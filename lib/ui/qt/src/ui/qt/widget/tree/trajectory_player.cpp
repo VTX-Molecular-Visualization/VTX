@@ -137,8 +137,8 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectoryPlayer::_onTrajectoryLoadingProgress( const App::Events::ThreadProgress & p_event )
 	{
-		const App::Trajectory::Loader * const loader		 = App::REG().try_get<App::Trajectory::Loader>( _system );
-		Util::Thread::BaseThread *			  progressThread = App::THREAD().get( p_event.id );
+		const App::Trajectory::Loader * const  loader		  = App::REG().try_get<App::Trajectory::Loader>( _system );
+		const Util::Thread::BaseThread * const progressThread = App::THREAD().get( p_event.id );
 		if ( loader == nullptr || progressThread != loader->thread.get() )
 		{
 			return;

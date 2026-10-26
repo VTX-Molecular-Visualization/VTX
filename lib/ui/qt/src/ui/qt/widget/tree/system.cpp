@@ -101,7 +101,7 @@ namespace VTX::UI::QT::Widget::Tree
 				);
 
 				App::ACTION().execute<App::Action::Visibility::SetVisibleItem>(
-					_system, item, index, visible == App::System::E_VISIBLE_STATE::HIDDEN ? true : false
+					_system, item, index, visible == App::System::E_VISIBLE_STATE::HIDDEN
 				);
 			}
 		);
@@ -255,7 +255,7 @@ namespace VTX::UI::QT::Widget::Tree
 	void System::mouseMoveEvent( QMouseEvent * p_e )
 	{
 		const bool draggingButton = p_e->buttons() & ( Qt::LeftButton | Qt::RightButton );
-		if ( _dragging == false || not draggingButton || UI_ACTIONS().isChecked( Action::Selection::LOCK ) )
+		if ( not _dragging || not draggingButton || UI_ACTIONS().isChecked( Action::Selection::LOCK ) )
 		{
 			QTreeView::mouseMoveEvent( p_e );
 			return;
@@ -296,7 +296,7 @@ namespace VTX::UI::QT::Widget::Tree
 		const auto * delegate = static_cast<const Delegate::SystemDelegate *>( itemDelegateForIndex( p_index ) );
 		const bool	 actionButtonClick = p_e->button() == Qt::LeftButton && delegate != nullptr
 										 && delegate->hitsButton( p_option, p_index, p_e->pos() );
-		return delegate != nullptr && isBranchClick == false && not actionButtonClick;
+		return delegate != nullptr && not isBranchClick && not actionButtonClick;
 	}
 
 	bool System::_isFullySelected( const QModelIndex & p_index ) const

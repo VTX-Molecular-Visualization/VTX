@@ -51,222 +51,225 @@ namespace VTX::UI::QT::Util
 		}
 	}
 
-	class Popup : public QWidget
+	namespace
 	{
-	  public:
-		Popup( QWidget * const p_parent ) : QWidget( p_parent )
+		class Popup : public QWidget
 		{
-			setWindowFlag( Qt::ToolTip );
-			setObjectName( "questionMarkPopup" );
-
-			// The global stylesheet that used to give this overlay its themed, rounded, contrasted border was
-			// removed. Recreate the look here without a stylesheet file: a translucent top-level window holding
-			// an inner frame that fills with the theme background and is outlined with the theme foreground.
-			// Reading the palette keeps it following the OS theme (light/dark) automatically.
-			setAttribute( Qt::WA_TranslucentBackground );
-
-			auto * outerLayout = Helper::makeQObject<QVBoxLayout>( this );
-			outerLayout->setContentsMargins( { 0, 0, 0, 0 } );
-
-			_frame = Helper::makeQObject<QWidget>( this );
-			_frame->setObjectName( "questionMarkPopupFrame" );
-			outerLayout->addWidget( _frame );
-
-			_applyThemeStyle();
-		}
-
-		// Host widget for the popup content; lives inside the themed, rounded frame.
-		QWidget * contentHost() const noexcept { return _frame; }
-
-		bool isHovered() const { return _hovered; }
-
-		void hoverLeave( QEvent * event )
-		{
-			_hovered = false;
-			QWidget::leaveEvent( event );
-			hide();
-		}
-
-		void hoverEnter( QHoverEvent * p_event )
-		{
-			_hovered = true;
-			QWidget::event( p_event );
-		}
-
-	  protected:
-		bool event( QEvent * const e ) override
-		{
-			switch ( e->type() )
+		  public:
+			Popup( QWidget * const p_parent ) : QWidget( p_parent )
 			{
-			case QEvent::HoverEnter: hoverEnter( static_cast<QHoverEvent *>( e ) ); return true;
-			case QEvent::HoverLeave: hoverLeave( e ); return true;
-			default: return QWidget::event( e );
-			}
-		}
+				setWindowFlag( Qt::ToolTip );
+				setObjectName( "questionMarkPopup" );
 
-		// Refresh the themed border/background colours when the OS theme (and thus the palette) changes.
-		void changeEvent( QEvent * e ) override
-		{
-			if ( e->type() == QEvent::PaletteChange || e->type() == QEvent::ThemeChange )
-			{
+				// The global stylesheet that used to give this overlay its themed, rounded, contrasted border was
+				// removed. Recreate the look here without a stylesheet file: a translucent top-level window holding
+				// an inner frame that fills with the theme background and is outlined with the theme foreground.
+				// Reading the palette keeps it following the OS theme (light/dark) automatically.
+				setAttribute( Qt::WA_TranslucentBackground );
+
+				auto * outerLayout = Helper::makeQObject<QVBoxLayout>( this );
+				outerLayout->setContentsMargins( { 0, 0, 0, 0 } );
+
+				_frame = Helper::makeQObject<QWidget>( this );
+				_frame->setObjectName( "questionMarkPopupFrame" );
+				outerLayout->addWidget( _frame );
+
 				_applyThemeStyle();
 			}
-			QWidget::changeEvent( e );
-		}
 
-		void leaveEvent( QEvent * event ) override
-		{
-			_hovered = false;
-			QWidget::leaveEvent( event );
-			hide();
-		}
+			// Host widget for the popup content; lives inside the themed, rounded frame.
+			QWidget * contentHost() const noexcept { return _frame; }
 
-	  private:
-		// Paint the inner frame with the theme background and a rounded border in the theme foreground.
-		void _applyThemeStyle()
-		{
-			const QColor background = palette().color( QPalette::Window );
-			const QColor foreground = palette().color( QPalette::WindowText );
-			_frame->setStyleSheet( QString(
-									   "#questionMarkPopupFrame{"
-									   "background:%1;"
-									   "border:1px solid %2;"
-									   "border-radius:8px;"
-									   "}"
-			)
-									   .arg( background.name(), foreground.name() ) );
-		}
+			bool isHovered() const { return _hovered; }
 
-		QWidget * _frame   = nullptr;
-		bool	  _hovered = false;
-	};
-
-	class QHoverableQuestionMark : public QPushButton
-	{
-		// Side length of the clickable question-mark button, in pixels.
-		static constexpr int BUTTON_SIDE = 16;
-
-		Popup *	 popup	= Helper::makeQObject<Popup>( this );
-		QLabel * _label = nullptr;
-
-	  public:
-		QHoverableQuestionMark( const char * const p_popupText, QWidget * const p_parent ) : QPushButton( p_parent )
-		{
-			// Render the help affordance as a bold "?" glyph rather than an icon. The old resource
-			// ":/sprite/citations_icon_hovered.png" was removed (turning this flat button invisible), and a
-			// style standard icon is just as fragile: it can be a low-contrast monochrome glyph that blends
-			// into a themed panel, or be missing entirely. Text uses the palette's text colour, so it always
-			// contrasts with whatever background the panel uses.
-			setText( QStringLiteral( "?" ) );
-			QFont glyphFont = font();
-			glyphFont.setBold( true );
-			setFont( glyphFont );
-
-			setAttribute( Qt::WA_Hover );
-			setFlat( true );
-			setCursor( QCursor( Qt::CursorShape::WhatsThisCursor ) );
-			setFixedSize( BUTTON_SIDE, BUTTON_SIDE );
-
-			_label = Helper::makeQObject<QLabel>( p_popupText, popup->contentHost() );
-			_label->setTextFormat( Qt::RichText );
-			_label->setOpenExternalLinks( true );
-			_label->setWordWrap( true );
-			// Let the user select/copy the content (useful for long engine output such as gromacs logs).
-			_label->setTextInteractionFlags( Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse );
-
-			// Large reports (e.g. raw gromacs output) used to grow the tooltip off-screen. Wrap the text in
-			// a scroll area so the popup stays bounded and the overflow is scrollable instead. Keep the scroll
-			// area and label transparent so the popup's themed frame background shows through uniformly.
-			auto * const scrollArea = Helper::makeQObject<QScrollArea>( popup->contentHost() );
-			scrollArea->setWidget( _label );
-			scrollArea->setWidgetResizable( true );
-			scrollArea->setFrameShape( QFrame::NoFrame );
-			scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-			scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-			scrollArea->setStyleSheet( "QScrollArea,QScrollArea>QWidget>QWidget{background:transparent;}" );
-			_label->setAttribute( Qt::WA_TranslucentBackground );
-
-			// Inset the content from the rounded border so text never overlaps the corners.
-			auto * const layout = Helper::makeQObject<QVBoxLayout>( popup->contentHost() );
-			layout->setContentsMargins( { 10, 8, 10, 8 } );
-			layout->addWidget( scrollArea );
-		}
-
-		~QHoverableQuestionMark() override { delete popup; }
-
-		QHoverableQuestionMark( QHoverableQuestionMark && )					 = delete;
-		QHoverableQuestionMark( const QHoverableQuestionMark & )			 = delete;
-		QHoverableQuestionMark & operator=( QHoverableQuestionMark && )		 = delete;
-		QHoverableQuestionMark & operator=( const QHoverableQuestionMark & ) = delete;
-
-		void mouseClicked( QMouseEvent * p_event )
-		{
-			if ( popup == nullptr )
+			void hoverLeave( QEvent * event )
 			{
-				return;
+				_hovered = false;
+				QWidget::leaveEvent( event );
+				hide();
 			}
-			if ( popup->isHidden() )
-			{
-				_showPopup();
-			}
-			else
-			{
-				popup->hide();
-			}
-		}
 
-	  protected:
-		bool event( QEvent * const e ) override
+			void hoverEnter( QHoverEvent * p_event )
+			{
+				_hovered = true;
+				QWidget::event( p_event );
+			}
+
+		  protected:
+			bool event( QEvent * const e ) override
+			{
+				switch ( e->type() )
+				{
+				case QEvent::HoverEnter: hoverEnter( static_cast<QHoverEvent *>( e ) ); return true;
+				case QEvent::HoverLeave: hoverLeave( e ); return true;
+				default: return QWidget::event( e );
+				}
+			}
+
+			// Refresh the themed border/background colours when the OS theme (and thus the palette) changes.
+			void changeEvent( QEvent * e ) override
+			{
+				if ( e->type() == QEvent::PaletteChange || e->type() == QEvent::ThemeChange )
+				{
+					_applyThemeStyle();
+				}
+				QWidget::changeEvent( e );
+			}
+
+			void leaveEvent( QEvent * event ) override
+			{
+				_hovered = false;
+				QWidget::leaveEvent( event );
+				hide();
+			}
+
+		  private:
+			// Paint the inner frame with the theme background and a rounded border in the theme foreground.
+			void _applyThemeStyle()
+			{
+				const QColor background = palette().color( QPalette::Window );
+				const QColor foreground = palette().color( QPalette::WindowText );
+				_frame->setStyleSheet( QString( "#questionMarkPopupFrame{"
+												"background:%1;"
+												"border:1px solid %2;"
+												"border-radius:8px;"
+												"}" )
+										   .arg( background.name(), foreground.name() ) );
+			}
+
+			QWidget * _frame   = nullptr;
+			bool	  _hovered = false;
+		};
+
+		class QHoverableQuestionMark : public QPushButton
 		{
-			switch ( e->type() )
+			// Side length of the clickable question-mark button, in pixels.
+			static constexpr int BUTTON_SIDE = 16;
+
+			Popup *	 popup	= Helper::makeQObject<Popup>( this );
+			QLabel * _label = nullptr;
+
+		  public:
+			QHoverableQuestionMark( const char * const p_popupText, QWidget * const p_parent ) : QPushButton( p_parent )
 			{
-			case QEvent::MouseButtonRelease: mouseClicked( static_cast<QMouseEvent *>( e ) ); break;
-			default: break;
+				// Render the help affordance as a bold "?" glyph rather than an icon. The old resource
+				// ":/sprite/citations_icon_hovered.png" was removed (turning this flat button invisible), and a
+				// style standard icon is just as fragile: it can be a low-contrast monochrome glyph that blends
+				// into a themed panel, or be missing entirely. Text uses the palette's text colour, so it always
+				// contrasts with whatever background the panel uses.
+				setText( QStringLiteral( "?" ) );
+				QFont glyphFont = font();
+				glyphFont.setBold( true );
+				setFont( glyphFont );
+
+				setAttribute( Qt::WA_Hover );
+				setFlat( true );
+				setCursor( QCursor( Qt::CursorShape::WhatsThisCursor ) );
+				setFixedSize( BUTTON_SIDE, BUTTON_SIDE );
+
+				_label = Helper::makeQObject<QLabel>( p_popupText, popup->contentHost() );
+				_label->setTextFormat( Qt::RichText );
+				_label->setOpenExternalLinks( true );
+				_label->setWordWrap( true );
+				// Let the user select/copy the content (useful for long engine output such as gromacs logs).
+				_label->setTextInteractionFlags( Qt::TextSelectableByMouse | Qt::LinksAccessibleByMouse );
+
+				// Large reports (e.g. raw gromacs output) used to grow the tooltip off-screen. Wrap the text in
+				// a scroll area so the popup stays bounded and the overflow is scrollable instead. Keep the scroll
+				// area and label transparent so the popup's themed frame background shows through uniformly.
+				auto * const scrollArea = Helper::makeQObject<QScrollArea>( popup->contentHost() );
+				scrollArea->setWidget( _label );
+				scrollArea->setWidgetResizable( true );
+				scrollArea->setFrameShape( QFrame::NoFrame );
+				scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+				scrollArea->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
+				scrollArea->setStyleSheet( "QScrollArea,QScrollArea>QWidget>QWidget{background:transparent;}" );
+				_label->setAttribute( Qt::WA_TranslucentBackground );
+
+				// Inset the content from the rounded border so text never overlaps the corners.
+				auto * const layout = Helper::makeQObject<QVBoxLayout>( popup->contentHost() );
+				layout->setContentsMargins( { 10, 8, 10, 8 } );
+				layout->addWidget( scrollArea );
 			}
-			return QPushButton::event( e );
-		}
 
-	  private:
-		// Show the popup, capped to a fraction of the current screen and repositioned so it always stays
-		// fully visible even when the report is very long.
-		void _showPopup()
-		{
-			const QScreen * scr	  = screen();
-			const QRect		avail = scr ? scr->availableGeometry() : QRect( 0, 0, 800, 600 );
+			~QHoverableQuestionMark() override { delete popup; }
 
-			const QSize maxSize(
-				std::min( 480, avail.width() - 2 * BUTTON_SIDE ), std::min( 360, avail.height() - 2 * BUTTON_SIDE )
-			);
-			// Constrain the label width so the text wraps (rather than forcing a horizontal scrollbar) and
-			// let adjustSize() resolve the height; the popup max size then bounds the whole tooltip.
-			_label->setMaximumWidth( maxSize.width() );
-			popup->setMaximumSize( maxSize );
-			popup->adjustSize();
+			QHoverableQuestionMark( QHoverableQuestionMark && )					 = delete;
+			QHoverableQuestionMark( const QHoverableQuestionMark & )			 = delete;
+			QHoverableQuestionMark & operator=( QHoverableQuestionMark && )		 = delete;
+			QHoverableQuestionMark & operator=( const QHoverableQuestionMark & ) = delete;
 
-			const QSize sz	= popup->size();
-			QPoint		pos = mapToGlobal( rect().bottomRight() );
-			if ( pos.x() + sz.width() > avail.right() )
+			void mouseClicked( QMouseEvent * p_event )
 			{
-				pos.setX( avail.right() - sz.width() );
+				if ( popup == nullptr )
+				{
+					return;
+				}
+				if ( popup->isHidden() )
+				{
+					_showPopup();
+				}
+				else
+				{
+					popup->hide();
+				}
 			}
-			if ( pos.y() + sz.height() > avail.bottom() )
-			{
-				pos.setY( mapToGlobal( rect().topRight() ).y() - sz.height() );
-			}
-			pos.setX( std::max( pos.x(), avail.left() ) );
-			pos.setY( std::max( pos.y(), avail.top() ) );
 
-			popup->move( pos );
-			popup->show();
-		}
-	};
+		  protected:
+			bool event( QEvent * const e ) override
+			{
+				switch ( e->type() )
+				{
+				case QEvent::MouseButtonRelease: mouseClicked( static_cast<QMouseEvent *>( e ) ); break;
+				default: break;
+				}
+				return QPushButton::event( e );
+			}
+
+		  private:
+			// Show the popup, capped to a fraction of the current screen and repositioned so it always stays
+			// fully visible even when the report is very long.
+			void _showPopup()
+			{
+				const QScreen * scr	  = screen();
+				const QRect		avail = scr ? scr->availableGeometry() : QRect( 0, 0, 800, 600 );
+
+				const QSize maxSize( std::min( 480, avail.width() - 2 * BUTTON_SIDE ),
+									 std::min( 360, avail.height() - 2 * BUTTON_SIDE ) );
+				// Constrain the label width so the text wraps (rather than forcing a horizontal scrollbar) and
+				// let adjustSize() resolve the height; the popup max size then bounds the whole tooltip.
+				_label->setMaximumWidth( maxSize.width() );
+				popup->setMaximumSize( maxSize );
+				popup->adjustSize();
+
+				const QSize sz	= popup->size();
+				QPoint		pos = mapToGlobal( rect().bottomRight() );
+				if ( pos.x() + sz.width() > avail.right() )
+				{
+					pos.setX( avail.right() - sz.width() );
+				}
+				if ( pos.y() + sz.height() > avail.bottom() )
+				{
+					pos.setY( mapToGlobal( rect().topRight() ).y() - sz.height() );
+				}
+				pos.setX( std::max( pos.x(), avail.left() ) );
+				pos.setY( std::max( pos.y(), avail.top() ) );
+
+				popup->move( pos );
+				popup->show();
+			}
+		};
+	}
 
 	LabelWithHelper::LabelWithHelper(
-		const char *					p_label,
-		const char *					p_helper,
+		const char * const				p_label,
+		const char * const				p_helper,
 		const E_QUESTIONMARK_POSITION & p_postion
-	) : container( new QWidget ), label( new QLabel( p_label ) )
+	)
 	{
+		auto containerOwner				= std::make_unique<QWidget>();
+		container						= containerOwner.get();
+		label							= Helper::makeQObject<QLabel>( p_label, container.data() );
 		QHBoxLayout *			 layout = Helper::makeQObject<QHBoxLayout>( container );
 		QHoverableQuestionMark * questionMark
 			= Helper::makeQObject<QHoverableQuestionMark>( p_helper, container.data() );
@@ -282,6 +285,7 @@ namespace VTX::UI::QT::Util
 			layout->addWidget( label, 1 );
 			layout->addWidget( questionMark );
 		}
+		container = containerOwner.release();
 	}
 
 	LabelWithHelper::operator QWidget *() const { return container; }
@@ -302,18 +306,16 @@ namespace VTX::UI::QT::Util
 		qLilLayout->addWidget( qLine.release(), 1 );
 	}
 
-	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip )
+	QLineEdit * addUInt64Field( QFormLayout * const p_dest, const char * const p_label, const char * const p_tooltip )
 	{
 		auto			  outOwner = std::make_unique<QLineEdit>();
 		QLineEdit * const out	   = outOwner.get();
 		out->setValidator( Helper::makeQObject<VTX::UI::QT::QUInt64Validator>( out ) );
 
-		p_dest->addRow(
-			VTX::UI::QT::Util::LabelWithHelper(
-				p_label, p_tooltip, VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
-			outOwner.release()
-		);
+		auto labelOwner = std::unique_ptr<QWidget>( VTX::UI::QT::Util::LabelWithHelper(
+			p_label, p_tooltip, VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
+		) );
+		p_dest->addRow( labelOwner.release(), outOwner.release() );
 		return out;
 	}
 
