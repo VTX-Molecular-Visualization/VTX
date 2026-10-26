@@ -55,6 +55,7 @@ namespace VTX::Tool::Mdprep::ui
 	  private:
 		struct _interface
 		{
+			virtual ~_interface()																 = default;
 			virtual void _get( Gateway::EngineSpecificCommonInformation & ) const noexcept		 = 0;
 			virtual void _get( const E_FIELD_SECTION &, MdEngineSpecificFieldPlacer & ) noexcept = 0;
 			virtual void _get( MdEngineFieldPlacer & p_out ) noexcept							 = 0;

@@ -25,6 +25,7 @@
 #include <ui/qt/style/style_manager.hpp>
 #include <util/constants.hpp>
 #include <util/enum.hpp>
+#include <utility>
 
 namespace VTX::Tool::TopologyEditor::Dialog
 {
@@ -260,7 +261,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		}
 		inspectorLayout->addRow( "Type", _selectedType );
 		inspectorLayout->addRow( "Name", _selectedName );
-		for ( int propertyIndex = 0; propertyIndex < static_cast<int>( _propertyLabels.size() ); ++propertyIndex )
+		for ( int propertyIndex = 0; std::cmp_less( propertyIndex, _propertyLabels.size() ); ++propertyIndex )
 		{
 			_propertyLabels[ propertyIndex ] = VTX::UI::QT::Helper::makeQObject<QLabel>( inspectorGroup );
 			_propertyValues[ propertyIndex ] = VTX::UI::QT::Helper::makeQObject<QLineEdit>( inspectorGroup );
@@ -434,7 +435,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			_selectedName->clear();
 		}
 
-		for ( int propertyIndex = 0; propertyIndex < static_cast<int>( _propertyLabels.size() ); ++propertyIndex )
+		for ( int propertyIndex = 0; std::cmp_less( propertyIndex, _propertyLabels.size() ); ++propertyIndex )
 		{
 			if ( _propertyLabels[ propertyIndex ] )
 			{
@@ -455,7 +456,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		const QString & p_value
 	)
 	{
-		if ( p_index < 0 || p_index >= static_cast<int>( _propertyLabels.size() ) )
+		if ( p_index < 0 || std::cmp_greater_equal( p_index, _propertyLabels.size() ) )
 		{
 			return;
 		}

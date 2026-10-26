@@ -268,13 +268,12 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_data->get( params );
 		_fieldsIons = IonicFields( qMainLayout, params->system );
 
-		_uiObjects._layoutIons = new QFormLayout;
-		qMainLayout->addLayout( _uiObjects._layoutIons );
+		_uiObjects._layoutIons = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *qMainLayout );
 
 		qMainLayout->addStretch( 1 );
 	}
 
-	void FormBasic::_loadValues( const MdParameters & p_defaults )
+	void FormBasic::_loadValues( const MdParameters & p_defaults ) const
 	{
 		_uiObjects._fieldStepNumberMinimization->setText( QString::number( p_defaults.minimization.stepNumber ) );
 		figureBestValueUnitRelation(

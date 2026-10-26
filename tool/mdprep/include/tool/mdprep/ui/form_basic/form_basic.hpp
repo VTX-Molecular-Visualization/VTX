@@ -92,7 +92,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		EventManager		  _eventManager;
 
 		void _createAndPlaceUiItems( QWidget * p_container );
-		void _loadValues( const MdParameters & p_defaults );
+		void _loadValues( const MdParameters & p_defaults ) const;
 		void _setupSlots();
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic

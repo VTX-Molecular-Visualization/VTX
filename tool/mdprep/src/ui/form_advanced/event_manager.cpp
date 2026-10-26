@@ -140,7 +140,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_connectForceField();
 	}
 
-	void EventManager::performFirstInputCheck( const Gateway::MdParameters & p_params )
+	void EventManager::performFirstInputCheck( const Gateway::MdParameters & p_params ) const
 	{
 		if ( not reportManager->hasFirstCheckBeenDone() )
 		{

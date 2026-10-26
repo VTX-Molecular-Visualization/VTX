@@ -6,6 +6,7 @@
 #include <string>
 #include <thread>
 #include <ui/qt/helper.hpp>
+#include <utility>
 #include <vector>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
@@ -91,7 +92,7 @@ namespace VTX::Tool::Mdprep::ui
 				_boxFields.fieldBoxSizeMode->addItem( QString::fromStdString( it_str ) );
 			}
 
-			if ( _data->boxSizeMode < static_cast<size_t>( _boxFields.fieldBoxSizeMode->count() ) )
+			if ( std::cmp_less( _data->boxSizeMode, _boxFields.fieldBoxSizeMode->count() ) )
 			{
 				_boxFields.fieldBoxSizeMode->setCurrentIndex( static_cast<int>( _data->boxSizeMode ) );
 			}

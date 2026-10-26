@@ -34,7 +34,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 		void get( Gateway::MdParameters *& ) noexcept;
 		void get( Gateway::EngineSpecificCommonInformation *& ) noexcept;
-		void get( ReportManager *& ) noexcept;
+		void get( ReportManager *& ) const noexcept;
 		void get( SpecificFieldsPlacerCallback *& ) noexcept;
 
 	  private:

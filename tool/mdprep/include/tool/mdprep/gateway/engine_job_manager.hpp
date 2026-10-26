@@ -18,7 +18,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		EngineJobManager() = default;
 
 		// Check weither the current inputs are reasonnable and send results via callback
-		void checkInputs( const MdParameters & p_1 ) noexcept
+		void checkInputs( const MdParameters & p_1 )
 		{
 			if ( _ptr )
 			{
@@ -30,7 +30,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		 * @brief Returns the last checkInputs result. Doesn't restart a check.
 		 * @return Returns default constructed Gateway::CheckReport if no results are available
 		 */
-		Gateway::CheckReport lastResult() const noexcept
+		Gateway::CheckReport lastResult() const
 		{
 			if ( _ptr )
 			{
@@ -53,7 +53,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		}
 
 		// Synchonously start preparation of the system and feed the callback with job progression
-		void startPreparation( const MdParameters & p_1 ) noexcept
+		void startPreparation( const MdParameters & p_1 )
 		{
 			if ( _ptr )
 			{
@@ -64,12 +64,12 @@ namespace VTX::Tool::Mdprep::Gateway
 	  private:
 		struct _interface
 		{
-			~_interface()													   = default;
-			virtual void checkInputs( const MdParameters & p_1 ) noexcept	   = 0;
-			virtual void startPreparation( const MdParameters & p_1 ) noexcept = 0;
+			virtual ~_interface()									  = default;
+			virtual void checkInputs( const MdParameters & p_1 )	  = 0;
+			virtual void startPreparation( const MdParameters & p_1 ) = 0;
 
 			virtual bool				 isResultAvailable() const noexcept = 0;
-			virtual Gateway::CheckReport lastResult() const noexcept		= 0;
+			virtual Gateway::CheckReport lastResult() const					= 0;
 		};
 
 		template<typename T>
@@ -79,13 +79,13 @@ namespace VTX::Tool::Mdprep::Gateway
 
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			void checkInputs( const MdParameters & p_1 ) noexcept override { _obj.checkInputs( p_1 ); }
+			void checkInputs( const MdParameters & p_1 ) override { _obj.checkInputs( p_1 ); }
 
-			void startPreparation( const MdParameters & p_1 ) noexcept override { _obj.startPreparation( p_1 ); }
+			void startPreparation( const MdParameters & p_1 ) override { _obj.startPreparation( p_1 ); }
 
 			bool isResultAvailable() const noexcept override { return _obj.isResultAvailable(); }
 
-			Gateway::CheckReport lastResult() const noexcept override { return _obj.lastResult(); }
+			Gateway::CheckReport lastResult() const override { return _obj.lastResult(); }
 		};
 
 		std::unique_ptr<_interface> _ptr = nullptr;
@@ -117,7 +117,7 @@ namespace VTX::Tool::Mdprep::Gateway
 			static_assert(
 				requires( T t ) {
 					{ t.lastResult() } -> std::same_as<Gateway::CheckReport>;
-				}, "You must implement 'Gateway::CheckReport lastResult() const noexcept' class method."
+				}, "You must implement 'Gateway::CheckReport lastResult() const' class method."
 			);
 		}
 	};

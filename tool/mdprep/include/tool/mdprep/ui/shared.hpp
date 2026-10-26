@@ -109,7 +109,7 @@ namespace VTX::Tool::Mdprep::ui
 		// test if this instance is a default-constructed one
 		bool _isDefault() const noexcept;
 		void _setupUi( QVBoxLayout * p_target );
-		void _loadValues( const Gateway::SystemData & p_defaults );
+		void _loadValues( const Gateway::SystemData & p_defaults ) const;
 	};
 
 	inline const char * getReportLabel( const Gateway::CheckReport & p_report ) noexcept

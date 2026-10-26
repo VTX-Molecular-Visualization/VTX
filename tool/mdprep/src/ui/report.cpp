@@ -68,119 +68,119 @@ namespace VTX::Tool::Mdprep::ui
 			Gateway::CheckReport			   report;
 		};
 
-	} // namespace
-
-	/**
-	 * @brief Internal class used for UiReport related things
-	 */
-	class FramedReportManager
-	{
-	  public:
-		void relocate( FramedReportManager & p_other )
+		/**
+		 * @brief Internal class used for UiReport related things
+		 */
+		class FramedReportManager
 		{
-			_removeContainerFromLayout();
-			_deleteContainer();
-			_deleteLayout();
-
-			_currentLayout = p_other._currentLayout;
-
-			p_other._removeContainerFromLayout();
-			p_other._deleteContainer();
-			p_other._currentLayout = nullptr;
-
-			if ( not _currentLayout.isNull() )
+		  public:
+			void relocate( FramedReportManager & p_other )
 			{
+				_removeContainerFromLayout();
+				_deleteContainer();
+				_deleteLayout();
+
+				_currentLayout = p_other._currentLayout;
+
+				p_other._removeContainerFromLayout();
+				p_other._deleteContainer();
+				p_other._currentLayout = nullptr;
+
+				if ( not _currentLayout.isNull() )
+				{
+					_createContainer();
+				}
+				_lastUiReport = ReportUi( _lastUiReport.report );
+				_recreateUi();
+			}
+
+			void relocate( QPointer<QVBoxLayout> p_ )
+			{
+				_removeContainerFromLayout();
+				_deleteContainer();
+				_currentLayout = std::move( p_ );
+
+				if ( not _lastUiReport.content.container.isNull() )
+				{
+					delete _lastUiReport.content.container;
+				}
+
+				if ( _currentLayout.isNull() )
+				{
+					return;
+				}
+
+				_lastUiReport = ReportUi( _lastUiReport.report );
+				_recreateUi();
+			}
+
+			void postReport( ReportUi p_uiReport )
+			{
+				if ( not _lastUiReport.content.container.isNull() )
+				{
+					delete _lastUiReport.content.container;
+				}
+
+				_lastUiReport = std::move( p_uiReport );
+
+				_recreateUi();
+			}
+
+		  private:
+			QPointer<QVBoxLayout> _currentLayout = nullptr;
+			QPointer<QWidget>	  _container	 = nullptr;
+			ReportUi			  _lastUiReport;
+
+			void _recreateUi()
+			{
+				if ( _currentLayout.isNull() )
+				{
+					return;
+				}
 				_createContainer();
+
+				if ( not _lastUiReport.content.container.isNull() )
+				{
+					_container->layout()->addWidget( _lastUiReport.content );
+				}
 			}
-			_lastUiReport = ReportUi( _lastUiReport.report );
-			_recreateUi();
-		}
 
-		void relocate( QPointer<QVBoxLayout> p_ )
-		{
-			_removeContainerFromLayout();
-			_deleteContainer();
-			_currentLayout = std::move( p_ );
-
-			if ( not _lastUiReport.content.container.isNull() )
+			void _removeContainerFromLayout()
 			{
-				delete _lastUiReport.content.container;
+				if ( not _currentLayout.isNull() && not _container.isNull() )
+				{
+					_currentLayout->removeWidget( _container );
+				}
 			}
 
-			if ( _currentLayout.isNull() )
+			void _deleteLayout() noexcept
 			{
-				return;
+				if ( not _currentLayout.isNull() )
+				{
+					delete _currentLayout.data();
+				}
 			}
 
-			_lastUiReport = ReportUi( _lastUiReport.report );
-			_recreateUi();
-		}
-
-		void postReport( ReportUi p_uiReport )
-		{
-			if ( not _lastUiReport.content.container.isNull() )
+			void _deleteContainer() noexcept
 			{
-				delete _lastUiReport.content.container;
+				if ( not _container.isNull() )
+				{
+					delete _container.data();
+				}
 			}
 
-			_lastUiReport = std::move( p_uiReport );
-
-			_recreateUi();
-		}
-
-	  private:
-		QPointer<QVBoxLayout> _currentLayout = nullptr;
-		QPointer<QWidget>	  _container	 = nullptr;
-		ReportUi			  _lastUiReport;
-
-		void _recreateUi()
-		{
-			if ( _currentLayout.isNull() )
+			void _createContainer()
 			{
-				return;
+				if ( _container.isNull() )
+				{
+					_container = VTX::UI::QT::Helper::makeQObject<QWidget>( _currentLayout->parentWidget() );
+					_currentLayout->addWidget( _container );
+					_container->setLayout( VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _container.data() ) );
+				}
 			}
-			_createContainer();
+		};
 
-			if ( not _lastUiReport.content.container.isNull() )
-			{
-				_container->layout()->addWidget( _lastUiReport.content );
-			}
-		}
-
-		void _removeContainerFromLayout()
-		{
-			if ( not _currentLayout.isNull() && not _container.isNull() )
-			{
-				_currentLayout->removeWidget( _container );
-			}
-		}
-
-		void _deleteLayout() noexcept
-		{
-			if ( not _currentLayout.isNull() )
-			{
-				delete _currentLayout.data();
-			}
-		}
-
-		void _deleteContainer() noexcept
-		{
-			if ( not _container.isNull() )
-			{
-				delete _container.data();
-			}
-		}
-
-		void _createContainer()
-		{
-			if ( _container.isNull() )
-			{
-				_container = VTX::UI::QT::Helper::makeQObject<QWidget>( _currentLayout->parentWidget() );
-				_currentLayout->addWidget( _container );
-				_container->setLayout( VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _container.data() ) );
-			}
-		}
-	};
+	} // namespace
 
 	struct ReportManager::_Impl
 	{

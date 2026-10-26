@@ -117,7 +117,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void _setupUi( QWidget * p_parent, const char * p_title );
 		void _setupSlots();
 		void _applyChanges();
-		void _cancelChanges();
+		void _cancelChanges() const;
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
 

@@ -6,6 +6,7 @@
 #include <app/ui/concepts.hpp>
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
+#include <memory>
 #include <string_view>
 #include <ui/qt/action_registry.hpp>
 #include <ui/qt/helper.hpp>
@@ -52,7 +53,7 @@ namespace VTX::Tool::TopologyEditor
 				if ( dialog != nullptr )
 				{
 					dialog->close();
-					delete dialog;
+					std::default_delete<Dialog::TopologyEditorDialog>()( dialog );
 				}
 				dialog = VTX::UI::QT::Helper::makeQObject<Dialog::TopologyEditorDialog>( p_system );
 				dialog->setAttribute( Qt::WA_DeleteOnClose, false );

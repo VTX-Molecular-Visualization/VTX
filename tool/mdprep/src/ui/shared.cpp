@@ -241,7 +241,7 @@ namespace VTX::Tool::Mdprep::ui
 		_uiObjects.cationCharge = VTX::UI::QT::Helper::makeQObject<QComboBox>( _uiObjects.container );
 		for ( const auto & it_chrgStr : g_IonicChargeValues )
 		{
-			const long	  chrg	  = std::stol( std::string( it_chrgStr ) );
+			const int32_t chrg	  = std::stol( std::string( it_chrgStr ) );
 			const QString chrgStr = QUtf8StringView( it_chrgStr ).toString();
 			if ( chrg > 0 )
 			{
@@ -268,14 +268,14 @@ namespace VTX::Tool::Mdprep::ui
 		qLayoutIons->addWidget( _uiObjects.cationCharge, 1, 3 );
 	}
 
-	void IonicFields::_loadValues( const Gateway::SystemData & p_defaults )
+	void IonicFields::_loadValues( const Gateway::SystemData & p_defaults ) const
 	{
 		_uiObjects.anionName->setText( QString::fromStdString( p_defaults.anionName ) );
 		_uiObjects.cationName->setText( QString::fromStdString( p_defaults.cationName ) );
 
 		for ( const auto & it_chrgStr : g_IonicChargeValues )
 		{
-			const long	  chrg	  = std::stol( std::string( it_chrgStr ) );
+			const int32_t chrg	  = std::stol( std::string( it_chrgStr ) );
 			const QString chrgStr = QUtf8StringView( it_chrgStr ).toString();
 			if ( chrg == p_defaults.anionCharge )
 			{

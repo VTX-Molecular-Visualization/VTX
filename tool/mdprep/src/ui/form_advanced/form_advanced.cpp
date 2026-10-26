@@ -144,8 +144,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 			= VTX::UI::QT::Helper::makeQObject<QPushButton>( "Check System", p_target->parentWidget() );
 		systemReportButtonLayout->addWidget( _uiObjects._buttonStartInputCheck );
 
-		_uiObjects._layoutSystemPreparation = new QFormLayout;
-		p_target->addLayout( _uiObjects._layoutSystemPreparation );
+		_uiObjects._layoutSystemPreparation = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_target );
 
 		QWidget * label = nullptr;
 
@@ -172,8 +171,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 
 		p_target->addSpacerItem( std::make_unique<QSpacerItem>( 0, 10 ).release() );
 		_fieldsIons							= IonicFields( p_target, _parameters().system );
-		_uiObjects._layoutSystemPreparation = new QFormLayout;
-		p_target->addLayout( _uiObjects._layoutSystemPreparation );
+		_uiObjects._layoutSystemPreparation = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_target );
 	}
 
 	void FormAdvanced::_uiAddExpertButton( QVBoxLayout * p_target )
@@ -198,9 +196,8 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 	void FormAdvanced::_uiAddMinimization( QVBoxLayout * p_target )
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, "Minimization" );
-		_uiObjects._layoutMinimization = new QFormLayout;
-		p_target->addLayout( _uiObjects._layoutMinimization );
-		QWidget * label = nullptr;
+		_uiObjects._layoutMinimization = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_target );
+		QWidget * label				   = nullptr;
 
 		VTX::Tool::Mdprep::ui::get(
 			E_COMMON_FIELDS_UINT64::stepNumberMinimization, label, _uiObjects._fieldMinimizationStepNumber
@@ -224,9 +221,8 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 	void FormAdvanced::_uiAddStep( QVBoxLayout * p_target, const char * p_header, UiData::FieldSet & p_field )
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, p_header );
-		p_field.layout	= new QFormLayout;
+		p_field.layout	= VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_target );
 		QWidget * label = nullptr;
-		p_target->addLayout( p_field.layout );
 
 		VTX::Tool::Mdprep::ui::get( E_COMMON_FIELDS_DOUBLE::dt, label, p_field.dt );
 		p_field.layout->addRow( label, p_field.dt );

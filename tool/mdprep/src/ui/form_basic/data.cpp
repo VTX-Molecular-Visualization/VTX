@@ -28,7 +28,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 	void Data::get( Gateway::EngineSpecificCommonInformation *& p_out ) noexcept { p_out = &_data.lastFormData; }
 
-	void Data::get( ReportManager *& p_out ) noexcept { p_out = _data.reportManager; }
+	void Data::get( ReportManager *& p_out ) const noexcept { p_out = _data.reportManager; }
 
 	void Data::get( SpecificFieldsPlacerCallback *& p_out ) noexcept { p_out = &_data.specificFieldsCallback; }
 } // namespace VTX::Tool::Mdprep::ui::form_basic

@@ -58,7 +58,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		void connectBoxShape( QComboBox * p_fieldSystemBoxShape );
 		void connectInputCheck( QPushButton * p_buttonStartInputCheck );
 		void connectBioForceField( QComboBox * p_fieldBioForceField, QVBoxLayout * p_target );
-		void performFirstInputCheck( const Gateway::MdParameters & );
+		void performFirstInputCheck( const Gateway::MdParameters & ) const;
 
 	  private:
 		QComboBox *				_fieldSystemBoxShape	   = nullptr;

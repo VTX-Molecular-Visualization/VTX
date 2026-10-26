@@ -10,11 +10,6 @@
 #include <util/thread/base_thread.hpp>
 #include <vector>
 
-namespace std
-{
-	class thread;
-}
-
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct EngineSpecificCommonInformation;

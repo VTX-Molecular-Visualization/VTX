@@ -47,8 +47,8 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		template<typename UiData>
 		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MdParametersStepData * p_data )
 		{
-			QWidget *	  label	  = nullptr;
-			QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
+			QWidget *			label	= nullptr;
+			const QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
 
 			VTX::Tool::Mdprep::ui::get( E_COMMON_FIELDS_DOUBLE::dt, label, p_uiObjects.fieldDt );
 			qLayout->addRow( label, p_uiObjects.fieldDt );
@@ -65,8 +65,8 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		template<typename UiData>
 		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MinimizationData * p_data )
 		{
-			QWidget *	  label	  = nullptr;
-			QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
+			QWidget *			label	= nullptr;
+			const QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
 
 			VTX::Tool::Mdprep::ui::get(
 				E_COMMON_FIELDS_DOUBLE::minimizationEnergyBreakpoint, label, p_uiObjects.fieldMinEnergyBreakpoint
@@ -84,8 +84,8 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		template<typename UiData>
 		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const SystemData * p_data )
 		{
-			QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
-			QWidget *	  w		  = nullptr;
+			const QFormLayout * qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
+			QWidget *			w		= nullptr;
 			// Engine info is optional : without it, the comboboxes are simply left empty.
 			const Gateway::EngineSpecificCommonInformation * const engineInfo
 				= p_uiObjects.engineInfo.has_value() ? &p_uiObjects.engineInfo.value() : nullptr;
@@ -140,7 +140,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 	void SettingsDialog::_setupUi( QWidget * const p_parent, const char * p_title )
 	{
-		_uiObjects.container = new QDialog( p_parent );
+		_uiObjects.container = VTX::UI::QT::Helper::makeQObject<QDialog>( p_parent );
 		_uiObjects.container->setWindowTitle( p_title );
 		QVBoxLayout * qMainLayout = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _uiObjects.container );
 
@@ -221,5 +221,5 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_uiObjects.container->close();
 	}
 
-	void SettingsDialog::_cancelChanges() { _uiObjects.container->close(); }
+	void SettingsDialog::_cancelChanges() const { _uiObjects.container->close(); }
 } // namespace VTX::Tool::Mdprep::ui::form_basic

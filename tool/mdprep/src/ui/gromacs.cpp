@@ -23,7 +23,9 @@ namespace VTX::Tool::Mdprep::ui
 	{
 	  public:
 		void get( Gateway::EngineJobManager & p_out ) noexcept { p_out = _jobManager; }
+
 		void get( MdEngineFieldPlacer & p_out ) noexcept { p_out = GromacsFieldPlacer( _data ); }
+
 		void get( const E_FIELD_SECTION & p_section, MdEngineSpecificFieldPlacer & p_out ) noexcept
 		{
 			switch ( p_section )
@@ -51,16 +53,16 @@ namespace VTX::Tool::Mdprep::ui
 	};
 
 	Gromacs::Gromacs() : _impl( new _Impl() ) {}
-	void Gromacs::get( MdEngineFieldPlacer & p_out ) noexcept { _impl->get( p_out ); }
-	void Gromacs::get( const E_FIELD_SECTION & p_section, MdEngineSpecificFieldPlacer & p_out ) noexcept
-	{
-		_impl->get( p_section, p_out );
-	}
-	void Gromacs::get( Gateway::EngineJobManager & p_out ) noexcept { _impl->get( p_out ); }
-	void get( const Gromacs &, Gateway::EngineSpecificCommonInformation & p_out ) noexcept
-	{
-		Gateway::Gromacs::get( p_out );
-	}
 
-	void Gromacs::Del::operator()( Gromacs::_Impl * p_ ) noexcept { delete p_; }
+	void Gromacs::get( MdEngineFieldPlacer & p_out ) noexcept { _impl->get( p_out ); }
+
+	void Gromacs::get( const E_FIELD_SECTION & p_section, MdEngineSpecificFieldPlacer & p_out ) noexcept
+	{ _impl->get( p_section, p_out ); }
+
+	void Gromacs::get( Gateway::EngineJobManager & p_out ) noexcept { _impl->get( p_out ); }
+
+	void get( const Gromacs &, Gateway::EngineSpecificCommonInformation & p_out ) noexcept
+	{ Gateway::Gromacs::get( p_out ); }
+
+	void Gromacs::Del::operator()( Gromacs::_Impl * p_ ) noexcept { std::default_delete<Gromacs::_Impl>()( p_ ); }
 } // namespace VTX::Tool::Mdprep::ui

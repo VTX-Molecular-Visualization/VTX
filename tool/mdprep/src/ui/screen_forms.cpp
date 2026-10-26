@@ -42,8 +42,8 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			p_parent->layout();
 		}
-		auto * const _			= VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( p_parent );
-		QWidget *	 mainWidget = VTX::UI::QT::Helper::makeQObject<QWidget>( p_parent );
+		VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( p_parent );
+		QWidget * mainWidget = VTX::UI::QT::Helper::makeQObject<QWidget>( p_parent );
 		p_parent->layout()->addWidget( mainWidget );
 		mainWidget->setContentsMargins( { 0, 0, 0, 0 } );
 

@@ -49,37 +49,37 @@ namespace VTX::Tool::Mdprep
 	namespace
 	{
 		constexpr std::string_view ACTION_OPEN_MDPREP = "tool.mdprep.open";
-	}
 
-	// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
-	// specifics.
-	class MainWindow : public UI::QT::DockWidget::BaseDockWidget<MainWindow>
-	{
-	  public:
-		inline static const QSize PREFERRED_SIZE { 500, 720 };
-
-	  private:
-		using EngineCollection
-			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
-		QComboBox * _w_mdEngine	   = nullptr;
-		QWidget *	_formContainer = nullptr;
-
-		VTX::Tool::Mdprep::Gateway::MdParameters		  _paramaeters;
-		std::optional<VTX::Tool::Mdprep::ui::ScreenForms> _screen;
-
-	  public:
-		MainWindow( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Molecular Dynamics Preparation" )
+		// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
+		// specifics.
+		class MainWindow : public UI::QT::DockWidget::BaseDockWidget<MainWindow>
 		{
-			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
+		  public:
+			inline static const QSize PREFERRED_SIZE { 500, 720 };
 
-			QWidget * screenWidget = VTX::UI::QT::Helper::makeQObject<QWidget>( _layout->parentWidget() );
-			_layout->addWidget( screenWidget );
+		  private:
+			using EngineCollection
+				= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
+			QComboBox * _w_mdEngine	   = nullptr;
+			QWidget *	_formContainer = nullptr;
 
-			setWindowState( Qt::WindowState::WindowActive );
-			resize( PREFERRED_SIZE );
-			_screen.emplace( screenWidget, _paramaeters );
-		}
-	};
+			VTX::Tool::Mdprep::Gateway::MdParameters		  _paramaeters;
+			std::optional<VTX::Tool::Mdprep::ui::ScreenForms> _screen;
+
+		  public:
+			MainWindow( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Molecular Dynamics Preparation" )
+			{
+				this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
+
+				QWidget * screenWidget = VTX::UI::QT::Helper::makeQObject<QWidget>( _layout->parentWidget() );
+				_layout->addWidget( screenWidget );
+
+				setWindowState( Qt::WindowState::WindowActive );
+				resize( PREFERRED_SIZE );
+				_screen.emplace( screenWidget, _paramaeters );
+			}
+		};
+	} // namespace
 
 	App::UI::DescAction openMdPrepAction()
 	{

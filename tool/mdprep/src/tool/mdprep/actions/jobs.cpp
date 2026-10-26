@@ -27,7 +27,7 @@ namespace VTX::Tool::Mdprep::Actions
 	{
 	}
 
-	void StartPreparation::_Del::operator()( _Impl * _ptr ) const noexcept { delete _ptr; }
+	void StartPreparation::_Del::operator()( _Impl * _ptr ) const noexcept { std::default_delete<_Impl>()( _ptr ); }
 
 	StartPreparation::StartPreparation() : _impl( new _Impl ) {}
 
@@ -174,5 +174,5 @@ namespace VTX::Tool::Mdprep::Actions
 		}
 	}
 
-	void CheckSystem::_Del::operator()( _Impl * _ptr ) const noexcept { delete _ptr; }
+	void CheckSystem::_Del::operator()( _Impl * _ptr ) const noexcept { std::default_delete<_Impl>()( _ptr ); }
 } // namespace VTX::Tool::Mdprep::Actions

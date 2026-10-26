@@ -18,7 +18,7 @@ namespace VTX::Tool::Mdprep::ui
 	  public:
 		InputChecker() = default;
 
-		void checkInputs( const Gateway::MdParameters & p_1 ) const noexcept
+		void checkInputs( const Gateway::MdParameters & p_1 ) const
 		{
 			if ( _ptr )
 			{
@@ -35,7 +35,7 @@ namespace VTX::Tool::Mdprep::ui
 			return false;
 		}
 
-		Gateway::CheckReport lastResult() const noexcept
+		Gateway::CheckReport lastResult() const
 		{
 			if ( _ptr )
 			{
@@ -49,10 +49,10 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			virtual ~_interface() = default;
 
-			virtual void checkInputs( const Gateway::MdParameters & p_1 ) const noexcept = 0;
+			virtual void checkInputs( const Gateway::MdParameters & p_1 ) const = 0;
 
 			virtual bool				 isResultAvailable() const noexcept = 0;
-			virtual Gateway::CheckReport lastResult() const noexcept		= 0;
+			virtual Gateway::CheckReport lastResult() const					= 0;
 		};
 
 		std::unique_ptr<_interface> _ptr = nullptr;
@@ -62,11 +62,11 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			void checkInputs( const Gateway::MdParameters & p_1 ) const noexcept override { _obj.checkInputs( p_1 ); }
+			void checkInputs( const Gateway::MdParameters & p_1 ) const override { _obj.checkInputs( p_1 ); }
 
 			bool isResultAvailable() const noexcept override { return _obj.isResultAvailable(); }
 
-			Gateway::CheckReport lastResult() const noexcept override { return _obj.lastResult(); }
+			Gateway::CheckReport lastResult() const override { return _obj.lastResult(); }
 
 		  private:
 			T _obj;
@@ -92,7 +92,7 @@ namespace VTX::Tool::Mdprep::ui
 			static_assert(
 				requires( T t ) {
 					{ t.lastResult() } -> std::same_as<Gateway::CheckReport>;
-				}, "You must implement 'Gateway::CheckReport lastResult() const noexcept' class method."
+				}, "You must implement 'Gateway::CheckReport lastResult() const' class method."
 			);
 		}
 	};
