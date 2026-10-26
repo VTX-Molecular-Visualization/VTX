@@ -22,7 +22,7 @@ namespace VTX::Tool::Mdprep::Gateway
 
 namespace VTX::Tool::Mdprep::Gateway::Gromacs
 {
-	enum class E_BOX_SHAPE
+	enum class E_BOX_SHAPE : uint8_t
 	{
 		dodecahedron,
 		octahedron,
@@ -30,7 +30,7 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		triclinic,
 		COUNT
 	};
-	enum class E_BOX_DIMENSION_MODE
+	enum class E_BOX_DIMENSION_MODE : uint8_t
 	{
 		distance // uses the distance from the solute to the box to determine box's size
 		,

@@ -23,7 +23,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 			// waitForFinished returns true once the process has actually exited;
 			// on timeout we drain accumulated output and loop again.
-			while ( p_proc.waitForFinished( 50 ) == false && p_proc.state() != QProcess::ProcessState::NotRunning )
+			while ( not p_proc.waitForFinished( 50 ) && p_proc.state() != QProcess::ProcessState::NotRunning )
 			{
 				drain();
 			}
@@ -52,7 +52,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		VTX_DEBUG( "[MDPREP] Gromacs working directory: {}", absoluteWorkingDirectory.string() );
 		proc.start();
 		proc.closeWriteChannel();
-		if ( proc.waitForStarted( -1 ) == false )
+		if ( not proc.waitForStarted( -1 ) )
 		{
 			p_args.report.errorOccured = true;
 			p_args.report.errors.emplace_back(

@@ -6,7 +6,7 @@
 namespace VTX::Tool::Mdprep::ui
 {
 
-	enum class E_MD_ENGINE
+	enum class E_MD_ENGINE : uint8_t
 	{
 		gromacs,
 		COUNT

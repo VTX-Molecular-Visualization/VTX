@@ -1,6 +1,8 @@
 #include "util/sentry.hpp"
 #include <QTimer>
+#include <memory>
 #include <qpushbutton.h>
+#include <ui/qt/helper.hpp>
 #include <ui/qt/util.hpp>
 #include <util/event_hub.hpp>
 //
@@ -41,19 +43,19 @@ namespace VTX::Tool::Mdprep::ui
 			p_parent->layout();
 		}
 		p_parent->setLayout( new QVBoxLayout );
-		QWidget * mainWidget = new QWidget( p_parent );
+		QWidget * mainWidget = VTX::UI::QT::Helper::makeQObject<QWidget>( p_parent );
 		p_parent->layout()->addWidget( mainWidget );
 		mainWidget->setContentsMargins( { 0, 0, 0, 0 } );
 
-		QVBoxLayout * qLayoutWindow = new QVBoxLayout( mainWidget );
+		QVBoxLayout * qLayoutWindow = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( mainWidget );
 		qLayoutWindow->setContentsMargins( 0, 0, 0, 0 );
-		qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );
+		qLayoutWindow->addSpacerItem( std::make_unique<QSpacerItem>( 0, 10 ).release() );
 
 		QHBoxLayout * qLayoutCentering = new QHBoxLayout;
 		qLayoutWindow->addLayout( qLayoutCentering );
 
 		// following content is meant to be moved eventually
-		_w_mdEngine = new QComboBox;
+		_w_mdEngine = VTX::UI::QT::Helper::makeQObject<QComboBox>( mainWidget );
 		for ( const auto & it : VTX::Tool::Mdprep::ui::mdEngineStrings() )
 		{
 			_w_mdEngine->addItem( QString( it ) );
@@ -64,7 +66,7 @@ namespace VTX::Tool::Mdprep::ui
 
 		QFormLayout * qLayoutFormEngine = new QFormLayout;
 		qLayoutCentering->addLayout( qLayoutFormEngine );
-		QLabel * qLabelMdEngine = new QLabel( "Choose your MD engine" );
+		QLabel * qLabelMdEngine = VTX::UI::QT::Helper::makeQObject<QLabel>( "Choose your MD engine", mainWidget );
 		{
 			auto font = qLabelMdEngine->font();
 			font.setPointSize( font.pointSize() + 2 );
@@ -76,12 +78,12 @@ namespace VTX::Tool::Mdprep::ui
 		qLayoutFormEngine->addRow( qLabelMdEngine, _w_mdEngine );
 		qLayoutCentering->addStretch( 1 );
 
-		QWidget *	  qWidgetSwitch = new QWidget;
-		QVBoxLayout * qLayoutSwitch = new QVBoxLayout( qWidgetSwitch );
+		QWidget *	  qWidgetSwitch = VTX::UI::QT::Helper::makeQObject<QWidget>( mainWidget );
+		QVBoxLayout * qLayoutSwitch = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( qWidgetSwitch );
 		qLayoutWindow->addWidget( qWidgetSwitch );
 
-		qLayoutWindow->addSpacerItem( new QSpacerItem( 0, 10 ) );
-		_formContainer = new QWidget;
+		qLayoutWindow->addSpacerItem( std::make_unique<QSpacerItem>( 0, 10 ).release() );
+		_formContainer = VTX::UI::QT::Helper::makeQObject<QWidget>( mainWidget );
 		qLayoutWindow->addWidget( _formContainer );
 
 		_updateMdEngine( 0 ); // Before setting up a form, the report manager needs to know the mdEngine
@@ -91,7 +93,7 @@ namespace VTX::Tool::Mdprep::ui
 		_switchButton.subscribeAdvancedSwitch( [ & ] { this->_setFormAdvanced(); } );
 		_switchButton.setupUi( qLayoutSwitch, VTX::Tool::Mdprep::ui::FormSwitchButton::E_FORM_MODE::basic );
 
-		QLabel *			qExplainatoryText = new QLabel;
+		QLabel *			qExplainatoryText = VTX::UI::QT::Helper::makeQObject<QLabel>( mainWidget );
 		static const char * buttonLabel		  = "Prepare system";
 		qExplainatoryText->setText(
 			QString::asprintf(
@@ -106,7 +108,7 @@ namespace VTX::Tool::Mdprep::ui
 		qExplainatoryText->setWordWrap( true );
 		qExplainatoryText->setContentsMargins( { 10, 10, 5, 5 } );
 		qLayoutWindow->addWidget( qExplainatoryText );
-		_buttonStart = new QPushButton;
+		_buttonStart = VTX::UI::QT::Helper::makeQObject<QPushButton>( mainWidget );
 		QFont f		 = _buttonStart->font();
 		f.setPointSize( f.pointSize() + 2 );
 		_buttonStart->setFont( f );
@@ -114,7 +116,7 @@ namespace VTX::Tool::Mdprep::ui
 		qLayoutWindow->addWidget( _buttonStart );
 	}
 
-	void ScreenForms::_updateMdEngine( int idx ) noexcept
+	void ScreenForms::_updateMdEngine( int idx )
 	{
 		_mdEngineCurrentIdx = idx;
 		if ( not _mdEngines[ _mdEngineCurrentIdx ].has_value() )
@@ -148,7 +150,7 @@ namespace VTX::Tool::Mdprep::ui
 	}
 
 	std::function<VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & )>
-	ScreenForms::_SpecificFieldPlacerGetter() noexcept
+	ScreenForms::_SpecificFieldPlacerGetter()
 	{
 		return [ & ]( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & p_section )
 		{
@@ -158,7 +160,7 @@ namespace VTX::Tool::Mdprep::ui
 		};
 	}
 
-	void ScreenForms::_updateForm() noexcept
+	void ScreenForms::_updateForm()
 	{
 		if ( _mdEngines[ _mdEngineCurrentIdx ].has_value() )
 		{
@@ -168,7 +170,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void ScreenForms::_setFormBasic() noexcept
+	void ScreenForms::_setFormBasic()
 	{
 		_formEngine.deactivate();
 		VTX::Tool::Mdprep::Gateway::MdParameters param;
@@ -185,7 +187,7 @@ namespace VTX::Tool::Mdprep::ui
 		_updateForm();
 	}
 
-	void ScreenForms::_setFormAdvanced() noexcept
+	void ScreenForms::_setFormAdvanced()
 	{
 		_formEngine.deactivate();
 		VTX::Tool::Mdprep::Gateway::MdParameters param;
@@ -202,7 +204,7 @@ namespace VTX::Tool::Mdprep::ui
 		_updateForm();
 	}
 
-	void ScreenForms::_startPreparation() noexcept
+	void ScreenForms::_startPreparation()
 	{
 		Gateway::EngineJobManager jobManager;
 		_mdEngines[ _mdEngineCurrentIdx ]->get( jobManager );
@@ -218,12 +220,12 @@ namespace VTX::Tool::Mdprep::ui
 		_buttonStart->setDisabled( true );
 	}
 
-	void ScreenForms::_preparationEnd() noexcept
+	void ScreenForms::_preparationEnd()
 	{
 		QTimer::singleShot( 0, _buttonStart, [ & ] { _buttonStart->setDisabled( false ); } );
 	}
 
-	void ScreenForms::_setupSlots() noexcept
+	void ScreenForms::_setupSlots()
 	{
 		QObject::connect(
 			_w_mdEngine, &QComboBox::currentIndexChanged, [ & ]( int p_newIdx ) { this->_updateMdEngine( p_newIdx ); }

@@ -21,7 +21,7 @@ namespace VTX::Tool::Mdprep::ui
 	{
 		void setWidgetRowVisibility( QFormLayout * p_dest, QWidget * p_label, QWidget * p_field, bool p_visibility )
 		{
-			if ( p_visibility == true )
+			if ( p_visibility )
 			{
 				p_dest->addRow( p_label, p_field );
 				p_label->show();
@@ -63,7 +63,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	void GromacsFieldPlacer::assign( FormLayouts p_layouts ) noexcept { _layouts.emplace( std::move( p_layouts ) ); }
 
-	void GromacsFieldPlacer::activate() noexcept
+	void GromacsFieldPlacer::activate()
 	{
 		if ( not _layouts )
 		{
@@ -83,7 +83,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void GromacsFieldPlacer::deactivate() noexcept
+	void GromacsFieldPlacer::deactivate()
 	{
 		if ( not _layouts )
 		{
@@ -103,6 +103,5 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void get( const GromacsFieldPlacer &, EngineSpecificCommonInformation & p_out ) noexcept
-	{ Gateway::Gromacs::get( p_out ); }
+	void get( const GromacsFieldPlacer &, EngineSpecificCommonInformation & p_out ) { Gateway::Gromacs::get( p_out ); }
 } // namespace VTX::Tool::Mdprep::ui

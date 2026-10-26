@@ -46,26 +46,26 @@ namespace VTX::Tool::Mdprep::ui
 		 * @param Paramaters to be checked out
 		 * @param Callback that'll be called when the report is ready.
 		 */
-		void checkInputs( const Gateway::MdParameters & ) noexcept;
+		void checkInputs( const Gateway::MdParameters & );
 
 		/**
 		 * @brief Inform the report manager that the resulting report shall be replaced elsewhere
 		 * @param  Destination
 		 */
-		void relocate( QPointer<QVBoxLayout> ) noexcept;
+		void relocate( QPointer<QVBoxLayout> );
 
 		/**
 		 * @brief Use the input location as a ui target.
 		 * @param Manager holding loaction to use.
 		 */
-		void relocate( ReportManager & ) noexcept;
+		void relocate( ReportManager & );
 
 	  private:
 		struct _Impl;
 
 		std::shared_ptr<_Impl> _impl { nullptr };
 
-		void _receiveReport( Gateway::CheckReport ) noexcept;
+		void _receiveReport( Gateway::CheckReport );
 	};
 
 } // namespace VTX::Tool::Mdprep::ui

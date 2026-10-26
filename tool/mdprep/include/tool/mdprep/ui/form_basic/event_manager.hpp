@@ -11,17 +11,20 @@ namespace VTX::UI::QT::Util
 	class LabelWithHelper;
 	class ObjectOwnership;
 } // namespace VTX::UI::QT::Util
+
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct MdParameters;
 	struct EngineSpecificCommonInformation;
 } // namespace VTX::Tool::Mdprep::Gateway
+
 namespace VTX::Tool::Mdprep::ui
 {
 	class InputChecker;
 	class MdEngineSpecificFieldPlacer;
 	enum class E_FIELD_SECTION;
 } // namespace VTX::Tool::Mdprep::ui
+
 namespace VTX::Tool::Mdprep::ui::form_basic
 {
 
@@ -50,12 +53,13 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void setProductionSettings( QPushButton * ) noexcept;
 		void setSystemSettings( QPushButton * ) noexcept;
 		void setSystemMsg( QVBoxLayout * ) noexcept;
-		void performFirstInputCheck() noexcept;
+		void performFirstInputCheck();
 
 	  private:
 		Data *						  _data;
 		std::optional<SettingsDialog> _settingsDialog = std::nullopt;
 		VTX::Util::SentryTarget		  _sentry;
+
 		struct UiObjects
 		{
 			QPushButton *					   _buttonMinimizationSettings	   = nullptr;
@@ -67,6 +71,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			QPushButton *					   _buttonInputCheck			   = nullptr;
 			VTX::UI::QT::Util::LabelWithHelper _labelSystemCheck;
 		} _uiObjects;
+
 		static void _disconnectAll( UiObjects & ) noexcept;
 
 		void _connectSettingsMinimization() noexcept;
@@ -80,7 +85,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void _openSettingsNpt() noexcept;
 		void _openSettingsProd() noexcept;
 		void _openSettingsManager() noexcept;
-		void _startInputCheck() noexcept;
+		void _startInputCheck();
 
 		void _systemSettingsApplied() noexcept;
 	};

@@ -134,36 +134,42 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			[ & ]() { this->_openSettingsMinimization(); }
 		);
 	}
+
 	void EventManager::_connectSettingsNvt() noexcept
 	{
 		QPushButton::connect(
 			_uiObjects._buttonEquilibrationNvtSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNvt(); }
 		);
 	}
+
 	void EventManager::_connectSettingsNpt() noexcept
 	{
 		QPushButton::connect(
 			_uiObjects._buttonEquilibrationNptSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNpt(); }
 		);
 	}
+
 	void EventManager::_connectSettingsProd() noexcept
 	{
 		QPushButton::connect(
 			_uiObjects._buttonProductionSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsProd(); }
 		);
 	}
+
 	void EventManager::_connectSettingsManager() noexcept
 	{
 		QPushButton::connect(
 			_uiObjects._buttonSystemSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsManager(); }
 		);
 	}
+
 	void EventManager::_connectInputCheck() noexcept
 	{
 		QPushButton::connect(
 			_uiObjects._buttonInputCheck, &QPushButton::clicked, [ & ]() { this->_startInputCheck(); }
 		);
 	}
+
 	void EventManager::_openSettingsMinimization() noexcept
 	{
 		Gateway::MdParameters * params = nullptr;
@@ -177,6 +183,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			( *callback )( E_FIELD_SECTION::minimization )
 		);
 	}
+
 	void EventManager::_openSettingsNvt() noexcept
 	{
 		Gateway::MdParameters * params = nullptr;
@@ -190,6 +197,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			( *callback )( E_FIELD_SECTION::equilibrationNvt )
 		);
 	}
+
 	void EventManager::_openSettingsNpt() noexcept
 	{
 		Gateway::MdParameters * params = nullptr;
@@ -203,6 +211,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			( *callback )( E_FIELD_SECTION::equilibrationNpt )
 		);
 	}
+
 	void EventManager::_openSettingsProd() noexcept
 	{
 		Gateway::MdParameters * params = nullptr;
@@ -216,18 +225,21 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			( *callback )( E_FIELD_SECTION::production )
 		);
 	}
+
 	namespace
 	{
 		class ApplyVisitorBasic
 		{
 		  public:
 			ApplyVisitorBasic( std::function<void()> p_callback ) : _callback( std::move( p_callback ) ) {}
-			void applied() noexcept { _callback(); }
+
+			void applied() { _callback(); }
 
 		  private:
 			std::function<void()> _callback;
 		};
 	} // namespace
+
 	void EventManager::_openSettingsManager() noexcept
 	{
 		Gateway::MdParameters * params = nullptr;
@@ -245,7 +257,8 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			ApplyVisitorBasic( [ & ]() { this->_startInputCheck(); } )
 		);
 	}
-	void EventManager::performFirstInputCheck() noexcept
+
+	void EventManager::performFirstInputCheck()
 	{
 		ReportManager * reportManager = nullptr;
 		_data->get( reportManager );
@@ -256,7 +269,8 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 		_startInputCheck();
 	}
-	void EventManager::_startInputCheck() noexcept
+
+	void EventManager::_startInputCheck()
 	{
 		ReportManager * reportManager = nullptr;
 		_data->get( reportManager );
@@ -266,5 +280,6 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 		reportManager->checkInputs( *params );
 	}
+
 	void EventManager::_systemSettingsApplied() noexcept {}
 } // namespace VTX::Tool::Mdprep::ui::form_basic

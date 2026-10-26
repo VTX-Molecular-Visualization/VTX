@@ -15,7 +15,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	struct GromacsJobData;
 	struct CumulativeOuputFiles;
 
-	enum class E_EDITCONF_BOX_SHAPE
+	enum class E_EDITCONF_BOX_SHAPE : uint8_t
 	{
 		dodecahedron,
 		octahedron,
@@ -24,7 +24,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		COUNT
 	};
 	std::string string( const E_EDITCONF_BOX_SHAPE & );
-	enum class E_EDITCONF_BOX_DIMENSION_MODE
+	enum class E_EDITCONF_BOX_DIMENSION_MODE : uint8_t
 	{
 		distance // uses the distance from the solute to the box to determine box's size
 		,
@@ -33,7 +33,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		COUNT
 	};
 	std::string string( const E_EDITCONF_BOX_DIMENSION_MODE & );
-	enum class E_EDITCONF_PURPOSE
+	enum class E_EDITCONF_PURPOSE : uint8_t
 	{
 		setup_box,
 		producing_pdb

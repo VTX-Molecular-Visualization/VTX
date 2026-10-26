@@ -17,11 +17,13 @@ namespace VTX::Util
 {
 	class SentryTarget;
 }
+
 namespace VTX::UI::QT::Util
 {
 	class LabelWithHelper;
 	class ObjectOwnership;
 } // namespace VTX::UI::QT::Util
+
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct MdParameters;
@@ -35,6 +37,7 @@ namespace VTX::Tool::Mdprep::ui
 	class InputChecker;
 	class ReportManager;
 } // namespace VTX::Tool::Mdprep::ui
+
 namespace VTX::Tool::Mdprep::ui::form_advanced
 {
 	class EventManager
@@ -47,15 +50,15 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		EventManager() = delete;
 		EventManager( ReportManager &, Gateway::MdParameters );
 		~EventManager();
-		EventManager( EventManager && ) noexcept;
-		EventManager & operator=( EventManager && ) noexcept;
+		EventManager( EventManager && );
+		EventManager & operator=( EventManager && );
 		EventManager( const EventManager & )			 = delete;
 		EventManager & operator=( const EventManager & ) = delete;
 
-		void connectBoxShape( QComboBox * p_fieldSystemBoxShape ) noexcept;
-		void connectInputCheck( QPushButton * p_buttonStartInputCheck ) noexcept;
-		void connectBioForceField( QComboBox * p_fieldBioForceField, QVBoxLayout * p_target ) noexcept;
-		void performFirstInputCheck( const Gateway::MdParameters & ) noexcept;
+		void connectBoxShape( QComboBox * p_fieldSystemBoxShape );
+		void connectInputCheck( QPushButton * p_buttonStartInputCheck );
+		void connectBioForceField( QComboBox * p_fieldBioForceField, QVBoxLayout * p_target );
+		void performFirstInputCheck( const Gateway::MdParameters & );
 
 	  private:
 		QComboBox *				_fieldSystemBoxShape	   = nullptr;
@@ -63,11 +66,11 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		QVBoxLayout *			_bioForcefieldResultLayout = nullptr;
 		QPushButton *			_buttonStartInputCheck	   = nullptr;
 		VTX::Util::SentryTarget _sentry;
-		void					_connectAll() noexcept;
-		void					_connectBoxShape() noexcept;
-		void					_connectInputCheck() noexcept;
-		void					_connectForceField() noexcept;
-		std::function<void()>	_getInputCheckCallback() noexcept;
+		void					_connectAll();
+		void					_connectBoxShape();
+		void					_connectInputCheck();
+		void					_connectForceField();
+		std::function<void()>	_getInputCheckCallback();
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_advanced
 

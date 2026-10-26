@@ -53,16 +53,16 @@ namespace VTX::Tool::Mdprep::ui
 		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer			_formEngine;
 		Util::EventHub::ScopedConnection					_preparationEndConnection;
 
-		void _updateMdEngine( int idx ) noexcept;
+		void _updateMdEngine( int idx );
 		void _setupUi( QWidget * p_parent );
-		void _updateForm() noexcept;
-		void _setFormBasic() noexcept;
-		void _setFormAdvanced() noexcept;
-		void _startPreparation() noexcept;
-		void _preparationEnd() noexcept;
-		void _setupSlots() noexcept;
+		void _updateForm();
+		void _setFormBasic();
+		void _setFormAdvanced();
+		void _startPreparation();
+		void _preparationEnd();
+		void _setupSlots();
 
-		std::function<MdEngineSpecificFieldPlacer( const E_FIELD_SECTION & )> _SpecificFieldPlacerGetter() noexcept;
+		std::function<MdEngineSpecificFieldPlacer( const E_FIELD_SECTION & )> _SpecificFieldPlacerGetter();
 	};
 } // namespace VTX::Tool::Mdprep::ui
 

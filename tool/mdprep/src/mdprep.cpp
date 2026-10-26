@@ -4,6 +4,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTextDocument>
+#include <ui/qt/helper.hpp>
 //
 #include "util/sentry.hpp"
 #include <util/event_hub.hpp>
@@ -38,6 +39,7 @@
 #include "tool/mdprep/ui/form_advanced/form_advanced.hpp"
 #include "tool/mdprep/ui/form_basic/form_basic.hpp"
 #include "tool/mdprep/ui/screen_forms.hpp"
+
 //
 
 //
@@ -70,7 +72,7 @@ namespace VTX::Tool::Mdprep
 		{
 			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
 
-			QWidget * screenWidget = new QWidget;
+			QWidget * screenWidget = VTX::UI::QT::Helper::makeQObject<QWidget>( _layout->parentWidget() );
 			_layout->addWidget( screenWidget );
 
 			setWindowState( Qt::WindowState::WindowActive );

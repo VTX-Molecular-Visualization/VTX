@@ -17,7 +17,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		uint64_t nsteps = 50000;  // Maximum number of (minimization) steps to perform
 	};
 
-	enum class E_GROMPP_STEP
+	enum class E_GROMPP_STEP : uint8_t
 	{
 		ions,
 		posres, // We need to compile a .top file for topology with posres, and for topology without constraints.

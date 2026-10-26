@@ -23,6 +23,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		parameters( std::move( p_param ) ), reportManager( &p_reportManager )
 	{
 	}
+
 	EventManager::~EventManager()
 	{
 		if ( _fieldSystemBoxShape != nullptr )
@@ -31,7 +32,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		}
 	}
 
-	EventManager::EventManager( EventManager && p_other ) noexcept :
+	EventManager::EventManager( EventManager && p_other ) :
 		fieldPlacers( std::move( p_other.fieldPlacers ) ), _fieldSystemBoxShape( p_other._fieldSystemBoxShape ),
 		_fieldBioForceField( p_other._fieldBioForceField ), parameters( std::move( p_other.parameters ) ),
 		reportManager( std::move( p_other.reportManager ) ), _sentry( std::move( p_other._sentry ) )
@@ -46,7 +47,8 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		}
 		_connectAll();
 	}
-	EventManager & EventManager::operator=( EventManager && p_other ) noexcept
+
+	EventManager & EventManager::operator=( EventManager && p_other )
 	{
 		if ( this == &p_other )
 		{
@@ -89,7 +91,8 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 
 		return *this;
 	}
-	void EventManager::connectBoxShape( QComboBox * p_fieldSystemBoxShape ) noexcept
+
+	void EventManager::connectBoxShape( QComboBox * p_fieldSystemBoxShape )
 	{
 		if ( _fieldSystemBoxShape )
 		{
@@ -98,7 +101,8 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_fieldSystemBoxShape = p_fieldSystemBoxShape;
 		_connectBoxShape();
 	}
-	void EventManager::connectInputCheck( QPushButton * p_buttonStartInputCheck ) noexcept
+
+	void EventManager::connectInputCheck( QPushButton * p_buttonStartInputCheck )
 	{
 		if ( _buttonStartInputCheck )
 		{
@@ -107,7 +111,8 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_buttonStartInputCheck = p_buttonStartInputCheck;
 		_connectInputCheck();
 	}
-	void EventManager::connectBioForceField( QComboBox * p_fieldBioForceField, QVBoxLayout * p_target ) noexcept
+
+	void EventManager::connectBioForceField( QComboBox * p_fieldBioForceField, QVBoxLayout * p_target )
 	{
 		if ( _fieldBioForceField )
 		{
@@ -119,20 +124,22 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		reportManager->relocate( p_target );
 		_connectForceField();
 	}
-	void EventManager::performFirstInputCheck( const Gateway::MdParameters & p_params ) noexcept
+
+	void EventManager::performFirstInputCheck( const Gateway::MdParameters & p_params )
 	{
-		if ( reportManager->hasFirstCheckBeenDone() == false )
+		if ( not reportManager->hasFirstCheckBeenDone() )
 		{
 			reportManager->checkInputs( p_params );
 		}
 	}
 
-	void EventManager::_connectAll() noexcept
+	void EventManager::_connectAll()
 	{
 		_connectBoxShape();
 		_connectForceField();
 	}
-	void EventManager::_connectBoxShape() noexcept
+
+	void EventManager::_connectBoxShape()
 	{
 		if ( _fieldSystemBoxShape )
 		{
@@ -141,13 +148,17 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 				&QComboBox::currentTextChanged,
 				[ & ]
 				{
-					this->fieldPlacers[ 0 ].update( EngineSpecificCommonInformationFieldUpdate {
-						.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
-						.newValue = static_cast<size_t>( _fieldSystemBoxShape->currentIndex() ) } );
-				} );
+					this->fieldPlacers[ 0 ].update(
+						EngineSpecificCommonInformationFieldUpdate {
+							.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
+							.newValue = static_cast<size_t>( _fieldSystemBoxShape->currentIndex() ) }
+					);
+				}
+			);
 		}
 	}
-	void EventManager::_connectInputCheck() noexcept
+
+	void EventManager::_connectInputCheck()
 	{
 		if ( _buttonStartInputCheck == nullptr )
 		{
@@ -156,7 +167,8 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 
 		QPushButton::connect( _buttonStartInputCheck, &QPushButton::clicked, _getInputCheckCallback() );
 	}
-	void EventManager::_connectForceField() noexcept
+
+	void EventManager::_connectForceField()
 	{
 		if ( _fieldBioForceField == nullptr )
 		{
@@ -165,7 +177,8 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 
 		QComboBox::connect( _fieldBioForceField, &QComboBox::currentTextChanged, _getInputCheckCallback() );
 	}
-	std::function<void()> EventManager::_getInputCheckCallback() noexcept
+
+	std::function<void()> EventManager::_getInputCheckCallback()
 	{
 		return [ & ]()
 		{

@@ -1,9 +1,11 @@
+#include <memory>
 #include <qboxlayout.h>
 #include <qcombobox.h>
 #include <qdialog.h>
 #include <qformlayout.h>
 #include <qpushbutton.h>
 #include <qspinbox.h>
+#include <ui/qt/helper.hpp>
 //
 #include <ui/qt/util.hpp>
 //
@@ -31,6 +33,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_setupUi( p_parent, p_title );
 		_setupSlots();
 	}
+
 	SettingsDialog::~SettingsDialog() noexcept
 	{
 		if ( _uiObjects.container )
@@ -59,6 +62,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			qLayout->addRow( label, p_uiObjects.fieldSaveInterval );
 			p_uiObjects.fieldSaveInterval->setText( QString::number( p_data->nsteps ) );
 		}
+
 		template<typename UiData>
 		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MinimizationData * p_data )
 		{
@@ -78,6 +82,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			qLayout->addRow( label, p_uiObjects.fieldMinStepSize );
 			p_uiObjects.fieldMinStepSize->setValue( p_data->stepSize );
 		}
+
 		template<typename UiData>
 		void setupUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const SystemData * p_data )
 		{
@@ -127,7 +132,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	{
 		_uiObjects.container = new QDialog( p_parent );
 		_uiObjects.container->setWindowTitle( p_title );
-		QVBoxLayout * qMainLayout = new QVBoxLayout( _uiObjects.container );
+		QVBoxLayout * qMainLayout = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _uiObjects.container );
 
 		// The variant part
 		std::visit( [ & ]( auto p_ ) { setupUi( qMainLayout, _uiObjects, p_ ); }, _data );
@@ -139,36 +144,42 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 		if ( std::holds_alternative<SystemData *>( _data ) && _uiObjects.engineInfo.has_value() )
 		{
-			this->_engineFieldPlacer.update( EngineSpecificCommonInformationFieldUpdate {
-				.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
-				.newValue = std::get<SystemData *>( this->_data )->boxShapeIdx } );
+			this->_engineFieldPlacer.update(
+				EngineSpecificCommonInformationFieldUpdate {
+					.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
+					.newValue = std::get<SystemData *>( this->_data )->boxShapeIdx }
+			);
 			QObject::connect(
 				_uiObjects.fieldBoxShape,
 				&QComboBox::currentTextChanged,
 				[ & ]
 				{
-					this->_engineFieldPlacer.update( EngineSpecificCommonInformationFieldUpdate {
-						.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
-						.newValue = static_cast<size_t>( _uiObjects.fieldBoxShape->currentIndex() ) } );
+					this->_engineFieldPlacer.update(
+						EngineSpecificCommonInformationFieldUpdate {
+							.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
+							.newValue = static_cast<size_t>( _uiObjects.fieldBoxShape->currentIndex() ) }
+					);
 				}
 			);
 		}
 
-		qMainLayout->addSpacerItem( new QSpacerItem( 0, 20 ) );
+		qMainLayout->addSpacerItem( std::make_unique<QSpacerItem>( 0, 20 ).release() );
 		QHBoxLayout * qButtonLayout = new QHBoxLayout;
 		qMainLayout->addLayout( qButtonLayout );
 		qButtonLayout->addStretch( 1 );
-		_uiObjects.buttonApply	= new QPushButton( "Apply" );
-		_uiObjects.buttonCancel = new QPushButton( "Cancel" );
+		_uiObjects.buttonApply	= VTX::UI::QT::Helper::makeQObject<QPushButton>( "Apply", _uiObjects.container );
+		_uiObjects.buttonCancel = VTX::UI::QT::Helper::makeQObject<QPushButton>( "Cancel", _uiObjects.container );
 		qButtonLayout->addWidget( _uiObjects.buttonApply );
 		qButtonLayout->addWidget( _uiObjects.buttonCancel );
 		_uiObjects.container->open();
 	}
-	void SettingsDialog::_setupSlots() noexcept
+
+	void SettingsDialog::_setupSlots()
 	{
 		QPushButton::connect( _uiObjects.buttonApply, &QPushButton::clicked, [ & ]() { this->_applyChanges(); } );
 		QPushButton::connect( _uiObjects.buttonCancel, &QPushButton::clicked, [ & ]() { this->_cancelChanges(); } );
 	}
+
 	namespace
 	{
 		template<typename UiData>
@@ -177,12 +188,14 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			p_data->energyBreakpoint = p_uiObjects.fieldMinEnergyBreakpoint->value();
 			p_data->stepSize		 = p_uiObjects.fieldMinStepSize->value();
 		}
+
 		template<typename UiData>
 		void applyChange( const UiData & p_uiObjects, MdParametersStepData * p_data )
 		{
 			p_data->dt	   = p_uiObjects.fieldDt->value();
 			p_data->nsteps = p_uiObjects.fieldSaveInterval->text().toUInt();
 		}
+
 		template<typename UiData>
 		void applyChange( const UiData & p_uiObjects, SystemData * p_data )
 		{
@@ -191,12 +204,14 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			p_data->waterModel	  = p_uiObjects.fieldWaterModel->currentText().toStdString();
 		}
 	} // namespace
-	void SettingsDialog::_applyChanges() noexcept
+
+	void SettingsDialog::_applyChanges()
 	{
 		std::visit( [ & ]( auto p_ ) { applyChange( _uiObjects, p_ ); }, _data );
 		_applyVisitor.applied();
 		_engineFieldPlacer.apply();
 		_uiObjects.container->close();
 	}
-	void SettingsDialog::_cancelChanges() noexcept { _uiObjects.container->close(); }
+
+	void SettingsDialog::_cancelChanges() { _uiObjects.container->close(); }
 } // namespace VTX::Tool::Mdprep::ui::form_basic

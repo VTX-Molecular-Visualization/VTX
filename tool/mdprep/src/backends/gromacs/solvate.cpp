@@ -14,7 +14,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		SolvateInstructions &		 p_instructions
 	)
 	{
-		if ( fs::exists( p_root ) && fs::is_directory( p_root ) == false )
+		if ( fs::exists( p_root ) && not fs::is_directory( p_root ) )
 		{
 			return; // This scenario shouldn't happen
 		}
@@ -36,7 +36,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		p_instructions.inputTop	   = jobDir / ( p_instructions.fileStem + ".top" );
 		const FilePath & sourceTop = p_previousJobsOutputs.lastUncompiledTop;
 
-		if ( sourceTop.empty() || fs::is_regular_file( sourceTop ) == false )
+		if ( sourceTop.empty() || not fs::is_regular_file( sourceTop ) )
 		{
 			VTX_ERROR(
 				"[MDPREP] Solvate input topology <{}> is missing before copy.",

@@ -31,7 +31,7 @@ namespace VTX::Tool::Mdprep::ui
 	};
 
 	// Fields are grouped into the following sections
-	enum class E_FIELD_SECTION
+	enum class E_FIELD_SECTION : uint8_t
 	{
 		system,
 		minimization,
@@ -41,7 +41,7 @@ namespace VTX::Tool::Mdprep::ui
 		ions
 	};
 
-	enum class E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD
+	enum class E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD : uint8_t
 	{
 		bioForcefield,
 		boxShape,
@@ -56,7 +56,7 @@ namespace VTX::Tool::Mdprep::ui
 		size_t									   newValue = 0xffffffffffffffff;
 	};
 
-	enum class E_COMMON_FIELDS_COMBOBOX
+	enum class E_COMMON_FIELDS_COMBOBOX : uint8_t
 	{
 		bioForcefield,
 		chemForcefield,
@@ -64,25 +64,25 @@ namespace VTX::Tool::Mdprep::ui
 		waterModel,
 		COUNT
 	};
-	void get( const E_COMMON_FIELDS_COMBOBOX &, QWidget *& label, QComboBox *& field ) noexcept;
+	void get( const E_COMMON_FIELDS_COMBOBOX &, QWidget *& label, QComboBox *& field );
 
-	enum class E_COMMON_FIELDS_DOUBLE
+	enum class E_COMMON_FIELDS_DOUBLE : uint8_t
 	{
 		minimizationStepSize,
 		minimizationEnergyBreakpoint,
 		dt,
 		COUNT
 	};
-	void get( const E_COMMON_FIELDS_DOUBLE &, QWidget *& label, QDoubleSpinBox *& field ) noexcept;
+	void get( const E_COMMON_FIELDS_DOUBLE &, QWidget *& label, QDoubleSpinBox *& field );
 
-	enum class E_COMMON_FIELDS_UINT64
+	enum class E_COMMON_FIELDS_UINT64 : uint8_t
 	{
 		stepNumberMinimization,
 		stepNumber,
 		coordinateSaveInterval,
 		COUNT
 	};
-	void get( const E_COMMON_FIELDS_UINT64 &, QWidget *& label, QLineEdit *& field ) noexcept;
+	void get( const E_COMMON_FIELDS_UINT64 &, QWidget *& label, QLineEdit *& field );
 
 	// class responsible for putting on fields and gathering data.
 	// Fields are destroyed when the object is destroyed.
@@ -92,7 +92,7 @@ namespace VTX::Tool::Mdprep::ui
 		IonicFields() = default;
 		IonicFields( QVBoxLayout * p_target, const Gateway::SystemData & p_defaults );
 
-		void get( Gateway::SystemData & p_out ) const noexcept;
+		void get( Gateway::SystemData & p_out ) const;
 
 	  private:
 		VTX::UI::QT::Util::ObjectOwnership _toDelete;
@@ -108,8 +108,8 @@ namespace VTX::Tool::Mdprep::ui
 
 		// test if this instance is a default-constructed one
 		bool _isDefault() const noexcept;
-		void _setupUi( QVBoxLayout * p_target ) noexcept;
-		void _loadValues( const Gateway::SystemData & p_defaults ) noexcept;
+		void _setupUi( QVBoxLayout * p_target );
+		void _loadValues( const Gateway::SystemData & p_defaults );
 	};
 
 	inline const char * getReportLabel( const Gateway::CheckReport & p_report ) noexcept

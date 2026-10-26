@@ -15,7 +15,7 @@ namespace VTX::Tool::Mdprep::ui
 	class FormSwitchButton
 	{
 	  public:
-		enum class E_FORM_MODE
+		enum class E_FORM_MODE : uint8_t
 		{
 			none,
 			basic,
@@ -26,11 +26,11 @@ namespace VTX::Tool::Mdprep::ui
 		FormSwitchButton() = default;
 
 		// Do the work. layouts won't be nullptr after that.
-		void setupUi( QLayout *, const E_FORM_MODE & ) noexcept;
+		void setupUi( QLayout *, const E_FORM_MODE & );
 
 		void subscribeBasicSwitch( Callback );
 		void subscribeAdvancedSwitch( Callback );
-		void switchFormMode() noexcept;
+		void switchFormMode();
 
 	  private:
 		E_FORM_MODE	  _mode				= E_FORM_MODE::none;
@@ -39,9 +39,9 @@ namespace VTX::Tool::Mdprep::ui
 		Callback	  _switchToBasic;
 		Callback	  _switchToAdvanced;
 
-		void _changeModeBasic() noexcept;
-		void _changeModeAdvanced() noexcept;
-		void _uiUncheckAllButtons() noexcept;
+		void _changeModeBasic();
+		void _changeModeAdvanced();
+		void _uiUncheckAllButtons();
 	};
 
 } // namespace VTX::Tool::Mdprep::ui

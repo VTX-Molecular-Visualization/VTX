@@ -1,3 +1,4 @@
+#include <memory>
 #include <qformlayout.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -7,6 +8,7 @@
 #include <qscrollbar.h>
 #include <qsizepolicy.h>
 #include <qspinbox.h>
+#include <ui/qt/helper.hpp>
 //
 #include <ui/qt/util.hpp>
 #include <util/logger.hpp>
@@ -67,7 +69,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 	namespace
 	{
 		template<typename T>
-		inline void extractResultsFromFields( const T & p_fields, MdParametersStepData & p_out ) noexcept
+		inline void extractResultsFromFields( const T & p_fields, MdParametersStepData & p_out )
 		{
 			p_out.dt = p_fields.dt->value();
 			VTX::UI::QT::Util::get( p_fields.nsteps, p_out.nsteps );
@@ -75,7 +77,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		}
 	} // namespace
 
-	void FormAdvanced::get( MdParameters & p_out ) const noexcept
+	void FormAdvanced::get( MdParameters & p_out ) const
 	{
 		p_out.system.boxShapeIdx			= _uiObjects._fieldSystemBoxShape->currentIndex();
 		p_out.system.forcefieldBio			= _uiObjects._fieldSystemBioForceField->currentText().toStdString();
@@ -102,28 +104,28 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		p_out.advancedParametersSystemPrepartion = _uiObjects._layoutSystemPreparation;
 	}
 
-	void FormAdvanced::update( const EngineSpecificCommonInformation & p_data ) noexcept
+	void FormAdvanced::update( const EngineSpecificCommonInformation & p_data )
 	{
 		_lastUpdateData = p_data;
 		_fillEngineSpecificData();
 	}
 
-	QWidget * FormAdvanced::_uiSetupContainer( QWidget * p_container ) noexcept
+	QWidget * FormAdvanced::_uiSetupContainer( QWidget * p_container )
 	{
 		{
-			QVBoxLayout * qLayoutContainer = new QVBoxLayout( p_container );
+			QVBoxLayout * qLayoutContainer = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( p_container );
 			_thingsToDelete[ 0 ]		   = qLayoutContainer;
 			qLayoutContainer->setContentsMargins( 0, 0, 0, 0 );
-			_uiObjects.container = new QWidget;
+			_uiObjects.container = VTX::UI::QT::Helper::makeQObject<QWidget>( p_container );
 			_thingsToDelete[ 1 ] = _uiObjects.container;
 			qLayoutContainer->addWidget( _uiObjects.container );
 		}
 
 		_uiObjects.container->setContentsMargins( 0, 0, 0, 0 );
-		QVBoxLayout * qLayoutContainer = new QVBoxLayout( _uiObjects.container );
+		QVBoxLayout * qLayoutContainer = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _uiObjects.container );
 		qLayoutContainer->setContentsMargins( 0, 0, 0, 0 );
-		QScrollArea * qScroll	   = new QScrollArea();
-		QWidget *	  qInnerScroll = new QWidget;
+		QScrollArea * qScroll	   = VTX::UI::QT::Helper::makeQObject<QScrollArea>( _uiObjects.container );
+		QWidget *	  qInnerScroll = VTX::UI::QT::Helper::makeQObject<QWidget>( qScroll->viewport() );
 		qScroll->setWidget( qInnerScroll );
 		qScroll->setFrameShape( QFrame::NoFrame );
 		qScroll->setWidgetResizable( true );
@@ -132,7 +134,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		return qInnerScroll;
 	}
 
-	void FormAdvanced::_uiAddSystem( QVBoxLayout * p_target ) noexcept
+	void FormAdvanced::_uiAddSystem( QVBoxLayout * p_target )
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, "System Preparation" );
 
@@ -140,7 +142,8 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_uiObjects._systemReportLayout		   = new QVBoxLayout;
 		p_target->addLayout( systemReportButtonLayout );
 		systemReportButtonLayout->addLayout( _uiObjects._systemReportLayout );
-		_uiObjects._buttonStartInputCheck = new QPushButton( "Check System" );
+		_uiObjects._buttonStartInputCheck
+			= VTX::UI::QT::Helper::makeQObject<QPushButton>( "Check System", p_target->parentWidget() );
 		systemReportButtonLayout->addWidget( _uiObjects._buttonStartInputCheck );
 
 		_uiObjects._layoutSystemPreparation = new QFormLayout;
@@ -170,13 +173,13 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_fieldPlacer( 0 ) = _specificFieldGenerator( E_FIELD_SECTION::system );
 		_fieldPlacer( 0 ).placeFields( boxLayout );
 
-		p_target->addSpacerItem( new QSpacerItem( 0, 10 ) );
+		p_target->addSpacerItem( std::make_unique<QSpacerItem>( 0, 10 ).release() );
 		_fieldsIons							= IonicFields( p_target, _parameters().system );
 		_uiObjects._layoutSystemPreparation = new QFormLayout;
 		p_target->addLayout( _uiObjects._layoutSystemPreparation );
 	}
 
-	void FormAdvanced::_uiAddExpertButton( QVBoxLayout * p_target ) noexcept
+	void FormAdvanced::_uiAddExpertButton( QVBoxLayout * p_target )
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, "" );
 
@@ -191,11 +194,12 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		);
 
 		layout->addWidget( label );
-		_uiObjects._buttonOpenExpertOptions = new QPushButton( "Expert Parameters" );
+		_uiObjects._buttonOpenExpertOptions
+			= VTX::UI::QT::Helper::makeQObject<QPushButton>( "Expert Parameters", p_target->parentWidget() );
 		layout->addWidget( _uiObjects._buttonOpenExpertOptions );
 	}
 
-	void FormAdvanced::_uiAddMinimization( QVBoxLayout * p_target ) noexcept
+	void FormAdvanced::_uiAddMinimization( QVBoxLayout * p_target )
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, "Minimization" );
 		_uiObjects._layoutMinimization = new QFormLayout;
@@ -221,7 +225,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_fieldPlacer( 1 ).placeFields( _uiObjects._layoutMinimization );
 	}
 
-	void FormAdvanced::_uiAddStep( QVBoxLayout * p_target, const char * p_header, UiData::FieldSet & p_field ) noexcept
+	void FormAdvanced::_uiAddStep( QVBoxLayout * p_target, const char * p_header, UiData::FieldSet & p_field )
 	{
 		VTX::UI::QT::Util::addLabeledHLineSeparator( p_target, p_header );
 		p_field.layout	= new QFormLayout;
@@ -237,12 +241,12 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		p_field.layout->addRow( label, p_field.saveInterval );
 	}
 
-	MdEngineSpecificFieldPlacer & FormAdvanced::_fieldPlacer( const size_t & p_idx ) noexcept
+	MdEngineSpecificFieldPlacer & FormAdvanced::_fieldPlacer( const size_t & p_idx )
 	{ return _eventManager.fieldPlacers.at( p_idx ); }
 
-	void FormAdvanced::_createAndPlaceUiItems( QWidget * p_container ) noexcept
+	void FormAdvanced::_createAndPlaceUiItems( QWidget * p_container )
 	{
-		QVBoxLayout * qLayoutMain = new QVBoxLayout( _uiSetupContainer( p_container ) );
+		QVBoxLayout * qLayoutMain = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _uiSetupContainer( p_container ) );
 
 		_uiAddSystem( qLayoutMain );
 		_uiAddMinimization( qLayoutMain );
@@ -266,7 +270,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 
 	{
 		template<typename T>
-		void loadStepValue( T & p_ui, const MdParametersStepData & p_data ) noexcept
+		void loadStepValue( T & p_ui, const MdParametersStepData & p_data )
 		{
 			p_ui.nsteps->setText( QString::number( p_data.nsteps ) );
 			p_ui.dt->setValue( p_data.dt );
@@ -274,7 +278,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		}
 	} // namespace
 
-	void FormAdvanced::_loadValues( const MdParameters & p_defaults ) noexcept
+	void FormAdvanced::_loadValues( const MdParameters & p_defaults )
 	{
 		_uiObjects._fieldMinimizationStepNumber->setText( QString::number( p_defaults.minimization.stepNumber ) );
 		_uiObjects._fieldMinimizationStopThreshold->setValue(
@@ -307,7 +311,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		}
 	} // namespace
 
-	void FormAdvanced::_fillEngineSpecificData() noexcept
+	void FormAdvanced::_fillEngineSpecificData()
 	{
 		_uiObjects._fieldSystemBoxShape->clear();
 		for ( auto & it_shapeStr : _lastUpdateData.boxShapeCollection )

@@ -8,6 +8,7 @@
 #include <io/metadata.hpp>
 #include <string_view>
 #include <ui/qt/action_registry.hpp>
+#include <ui/qt/helper.hpp>
 #include <ui/qt/services.hpp>
 #include <ui/qt/widget/main_window.hpp>
 #include <util/logger.hpp>
@@ -52,7 +53,7 @@ namespace VTX::Tool::TopologyEditor
 					g_dialog->close();
 					delete g_dialog;
 				}
-				g_dialog = new Dialog::TopologyEditorDialog( p_system );
+				g_dialog = VTX::UI::QT::Helper::makeQObject<Dialog::TopologyEditorDialog>( p_system );
 				g_dialog->setAttribute( Qt::WA_DeleteOnClose, false );
 			}
 
@@ -88,7 +89,7 @@ namespace VTX::Tool::TopologyEditor
 				}
 
 				const Entity firstSystem = *systems.begin();
-				auto				   secondIt	   = systems.begin();
+				auto		 secondIt	 = systems.begin();
 				++secondIt;
 				if ( secondIt == systems.end() )
 				{

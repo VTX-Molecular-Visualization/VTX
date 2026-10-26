@@ -9,7 +9,7 @@ namespace VTX::Tool::Mdprep::Gateway
 {
 	// Hold information on which item the report is about. If 'none', the report is likely to refer to an item specific
 	// to the active MdEngine.
-	enum class E_REPORT_CHECKED_ITEM
+	enum class E_REPORT_CHECKED_ITEM : uint8_t
 	{
 		none,
 		systemWithForceField

@@ -94,7 +94,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			{
 				continue;
 			}
-			if ( fs::exists( f ) == false || fs::is_regular_file( f ) == false )
+			if ( not fs::exists( f ) || not fs::is_regular_file( f ) )
 			{
 				p_in.report.errors.push_back(
 					fmt::format( "Expected output file <{}> not found.", p_in.arguments[ it ] )
@@ -109,7 +109,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				break;
 			}
 		}
-		p_in.report.errorOccured = ( p_in.report.errors.empty() == false );
+		p_in.report.errorOccured = ( not p_in.report.errors.empty() );
 	}
 
 	const std::string * getFirstFileOfType( const CumulativeOuputFiles & p_list, const char * extension ) noexcept
@@ -138,7 +138,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	std::string getFileContent( const FilePath & p_file )
 	{
-		if ( fs::exists( p_file ) == false )
+		if ( not fs::exists( p_file ) )
 		{
 			return {};
 		}

@@ -1,6 +1,7 @@
 #include <qgridlayout.h>
 #include <qlineedit.h>
 #include <qspinbox.h>
+#include <ui/qt/helper.hpp>
 //
 #include <app/vtx_app.hpp>
 #include <ui/qt/util.hpp>
@@ -14,7 +15,7 @@
 
 namespace VTX::Tool::Mdprep::ui
 {
-	void get( const E_COMMON_FIELDS_COMBOBOX & p_enum, QWidget *& p_label, QComboBox *& p_field ) noexcept
+	void get( const E_COMMON_FIELDS_COMBOBOX & p_enum, QWidget *& p_label, QComboBox *& p_field )
 	{
 		switch ( p_enum )
 		{
@@ -53,7 +54,7 @@ namespace VTX::Tool::Mdprep::ui
 		p_field = new QComboBox;
 	}
 
-	void get( const E_COMMON_FIELDS_DOUBLE & p_enum, QWidget *& p_label, QDoubleSpinBox *& field ) noexcept
+	void get( const E_COMMON_FIELDS_DOUBLE & p_enum, QWidget *& p_label, QDoubleSpinBox *& field )
 	{
 		switch ( p_enum )
 		{
@@ -102,7 +103,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void get( const E_COMMON_FIELDS_UINT64 & p_enum, QWidget *& p_label, QLineEdit *& p_field ) noexcept
+	void get( const E_COMMON_FIELDS_UINT64 & p_enum, QWidget *& p_label, QLineEdit *& p_field )
 	{
 		switch ( p_enum )
 		{
@@ -134,7 +135,7 @@ namespace VTX::Tool::Mdprep::ui
 		default: break;
 		}
 		p_field = new QLineEdit;
-		p_field->setValidator( new VTX::UI::QT::QUInt64Validator( p_field ) );
+		p_field->setValidator( VTX::UI::QT::Helper::makeQObject<VTX::UI::QT::QUInt64Validator>( p_field ) );
 	}
 
 	IonicFields::IonicFields( QVBoxLayout * p_target, const Gateway::SystemData & p_defaults )
@@ -143,7 +144,7 @@ namespace VTX::Tool::Mdprep::ui
 		_loadValues( p_defaults );
 	}
 
-	void IonicFields::get( Gateway::SystemData & p_out ) const noexcept
+	void IonicFields::get( Gateway::SystemData & p_out ) const
 	{
 		if ( _isDefault() )
 		{
@@ -186,13 +187,13 @@ namespace VTX::Tool::Mdprep::ui
 
 	bool IonicFields::_isDefault() const noexcept { return _uiObjects.container == nullptr; }
 
-	void IonicFields::_setupUi( QVBoxLayout * p_target ) noexcept
+	void IonicFields::_setupUi( QVBoxLayout * p_target )
 	{
-		_uiObjects.container = new QWidget;
+		_uiObjects.container = VTX::UI::QT::Helper::makeQObject<QWidget>( p_target->parentWidget() );
 		p_target->addWidget( _uiObjects.container );
 		_toDelete = _uiObjects.container;
 
-		QGridLayout * qLayoutIons = new QGridLayout;
+		QGridLayout * qLayoutIons = VTX::UI::QT::Helper::makeQObject<QGridLayout>( _uiObjects.container );
 		qLayoutIons->setContentsMargins( { 0, 0, 0, 0 } );
 		_uiObjects.container->setLayout( qLayoutIons );
 
@@ -205,8 +206,10 @@ namespace VTX::Tool::Mdprep::ui
 			0,
 			0
 		);
-		_uiObjects.anionName = new QLineEdit;
-		_uiObjects.anionName->setValidator( new QChemicalSymbolValidator( _uiObjects.anionName ) );
+		_uiObjects.anionName = VTX::UI::QT::Helper::makeQObject<QLineEdit>( _uiObjects.container );
+		_uiObjects.anionName->setValidator(
+			VTX::UI::QT::Helper::makeQObject<QChemicalSymbolValidator>( _uiObjects.anionName )
+		);
 		qLayoutIons->addWidget( _uiObjects.anionName, 0, 1 );
 
 		qLayoutIons->addWidget(
@@ -218,8 +221,10 @@ namespace VTX::Tool::Mdprep::ui
 			1,
 			0
 		);
-		_uiObjects.cationName = new QLineEdit;
-		_uiObjects.cationName->setValidator( new QChemicalSymbolValidator( _uiObjects.cationName ) );
+		_uiObjects.cationName = VTX::UI::QT::Helper::makeQObject<QLineEdit>( _uiObjects.container );
+		_uiObjects.cationName->setValidator(
+			VTX::UI::QT::Helper::makeQObject<QChemicalSymbolValidator>( _uiObjects.cationName )
+		);
 		qLayoutIons->addWidget( _uiObjects.cationName, 1, 1 );
 
 		qLayoutIons->addWidget(
@@ -232,9 +237,9 @@ namespace VTX::Tool::Mdprep::ui
 			2
 		);
 
-		_uiObjects.anionCharge	= new QComboBox;
-		_uiObjects.cationCharge = new QComboBox;
-		for ( auto & it_chrgStr : g_IonicChargeValues )
+		_uiObjects.anionCharge	= VTX::UI::QT::Helper::makeQObject<QComboBox>( _uiObjects.container );
+		_uiObjects.cationCharge = VTX::UI::QT::Helper::makeQObject<QComboBox>( _uiObjects.container );
+		for ( const auto & it_chrgStr : g_IonicChargeValues )
 		{
 			if ( std::stol( it_chrgStr.data() ) > 0 )
 			{
@@ -261,14 +266,14 @@ namespace VTX::Tool::Mdprep::ui
 		qLayoutIons->addWidget( _uiObjects.cationCharge, 1, 3 );
 	}
 
-	void IonicFields::_loadValues( const Gateway::SystemData & p_defaults ) noexcept
+	void IonicFields::_loadValues( const Gateway::SystemData & p_defaults )
 	{
 		_uiObjects.anionName->setText( QString::fromStdString( p_defaults.anionName ) );
 		_uiObjects.cationName->setText( QString::fromStdString( p_defaults.cationName ) );
 
 		for ( size_t it_idx = 0; it_idx < g_IonicChargeValues.size(); it_idx++ )
 		{
-			auto & it_chrgStr = g_IonicChargeValues[ it_idx ];
+			const auto & it_chrgStr = g_IonicChargeValues[ it_idx ];
 			if ( std::stol( it_chrgStr.data() ) == p_defaults.anionCharge )
 			{
 				_uiObjects.anionCharge->setCurrentText( g_IonicChargeValues[ it_idx ].data() );

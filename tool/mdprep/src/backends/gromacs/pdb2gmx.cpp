@@ -166,7 +166,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			}; // We need to used this buffer because the regex match function doesn't stop at the en of a string view
 			   // iterator but rather at the end of the entire super-string. So we need to copy the string data on a
 			   // separated buffer for it to work as intended.
-			if ( std::regex_match( lineBuf, match, lineRegex ) == false || match.size() < NUM_EXPECTED_GROUPS + 1 )
+			if ( not std::regex_match( lineBuf, match, lineRegex ) || match.size() < NUM_EXPECTED_GROUPS + 1 )
 			{
 				out.error	= true;
 				out.message = fmt::format(
@@ -236,7 +236,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		Pdb2gmxInstructions &	 p_instructions
 	)
 	{
-		if ( fs::exists( p_root ) && fs::is_directory( p_root ) == false )
+		if ( fs::exists( p_root ) && not fs::is_directory( p_root ) )
 		{
 			return; // This scenario shouldn't happen
 		}
@@ -319,7 +319,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 					break;
 				}
 			}
-			if ( topFile.empty() || fs::exists( topFile ) == false )
+			if ( topFile.empty() || not fs::exists( topFile ) )
 			{
 				return; // if no top file is found it's the checkRslt's responsibility to report it
 			}

@@ -30,7 +30,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	//    misleading forcefield object
 	std::vector<forcefield> listForcefields( const FilePath & );
 
-	enum class E_WATER_MODEL
+	enum class E_WATER_MODEL : uint8_t
 	{
 		tip3p,
 		spc,
@@ -44,7 +44,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	const char * string( const E_WATER_MODEL & ) noexcept;
 
 	// Meant to refer to one of the interactive gromacs option
-	enum class E_INTERACTIVE_KEYWORD
+	enum class E_INTERACTIVE_KEYWORD : uint8_t
 	{
 		none,
 		ss,

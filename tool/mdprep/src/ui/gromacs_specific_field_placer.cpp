@@ -5,6 +5,7 @@
 #include <qvalidator.h>
 #include <string>
 #include <thread>
+#include <ui/qt/helper.hpp>
 #include <vector>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
@@ -24,7 +25,7 @@ namespace VTX::Tool::Mdprep::ui
 {
 	GromacsMdStepFieldPlacer::GromacsMdStepFieldPlacer( Gateway::Gromacs::MdStep & p_data ) : _data( &p_data ) {}
 
-	void GromacsMdStepFieldPlacer::placeFields( QFormLayout * p_layout ) noexcept
+	void GromacsMdStepFieldPlacer::placeFields( QFormLayout * p_layout )
 	{
 		_field_nstvout = VTX::UI::QT::Util::addUInt64Field(
 			p_layout,
@@ -52,7 +53,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void GromacsMdStepFieldPlacer::apply() noexcept
+	void GromacsMdStepFieldPlacer::apply()
 	{
 		_data->nstvout	 = _field_nstvout->text().toUInt();
 		_data->nstenergy = _field_nstenergy->text().toUInt();
@@ -69,18 +70,18 @@ namespace VTX::Tool::Mdprep::ui
 	{
 		inline void createInt64HiddenField( QWidget * const p_parent, QLineEdit *& p_field, const double & p_default )
 		{
-			p_field = new QLineEdit( p_parent );
-			p_field->setValidator( new VTX::UI::QT::QUInt64Validator( p_field ) );
+			p_field = VTX::UI::QT::Helper::makeQObject<QLineEdit>( p_parent );
+			p_field->setValidator( VTX::UI::QT::Helper::makeQObject<VTX::UI::QT::QUInt64Validator>( p_field ) );
 			p_field->setText( QString::number( p_default ) );
 			p_field->hide();
 		}
 	} // namespace
 
-	void GromacsSystemFieldPlacer::placeFields( QFormLayout * p_layout ) noexcept
+	void GromacsSystemFieldPlacer::placeFields( QFormLayout * p_layout )
 	{
 		_targetLayout = p_layout;
 
-		_boxFields.fieldBoxSizeMode = new QComboBox( _targetLayout->parentWidget() );
+		_boxFields.fieldBoxSizeMode = VTX::UI::QT::Helper::makeQObject<QComboBox>( _targetLayout->parentWidget() );
 		_boxFields.fieldBoxSizeMode->hide();
 		{
 			std::vector<std::string> values;
@@ -99,7 +100,7 @@ namespace VTX::Tool::Mdprep::ui
 			_boxFields.fieldBoxSizeMode, &QComboBox::currentIndexChanged, [ & ] { this->_updateBoxSizeMode(); }
 		);
 
-		_boxFields.fieldDistance = new QDoubleSpinBox( _targetLayout->parentWidget() );
+		_boxFields.fieldDistance = VTX::UI::QT::Helper::makeQObject<QDoubleSpinBox>( _targetLayout->parentWidget() );
 		_boxFields.fieldDistance->setMinimum( 0. );
 		_boxFields.fieldDistance->setMaximum( 100. );
 		_boxFields.fieldDistance->setSingleStep( 0.1 );
@@ -115,7 +116,7 @@ namespace VTX::Tool::Mdprep::ui
 		createInt64HiddenField( _targetLayout->parentWidget(), _boxFields.fieldAngleZ, _data->boxAngles[ 2 ] );
 	}
 
-	void GromacsSystemFieldPlacer::apply() noexcept
+	void GromacsSystemFieldPlacer::apply()
 	{
 		_data->boxSizeMode		  = _boxFields.fieldBoxSizeMode->currentIndex();
 		_data->distanceNm		  = _boxFields.fieldDistance->value();
@@ -127,7 +128,7 @@ namespace VTX::Tool::Mdprep::ui
 		_data->boxAngles[ 2 ]	  = _boxFields.fieldAngleZ->text().toInt();
 	}
 
-	void GromacsSystemFieldPlacer::update( const EngineSpecificCommonInformationFieldUpdate & p_info ) noexcept
+	void GromacsSystemFieldPlacer::update( const EngineSpecificCommonInformationFieldUpdate & p_info )
 	{
 		if ( p_info.field != E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape
 			 && p_info.field != E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxDimensionMode )
@@ -165,7 +166,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void GromacsSystemFieldPlacer::_updateBoxSizeMode() noexcept
+	void GromacsSystemFieldPlacer::_updateBoxSizeMode()
 	{
 		update(
 			EngineSpecificCommonInformationFieldUpdate {
@@ -176,7 +177,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	namespace
 	{
-		void removeField( QFormLayout * p_from, QWidget * p_what ) noexcept
+		void removeField( QFormLayout * p_from, QWidget * p_what )
 		{
 			int					  rowToTakeOutIndex = INT32_MAX;
 			QFormLayout::ItemRole _tmp {};
@@ -191,7 +192,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	} // namespace
 
-	void GromacsSystemFieldPlacer::_removeFields() noexcept
+	void GromacsSystemFieldPlacer::_removeFields()
 	{
 		removeField( _targetLayout, _boxFields.fieldBoxSizeMode );
 		removeField( _targetLayout, _boxFields.fieldDistance );
@@ -205,7 +206,7 @@ namespace VTX::Tool::Mdprep::ui
 		removeField( _targetLayout, _boxFields.fieldAngleZ );
 	}
 
-	void GromacsSystemFieldPlacer::_addDimensionModeField() noexcept
+	void GromacsSystemFieldPlacer::_addDimensionModeField()
 	{
 		_boxFields.fieldBoxSizeMode->show();
 		_targetLayout->addRow(
@@ -222,7 +223,7 @@ namespace VTX::Tool::Mdprep::ui
 		);
 	}
 
-	void GromacsSystemFieldPlacer::_addDistanceField() noexcept
+	void GromacsSystemFieldPlacer::_addDistanceField()
 	{
 		_boxFields.fieldDistance->show();
 		_targetLayout->addRow(
@@ -235,7 +236,7 @@ namespace VTX::Tool::Mdprep::ui
 		);
 	}
 
-	void GromacsSystemFieldPlacer::_addSizeOnlyX() noexcept
+	void GromacsSystemFieldPlacer::_addSizeOnlyX()
 	{
 		_boxFields.fieldSizeX->show();
 		_targetLayout->addRow(
@@ -248,10 +249,10 @@ namespace VTX::Tool::Mdprep::ui
 		);
 	}
 
-	void GromacsSystemFieldPlacer::_addSizeXYZ() noexcept
+	void GromacsSystemFieldPlacer::_addSizeXYZ()
 	{
-		_boxFields.containerSizeXYZ = new QWidget;
-		QHBoxLayout * layout		= new QHBoxLayout( _boxFields.containerSizeXYZ );
+		_boxFields.containerSizeXYZ = VTX::UI::QT::Helper::makeQObject<QWidget>( _targetLayout->parentWidget() );
+		QHBoxLayout * layout		= VTX::UI::QT::Helper::makeQObject<QHBoxLayout>( _boxFields.containerSizeXYZ );
 		layout->setContentsMargins( { 0, 0, 0, 0 } );
 		layout->addWidget( _boxFields.fieldSizeX );
 		layout->addWidget( _boxFields.fieldSizeY );
@@ -269,10 +270,10 @@ namespace VTX::Tool::Mdprep::ui
 		);
 	}
 
-	void GromacsSystemFieldPlacer::_addAnglesXYZ() noexcept
+	void GromacsSystemFieldPlacer::_addAnglesXYZ()
 	{
-		_boxFields.containerAngleXYZ = new QWidget;
-		QHBoxLayout * layout		 = new QHBoxLayout( _boxFields.containerAngleXYZ );
+		_boxFields.containerAngleXYZ = VTX::UI::QT::Helper::makeQObject<QWidget>( _targetLayout->parentWidget() );
+		QHBoxLayout * layout		 = VTX::UI::QT::Helper::makeQObject<QHBoxLayout>( _boxFields.containerAngleXYZ );
 		layout->setContentsMargins( { 0, 0, 0, 0 } );
 		layout->addWidget( _boxFields.fieldAngleX );
 		layout->addWidget( _boxFields.fieldAngleY );

@@ -12,14 +12,17 @@ namespace VTX::UI::QT::Util
 {
 	class ObjectOwnership;
 }
+
 namespace VTX::Tool::Mdprep::Gateway::Gromacs
 {
 	struct MdSettings;
 }
+
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct EngineSpecificCommonInformation;
 } // namespace VTX::Tool::Mdprep::Gateway
+
 namespace VTX::Tool::Mdprep::ui
 {
 	using namespace VTX::Tool::Mdprep::Gateway;
@@ -34,8 +37,8 @@ namespace VTX::Tool::Mdprep::ui
 		GromacsFieldPlacer( Gateway::Gromacs::MdSettings & );
 
 		void assign( FormLayouts p_layouts ) noexcept;
-		void activate() noexcept;
-		void deactivate() noexcept;
+		void activate();
+		void deactivate();
 
 	  private:
 		std::array<VTX::UI::QT::Util::ObjectOwnership, 2> _toDeleteObjects;

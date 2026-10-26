@@ -168,7 +168,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			p_thrData.thrRef->get().setProgressText( "1 - pdb2gmx" );
 		}
-		if ( carryPreparationStep( p_in, p_in.pdb2gmx, g_jobNames[ jobIdx ], jobIdx ) == false
+		if ( not carryPreparationStep( p_in, p_in.pdb2gmx, g_jobNames[ jobIdx ], jobIdx )
 			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
@@ -177,7 +177,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			p_thrData.thrRef->get().setProgressText( "2 - editconf" );
 		}
-		if ( carryPreparationStep( p_in, p_in.editconf1, g_jobNames[ jobIdx ], jobIdx ) == false
+		if ( not carryPreparationStep( p_in, p_in.editconf1, g_jobNames[ jobIdx ], jobIdx )
 			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
@@ -186,7 +186,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			p_thrData.thrRef->get().setProgressText( "3 - solvate" );
 		}
-		if ( carryPreparationStep( p_in, p_in.solvate, g_jobNames[ jobIdx ], jobIdx ) == false
+		if ( not carryPreparationStep( p_in, p_in.solvate, g_jobNames[ jobIdx ], jobIdx )
 			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
@@ -195,7 +195,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			p_thrData.thrRef->get().setProgressText( "4 - trjconv" );
 		}
-		if ( carryPreparationStep( p_in, p_in.trjconv, g_jobNames[ jobIdx ], jobIdx ) == false
+		if ( not carryPreparationStep( p_in, p_in.trjconv, g_jobNames[ jobIdx ], jobIdx )
 			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
@@ -205,7 +205,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			p_thrData.thrRef->get().setProgressText( "5 - grompp ions" );
 		}
 		p_in.gromppIons.step = E_GROMPP_STEP::ions;
-		if ( carryPreparationStep( p_in, p_in.gromppIons, g_jobNames[ jobIdx ], jobIdx ) == false
+		if ( not carryPreparationStep( p_in, p_in.gromppIons, g_jobNames[ jobIdx ], jobIdx )
 			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
@@ -214,7 +214,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			p_thrData.thrRef->get().setProgressText( "6 - genion" );
 		}
-		if ( carryPreparationStep( p_in, p_in.genion, g_jobNames[ jobIdx ], jobIdx ) == false
+		if ( not carryPreparationStep( p_in, p_in.genion, g_jobNames[ jobIdx ], jobIdx )
 			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
@@ -224,7 +224,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			p_thrData.thrRef->get().setProgressText( "6 - grompp posres" );
 		}
 		p_in.gromppPosres.step = E_GROMPP_STEP::posres;
-		if ( carryPreparationStep( p_in, p_in.gromppPosres, g_jobNames[ jobIdx ], jobIdx ) == false
+		if ( not carryPreparationStep( p_in, p_in.gromppPosres, g_jobNames[ jobIdx ], jobIdx )
 			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
@@ -234,7 +234,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			p_thrData.thrRef->get().setProgressText( "7 - grompp em" );
 		}
 		p_in.gromppEm.step = E_GROMPP_STEP::em;
-		if ( carryPreparationStep( p_in, p_in.gromppEm, g_jobNames[ jobIdx ], jobIdx ) == false
+		if ( not carryPreparationStep( p_in, p_in.gromppEm, g_jobNames[ jobIdx ], jobIdx )
 			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
@@ -243,7 +243,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			p_thrData.thrRef->get().setProgressText( "8 - editconf" );
 		}
-		if ( carryPreparationStep( p_in, p_in.editconf2, g_jobNames[ jobIdx ], jobIdx ) == false
+		if ( not carryPreparationStep( p_in, p_in.editconf2, g_jobNames[ jobIdx ], jobIdx )
 			 || p_thrData.stopToken.stop_requested() )
 		{
 			return;
@@ -270,7 +270,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			for ( uint32_t i = 0; i != 0xffffffff; i++ )
 			{
 				out = base / std::to_string( i );
-				if ( fs::exists( out ) == false )
+				if ( not fs::exists( out ) )
 				{
 					return out;
 				}
@@ -305,7 +305,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
 				submitGromacsJob( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath(), jobDir, jobData );
 				checkJobResults( jobData );
-				_testData._systemOk = jobData.report.errorOccured == false;
+				_testData._systemOk = not jobData.report.errorOccured;
 				for ( auto & err : jobData.report.errors )
 				{
 					_testData._why += err + '\n';

@@ -103,7 +103,7 @@ int main( int p_argc, char * p_argv[] )
 
 		if ( help )
 		{
-			std::cout << std::endl << *help;
+			std::cout << '\n' << *help;
 #ifdef _WIN32
 			if ( hasParentConsole )
 			{

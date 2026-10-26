@@ -12,6 +12,7 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 	struct MdStep;
 	struct SystemSettings;
 } // namespace VTX::Tool::Mdprep::Gateway::Gromacs
+
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct EngineSpecificCommonInformation;
@@ -21,14 +22,15 @@ namespace VTX::Tool::Mdprep::ui
 {
 	struct EngineSpecificCommonInformationFieldUpdate;
 	class MdEngine;
+
 	class GromacsMdStepFieldPlacer
 	{
 	  public:
 		GromacsMdStepFieldPlacer( Gateway::Gromacs::MdStep & );
 		GromacsMdStepFieldPlacer() = delete;
 
-		void placeFields( QFormLayout * ) noexcept;
-		void apply() noexcept;
+		void placeFields( QFormLayout * );
+		void apply();
 
 	  private:
 		Gateway::Gromacs::MdStep * _data					 = nullptr;
@@ -37,15 +39,16 @@ namespace VTX::Tool::Mdprep::ui
 		QLineEdit *				   _field_nstlog			 = nullptr;
 		QLineEdit *				   _field_nstxout_compressed = nullptr;
 	};
+
 	class GromacsSystemFieldPlacer
 	{
 	  public:
 		GromacsSystemFieldPlacer( Gateway::Gromacs::SystemSettings & );
 		GromacsSystemFieldPlacer() = delete;
 
-		void placeFields( QFormLayout * ) noexcept;
-		void apply() noexcept;
-		void update( const EngineSpecificCommonInformationFieldUpdate & ) noexcept;
+		void placeFields( QFormLayout * );
+		void apply();
+		void update( const EngineSpecificCommonInformationFieldUpdate & );
 
 	  private:
 		Gateway::Gromacs::SystemSettings * _data = nullptr;
@@ -63,18 +66,19 @@ namespace VTX::Tool::Mdprep::ui
 			QLineEdit *		 fieldAngleY	   = nullptr;
 			QLineEdit *		 fieldAngleZ	   = nullptr;
 		};
+
 		Gateway::Gromacs::E_BOX_SHAPE _currentShape = Gateway::Gromacs::E_BOX_SHAPE::dodecahedron;
 		QFormLayout *				  _targetLayout = nullptr;
 		BoxFields					  _boxFields;
 
-		void _removeFields() noexcept;
-		void _updateBoxSizeMode() noexcept;
+		void _removeFields();
+		void _updateBoxSizeMode();
 
-		void _addDimensionModeField() noexcept;
-		void _addDistanceField() noexcept;
-		void _addSizeOnlyX() noexcept;
-		void _addSizeXYZ() noexcept;
-		void _addAnglesXYZ() noexcept;
+		void _addDimensionModeField();
+		void _addDistanceField();
+		void _addSizeOnlyX();
+		void _addSizeXYZ();
+		void _addAnglesXYZ();
 	};
 } // namespace VTX::Tool::Mdprep::ui
 

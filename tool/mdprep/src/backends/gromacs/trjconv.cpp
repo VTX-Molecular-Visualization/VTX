@@ -14,7 +14,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		TrjconvInstructions &		 p_instructions
 	)
 	{
-		if ( fs::exists( p_root ) && fs::is_directory( p_root ) == false )
+		if ( fs::exists( p_root ) && not fs::is_directory( p_root ) )
 		{
 			return; // This scenario shouldn't happen
 		}

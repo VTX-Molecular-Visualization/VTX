@@ -1,3 +1,5 @@
+#include <memory>
+#include <ui/qt/helper.hpp>
 // #include <fmt/format.h>
 #include <QFormLayout>
 #include <QLabel>
@@ -89,9 +91,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 	namespace
 	{
-		void createSettingButton( QPushButton ** p_out_buttonSettings )
+		void createSettingButton( QPushButton ** p_out_buttonSettings, QWidget * const p_parent )
 		{
-			*p_out_buttonSettings = new QPushButton;
+			*p_out_buttonSettings = VTX::UI::QT::Helper::makeQObject<QPushButton>( p_parent );
 			( *p_out_buttonSettings )->setFlat( true );
 			( *p_out_buttonSettings )->setCursor( Qt::CursorShape::PointingHandCursor );
 			( *p_out_buttonSettings )->setIcon( UI::QT::STYLE().iconFromCodepoint( UI::QT::Style::Icons::OPTIONS ) );
@@ -107,18 +109,18 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		)
 		{
 			*p_out_durationNumber	   = addUInt64Field( p_dest, p_label, p_tooltip );
-			QWidget * qWidgetRightCell = new QWidget;
+			QWidget * qWidgetRightCell = VTX::UI::QT::Helper::makeQObject<QWidget>( p_dest->parentWidget() );
 			p_dest->replaceWidget( *p_out_durationNumber, qWidgetRightCell );
-			QHBoxLayout * qLayoutRightCell = new QHBoxLayout( qWidgetRightCell );
+			QHBoxLayout * qLayoutRightCell = VTX::UI::QT::Helper::makeQObject<QHBoxLayout>( qWidgetRightCell );
 			qLayoutRightCell->setContentsMargins( { 0, 0, 0, 0 } );
 			qLayoutRightCell->addWidget( *p_out_durationNumber );
-			*p_out_durationUnit = new QComboBox;
+			*p_out_durationUnit = VTX::UI::QT::Helper::makeQObject<QComboBox>( qWidgetRightCell );
 			qLayoutRightCell->addWidget( *p_out_durationUnit );
 			for ( auto it_idxUnit = 0; it_idxUnit < static_cast<int>( E_MD_DURATION_UNIT::COUNT ); it_idxUnit++ )
 			{
 				( *p_out_durationUnit )->addItem( string( static_cast<E_MD_DURATION_UNIT>( it_idxUnit ) ) );
 			}
-			createSettingButton( p_out_buttonSettings );
+			createSettingButton( p_out_buttonSettings, qWidgetRightCell );
 			qLayoutRightCell->addWidget( *p_out_buttonSettings );
 		}
 
@@ -183,33 +185,35 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	void FormBasic::_createAndPlaceUiItems( QWidget * p_container )
 	{
 		_uiObjects._parent				  = p_container;
-		QVBoxLayout * _IntermediateLayout = new QVBoxLayout( p_container );
+		QVBoxLayout * _IntermediateLayout = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( p_container );
 		_toDeleteObjects[ 0 ]			  = _IntermediateLayout;
-		_uiObjects._container			  = new QWidget;
+		_uiObjects._container			  = VTX::UI::QT::Helper::makeQObject<QWidget>( p_container );
 		_toDeleteObjects[ 1 ]			  = _uiObjects._container;
 		QWidget * label					  = new QWidget;
 
 		_IntermediateLayout->setContentsMargins( { 0, 0, 0, 0 } );
 		_IntermediateLayout->addWidget( _uiObjects._container );
-		QVBoxLayout * qMainLayout = new QVBoxLayout( _uiObjects._container );
+		QVBoxLayout * qMainLayout = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _uiObjects._container );
 
 		VTX::UI::QT::Util::addLabeledHLineSeparator( qMainLayout, "System Parameters" );
 
-		_uiObjects._buttonInputCheck = new QPushButton( "Check System" );
+		_uiObjects._buttonInputCheck
+			= VTX::UI::QT::Helper::makeQObject<QPushButton>( "Check System", _uiObjects._container );
 		qMainLayout->addWidget( _uiObjects._buttonInputCheck );
 		_eventManager.setInputCheck( _uiObjects._buttonInputCheck );
 
 		QHBoxLayout * qLayoutForceField = new QHBoxLayout;
 		qMainLayout->addLayout( qLayoutForceField );
-		createSettingButton( &_uiObjects._buttonSystemSettings );
-		_uiObjects._labelSystemCheckMsgContainer = new QWidget;
-		_uiObjects._layoutSystemCheckMsg		 = new QVBoxLayout( _uiObjects._labelSystemCheckMsgContainer );
+		createSettingButton( &_uiObjects._buttonSystemSettings, _uiObjects._container );
+		_uiObjects._labelSystemCheckMsgContainer = VTX::UI::QT::Helper::makeQObject<QWidget>( _uiObjects._container );
+		_uiObjects._layoutSystemCheckMsg
+			= VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _uiObjects._labelSystemCheckMsgContainer );
 
 		_eventManager.setSystemMsg( _uiObjects._layoutSystemCheckMsg );
 		qLayoutForceField->addWidget( _uiObjects._labelSystemCheckMsgContainer, 1 );
 		qLayoutForceField->addWidget( _uiObjects._buttonSystemSettings );
 
-		qMainLayout->addSpacerItem( new QSpacerItem( 0, 10 ) );
+		qMainLayout->addSpacerItem( std::make_unique<QSpacerItem>( 0, 10 ).release() );
 		VTX::UI::QT::Util::addLabeledHLineSeparator( qMainLayout, "MD Duration" );
 
 		QFormLayout * qFormSteps = new QFormLayout;
@@ -220,14 +224,14 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		);
 		qFormSteps->addRow( label, _uiObjects._fieldStepNumberMinimization );
 
-		QWidget * qMinizationWidget = new QWidget;
+		QWidget * qMinizationWidget = VTX::UI::QT::Helper::makeQObject<QWidget>( _uiObjects._container );
 		qMinizationWidget->setContentsMargins( { 0, 0, 0, 0 } );
 		qFormSteps->replaceWidget( _uiObjects._fieldStepNumberMinimization, qMinizationWidget );
-		QHBoxLayout * qMinimizationLayout = new QHBoxLayout( qMinizationWidget );
+		QHBoxLayout * qMinimizationLayout = VTX::UI::QT::Helper::makeQObject<QHBoxLayout>( qMinizationWidget );
 		qMinimizationLayout->setContentsMargins( { 0, 0, 0, 0 } );
 
 		qMinimizationLayout->addWidget( _uiObjects._fieldStepNumberMinimization, 1 );
-		createSettingButton( &_uiObjects._buttonMinimizationSettings );
+		createSettingButton( &_uiObjects._buttonMinimizationSettings, qMinizationWidget );
 		qMinimizationLayout->addWidget( _uiObjects._buttonMinimizationSettings, 0 );
 
 		addDurationRow(
@@ -259,7 +263,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			&_uiObjects._buttonProductionSettings
 		);
 
-		qMainLayout->addSpacerItem( new QSpacerItem( 0, 10 ) );
+		qMainLayout->addSpacerItem( std::make_unique<QSpacerItem>( 0, 10 ).release() );
 		VTX::UI::QT::Util::addLabeledHLineSeparator( qMainLayout, "Ions" );
 
 		Gateway::MdParameters * params = nullptr;

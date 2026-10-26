@@ -33,7 +33,7 @@ namespace VTX::Tool::Mdprep::ui
 		/**
 		 * @brief Bring every node back to its pending state for a fresh preparation run.
 		 */
-		void reset() noexcept;
+		void reset();
 
 	  private:
 		std::vector<StepNode *> _nodes;
@@ -45,18 +45,18 @@ namespace VTX::Tool::Mdprep::ui
 		Util::EventHub::ScopedConnection _stepFinishedConnection;
 		Util::EventHub::ScopedConnection _systemPackedConnection;
 
-		void _setupUi() noexcept;
+		void _setupUi();
 
-		void _onStepStarted( const Gateway::PreparationStepStarted & ) noexcept;
-		void _onStepFinished( const Gateway::PreparationStepFinished & ) noexcept;
-		void _onSystemPacked( const Gateway::SystemPacked & ) noexcept;
+		void _onStepStarted( const Gateway::PreparationStepStarted & );
+		void _onStepFinished( const Gateway::PreparationStepFinished & );
+		void _onSystemPacked( const Gateway::SystemPacked & );
 	};
 
 	/**
 	 * @brief Create (once) the preparation timeline dock, tabified next to the mdprep panel, then show, raise and reset
 	 * it for a new run.
 	 */
-	void showPreparationTimeline() noexcept;
+	void showPreparationTimeline();
 
 } // namespace VTX::Tool::Mdprep::ui
 

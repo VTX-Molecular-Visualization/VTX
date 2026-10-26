@@ -33,18 +33,19 @@ namespace VTX::Tool::Mdprep::ui
 			static_assert(
 				requires( T t, QFormLayout * f ) {
 					{ t.placeFields( f ) };
-				}, "You must implement 'void placeFields( QFormLayout * p_ ) noexcept' class method."
+				}, "You must implement 'void placeFields( QFormLayout * p_ )' class method."
 			);
 			static_assert(
 				requires( T t ) {
 					{ t.apply() };
-				}, "You must implement 'void apply() noexcept' class method."
+				}, "You must implement 'void apply()' class method."
 			);
 		}
+
 		MdEngineSpecificFieldPlacer() = default;
 
 		// Adds fields to the input layout
-		void placeFields( QFormLayout * const p_ ) noexcept
+		void placeFields( QFormLayout * const p_ )
 		{
 			if ( _ptr )
 			{
@@ -53,7 +54,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 
 		// Apply changes to the fields values into data that'll be send to the backend.
-		void apply() noexcept
+		void apply()
 		{
 			if ( _ptr )
 			{
@@ -63,7 +64,7 @@ namespace VTX::Tool::Mdprep::ui
 
 		// OPTIONAL : Inform the field placer that a value has changed.
 		// DO nothing if the method isn't implemented
-		void update( const EngineSpecificCommonInformationFieldUpdate & p_ ) noexcept
+		void update( const EngineSpecificCommonInformationFieldUpdate & p_ )
 		{
 			if ( _ptr )
 			{
@@ -74,23 +75,24 @@ namespace VTX::Tool::Mdprep::ui
 	  private:
 		struct _interface
 		{
-			virtual ~_interface()															   = default;
-			virtual void placeFields( QFormLayout * ) noexcept								   = 0;
-			virtual void apply() noexcept													   = 0;
-			virtual void update( const EngineSpecificCommonInformationFieldUpdate & ) noexcept = 0;
+			virtual ~_interface()													  = default;
+			virtual void placeFields( QFormLayout * )								  = 0;
+			virtual void apply()													  = 0;
+			virtual void update( const EngineSpecificCommonInformationFieldUpdate & ) = 0;
 		};
 
 		template<typename T>
 		struct wrapper final : public _interface
 		{
 			T _t;
+
 			wrapper( T && p_in ) : _t( std::forward<T>( p_in ) ) {}
 
-			void placeFields( QFormLayout * const p_ ) noexcept override { _t.placeFields( p_ ); }
+			void placeFields( QFormLayout * const p_ ) override { _t.placeFields( p_ ); }
 
-			void apply() noexcept override { _t.apply(); }
+			void apply() override { _t.apply(); }
 
-			void update( const EngineSpecificCommonInformationFieldUpdate & p_ ) noexcept override
+			void update( const EngineSpecificCommonInformationFieldUpdate & p_ ) override
 			{
 				if constexpr ( IsUpdatable<T> )
 				{

@@ -30,7 +30,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		std::any formData;
 	};
 
-	enum class E_MD_DURATION_UNIT
+	enum class E_MD_DURATION_UNIT : uint8_t
 	{
 		femtoSeconds,
 		picoSeconds,

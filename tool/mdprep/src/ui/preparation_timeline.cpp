@@ -1,5 +1,6 @@
 #include <array>
 #include <functional>
+#include <ui/qt/helper.hpp>
 //
 #include <QColor>
 #include <QDesktopServices>
@@ -33,7 +34,7 @@ namespace VTX::Tool::Mdprep::ui
 {
 	namespace
 	{
-		enum class E_STEP_STATE
+		enum class E_STEP_STATE : uint8_t
 		{
 			pending,
 			running,
@@ -120,28 +121,29 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			setObjectName( "mdprepStepNode" );
 
-			QVBoxLayout * outer = new QVBoxLayout( this );
+			QVBoxLayout * outer = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( this );
 			outer->setContentsMargins( 8, 6, 8, 6 );
 			outer->setSpacing( 6 );
 
 			// Header.
-			_header					= new ClickableRow;
-			QHBoxLayout * headerLay = new QHBoxLayout( _header );
+			_header					= VTX::UI::QT::Helper::makeQObject<ClickableRow>( this );
+			QHBoxLayout * headerLay = VTX::UI::QT::Helper::makeQObject<QHBoxLayout>( _header );
 			headerLay->setContentsMargins( 0, 0, 0, 0 );
 			headerLay->setSpacing( 8 );
 
-			_dot = new QLabel;
+			_dot = VTX::UI::QT::Helper::makeQObject<QLabel>( _header );
 			_dot->setFixedSize( 12, 12 );
 
-			_titleLabel = new QLabel( p_title );
+			_titleLabel = VTX::UI::QT::Helper::makeQObject<QLabel>( p_title, _header );
 			{
 				QFont f = _titleLabel->font();
 				f.setBold( true );
 				_titleLabel->setFont( f );
 			}
 
-			_stateLabel = new QLabel;
-			_arrow		= new QLabel( QStringLiteral( "▸" ) ); // right-pointing triangle
+			_stateLabel = VTX::UI::QT::Helper::makeQObject<QLabel>( _header );
+			_arrow
+				= VTX::UI::QT::Helper::makeQObject<QLabel>( QStringLiteral( "▸" ), _header ); // right-pointing triangle
 
 			headerLay->addWidget( _dot );
 			headerLay->addWidget( _titleLabel );
@@ -153,17 +155,17 @@ namespace VTX::Tool::Mdprep::ui
 			outer->addWidget( _header );
 
 			// Details.
-			_details			 = new QWidget;
-			QVBoxLayout * detLay = new QVBoxLayout( _details );
+			_details			 = VTX::UI::QT::Helper::makeQObject<QWidget>( this );
+			QVBoxLayout * detLay = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _details );
 			detLay->setContentsMargins( 20, 0, 0, 0 );
 			detLay->setSpacing( 6 );
 
-			_whyLabel = new QLabel( p_why );
+			_whyLabel = VTX::UI::QT::Helper::makeQObject<QLabel>( p_why, _details );
 			_whyLabel->setWordWrap( true );
 			_whyLabel->setForegroundRole( QPalette::PlaceholderText ); // theme-aware muted text
 			detLay->addWidget( _whyLabel );
 
-			_errorsLabel = new QLabel;
+			_errorsLabel = VTX::UI::QT::Helper::makeQObject<QLabel>( _details );
 			_errorsLabel->setWordWrap( true );
 			{
 				QPalette pal = _errorsLabel->palette();
@@ -189,13 +191,13 @@ namespace VTX::Tool::Mdprep::ui
 			_applyState();
 		}
 
-		void setState( E_STEP_STATE p_state ) noexcept
+		void setState( E_STEP_STATE p_state )
 		{
 			_state = p_state;
 			_applyState();
 		}
 
-		void setOutputs( const QString & p_stdOut, const QString & p_stdErr, const QStringList & p_errors ) noexcept
+		void setOutputs( const QString & p_stdOut, const QString & p_stdErr, const QStringList & p_errors )
 		{
 			if ( not p_errors.isEmpty() )
 			{
@@ -216,14 +218,14 @@ namespace VTX::Tool::Mdprep::ui
 			}
 		}
 
-		void setExpanded( bool p_expanded ) noexcept
+		void setExpanded( bool p_expanded )
 		{
 			_expanded = p_expanded;
 			_details->setVisible( _expanded );
 			_arrow->setText( _expanded ? QStringLiteral( "▾" ) : QStringLiteral( "▸" ) );
 		}
 
-		void resetNode() noexcept
+		void resetNode()
 		{
 			_state = E_STEP_STATE::pending;
 			_errorsLabel->clear();
@@ -256,9 +258,9 @@ namespace VTX::Tool::Mdprep::ui
 
 		// A dimmed, slightly smaller section heading. Color comes from the theme (palette role) and the size from the
 		// font API, so nothing here needs a stylesheet.
-		static QLabel * _makeHeading( const QString & p_text ) noexcept
+		QLabel * _makeHeading( const QString & p_text )
 		{
-			QLabel * label = new QLabel( p_text );
+			QLabel * label = VTX::UI::QT::Helper::makeQObject<QLabel>( p_text, _details );
 			label->setForegroundRole( QPalette::PlaceholderText );
 			QFont	  f	 = label->font();
 			const int pt = f.pointSize();
@@ -271,9 +273,9 @@ namespace VTX::Tool::Mdprep::ui
 			return label;
 		}
 
-		static QPlainTextEdit * _makeOutputBox() noexcept
+		QPlainTextEdit * _makeOutputBox()
 		{
-			QPlainTextEdit * box = new QPlainTextEdit;
+			QPlainTextEdit * box = VTX::UI::QT::Helper::makeQObject<QPlainTextEdit>( _details );
 			box->setReadOnly( true );
 			box->setMaximumHeight( 160 );
 			box->setLineWrapMode( QPlainTextEdit::NoWrap );
@@ -284,7 +286,7 @@ namespace VTX::Tool::Mdprep::ui
 			return box;
 		}
 
-		void _applyState() noexcept
+		void _applyState()
 		{
 			const StateStyle style = stateStyle( _state );
 
@@ -318,11 +320,12 @@ namespace VTX::Tool::Mdprep::ui
 			= App::HUB().connect<Gateway::SystemPacked, &PreparationTimeline::_onSystemPacked>( this );
 	}
 
-	void PreparationTimeline::_setupUi() noexcept
+	void PreparationTimeline::_setupUi()
 	{
-		QLabel * intro = new QLabel(
+		QLabel * intro = VTX::UI::QT::Helper::makeQObject<QLabel>(
 			"Progress of the Molecular Dynamics preparation. Click a step to read what it does and, once finished, its "
-			"GROMACS output."
+			"GROMACS output.",
+			_layout->parentWidget()
 		);
 		intro->setWordWrap( true );
 		intro->setContentsMargins( 10, 10, 10, 4 );
@@ -330,7 +333,9 @@ namespace VTX::Tool::Mdprep::ui
 
 		for ( size_t i = 0; i < g_steps.size(); i++ )
 		{
-			StepNode * node = new StepNode( g_steps[ i ].title, g_steps[ i ].why );
+			StepNode * node = VTX::UI::QT::Helper::makeQObject<StepNode>(
+				g_steps[ i ].title, g_steps[ i ].why, _layout->parentWidget()
+			);
 			_layout->addWidget( node );
 			if ( i + 1 == g_steps.size() )
 			{
@@ -344,7 +349,9 @@ namespace VTX::Tool::Mdprep::ui
 
 		_layout->addStretch( 1 );
 
-		_openFolderBtn = new QPushButton( QStringLiteral( "Open system folder" ) );
+		_openFolderBtn = VTX::UI::QT::Helper::makeQObject<QPushButton>(
+			QStringLiteral( "Open system folder" ), _layout->parentWidget()
+		);
 		_openFolderBtn->setEnabled( false );
 		_openFolderBtn->setToolTip( QStringLiteral( "Available once the system has been packed successfully." ) );
 		{
@@ -370,7 +377,7 @@ namespace VTX::Tool::Mdprep::ui
 		_layout->addWidget( _openFolderBtn );
 	}
 
-	void PreparationTimeline::reset() noexcept
+	void PreparationTimeline::reset()
 	{
 		for ( StepNode * node : _nodes )
 		{
@@ -387,7 +394,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void PreparationTimeline::_onStepStarted( const Gateway::PreparationStepStarted & p_ev ) noexcept
+	void PreparationTimeline::_onStepStarted( const Gateway::PreparationStepStarted & p_ev )
 	{
 		if ( p_ev.index < 0 || static_cast<size_t>( p_ev.index ) >= _nodes.size() )
 		{
@@ -396,7 +403,7 @@ namespace VTX::Tool::Mdprep::ui
 		_nodes[ p_ev.index ]->setState( E_STEP_STATE::running );
 	}
 
-	void PreparationTimeline::_onStepFinished( const Gateway::PreparationStepFinished & p_ev ) noexcept
+	void PreparationTimeline::_onStepFinished( const Gateway::PreparationStepFinished & p_ev )
 	{
 		if ( p_ev.index < 0 || static_cast<size_t>( p_ev.index ) >= _nodes.size() )
 		{
@@ -417,7 +424,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	void PreparationTimeline::_onSystemPacked( const Gateway::SystemPacked & p_ev ) noexcept
+	void PreparationTimeline::_onSystemPacked( const Gateway::SystemPacked & p_ev )
 	{
 		if ( _packNode )
 		{
@@ -439,7 +446,7 @@ namespace VTX::Tool::Mdprep::ui
 		PreparationTimeline * g_timeline = nullptr;
 	}
 
-	void showPreparationTimeline() noexcept
+	void showPreparationTimeline()
 	{
 		if ( g_timeline == nullptr )
 		{

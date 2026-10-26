@@ -13,7 +13,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		GromppInstructions &		 p_instructions
 	)
 	{
-		if ( fs::exists( p_root ) && fs::is_directory( p_root ) == false )
+		if ( fs::exists( p_root ) && not fs::is_directory( p_root ) )
 		{
 			return; // This scenario shouldn't happen
 		}
@@ -44,7 +44,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		case E_GROMPP_STEP::ions:
 		{
 			const FilePath mdpTemplate = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "ions.mdp";
-			if ( fs::exists( mdpTemplate ) == false )
+			if ( not fs::exists( mdpTemplate ) )
 			{
 				return;
 			}
@@ -56,7 +56,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		case E_GROMPP_STEP::posres:
 		{
 			const FilePath mdpTemplate = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "posres.mdp";
-			if ( fs::exists( mdpTemplate ) == false )
+			if ( not fs::exists( mdpTemplate ) )
 			{
 				return;
 			}

@@ -54,7 +54,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	ErrorReport createNvtMdp( const FilePath & p_dest, MdInstructions & p_in )
 	{
-		if ( fs::exists( p_dest ) == false )
+		if ( not fs::exists( p_dest ) )
 		{
 			fs::create_directories( p_dest );
 		}
@@ -67,7 +67,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	ErrorReport createNptMdp( const FilePath & p_dest, MdInstructions & p_in )
 	{
-		if ( fs::exists( p_dest ) == false )
+		if ( not fs::exists( p_dest ) )
 		{
 			fs::create_directories( p_dest );
 		}
@@ -80,7 +80,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	ErrorReport createProdMdp( const FilePath & p_dest, MdInstructions & p_in )
 	{
-		if ( fs::exists( p_dest ) == false )
+		if ( not fs::exists( p_dest ) )
 		{
 			fs::create_directories( p_dest );
 		}
@@ -93,7 +93,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	ErrorReport createWorkflowPy( const FilePath & p_dest, MdInstructions & p_in )
 	{
-		if ( fs::exists( p_dest ) == false )
+		if ( not fs::exists( p_dest ) )
 		{
 			fs::create_directories( p_dest );
 		}
@@ -144,7 +144,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		FilePath file { *fileStrPtr };
-		if ( fs::exists( file ) == false )
+		if ( not fs::exists( file ) )
 		{
 			return { true, "Preparation failed. Please check preparation step in red to learn more." };
 		}
@@ -158,7 +158,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		file = *fileStrPtr;
-		if ( fs::exists( file ) == false )
+		if ( not fs::exists( file ) )
 		{
 			return { true, "Preparation failed. Please check preparation step in red to learn more." };
 		}
@@ -172,7 +172,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		file = *fileStrPtr;
-		if ( fs::exists( file ) == false )
+		if ( not fs::exists( file ) )
 		{
 			return { true, "Preparation failed. Please check preparation step in red to learn more." };
 		}
@@ -186,7 +186,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		file = *fileStrPtr;
-		if ( fs::exists( file ) == false )
+		if ( not fs::exists( file ) )
 		{
 			return { true, "Preparation failed. Please check preparation step in red to learn more." };
 		}

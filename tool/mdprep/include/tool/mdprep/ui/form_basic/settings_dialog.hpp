@@ -28,6 +28,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	{
 	  public:
 		ApplyVisitor() = default;
+
 		template<typename T>
 			requires( not VTX::SameUnalteredType<T, ApplyVisitor> )
 		ApplyVisitor( T && p_ ) : _ptr( new _wrapper<T>( std::forward<T>( p_ ) ) )
@@ -35,11 +36,11 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			static_assert(
 				requires( T t ) {
 					{ t.applied() };
-				}, "You need to implement 'void applied() noexcept' class method"
+				}, "You need to implement 'void applied()' class method"
 			);
 		}
 
-		void applied() noexcept
+		void applied()
 		{
 			if ( _ptr )
 			{
@@ -52,8 +53,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		{
 			virtual ~_interface() = default;
 
-			virtual void applied() noexcept = 0;
+			virtual void applied() = 0;
 		};
+
 		std::unique_ptr<_interface> _ptr = nullptr;
 
 		template<typename T>
@@ -61,7 +63,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		{
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			void applied() noexcept override { _obj.applied(); }
+			void applied() override { _obj.applied(); }
 
 		  private:
 			T _obj;
@@ -108,14 +110,15 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 			std::optional<Gateway::EngineSpecificCommonInformation> engineInfo;
 		};
+
 		UiData						_uiObjects;
 		MdEngineSpecificFieldPlacer _engineFieldPlacer;
 		ApplyVisitor				_applyVisitor;
 
 		void _setupUi( QWidget * p_parent, const char * p_title );
-		void _setupSlots() noexcept;
-		void _applyChanges() noexcept;
-		void _cancelChanges() noexcept;
+		void _setupSlots();
+		void _applyChanges();
+		void _cancelChanges();
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
 
