@@ -1,5 +1,6 @@
 #include <app/arguments.hpp>
 #include <app/session.hpp>
+#include <cstdio>
 #include <string>
 #include <util/types.hpp>
 #include <vector>
@@ -42,7 +43,7 @@ extern "C"
  * work around this, we add an "enter" input after we flush the stdcout to have a fresh cursor after the help text. All
  * this stuff is pointless on linux as the console waits for the process to finish before returning hand.
  */
-void unblockParentConsole() noexcept
+void unblockParentConsole()
 {
 #ifdef _WIN32
 	std::cout.flush();
@@ -154,8 +155,13 @@ int main( int p_argc, char * p_argv[] )
 	}
 	catch ( const std::exception & p_e )
 	{
-		const std::string error = p_e.what();
-		std::cerr << "Unhandled exception: " << error;
+		std::fputs( "Unhandled exception: ", stderr );
+		std::fputs( p_e.what(), stderr );
+		return EXIT_FAILURE;
+	}
+	catch ( ... )
+	{
+		std::fputs( "Unhandled unknown exception", stderr );
 		return EXIT_FAILURE;
 	}
 }

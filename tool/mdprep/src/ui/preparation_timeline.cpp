@@ -117,7 +117,19 @@ namespace VTX::Tool::Mdprep::ui
 	{
 	  public:
 		StepNode( const QString & p_title, const QString & p_why, QWidget * const p_parent = nullptr ) :
-			QFrame( p_parent )
+			QFrame( p_parent ), _header( VTX::UI::QT::Helper::makeQObject<ClickableRow>( this ) ),
+			_dot( VTX::UI::QT::Helper::makeQObject<QLabel>( _header ) ),
+			_titleLabel( VTX::UI::QT::Helper::makeQObject<QLabel>( p_title, _header ) ),
+			_stateLabel( VTX::UI::QT::Helper::makeQObject<QLabel>( _header ) ),
+			_arrow(
+				VTX::UI::QT::Helper::makeQObject<QLabel>( QStringLiteral( "▸" ), _header )
+			), // right-pointing triangle
+			_details( VTX::UI::QT::Helper::makeQObject<QWidget>( this ) ),
+			_whyLabel( VTX::UI::QT::Helper::makeQObject<QLabel>( p_why, _details ) ),
+			_errorsLabel( VTX::UI::QT::Helper::makeQObject<QLabel>( _details ) ),
+			_stdoutHeading( _makeHeading( QStringLiteral( "Standard output" ) ) ),
+			_stderrHeading( _makeHeading( QStringLiteral( "Standard error" ) ) ), _stdout( _makeOutputBox() ),
+			_stderr( _makeOutputBox() )
 		{
 			setObjectName( "mdprepStepNode" );
 
@@ -126,24 +138,17 @@ namespace VTX::Tool::Mdprep::ui
 			outer->setSpacing( 6 );
 
 			// Header.
-			_header					= VTX::UI::QT::Helper::makeQObject<ClickableRow>( this );
 			QHBoxLayout * headerLay = VTX::UI::QT::Helper::makeQObject<QHBoxLayout>( _header );
 			headerLay->setContentsMargins( 0, 0, 0, 0 );
 			headerLay->setSpacing( 8 );
 
-			_dot = VTX::UI::QT::Helper::makeQObject<QLabel>( _header );
 			_dot->setFixedSize( 12, 12 );
 
-			_titleLabel = VTX::UI::QT::Helper::makeQObject<QLabel>( p_title, _header );
 			{
 				QFont f = _titleLabel->font();
 				f.setBold( true );
 				_titleLabel->setFont( f );
 			}
-
-			_stateLabel = VTX::UI::QT::Helper::makeQObject<QLabel>( _header );
-			_arrow
-				= VTX::UI::QT::Helper::makeQObject<QLabel>( QStringLiteral( "▸" ), _header ); // right-pointing triangle
 
 			headerLay->addWidget( _dot );
 			headerLay->addWidget( _titleLabel );
@@ -155,17 +160,14 @@ namespace VTX::Tool::Mdprep::ui
 			outer->addWidget( _header );
 
 			// Details.
-			_details			 = VTX::UI::QT::Helper::makeQObject<QWidget>( this );
 			QVBoxLayout * detLay = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _details );
 			detLay->setContentsMargins( 20, 0, 0, 0 );
 			detLay->setSpacing( 6 );
 
-			_whyLabel = VTX::UI::QT::Helper::makeQObject<QLabel>( p_why, _details );
 			_whyLabel->setWordWrap( true );
 			_whyLabel->setForegroundRole( QPalette::PlaceholderText ); // theme-aware muted text
 			detLay->addWidget( _whyLabel );
 
-			_errorsLabel = VTX::UI::QT::Helper::makeQObject<QLabel>( _details );
 			_errorsLabel->setWordWrap( true );
 			{
 				QPalette pal = _errorsLabel->palette();
@@ -175,14 +177,10 @@ namespace VTX::Tool::Mdprep::ui
 			_errorsLabel->hide();
 			detLay->addWidget( _errorsLabel );
 
-			_stdoutHeading = _makeHeading( QStringLiteral( "Standard output" ) );
 			detLay->addWidget( _stdoutHeading );
-			_stdout = _makeOutputBox();
 			detLay->addWidget( _stdout );
 
-			_stderrHeading = _makeHeading( QStringLiteral( "Standard error" ) );
 			detLay->addWidget( _stderrHeading );
-			_stderr = _makeOutputBox();
 			detLay->addWidget( _stderr );
 
 			_details->hide();

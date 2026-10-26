@@ -93,7 +93,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			get( E_COMMON_FIELDS_COMBOBOX ::bioForcefield, w, p_uiObjects.fieldForceFieldBio );
 			if ( engineInfo != nullptr )
 			{
-				for ( auto & it_bioFf : engineInfo->bioForcefieldCollection )
+				for ( const auto & it_bioFf : engineInfo->bioForcefieldCollection )
 				{
 					p_uiObjects.fieldForceFieldBio->addItem( QString::fromStdString( it_bioFf ) );
 					if ( it_bioFf == p_data->forcefieldBio )
@@ -111,7 +111,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			get( E_COMMON_FIELDS_COMBOBOX::boxShape, w, p_uiObjects.fieldBoxShape );
 			if ( engineInfo != nullptr )
 			{
-				for ( auto & it_shapeStr : engineInfo->boxShapeCollection )
+				for ( const auto & it_shapeStr : engineInfo->boxShapeCollection )
 				{
 					p_uiObjects.fieldBoxShape->addItem( QString::fromStdString( it_shapeStr ) );
 				}
@@ -125,7 +125,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			get( E_COMMON_FIELDS_COMBOBOX ::waterModel, w, p_uiObjects.fieldWaterModel );
 			if ( engineInfo != nullptr )
 			{
-				for ( auto & it_waterModelsStr : engineInfo->waterModels )
+				for ( const auto & it_waterModelsStr : engineInfo->waterModels )
 				{
 					p_uiObjects.fieldWaterModel->addItem( QString::fromStdString( it_waterModelsStr ) );
 					if ( it_waterModelsStr == p_data->waterModel )
