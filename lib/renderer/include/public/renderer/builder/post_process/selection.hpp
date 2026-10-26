@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_SELECTION__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_SELECTION__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_SELECTION_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_SELECTION_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"

@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_MESH_READER__
-#define __VTX_IO_MESH_READER__
+#ifndef VTX_IO_MESH_READER_HPP
+#define VTX_IO_MESH_READER_HPP
 
 #include <util/filesystem.hpp>
 #include <util/thread/base_thread.hpp>

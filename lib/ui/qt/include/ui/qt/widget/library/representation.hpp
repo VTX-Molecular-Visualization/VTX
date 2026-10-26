@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_LIBRARY_REPRESENTATION__
-#define __VTX_UI_QT_WIDGET_LIBRARY_REPRESENTATION__
+#ifndef VTX_UI_QT_WIDGET_LIBRARY_REPRESENTATION_HPP
+#define VTX_UI_QT_WIDGET_LIBRARY_REPRESENTATION_HPP
 
 #include "base_preset_widget.hpp"
 #include "ui/qt/widget/editable_slider.hpp"
@@ -51,9 +51,7 @@ namespace VTX::UI::QT::Widget::Library
 
 		template<VTX::Renderer::E_REPRESENTATION_VALUES S, typename T>
 		void _changeValue( const T p_value )
-		{
-			App::ACTION().execute<App::Action::Representation::Change<S, T>>( currentPreset(), p_value );
-		}
+		{ App::ACTION().execute<App::Action::Representation::Change<S, T>>( currentPreset(), p_value ); }
 
 		void _applyLogic( const VTX::Renderer::Representation & );
 		void _refreshCUDAState();

@@ -22,9 +22,8 @@ namespace VTX::UI::QT::Menu
 
 			if ( p_selected.index )
 			{
-				params.emplace(
-					std::string( Action::Selection::PARAM_COLOR_INDEX ), static_cast<int>( *p_selected.index )
-				);
+				params.emplace( std::string( Action::Selection::PARAM_COLOR_INDEX ),
+								static_cast<int>( *p_selected.index ) );
 			}
 
 			return params;
@@ -61,23 +60,22 @@ namespace VTX::UI::QT::Menu
 		addSeparator();
 
 		_colorSchemeMenu = Helper::makeQObject<ColorScheme>( this );
-		connect(
-			_colorSchemeMenu,
-			&ColorScheme::selected,
-			this,
-			[]( const ColorScheme::Selected & p_selected )
-			{ UI_ACTIONS().trigger( Action::Selection::SET_COLOR_SCHEME, colorSchemeParams( p_selected ) ); }
-		);
+		connect( _colorSchemeMenu,
+				 &ColorScheme::selected,
+				 this,
+				 []( const ColorScheme::Selected & p_selected )
+				 { UI_ACTIONS().trigger( Action::Selection::SET_COLOR_SCHEME, colorSchemeParams( p_selected ) ); } );
 		addMenu( _colorSchemeMenu );
 
 		_representationMenu = Helper::makeQObject<Representation>( this );
-		connect(
-			_representationMenu,
-			&Representation::selected,
-			this,
-			[]( const Entity p_representation )
-			{ UI_ACTIONS().trigger( Action::Selection::SET_REPRESENTATION, representationParams( p_representation ) ); }
-		);
+		connect( _representationMenu,
+				 &Representation::selected,
+				 this,
+				 []( const Entity p_representation )
+				 {
+					 UI_ACTIONS().trigger( Action::Selection::SET_REPRESENTATION,
+										   representationParams( p_representation ) );
+				 } );
 		addMenu( _representationMenu );
 
 		auto &	   reg		= REG();

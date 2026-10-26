@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_WRITER_SHARED__
-#define __VTX_IO_WRITER_SHARED__
+#ifndef VTX_IO_WRITER_SHARED_HPP
+#define VTX_IO_WRITER_SHARED_HPP
 
 #include <cstdint>
 

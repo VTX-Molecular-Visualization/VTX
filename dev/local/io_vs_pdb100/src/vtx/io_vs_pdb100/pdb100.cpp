@@ -28,6 +28,7 @@ namespace
 			boost::interprocess::shared_memory_object::remove( VTX::IO::test::SHM_REREADRSLT_MAP_SEGNAME );
 			boost::interprocess::named_mutex::remove( VTX::IO::test::SHM_REREADRSLT_MUTEX );
 		}
+
 		~shm_remove()
 		{
 			boost::interprocess::shared_memory_object::remove( VTX::IO::test::SHM_FILESTR_DEQUE_SEGNAME );
@@ -42,6 +43,7 @@ namespace
 	using FilePtrCollection = std::list<const std::string *>;
 	using ResultDict		= std::unordered_map<const std::string *, uint32_t>;
 	using TestResults		= std::map<const std::string *, VTX::IO::test::RereadResult>;
+
 	struct DataBaseTestContext
 	{
 		fs::path	   dbDir;
@@ -55,6 +57,7 @@ namespace
 		uint32_t num_frameNumNotMatch	 = 0;
 		uint32_t num_crashed			 = 0;
 	};
+
 	/**
 	 * @brief Recursive function. If file, add it to collection. If dir, call itself on it. The directory depth is
 	 * supposed to be fixed at 2 so the stack size souldn't explose.
@@ -66,63 +69,57 @@ namespace
 		for ( auto & it_fsItem : fs::directory_iterator( dir ) )
 		{
 			if ( fs::is_directory( it_fsItem ) )
+			{
 				walkDir( contextData, it_fsItem.path() );
+			}
 			if ( fs::is_regular_file( it_fsItem ) )
+			{
 				contextData.push_back( it_fsItem.path().string() );
+			}
 		}
 	}
+
 	/**
 	 * @brief Open each directory from the dbDir and list the files in the pdb100_system collection
 	 * @param contextData
 	 */
 	void enumerateFiles( DataBaseTestContext & contextData )
-	{
-		walkDir( contextData.pdb100_system, contextData.dbDir );
-	}
+	{ walkDir( contextData.pdb100_system, contextData.dbDir ); }
+
 	void writeReportSummary( DataBaseTestContext & contextData )
 	{
-		VTX::VTX_INFO(
-			"Fully working : {:0.02f}% ({}/{})",
-			static_cast<double>( contextData.num_fullyworking ) / contextData.pdb100_system.size() * 100.,
-			contextData.num_fullyworking,
-			contextData.pdb100_system.size()
-		);
-		VTX::VTX_INFO(
-			"Atom mismatch : {:0.02f}% ({}/{})",
-			static_cast<double>( contextData.num_atomNumNotMatch ) / contextData.pdb100_system.size() * 100.,
-			contextData.num_atomNumNotMatch,
-			contextData.pdb100_system.size()
-		);
+		VTX::VTX_INFO( "Fully working : {:0.02f}% ({}/{})",
+					   static_cast<double>( contextData.num_fullyworking ) / contextData.pdb100_system.size() * 100.,
+					   contextData.num_fullyworking,
+					   contextData.pdb100_system.size() );
+		VTX::VTX_INFO( "Atom mismatch : {:0.02f}% ({}/{})",
+					   static_cast<double>( contextData.num_atomNumNotMatch ) / contextData.pdb100_system.size() * 100.,
+					   contextData.num_atomNumNotMatch,
+					   contextData.pdb100_system.size() );
 		VTX::VTX_INFO(
 			"Residue mismatch : {:0.02f}% ({}/{})",
 			static_cast<double>( contextData.num_residuesNumNotMatch ) / contextData.pdb100_system.size() * 100.,
 			contextData.num_residuesNumNotMatch,
-			contextData.pdb100_system.size()
-		);
+			contextData.pdb100_system.size() );
 		VTX::VTX_INFO(
 			"Chain mismatch : {:0.02f}% ({}/{})",
 			static_cast<double>( contextData.num_chainNumNotMatch ) / contextData.pdb100_system.size() * 100.,
 			contextData.num_chainNumNotMatch,
-			contextData.pdb100_system.size()
-		);
+			contextData.pdb100_system.size() );
 		VTX::VTX_INFO(
 			"Frame mismatch : {:0.02f}% ({}/{})",
 			static_cast<double>( contextData.num_frameNumNotMatch ) / contextData.pdb100_system.size() * 100.,
 			contextData.num_frameNumNotMatch,
-			contextData.pdb100_system.size()
-		);
-		VTX::VTX_INFO(
-			"Crashes : {:0.02f}% ({}/{})",
-			static_cast<double>( contextData.num_crashed ) / contextData.pdb100_system.size() * 100.,
-			contextData.num_crashed,
-			contextData.pdb100_system.size()
-		);
+			contextData.pdb100_system.size() );
+		VTX::VTX_INFO( "Crashes : {:0.02f}% ({}/{})",
+					   static_cast<double>( contextData.num_crashed ) / contextData.pdb100_system.size() * 100.,
+					   contextData.num_crashed,
+					   contextData.pdb100_system.size() );
 	}
-	void writeResultFile(
-		const VTX::FilePath &				dest,
-		TestResults &						data,
-		const VTX::IO::test::RereadResult & result_type
-	)
+
+	void writeResultFile( const VTX::FilePath &				  dest,
+						  TestResults &						  data,
+						  const VTX::IO::test::RereadResult & result_type )
 	{
 		std::ofstream file { dest };
 
@@ -131,13 +128,15 @@ namespace
 			if ( static_cast<bool>( it_strRslt.second & result_type )
 				 || ( result_type == VTX::IO::test::RereadResult::fully_working
 					  && it_strRslt.second == VTX::IO::test::RereadResult::fully_working ) )
+			{
 				file << fs::path( *it_strRslt.first ).stem().string() << "\t" << *it_strRslt.first << std::endl;
+			}
 		}
 	}
+
 	int byteswap( const int & _Val )
-	{
-		return ( _Val << 24 ) | ( ( _Val << 8 ) & 0x00FF'0000 ) | ( ( _Val >> 8 ) & 0x0000'FF00 ) | ( _Val >> 24 );
-	}
+	{ return ( _Val << 24 ) | ( ( _Val << 8 ) & 0x00FF'0000 ) | ( ( _Val >> 8 ) & 0x0000'FF00 ) | ( _Val >> 24 ); }
+
 	/**
 	 * @brief Class responsible for starting an independant worker, and restarting it if it crashes. If the worker
 	 * finish normally, it is not restarted and the finished method return true.
@@ -159,21 +158,25 @@ namespace
 									   VTX::VTX_INFO( "Starting worker {}.", this->num, this->thr_retcode );
 									   this->thr_retcode = std::system( startStr.data() );
 
-									   VTX::VTX_INFO(
-										   "Worker {} terminated with return code {:32b}.", this->num, this->thr_retcode
-									   );
+									   VTX::VTX_INFO( "Worker {} terminated with return code {:32b}.",
+													  this->num,
+													  this->thr_retcode );
 								   }
 								   VTX::VTX_INFO( "Worker {} won't restart.", this->num );
 								   this->finished = true;
 							   } };
 		};
+
 		std::unique_ptr<_Data> _data = nullptr;
 
 	  public:
 		RestartableWorker() = delete;
+
 		RestartableWorker( const char * startStr, int num ) : _data( std::make_unique<_Data>( startStr, num ) ) {}
+
 		bool finished() const { return _data->finished; }
 	};
+
 	/**
 	 * @brief Initilize shared deque and fill it with list of structure file path
 	 * @param contextData
@@ -188,8 +191,7 @@ namespace
 									  + 1000;
 
 		boost::interprocess::managed_shared_memory sharedSegment(
-			boost::interprocess::create_only, VTX::IO::test::SHM_FILESTR_DEQUE_SEGNAME, size_shm_deque
-		);
+			boost::interprocess::create_only, VTX::IO::test::SHM_FILESTR_DEQUE_SEGNAME, size_shm_deque );
 		StringDequeAllocator dequeAlloc( sharedSegment.get_segment_manager() );
 		StringAllocator		 strAlloc( sharedSegment.get_segment_manager() );
 		StringDeque * fileStrDeque = sharedSegment.construct<StringDeque>( SHM_FILESTR_DEQUE_OBJNAME )( dequeAlloc );
@@ -201,6 +203,7 @@ namespace
 		}
 		std::cout << fileStrDeque->size();
 	}
+
 	/**
 	 * @brief Initilize shared memory map
 	 * @param contextData
@@ -212,11 +215,11 @@ namespace
 			= contextData.pdb100_system.size() * ( 50 + sizeof( RereadResult ) + sizeof( uint64_t ) ) + 500;
 
 		boost::interprocess::managed_shared_memory sharedSegment(
-			boost::interprocess::create_only, VTX::IO::test::SHM_REREADRSLT_MAP_SEGNAME, size_shm_map
-		);
+			boost::interprocess::create_only, VTX::IO::test::SHM_REREADRSLT_MAP_SEGNAME, size_shm_map );
 		RereadResultMapAllocator mapAlloc( sharedSegment.get_segment_manager() );
 		RereadResultMap * rsltMap = sharedSegment.construct<RereadResultMap>( SHM_REREADRSLT_MAP_OBJNAME )( mapAlloc );
 	}
+
 	/**
 	 * @brief Read the shared map to fill the process-local map for future reading
 	 * @param contextData
@@ -225,9 +228,8 @@ namespace
 	{
 		using namespace VTX::IO::test;
 
-		boost::interprocess::managed_shared_memory sharedSegment(
-			boost::interprocess::open_only, VTX::IO::test::SHM_REREADRSLT_MAP_SEGNAME
-		);
+		boost::interprocess::managed_shared_memory sharedSegment( boost::interprocess::open_only,
+																  VTX::IO::test::SHM_REREADRSLT_MAP_SEGNAME );
 		auto rsltMapPair = sharedSegment.find<RereadResultMap>( SHM_REREADRSLT_MAP_OBJNAME );
 		if ( rsltMapPair.first == nullptr )
 		{
@@ -263,6 +265,7 @@ namespace
 			contextData.num_frameNumNotMatch += static_cast<bool>( rslt & RereadResult::frame_mismatch );
 		}
 	}
+
 	/**
 	 * @brief Read the shared memory segment to prompt what's left to do using the VTX logger
 	 * @param contextData
@@ -275,21 +278,21 @@ namespace
 		{
 			named_mutex									  mutex( open_or_create, SHM_REREADRSLT_MUTEX );
 			scoped_lock<boost::interprocess::named_mutex> lock( mutex );
-			boost::interprocess::managed_shared_memory	  sharedSegment(
-				   boost::interprocess::open_only, VTX::IO::test::SHM_REREADRSLT_MAP_SEGNAME
-			   );
+			boost::interprocess::managed_shared_memory	  sharedSegment( boost::interprocess::open_only,
+																		 VTX::IO::test::SHM_REREADRSLT_MAP_SEGNAME );
 			auto rsltMapPair = sharedSegment.find<RereadResultMap>( SHM_REREADRSLT_MAP_OBJNAME );
 			if ( rsltMapPair.first == nullptr )
+			{
 				throw;
+			}
 			mapSize = rsltMapPair.first->size();
 		}
-		VTX::VTX_INFO(
-			"Job status : {:0.2f}% completion ({}/{})",
-			100. * static_cast<double>( mapSize ) / static_cast<double>( contextData.pdb100_system.size() ),
-			mapSize,
-			contextData.pdb100_system.size()
-		);
+		VTX::VTX_INFO( "Job status : {:0.2f}% completion ({}/{})",
+					   100. * static_cast<double>( mapSize ) / static_cast<double>( contextData.pdb100_system.size() ),
+					   mapSize,
+					   contextData.pdb100_system.size() );
 	}
+
 	/**
 	 * @brief Create process workers and wait for them to complete their task.
 	 * @param contextData
@@ -316,15 +319,17 @@ namespace
 
 		uint64_t waitCount = 1;
 		while ( not std::all_of(
-			workerPool.begin(), workerPool.end(), []( const RestartableWorker & w ) { return w.finished(); }
-		) )
+			workerPool.begin(), workerPool.end(), []( const RestartableWorker & w ) { return w.finished(); } ) )
 		{
 			std::this_thread::sleep_for( std::chrono::seconds( 1 ) );
 			if ( waitCount % 30 == 0 )
+			{
 				promptJobStatus( contextData );
+			}
 			waitCount++;
 		}
 	}
+
 	/**
 	 * @brief Will take care of the logging part when the object is destructed. Placing it on destructor allows for the
 	 * logging to occur even if the program is closed (kill 15 won't work)
@@ -335,29 +340,27 @@ namespace
 
 	  public:
 		Logger( DataBaseTestContext & d ) : _d( &d ) {}
+
 		~Logger()
 		{
 			_exploitMap( *_d );
 			VTX::FilePath outDir { VTX::Util::Filesystem::getExecutableDir() / "out" / "pdbDb" };
 			if ( not fs::exists( outDir ) )
+			{
 				fs::create_directories( outDir );
+			}
 			writeReportSummary( *_d );
 			writeResultFile(
-				outDir / "fully_working.log", _d->testResults, VTX::IO::test::RereadResult::fully_working
-			);
+				outDir / "fully_working.log", _d->testResults, VTX::IO::test::RereadResult::fully_working );
 			writeResultFile( outDir / "crashed.log", _d->testResults, VTX::IO::test::RereadResult::crashed );
 			writeResultFile(
-				outDir / "residue_mismatch.log", _d->testResults, VTX::IO::test::RereadResult::residue_mismatch
-			);
+				outDir / "residue_mismatch.log", _d->testResults, VTX::IO::test::RereadResult::residue_mismatch );
 			writeResultFile(
-				outDir / "atom_mismatch.log", _d->testResults, VTX::IO::test::RereadResult::atom_mismatch
-			);
+				outDir / "atom_mismatch.log", _d->testResults, VTX::IO::test::RereadResult::atom_mismatch );
 			writeResultFile(
-				outDir / "chain_mismatch.log", _d->testResults, VTX::IO::test::RereadResult::chain_mismatch
-			);
+				outDir / "chain_mismatch.log", _d->testResults, VTX::IO::test::RereadResult::chain_mismatch );
 			writeResultFile(
-				outDir / "frame_mismatch.log", _d->testResults, VTX::IO::test::RereadResult::frame_mismatch
-			);
+				outDir / "frame_mismatch.log", _d->testResults, VTX::IO::test::RereadResult::frame_mismatch );
 		}
 	};
 } // namespace

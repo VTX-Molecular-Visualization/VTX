@@ -51,8 +51,7 @@ namespace VTX::App::PythonBinding
 							state.speed				  = player->playingSpeed;
 						}
 						return state;
-					}
-				);
+					} );
 			}
 			catch ( const std::invalid_argument & )
 			{
@@ -112,115 +111,83 @@ namespace VTX::App::PythonBinding
 				"getAtomPosition",
 				[]( const Frame & p_frame, const std::size_t p_atom )
 				{ return _getFrameAtomPosition( p_frame, static_cast<py::ssize_t>( p_atom ) ); },
-				py::arg( "index" )
-			)
+				py::arg( "index" ) )
 			.def( "__len__", &_getFrameAtomCount )
-			.def(
-				"__getitem__",
-				[]( const Frame & p_frame, const py::ssize_t p_index )
-				{ return _getFrameAtomPosition( p_frame, p_index ); }
-			);
+			.def( "__getitem__",
+				  []( const Frame & p_frame, const py::ssize_t p_index )
+				  { return _getFrameAtomPosition( p_frame, p_index ); } );
 
 		py::class_<Trajectory>( module, "Trajectory", py::module_local() )
-			.def_property_readonly(
-				"frameCount",
-				[]( const Trajectory & p_trajectory ) { return _getTrajectoryState( p_trajectory.entity ).frameCount; }
-			)
-			.def_property_readonly(
-				"loadedFrameCount",
-				[]( const Trajectory & p_trajectory )
-				{ return _getTrajectoryState( p_trajectory.entity ).availableFrames.getCount(); }
-			)
-			.def_property_readonly(
-				"availableFrames",
-				[]( const Trajectory & p_trajectory )
-				{ return _getTrajectoryState( p_trajectory.entity ).availableFrames; }
-			)
-			.def_property_readonly(
-				"currentFrameIndex",
-				[]( const Trajectory & p_trajectory )
-				{ return _getTrajectoryState( p_trajectory.entity ).currentFrameIndex; }
-			)
-			.def_property_readonly(
-				"requestedFrameIndex",
-				[]( const Trajectory & p_trajectory )
-				{ return _getTrajectoryState( p_trajectory.entity ).requestedFrameIndex; }
-			)
-			.def_property_readonly(
-				"playMode",
-				[]( const Trajectory & p_trajectory ) { return _getTrajectoryState( p_trajectory.entity ).playMode; }
-			)
-			.def_property_readonly(
-				"paused",
-				[]( const Trajectory & p_trajectory ) { return _getTrajectoryState( p_trajectory.entity ).paused; }
-			)
-			.def_property_readonly(
-				"speed",
-				[]( const Trajectory & p_trajectory ) { return _getTrajectoryState( p_trajectory.entity ).speed; }
-			)
-			.def_property_readonly(
-				"currentFrame",
-				[]( const Trajectory & p_trajectory )
-				{
-					const uint index = _getTrajectoryState( p_trajectory.entity ).currentFrameIndex;
-					return _getFrame( p_trajectory.entity, index );
-				}
-			)
+			.def_property_readonly( "frameCount",
+									[]( const Trajectory & p_trajectory )
+									{ return _getTrajectoryState( p_trajectory.entity ).frameCount; } )
+			.def_property_readonly( "loadedFrameCount",
+									[]( const Trajectory & p_trajectory )
+									{ return _getTrajectoryState( p_trajectory.entity ).availableFrames.getCount(); } )
+			.def_property_readonly( "availableFrames",
+									[]( const Trajectory & p_trajectory )
+									{ return _getTrajectoryState( p_trajectory.entity ).availableFrames; } )
+			.def_property_readonly( "currentFrameIndex",
+									[]( const Trajectory & p_trajectory )
+									{ return _getTrajectoryState( p_trajectory.entity ).currentFrameIndex; } )
+			.def_property_readonly( "requestedFrameIndex",
+									[]( const Trajectory & p_trajectory )
+									{ return _getTrajectoryState( p_trajectory.entity ).requestedFrameIndex; } )
+			.def_property_readonly( "playMode",
+									[]( const Trajectory & p_trajectory )
+									{ return _getTrajectoryState( p_trajectory.entity ).playMode; } )
+			.def_property_readonly( "paused",
+									[]( const Trajectory & p_trajectory )
+									{ return _getTrajectoryState( p_trajectory.entity ).paused; } )
+			.def_property_readonly( "speed",
+									[]( const Trajectory & p_trajectory )
+									{ return _getTrajectoryState( p_trajectory.entity ).speed; } )
+			.def_property_readonly( "currentFrame",
+									[]( const Trajectory & p_trajectory )
+									{
+										const uint index = _getTrajectoryState( p_trajectory.entity ).currentFrameIndex;
+										return _getFrame( p_trajectory.entity, index );
+									} )
 			.def(
 				"getFrame",
 				[]( const Trajectory & p_trajectory, const std::size_t p_index )
 				{ return _getFrame( p_trajectory.entity, p_index ); },
-				py::arg( "index" )
-			)
-			.def(
-				"__len__",
-				[]( const Trajectory & p_trajectory ) { return _getTrajectoryState( p_trajectory.entity ).frameCount; }
-			)
-			.def(
-				"__getitem__",
-				[]( const Trajectory & p_trajectory, const py::ssize_t p_index )
-				{
-					const std::size_t frameCount = _getTrajectoryState( p_trajectory.entity ).frameCount;
-					return _getFrame( p_trajectory.entity, _resolveIndex( p_index, frameCount ) );
-				}
-			)
-			.def(
-				"toggleStartPause",
-				[]( const Trajectory & p_trajectory )
-				{ executeAction<App::Action::Trajectory::ToggleStartPause>( p_trajectory.entity ); }
-			)
-			.def(
-				"play",
-				[]( const Trajectory & p_trajectory )
-				{ executeAction<App::Action::Trajectory::SetPaused>( p_trajectory.entity, false ); }
-			)
-			.def(
-				"pause",
-				[]( const Trajectory & p_trajectory )
-				{ executeAction<App::Action::Trajectory::SetPaused>( p_trajectory.entity, true ); }
-			)
-			.def(
-				"stop",
-				[]( const Trajectory & p_trajectory )
-				{ executeAction<App::Action::Trajectory::Stop>( p_trajectory.entity ); }
-			)
+				py::arg( "index" ) )
+			.def( "__len__",
+				  []( const Trajectory & p_trajectory )
+				  { return _getTrajectoryState( p_trajectory.entity ).frameCount; } )
+			.def( "__getitem__",
+				  []( const Trajectory & p_trajectory, const py::ssize_t p_index )
+				  {
+					  const std::size_t frameCount = _getTrajectoryState( p_trajectory.entity ).frameCount;
+					  return _getFrame( p_trajectory.entity, _resolveIndex( p_index, frameCount ) );
+				  } )
+			.def( "toggleStartPause",
+				  []( const Trajectory & p_trajectory )
+				  { executeAction<App::Action::Trajectory::ToggleStartPause>( p_trajectory.entity ); } )
+			.def( "play",
+				  []( const Trajectory & p_trajectory )
+				  { executeAction<App::Action::Trajectory::SetPaused>( p_trajectory.entity, false ); } )
+			.def( "pause",
+				  []( const Trajectory & p_trajectory )
+				  { executeAction<App::Action::Trajectory::SetPaused>( p_trajectory.entity, true ); } )
+			.def( "stop",
+				  []( const Trajectory & p_trajectory )
+				  { executeAction<App::Action::Trajectory::Stop>( p_trajectory.entity ); } )
 			.def(
 				"jumpTo",
 				[]( const Trajectory & p_trajectory, const uint p_index )
 				{ executeAction<App::Action::Trajectory::JumpTo>( p_trajectory.entity, p_index ); },
-				py::arg( "index" )
-			)
+				py::arg( "index" ) )
 			.def(
 				"setPlayMode",
 				[]( const Trajectory & p_trajectory, const App::Trajectory::PLAY_MODE p_mode )
 				{ executeAction<App::Action::Trajectory::ChangePlayer>( p_trajectory.entity, p_mode ); },
-				py::arg( "mode" )
-			)
+				py::arg( "mode" ) )
 			.def(
 				"setSpeed",
 				[]( const Trajectory & p_trajectory, const float p_speed )
 				{ executeAction<App::Action::Trajectory::ChangeSpeed>( p_trajectory.entity, p_speed ); },
-				py::arg( "speed" )
-			);
+				py::arg( "speed" ) );
 	}
 } // namespace VTX::App::PythonBinding

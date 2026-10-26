@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT__
-#define __VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT__
+#ifndef VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT_HPP
+#define VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT_HPP
 
 #include "base_preset_widget.hpp"
 #include "ui/qt/widget/color_picker.hpp"
@@ -26,9 +26,9 @@ namespace VTX::UI::QT::Widget::Library
 		void _update( Entity ) override;
 
 	  private:
-		inline static const int _BUTTON_SIZE = 32;
+		inline static const int BUTTON_SIZE = 32;
 
-		QPointer<QCheckBox> _checkBoxHideNonUsual;
+		QPointer<QCheckBox>				   _checkBoxHideNonUsual;
 		std::vector<QPointer<ColorPicker>> _buttons;
 
 		void _createGroupBox( std::string_view					p_title,
@@ -47,12 +47,10 @@ namespace VTX::UI::QT::Widget::Library
 		 */
 		void _updateColor( size_t, const Util::Color::Rgba & );
 
-		void _refreshButtonVisibility(
-			bool				  p_hide,
-			size_t				  p_start,
-			size_t				  p_count,
-			std::span<const bool> p_isCommonValues
-		);
+		void _refreshButtonVisibility( bool					 p_hide,
+									   size_t				 p_start,
+									   size_t				 p_count,
+									   std::span<const bool> p_isCommonValues );
 
 		// void _onCurrentPresetUpdated()
 	};

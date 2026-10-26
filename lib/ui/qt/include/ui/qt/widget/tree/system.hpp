@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TREE_SYSTEM__
-#define __VTX_UI_QT_WIDGET_TREE_SYSTEM__
+#ifndef VTX_UI_QT_WIDGET_TREE_SYSTEM_HPP
+#define VTX_UI_QT_WIDGET_TREE_SYSTEM_HPP
 
 #include "ui/qt/model/system_model.hpp"
 #include "ui/qt/widget/tree/base_tree.hpp"

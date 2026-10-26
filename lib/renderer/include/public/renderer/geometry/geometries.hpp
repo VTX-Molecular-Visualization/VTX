@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GEOMETRIES__
-#define __VTX_RENDERER_GEOMETRIES__
+#ifndef VTX_RENDERER_GEOMETRY_GEOMETRIES_HPP
+#define VTX_RENDERER_GEOMETRY_GEOMETRIES_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
@@ -59,19 +59,16 @@ namespace VTX::Renderer
 			cylinders.registerSystem( p_handle, p_data );
 		}
 
-		void constructSES(
-			Context::ContextWrapper & p_context,
-			const Desc::Handle		  p_handle,
-			const Cache::System &	  p_data,
-			const uint32_t			  p_inputAtomOffset,
-			const float				  p_probeRadius,
-			const E_SES_COMPUTE_MODE  p_computeMode,
-			const RepresentationIndex p_representation
-		)
+		void constructSES( Context::ContextWrapper & p_context,
+						   const Desc::Handle		 p_handle,
+						   const Cache::System &	 p_data,
+						   const uint32_t			 p_inputAtomOffset,
+						   const float				 p_probeRadius,
+						   const E_SES_COMPUTE_MODE	 p_computeMode,
+						   const RepresentationIndex p_representation )
 		{
 			ses.construct(
-				p_context, p_handle, p_data, p_inputAtomOffset, p_probeRadius, p_computeMode, p_representation
-			);
+				p_context, p_handle, p_data, p_inputAtomOffset, p_probeRadius, p_computeMode, p_representation );
 		}
 
 		void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
@@ -105,46 +102,38 @@ namespace VTX::Renderer
 			auto sphereDraws = spheres.toDrawIndexedIndirectCommands();
 			_setModelIndices( sphereDraws, p_systems );
 			_logDrawRanges( { Desc::Key { Geometry::Sphere::INDIRECT_SPHERES } }, sphereDraws );
-			p_context.setBuffer(
-				{ Desc::Key { Geometry::Sphere::INDIRECT_SPHERES } }, _toBuffer( sphereDraws ).bytes()
-			);
+			p_context.setBuffer( { Desc::Key { Geometry::Sphere::INDIRECT_SPHERES } },
+								 _toBuffer( sphereDraws ).bytes() );
 
 			auto cylinderDraws = cylinders.toDrawIndexedIndirectCommands();
 			_setModelIndices( cylinderDraws, p_systems );
 			_logDrawRanges( { Desc::Key { Geometry::Cylinder::INDIRECT_CYLINDERS } }, cylinderDraws );
-			p_context.setBuffer(
-				{ Desc::Key { Geometry::Cylinder::INDIRECT_CYLINDERS } }, _toBuffer( cylinderDraws ).bytes()
-			);
+			p_context.setBuffer( { Desc::Key { Geometry::Cylinder::INDIRECT_CYLINDERS } },
+								 _toBuffer( cylinderDraws ).bytes() );
 
 			auto ribbonDraws = ribbons.toDrawIndexedIndirectCommands();
 			_setModelIndices( ribbonDraws, p_systems );
 			_logDrawRanges( { Desc::Key { Geometry::Ribbon::INDIRECT_RIBBONS } }, ribbonDraws );
-			p_context.setBuffer(
-				{ Desc::Key { Geometry::Ribbon::INDIRECT_RIBBONS } }, _toBuffer( ribbonDraws ).bytes()
-			);
+			p_context.setBuffer( { Desc::Key { Geometry::Ribbon::INDIRECT_RIBBONS } },
+								 _toBuffer( ribbonDraws ).bytes() );
 
 			auto triangleDraws = triangles.toDrawIndexedIndirectCommands();
 			_setModelIndices( triangleDraws, p_meshes );
 			_logDrawRanges( { Desc::Key { Geometry::Triangle::INDIRECT_TRIANGLES } }, triangleDraws );
-			p_context.setBuffer(
-				{ Desc::Key { Geometry::Triangle::INDIRECT_TRIANGLES } }, _toBuffer( triangleDraws ).bytes()
-			);
+			p_context.setBuffer( { Desc::Key { Geometry::Triangle::INDIRECT_TRIANGLES } },
+								 _toBuffer( triangleDraws ).bytes() );
 
 			const auto gridDraws = grid.toDrawIndirectCommands();
 			_logDrawRanges( { Desc::Key { Geometry::Grid::INDIRECT_GRID } }, gridDraws );
 			p_context.setBuffer( { Desc::Key { Geometry::Grid::INDIRECT_GRID } }, _toBuffer( gridDraws ).bytes() );
 			_uploadPatchDrawCommands(
-				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_CONVEX_PATCHES } }, ses.convexPatches
-			);
+				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_CONVEX_PATCHES } }, ses.convexPatches );
 			_uploadPatchDrawCommands(
-				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_CIRCLE_PATCHES } }, ses.circlePatches
-			);
+				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_CIRCLE_PATCHES } }, ses.circlePatches );
 			_uploadPatchDrawCommands(
-				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_SEGMENT_PATCHES } }, ses.segmentPatches
-			);
+				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_SEGMENT_PATCHES } }, ses.segmentPatches );
 			_uploadPatchDrawCommands(
-				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_CONCAVE_PATCHES } }, ses.concavePatches
-			);
+				p_context, p_systems, { Desc::Key { Geometry::SES::INDIRECT_CONCAVE_PATCHES } }, ses.concavePatches );
 		}
 
 	  private:
@@ -160,20 +149,17 @@ namespace VTX::Renderer
 		}
 
 		template<typename Systems>
-		void _uploadPatchDrawCommands(
-			Context::ContextWrapper &			 p_context,
-			Systems &							 p_systems,
-			const Desc::Key &					 p_indirectBuffer,
-			const Geometry::SES::PatchGeometry & p_geometry
-		)
+		void _uploadPatchDrawCommands( Context::ContextWrapper &			p_context,
+									   Systems &							p_systems,
+									   const Desc::Key &					p_indirectBuffer,
+									   const Geometry::SES::PatchGeometry & p_geometry )
 		{
 			if ( p_geometry.chunks.empty() )
 			{
 				const std::vector<Desc::DrawIndexedIndirectRecord> records;
 				_logDrawRanges( { p_indirectBuffer, static_cast<uint32_t>( 0 ) }, records );
-				p_context.setBuffer(
-					Desc::BufferRef { p_indirectBuffer, static_cast<uint32_t>( 0 ) }, _toBuffer( records ).bytes()
-				);
+				p_context.setBuffer( Desc::BufferRef { p_indirectBuffer, static_cast<uint32_t>( 0 ) },
+									 _toBuffer( records ).bytes() );
 				return;
 			}
 
@@ -215,10 +201,8 @@ namespace VTX::Renderer
 			// }
 		}
 
-		void _logDrawRanges(
-			const Desc::BufferRef &								 p_ref,
-			const std::vector<Desc::DrawIndexedIndirectRecord> & p_records
-		)
+		void _logDrawRanges( const Desc::BufferRef &							  p_ref,
+							 const std::vector<Desc::DrawIndexedIndirectRecord> & p_records )
 		{
 			// if ( p_ref.chunk )
 			// {

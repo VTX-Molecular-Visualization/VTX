@@ -9,12 +9,10 @@
 namespace VTX::App::Controller
 {
 
-	bool Freefly::update(
-		const float					p_deltaTime,
-		const Setting::Controller & p_settings,
-		Util::Math::Transform &		p_transform,
-		Vec3f &						p_target
-	)
+	bool Freefly::update( const float				  p_deltaTime,
+						  const Setting::Controller & p_settings,
+						  Util::Math::Transform &	  p_transform,
+						  Vec3f &					  p_target )
 	{
 		using namespace Util;
 		auto & input = INPUT();
@@ -27,8 +25,7 @@ namespace VTX::App::Controller
 		if ( rotation.x || rotation.y )
 		{
 			localRotation = Vec3f(
-				-rotationSpeed * rotation.y * ( p_settings.invertY ? -1.f : 1.f ), -rotationSpeed * rotation.x, 0.f
-			);
+				-rotationSpeed * rotation.y * ( p_settings.invertY ? -1.f : 1.f ), -rotationSpeed * rotation.x, 0.f );
 		}
 
 		const Vec2i rotationAlt	 = input.rotateAlt();

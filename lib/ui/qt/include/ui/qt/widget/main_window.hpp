@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_MAIN_WINDOW__
-#define __VTX_UI_QT_WIDGET_MAIN_WINDOW__
+#ifndef VTX_UI_QT_WIDGET_MAIN_WINDOW_HPP
+#define VTX_UI_QT_WIDGET_MAIN_WINDOW_HPP
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/widget/base_widget.hpp"

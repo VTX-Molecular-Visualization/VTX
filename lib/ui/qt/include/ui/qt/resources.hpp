@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_RESOURCES__
-#define __VTX_UI_QT_RESOURCES__
+#ifndef VTX_UI_QT_RESOURCES_HPP
+#define VTX_UI_QT_RESOURCES_HPP
 
 #include <QString>
 

@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_MATH_RANGE_LIST__
-#define __VTX_UTIL_MATH_RANGE_LIST__
+#ifndef VTX_UTIL_MATH_RANGE_LIST_HPP
+#define VTX_UTIL_MATH_RANGE_LIST_HPP
 
 #include "util/math/range.hpp"
 #include <algorithm>
@@ -183,8 +183,7 @@ namespace VTX::Util::Math
 		constexpr bool contains( const RangeType & p_r ) const
 		{
 			return std::ranges::any_of(
-				_ranges, [ &p_r ]( const auto & r ) { return r.first <= p_r.first && r.last >= p_r.last; }
-			);
+				_ranges, [ &p_r ]( const auto & r ) { return r.first <= p_r.first && r.last >= p_r.last; } );
 		}
 
 		/**

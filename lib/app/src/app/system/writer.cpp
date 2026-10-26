@@ -35,11 +35,9 @@ namespace VTX::App::System
 	{
 		for ( auto it_selectionEntt : REG().group<System::Selection, Core::Struct::Topology>() )
 		{
-			_ptr->systems.emplace_back(
-				IO::Writer::WriteArgs::System {
-					.topology	= &REG().get<Core::Struct::Topology>( it_selectionEntt ),
-					.atomFilter = SelectedAtomFilter( REG().get<System::Selection>( it_selectionEntt ) ) }
-			);
+			_ptr->systems.emplace_back( IO::Writer::WriteArgs::System {
+				.topology	= &REG().get<Core::Struct::Topology>( it_selectionEntt ),
+				.atomFilter = SelectedAtomFilter( REG().get<System::Selection>( it_selectionEntt ) ) } );
 			VTX::App::Helper::Trajectory::get( it_selectionEntt, _ptr->systems.back().trajectory );
 		}
 	}
@@ -49,8 +47,7 @@ namespace VTX::App::System
 	void SelectionWriter::operator()()
 	{
 		VTX::IO::Writer::writeFile(
-			VTX::IO::Writer::WriteArgs { .destination = _ptr->_dest, .topologies = std::move( _ptr->systems ) }
-		);
+			VTX::IO::Writer::WriteArgs { .destination = _ptr->_dest, .topologies = std::move( _ptr->systems ) } );
 	}
 
 	struct VisibleWriter::_impl
@@ -80,11 +77,9 @@ namespace VTX::App::System
 	{
 		for ( auto it_selectionEntt : REG().group<System::Visibility, Core::Struct::Topology>() )
 		{
-			_ptr->systems.emplace_back(
-				IO::Writer::WriteArgs::System {
-					.topology	= &REG().get<Core::Struct::Topology>( it_selectionEntt ),
-					.atomFilter = VisibleAtomFilter( REG().get<System::Visibility>( it_selectionEntt ) ) }
-			);
+			_ptr->systems.emplace_back( IO::Writer::WriteArgs::System {
+				.topology	= &REG().get<Core::Struct::Topology>( it_selectionEntt ),
+				.atomFilter = VisibleAtomFilter( REG().get<System::Visibility>( it_selectionEntt ) ) } );
 			VTX::App::Helper::Trajectory::get( it_selectionEntt, _ptr->systems.back().trajectory );
 		}
 	}
@@ -94,8 +89,7 @@ namespace VTX::App::System
 	void VisibleWriter::operator()()
 	{
 		VTX::IO::Writer::writeFile(
-			VTX::IO::Writer::WriteArgs { .destination = _ptr->_dest, .topologies = std::move( _ptr->systems ) }
-		);
+			VTX::IO::Writer::WriteArgs { .destination = _ptr->_dest, .topologies = std::move( _ptr->systems ) } );
 	}
 
 } // namespace VTX::App::System

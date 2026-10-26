@@ -102,9 +102,8 @@ namespace VTX::Util::Filesystem
 
 		if ( inputFile.is_open() )
 		{
-			std::string fileContent(
-				( std::istreambuf_iterator<char>( inputFile ) ), std::istreambuf_iterator<char>()
-			);
+			std::string fileContent( ( std::istreambuf_iterator<char>( inputFile ) ),
+									 std::istreambuf_iterator<char>() );
 
 			return fileContent;
 		}
@@ -136,9 +135,8 @@ namespace VTX::Util::Filesystem
 		while ( std::filesystem::exists( p_filePath ) )
 		{
 			p_filePath = parentPath
-						 / p_filePath.stem().string().append(
-							 "_" + std::to_string( counter ) + p_filePath.extension().string()
-						 );
+						 / p_filePath.stem().string().append( "_" + std::to_string( counter )
+															  + p_filePath.extension().string() );
 			counter++;
 		}
 	}

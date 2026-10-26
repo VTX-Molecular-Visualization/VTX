@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_UID_POOL__
-#define __VTX_UTIL_UID_POOL__
+#ifndef VTX_UTIL_UID_HPP
+#define VTX_UTIL_UID_HPP
 
 #include <mutex>
 #include <util/exceptions.hpp>

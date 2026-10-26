@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BENCH_INPUT_MANAGER__
-#define __VTX_RENDERER_BENCH_INPUT_MANAGER__
+#ifndef VTX_BENCH_INPUT_MANAGER_HPP
+#define VTX_BENCH_INPUT_MANAGER_HPP
 
 #include <SDL3/SDL.h>
 #include <optional>

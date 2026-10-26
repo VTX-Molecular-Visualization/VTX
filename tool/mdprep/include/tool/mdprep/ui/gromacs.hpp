@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_GROMACS__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_GROMACS__
+#ifndef VTX_TOOL_MDPREP_UI_GROMACS_HPP
+#define VTX_TOOL_MDPREP_UI_GROMACS_HPP
 
 namespace VTX::Tool::Mdprep::Gateway
 {
@@ -24,14 +24,14 @@ namespace VTX::Tool::Mdprep::ui
 		void get( Gateway::EngineJobManager & ) noexcept;
 
 	  private:
-		class _Impl;
+		class Impl;
 
 		struct Del
 		{
-			void operator()( _Impl * ) noexcept;
+			void operator()( Impl * ) noexcept;
 		};
 
-		std::unique_ptr<_Impl, Del> _impl = nullptr;
+		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
 
 	void get( const Gromacs &, Gateway::EngineSpecificCommonInformation & ) noexcept;

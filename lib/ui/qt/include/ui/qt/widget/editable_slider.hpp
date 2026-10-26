@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_EDITABLE_SLIDER__
-#define __VTX_UI_QT_WIDGET_EDITABLE_SLIDER__
+#ifndef VTX_UI_QT_WIDGET_EDITABLE_SLIDER_HPP
+#define VTX_UI_QT_WIDGET_EDITABLE_SLIDER_HPP
 
 #include "ui/qt/helper.hpp"
 #include <QDoubleSpinBox>
@@ -35,28 +35,24 @@ namespace VTX::UI::QT::Widget
 			layout->addWidget( _slider );
 			layout->addWidget( _spinbox );
 
-			connect(
-				_slider,
-				&QSlider::valueChanged,
-				this,
-				[ this ]( const int p_value )
-				{
-					const float value = static_cast<float>( p_value ) / 100.f;
-					_spinbox->setValue( value );
-				}
-			);
+			connect( _slider,
+					 &QSlider::valueChanged,
+					 this,
+					 [ this ]( const int p_value )
+					 {
+						 const float value = static_cast<float>( p_value ) / 100.f;
+						 _spinbox->setValue( value );
+					 } );
 
-			connect(
-				_spinbox,
-				&QDoubleSpinBox::valueChanged,
-				this,
-				[ this ]( const double p_value )
-				{
-					const QSignalBlocker blocker( _slider );
-					_slider->setValue( std::lround( p_value * 100.0f ) );
-					emit valueChanged( p_value );
-				}
-			);
+			connect( _spinbox,
+					 &QDoubleSpinBox::valueChanged,
+					 this,
+					 [ this ]( const double p_value )
+					 {
+						 const QSignalBlocker blocker( _slider );
+						 _slider->setValue( std::lround( p_value * 100.0f ) );
+						 emit valueChanged( p_value );
+					 } );
 		}
 
 		void setValue( const float p_value ) { _spinbox->setValue( p_value ); }

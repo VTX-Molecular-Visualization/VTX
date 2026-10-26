@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS__
-#define __VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS__
+#ifndef VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS_HPP
+#define VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS_HPP
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
@@ -24,8 +24,7 @@ namespace VTX::UI::QT::Widget::Tree
 		BaseTreePreset( QWidget * const p_parent ) :
 			W( p_parent ),
 			_onRenameConnection(
-				App::HUB().connect<App::Events::PresetRename<P>, &BaseTreePreset::_onPresetRename>( this )
-			)
+				App::HUB().connect<App::Events::PresetRename<P>, &BaseTreePreset::_onPresetRename>( this ) )
 		{
 			W::setExpandsOnDoubleClick( true );
 
@@ -34,21 +33,19 @@ namespace VTX::UI::QT::Widget::Tree
 			_onDestroyConnection   = reg.on_destroy<P>().template connect<&BaseTreePreset::_removePreset>( this );
 
 			// Connect double click to apply the preset.
-			W::connect(
-				this,
-				&QTreeWidget::itemDoubleClicked,
-				this,
-				[ this ]( QTreeWidgetItem * item, int column )
-				{
-					if ( item == nullptr || item->parent() == nullptr || column != 0 )
-					{
-						return;
-					}
+			W::connect( this,
+						&QTreeWidget::itemDoubleClicked,
+						this,
+						[ this ]( QTreeWidgetItem * item, int column )
+						{
+							if ( item == nullptr || item->parent() == nullptr || column != 0 )
+							{
+								return;
+							}
 
-					Entity entity = item->data( 0, Qt::UserRole ).value<Entity>();
-					App::ACTION().execute<App::Action::Preset::Apply<P>>( entity );
-				}
-			);
+							Entity entity = item->data( 0, Qt::UserRole ).value<Entity>();
+							App::ACTION().execute<App::Action::Preset::Apply<P>>( entity );
+						} );
 		}
 
 	  protected:
@@ -58,30 +55,26 @@ namespace VTX::UI::QT::Widget::Tree
 
 			W::topLevelItem( 0 )->setExpanded( SETTINGS().value( p_settingKey, true ).toBool() );
 
-			W::connect(
-				this,
-				&QTreeView::expanded,
-				this,
-				[ p_settingKey ]( const QModelIndex & p_index )
-				{
-					if ( not p_index.parent().isValid() )
-					{
-						SETTINGS().setValue( p_settingKey, true );
-					}
-				}
-			);
-			W::connect(
-				this,
-				&QTreeView::collapsed,
-				this,
-				[ p_settingKey ]( const QModelIndex & p_index )
-				{
-					if ( not p_index.parent().isValid() )
-					{
-						SETTINGS().setValue( p_settingKey, false );
-					}
-				}
-			);
+			W::connect( this,
+						&QTreeView::expanded,
+						this,
+						[ p_settingKey ]( const QModelIndex & p_index )
+						{
+							if ( not p_index.parent().isValid() )
+							{
+								SETTINGS().setValue( p_settingKey, true );
+							}
+						} );
+			W::connect( this,
+						&QTreeView::collapsed,
+						this,
+						[ p_settingKey ]( const QModelIndex & p_index )
+						{
+							if ( not p_index.parent().isValid() )
+							{
+								SETTINGS().setValue( p_settingKey, false );
+							}
+						} );
 		}
 
 		void _setAppliedPreset( const Entity p_preset )

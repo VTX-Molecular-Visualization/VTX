@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_MONITORING_STAT__
-#define __VTX_UTIL_MONITORING_STAT__
+#ifndef VTX_UTIL_MONITORING_STATS_HPP
+#define VTX_UTIL_MONITORING_STATS_HPP
 
 #include "frame_info.hpp"
 #include <list>

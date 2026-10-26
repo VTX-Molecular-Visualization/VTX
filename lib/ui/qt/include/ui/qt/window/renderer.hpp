@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WINDOW_RENDERER__
-#define __VTX_UI_QT_WINDOW_RENDERER__
+#ifndef VTX_UI_QT_WINDOW_RENDERER_HPP
+#define VTX_UI_QT_WINDOW_RENDERER_HPP
 
 #include "ui/qt/events.hpp"
 #include <QFocusEvent>

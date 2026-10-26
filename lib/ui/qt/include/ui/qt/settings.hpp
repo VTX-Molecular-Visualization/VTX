@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_SETTINGS__
-#define __VTX_UI_QT_SETTINGS__
+#ifndef VTX_UI_QT_SETTINGS_HPP
+#define VTX_UI_QT_SETTINGS_HPP
 
 #include <QSettings>
 

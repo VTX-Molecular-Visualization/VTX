@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_HISTORY_BROWSER__
-#define __VTX_UTIL_HISTORY_BROWSER__
+#ifndef VTX_UTIL_HISTORY_BROWSER_HPP
+#define VTX_UTIL_HISTORY_BROWSER_HPP
 
 #include <string>
 #include <vector>

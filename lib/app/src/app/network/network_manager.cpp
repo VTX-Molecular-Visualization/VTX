@@ -11,11 +11,9 @@ namespace VTX::App::Network
 	NetworkManager::NetworkManager()
 	{ _updateConnection = HUB().connect<Events::Update, &NetworkManager::_onUpdate>( this ); }
 
-	NetworkManager::DownloadId NetworkManager::downloadFile(
-		const std::string_view				   p_url,
-		const std::string_view				   p_filename,
-		const Util::Network::CallbackHttpGet & p_callback
-	)
+	NetworkManager::DownloadId NetworkManager::downloadFile( const std::string_view					p_url,
+															 const std::string_view					p_filename,
+															 const Util::Network::CallbackHttpGet & p_callback )
 	{
 		VTX_INFO( "Downloading from: {}", p_url );
 
@@ -24,9 +22,8 @@ namespace VTX::App::Network
 		const std::string filename = std::string( p_filename );
 
 		const Util::Thread::BaseThread & thread = THREAD().createThread(
-			[ this, id, url, filename, p_callback ](
-				Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread
-			) -> uint
+			[ this, id, url, filename, p_callback ]( Util::Thread::StopToken	p_stopToken,
+													 Util::Thread::BaseThread & p_thread ) -> uint
 			{
 				std::string data;
 				bool		success = true;
@@ -40,13 +37,11 @@ namespace VTX::App::Network
 						{
 							if ( p_total > 0 )
 							{
-								p_thread.setProgress(
-									static_cast<float>( p_downloaded ) / static_cast<float>( p_total )
-								);
+								p_thread.setProgress( static_cast<float>( p_downloaded )
+													  / static_cast<float>( p_total ) );
 							}
 							return not p_stopToken.stop_requested();
-						}
-					);
+						} );
 
 					if ( not p_stopToken.stop_requested() )
 					{
@@ -69,8 +64,7 @@ namespace VTX::App::Network
 				}
 
 				return success ? 1u : 0u;
-			}
-		);
+			} );
 
 		{
 			const std::scoped_lock lock( _mutex );

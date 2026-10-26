@@ -4,10 +4,8 @@
 
 namespace VTX::App::Extractor
 {
-	Trajectory::TRAJECTORY_BUFFER_MODE TrajectoryBufferSettings::selectMode(
-		const size_t p_atomCount,
-		const size_t p_frameCount
-	) const noexcept
+	Trajectory::TRAJECTORY_BUFFER_MODE TrajectoryBufferSettings::selectMode( const size_t p_atomCount,
+																			 const size_t p_frameCount ) const noexcept
 	{
 		if ( p_atomCount == 0 || p_frameCount == 0 )
 		{
@@ -19,10 +17,8 @@ namespace VTX::App::Extractor
 													  : Trajectory::TRAJECTORY_BUFFER_MODE::FULL;
 	}
 
-	size_t TrajectoryBufferSettings::getStorageFrameCount(
-		const Trajectory::TRAJECTORY_BUFFER_MODE p_mode,
-		const size_t							 p_frameCount
-	) const noexcept
+	size_t TrajectoryBufferSettings::getStorageFrameCount( const Trajectory::TRAJECTORY_BUFFER_MODE p_mode,
+														   const size_t p_frameCount ) const noexcept
 	{
 		return p_mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR
 				   ? std::min( p_frameCount, std::max( static_cast<size_t>( 1 ), circularBufferFrameCount ) )

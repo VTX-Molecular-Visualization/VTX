@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_METADATA__
-#define __VTX_IO_METADATA__
+#ifndef VTX_IO_METADATA_HPP
+#define VTX_IO_METADATA_HPP
 
 #include "io/constants.hpp"
 #include <string>

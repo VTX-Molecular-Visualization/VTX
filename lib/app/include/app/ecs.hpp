@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ECS__
-#define __VTX_APP_ECS__
+#ifndef VTX_APP_ECS_HPP
+#define VTX_APP_ECS_HPP
 
 #include <util/ecs.hpp>
 

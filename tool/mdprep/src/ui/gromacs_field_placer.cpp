@@ -52,8 +52,7 @@ namespace VTX::Tool::Mdprep::ui
 		_uiObjects._labelConc = VTX::UI::QT::Util::LabelWithHelper(
 			"Target Salt concentration (mol/L)",
 			"If the value is not null, ions will be added to the system until the targeted concentration is reached.",
-			VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-		);
+			VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 		_toDeleteObjects[ 1 ] = _uiObjects._labelConc;
 		_uiObjects._fieldConc->hide();
 		_uiObjects._labelConc->hide();
@@ -76,8 +75,7 @@ namespace VTX::Tool::Mdprep::ui
 		if ( _layouts->advancedParametersSystemPrepartion )
 		{
 			setWidgetRowVisibility(
-				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, true
-			);
+				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, true );
 		}
 	}
 
@@ -96,8 +94,7 @@ namespace VTX::Tool::Mdprep::ui
 		if ( _layouts->advancedParametersSystemPrepartion )
 		{
 			setWidgetRowVisibility(
-				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, false
-			);
+				_layouts->advancedParametersSystemPrepartion, _uiObjects._labelConc, _uiObjects._fieldConc, false );
 		}
 	}
 

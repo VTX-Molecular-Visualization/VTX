@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_SHARED__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_SHARED__
+#ifndef VTX_TOOL_MDPREP_UI_SHARED_HPP
+#define VTX_TOOL_MDPREP_UI_SHARED_HPP
 
 #include <tool/mdprep/gateway/shared.hpp>
 #include <ui/qt/util.hpp>

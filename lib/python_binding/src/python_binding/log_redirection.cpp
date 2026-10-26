@@ -4,6 +4,7 @@
 namespace VTX::PythonBinding
 {
 	void LogRedirection::write( std::string str ) { VTX_INFO( "{}", str ); }
+
 	void LogRedirection::flush()
 	{
 		// LOGGER::flush(); // flushing seems to cause crash for some reason

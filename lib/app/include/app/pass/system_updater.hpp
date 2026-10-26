@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PASS_SYSTEM_UPDATER__
-#define __VTX_APP_PASS_SYSTEM_UPDATER__
+#ifndef VTX_APP_PASS_SYSTEM_UPDATER_HPP
+#define VTX_APP_PASS_SYSTEM_UPDATER_HPP
 
 #include "app/ecs.hpp"
 #include "app/events.hpp"

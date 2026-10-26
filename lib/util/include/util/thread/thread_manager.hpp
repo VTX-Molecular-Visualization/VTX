@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_THREAD_MANAGER__
-#define __VTX_UTIL_THREAD_MANAGER__
+#ifndef VTX_UTIL_THREAD_THREAD_MANAGER_HPP
+#define VTX_UTIL_THREAD_THREAD_MANAGER_HPP
 
 #include "util/thread/base_thread.hpp"
 #include <concepts>
@@ -43,10 +43,8 @@ namespace VTX::Util::Thread
 		 * @brief Spawn a thread and executes the content of p_asyncOp in the new thread context.
 		 * Once the p_asyncOp has returned, p_callback is executed.
 		 */
-		BaseThread & createThread(
-			const BaseThread::AsyncOp &		p_asyncOp,
-			const BaseThread::EndCallback & p_callback = {}
-		);
+		BaseThread & createThread( const BaseThread::AsyncOp &	   p_asyncOp,
+								   const BaseThread::EndCallback & p_callback = {} );
 
 		/**
 		 * @brief Creates a thread of type T.
@@ -89,9 +87,8 @@ namespace VTX::Util::Thread
 			{
 				std::packaged_task<Result()> resultTask( std::move( function ) );
 				future = resultTask.get_future();
-				_SynchronizedCall call(
-					caller, std::packaged_task<void()>( [ task = std::move( resultTask ) ]() mutable { task(); } )
-				);
+				SynchronizedCall call(
+					caller, std::packaged_task<void()>( [ task = std::move( resultTask ) ]() mutable { task(); } ) );
 				const std::scoped_lock lock( _synchronizedCallsMutex );
 				if ( not _shuttingDown && not _cancelledCallers.contains( caller ) )
 				{
@@ -110,7 +107,7 @@ namespace VTX::Util::Thread
 			requires std::invocable<std::decay_t<Func> &>
 		void dispatch( Func && p_function )
 		{
-			_DispatchedCall		   call( std::forward<Func>( p_function ) );
+			DispatchedCall		   call( std::forward<Func>( p_function ) );
 			const std::scoped_lock lock( _synchronizedCallsMutex );
 			if ( not _shuttingDown )
 			{
@@ -138,9 +135,9 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Struct to store a synchronized call.
 		 */
-		struct _SynchronizedCall
+		struct SynchronizedCall
 		{
-			_SynchronizedCall( const ID p_caller, std::packaged_task<void()> p_task ) :
+			SynchronizedCall( const ID p_caller, std::packaged_task<void()> p_task ) :
 				caller( p_caller ), task( std::move( p_task ) )
 			{
 			}
@@ -152,11 +149,11 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Struct to store a dispatched call.
 		 */
-		struct _DispatchedCall
+		struct DispatchedCall
 		{
 			template<typename Func>
-				requires( not std::same_as<std::remove_cvref_t<Func>, _DispatchedCall> )
-			_DispatchedCall( Func && p_function ) :
+				requires( not std::same_as<std::remove_cvref_t<Func>, DispatchedCall> )
+			DispatchedCall( Func && p_function ) :
 				task( std::forward<Func>( p_function ) ), result( task.get_future() )
 			{
 			}
@@ -189,12 +186,12 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief List of synchronized calls to be executed.
 		 */
-		std::list<_SynchronizedCall> _synchronizedCalls;
+		std::list<SynchronizedCall> _synchronizedCalls;
 
 		/**
 		 * @brief List of dispatched calls to be executed.
 		 */
-		std::list<_DispatchedCall> _dispatchedCalls;
+		std::list<DispatchedCall> _dispatchedCalls;
 
 		/**
 		 * @brief Set of thread ids that have been cancelled.

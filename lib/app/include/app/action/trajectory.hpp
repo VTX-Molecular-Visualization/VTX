@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_TRAJECTORY__
-#define __VTX_APP_ACTION_TRAJECTORY__
+#ifndef VTX_APP_ACTION_TRAJECTORY_HPP
+#define VTX_APP_ACTION_TRAJECTORY_HPP
 
 #include "app/ecs.hpp"
 #include "app/trajectory/player.hpp"

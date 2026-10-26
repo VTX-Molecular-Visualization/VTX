@@ -36,12 +36,10 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		std::string format( const double & p_ ) { return fmt::format( "{:.1f}", p_ ); }
 	} // namespace
 
-	void prepareJob(
-		const CumulativeOuputFiles & p_previousJobsOutputs,
-		const FilePath &			 p_root,
-		const std::string_view &	 p_folderName,
-		EditconfInstructions &		 p_instructions
-	)
+	void prepareJob( const CumulativeOuputFiles & p_previousJobsOutputs,
+					 const FilePath &			  p_root,
+					 const std::string_view &	  p_folderName,
+					 EditconfInstructions &		  p_instructions )
 	{
 		if ( fs::exists( p_root ) && not fs::is_directory( p_root ) )
 		{
@@ -52,10 +50,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		if ( p_instructions.purpose == E_EDITCONF_PURPOSE::setup_box )
 		{
-			auto lastGroFile = std::ranges::find_if(
-				p_previousJobsOutputs.fileStringPtrs,
-				[]( const std::string * const p_ ) { return p_->ends_with( ".gro" ); }
-			);
+			auto lastGroFile
+				= std::ranges::find_if( p_previousJobsOutputs.fileStringPtrs,
+										[]( const std::string * const p_ ) { return p_->ends_with( ".gro" ); } );
 			if ( lastGroFile != std::end( p_previousJobsOutputs.fileStringPtrs ) )
 			{
 				p_instructions.in = *lastGroFile.operator*();

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET__
-#define __VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET__
+#ifndef VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET_HPP
+#define VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET_HPP
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/style/style_manager.hpp"
@@ -41,9 +41,8 @@ namespace VTX::UI::QT::DockWidget
 		{
 			QDockWidget::setWindowTitle( p_title );
 			QDockWidget::setMinimumSize( Style::MINIMUM_DOCK_PANEL_WIDTH, Style::MINIMUM_DOCK_PANEL_HEIGHT );
-			QDockWidget::setFeatures(
-				QDockWidget::features() | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable
-			);
+			QDockWidget::setFeatures( QDockWidget::features() | QDockWidget::DockWidgetMovable
+									  | QDockWidget::DockWidgetFloatable );
 
 			// Scroll area.
 			if constexpr ( VSA or HSA )

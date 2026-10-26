@@ -1,3 +1,6 @@
+#ifndef VTX_PYTHON_BINDING_BINDING_HELPER_HPP
+#define VTX_PYTHON_BINDING_BINDING_HELPER_HPP
+
 #include <pybind11/native_enum.h>
 #include <pybind11/pybind11.h>
 #include <string>
@@ -25,3 +28,5 @@ namespace VTX::PythonBinding
 		}
 	};
 } // namespace VTX::PythonBinding
+
+#endif

@@ -62,10 +62,8 @@ namespace VTX::App::Extractor
 
 	Mesh::Mesh( FilePath p_path ) : _sourcePath( std::move( p_path ) ) {}
 
-	uint Mesh::operator()(
-		const Util::Thread::StopToken &				p_stopToken,
-		const Util::Thread::OptionalThreadReference p_thread
-	)
+	uint Mesh::operator()( const Util::Thread::StopToken &			   p_stopToken,
+						   const Util::Thread::OptionalThreadReference p_thread )
 	{
 		if ( p_thread )
 		{

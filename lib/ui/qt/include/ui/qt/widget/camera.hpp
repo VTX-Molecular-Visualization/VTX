@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_CAMERA__
-#define __VTX_UI_QT_WIDGET_CAMERA__
+#ifndef VTX_UI_QT_WIDGET_CAMERA_HPP
+#define VTX_UI_QT_WIDGET_CAMERA_HPP
 
 #include "ui/qt/widget/editable_slider.hpp"
 #include "ui/qt/widget/transform.hpp"

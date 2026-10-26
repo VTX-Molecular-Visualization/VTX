@@ -49,8 +49,7 @@ namespace VTX::App::PythonBinding
 
 		VTX::PythonBinding::Helper::declareEnum<Renderer::E_COLOR_SCHEME>( module, "COLOR_SCHEME" );
 		VTX::PythonBinding::Helper::declareEnum<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE>(
-			module, "SECONDARY_STRUCTURE_COLOR_SCHEME"
-		);
+			module, "SECONDARY_STRUCTURE_COLOR_SCHEME" );
 
 		p_vtxModule.def(
 			"setColorScheme",
@@ -63,8 +62,7 @@ namespace VTX::App::PythonBinding
 				_validateSystem( p_ent );
 				_validateColorIndex(
 					p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM || p_scheme == Renderer::E_COLOR_SCHEME::CARBON_CUSTOM,
-					p_colorIndex
-				);
+					p_colorIndex );
 				executeAction<App::Action::Color::AddItem>( p_ent, p_item, p_scheme, p_ranges, p_colorIndex );
 			},
 			"Set the color scheme of system items.",
@@ -72,22 +70,19 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "scheme" ),
 			VTX::PythonBinding::Wrapper::VArg<SystemItem>( "item", SystemItem::SYSTEM ),
 			VTX::PythonBinding::Wrapper::VArg<RangeList>( "ranges", RangeList() ),
-			VTX::PythonBinding::Wrapper::VArg<std::optional<ColorIndex>>( "colorIndex", std::optional<ColorIndex>() )
-		);
+			VTX::PythonBinding::Wrapper::VArg<std::optional<ColorIndex>>( "colorIndex", std::optional<ColorIndex>() ) );
 		p_vtxModule.def(
 			"setColorSchemeSelected",
 			[]( const Renderer::E_COLOR_SCHEME p_scheme, const std::optional<ColorIndex> p_colorIndex )
 			{
 				_validateColorIndex(
 					p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM || p_scheme == Renderer::E_COLOR_SCHEME::CARBON_CUSTOM,
-					p_colorIndex
-				);
+					p_colorIndex );
 				executeAction<App::Action::Color::AddSelected>( p_scheme, p_colorIndex );
 			},
 			"Set the color scheme of the current selection.",
 			VTX::PythonBinding::Wrapper::Arg( "scheme" ),
-			VTX::PythonBinding::Wrapper::VArg<std::optional<ColorIndex>>( "colorIndex", std::optional<ColorIndex>() )
-		);
+			VTX::PythonBinding::Wrapper::VArg<std::optional<ColorIndex>>( "colorIndex", std::optional<ColorIndex>() ) );
 		p_vtxModule.def(
 			"setSecondaryStructureColorScheme",
 			[]( const Entity									   p_ent,
@@ -99,15 +94,13 @@ namespace VTX::App::PythonBinding
 				_validateSystem( p_ent );
 				_validateColorIndex( p_scheme == Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::CUSTOM, p_colorIndex );
 				executeAction<App::Action::Color::AddSecondaryStructureItem>(
-					p_ent, p_item, p_scheme, p_ranges, p_colorIndex
-				);
+					p_ent, p_item, p_scheme, p_ranges, p_colorIndex );
 			},
 			"Set the secondary structure color scheme of system items.",
 			VTX::PythonBinding::Wrapper::Arg( "systemId" ),
 			VTX::PythonBinding::Wrapper::Arg( "scheme" ),
 			VTX::PythonBinding::Wrapper::VArg<SystemItem>( "item", SystemItem::SYSTEM ),
 			VTX::PythonBinding::Wrapper::VArg<RangeList>( "ranges", RangeList() ),
-			VTX::PythonBinding::Wrapper::VArg<std::optional<ColorIndex>>( "colorIndex", std::optional<ColorIndex>() )
-		);
+			VTX::PythonBinding::Wrapper::VArg<std::optional<ColorIndex>>( "colorIndex", std::optional<ColorIndex>() ) );
 	}
 } // namespace VTX::App::PythonBinding

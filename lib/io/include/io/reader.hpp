@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_READER__
-#define __VTX_IO_READER__
+#ifndef VTX_IO_READER_HPP
+#define VTX_IO_READER_HPP
 
 #include "io/constants.hpp"
 #include "io/metadata.hpp"
@@ -41,13 +41,11 @@ namespace VTX::IO
 		 * @brief Read topology and metadata.
 		 */
 		void get( const VTX::Core::ChemDB::Category::Dictionary &, VTX::Core::Struct::Topology &, Metadata & );
-		void get(
-			const VTX::Core::ChemDB::Category::Dictionary &,
-			VTX::Core::Struct::Topology &,
-			Metadata &,
-			VTX::Util::Math::AABB &,
-			VTX::Util::Math::Grid<Index> &
-		);
+		void get( const VTX::Core::ChemDB::Category::Dictionary &,
+				  VTX::Core::Struct::Topology &,
+				  Metadata &,
+				  VTX::Util::Math::AABB &,
+				  VTX::Util::Math::Grid<Index> & );
 
 		/**
 		 * @brief Read position-related data.
@@ -65,18 +63,18 @@ namespace VTX::IO
 		void set( const StopToken & ) noexcept;
 
 	  private:
-		struct _Impl;
+		struct Impl;
 
 		struct Del
 		{
-			void operator()( _Impl * ) noexcept;
+			void operator()( Impl * ) noexcept;
 		};
 
-		std::unique_ptr<_Impl, Del> _impl = nullptr;
+		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
 
 	bool isTrajectoryFileFormat( const FilePath & p_path );
 
 } // namespace VTX::IO
 
-#endif // !__VTX_IO_READER__
+#endif // !VTX_IO_READER_HPP

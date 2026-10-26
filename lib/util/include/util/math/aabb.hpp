@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_MATH_AABB__
-#define __VTX_UTIL_MATH_AABB__
+#ifndef VTX_UTIL_MATH_AABB_HPP
+#define VTX_UTIL_MATH_AABB_HPP
 
 #include "util/constants.hpp"
 #include "util/math.hpp"

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_FIXTURE__
-#define __VTX_APP_FIXTURE__
+#ifndef VTX_APP_FIXTURE_HPP
+#define VTX_APP_FIXTURE_HPP
 
 #include "action/io.hpp"
 #include "pass/pass_manager.hpp"

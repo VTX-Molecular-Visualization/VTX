@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_ACTION_MANAGER__
-#define __VTX_APP_ACTION_ACTION_MANAGER__
+#ifndef VTX_APP_ACTION_ACTION_MANAGER_HPP
+#define VTX_APP_ACTION_ACTION_MANAGER_HPP
 
 #include "app/events.hpp"
 #include "app/services.hpp"
@@ -84,15 +84,13 @@ namespace VTX::App::Action
 			else
 			{
 				THREAD().createThread(
-					[... args = std::forward<Args>( p_args ) ](
-						Util::Thread::StopToken p_token, Util::Thread::BaseThread & p_thr
-					) mutable
+					[... args = std::forward<Args>( p_args ) ]( Util::Thread::StopToken	   p_token,
+																Util::Thread::BaseThread & p_thr ) mutable
 					{
 						A action( Util::Thread::ThreadData { std::move( p_token ), p_thr } );
 						action.execute( std::move( args )... );
 						return 0;
-					}
-				);
+					} );
 			}
 		}
 
@@ -108,8 +106,7 @@ namespace VTX::App::Action
 			{
 				auto duration = Util::CHRONO_CPU( [ & ]() { p_action.execute( std::forward<Args>( p_args )... ); } );
 				VTX_TRACE(
-					"ActionSystem::execute( {} ) - done ({})", actionName, Util::String::durationToStr( duration )
-				);
+					"ActionSystem::execute( {} ) - done ({})", actionName, Util::String::durationToStr( duration ) );
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -119,14 +116,14 @@ namespace VTX::App::Action
 		}
 
 	  private:
-		struct _Data;
+		struct Data;
 
 		struct Del
 		{
-			void operator()( _Data * ) noexcept;
+			void operator()( Data * ) noexcept;
 		};
 
-		std::unique_ptr<_Data, Del> _attributesPtr;
+		std::unique_ptr<Data, Del> _attributesPtr;
 		float						_skipTime = 0.f;
 
 		bool _noThread() const noexcept;
@@ -169,7 +166,7 @@ namespace VTX::App::Action
 			virtual void wait()	   = 0;
 		};
 
-		struct _State
+		struct State
 		{
 			std::mutex				mutex;
 			std::condition_variable conditionVariable;
@@ -187,12 +184,12 @@ namespace VTX::App::Action
 			SomeAction _obj;
 
 			std::tuple<std::remove_cvref_t<Args>...> _args;
-			std::shared_ptr<_State>					 _state;
+			std::shared_ptr<State>					 _state;
 
 		  public:
 			_wrapper() = delete;
 
-			_wrapper( std::shared_ptr<_State> p_state, SomeAction && p_action, Args &&... args ) :
+			_wrapper( std::shared_ptr<State> p_state, SomeAction && p_action, Args &&... args ) :
 				_obj( std::forward<SomeAction>( p_action ) ), _args( std::forward<Args>( args )... ),
 				_state( std::move( p_state ) )
 			{
@@ -223,18 +220,16 @@ namespace VTX::App::Action
 			}
 		};
 
-		std::shared_ptr<_State>		_state = std::make_shared<_State>();
+		std::shared_ptr<State>		_state = std::make_shared<State>();
 		std::shared_ptr<_interface> _ptr;
 
 	  public:
 		template<typename SomeAction, typename... Args>
 			requires( not std::same_as<std::remove_cvref_t<SomeAction>, QueuedAction> )
 		QueuedAction( SomeAction && p_action, Args &&... args ) :
-			_ptr( new _wrapper<SomeAction, Args...>(
-				_state,
-				std::forward<SomeAction>( p_action ),
-				std::forward<Args>( args )...
-			) )
+			_ptr( new _wrapper<SomeAction, Args...>( _state,
+													 std::forward<SomeAction>( p_action ),
+													 std::forward<Args>( args )... ) )
 		{
 		}
 
@@ -264,7 +259,7 @@ namespace VTX::App::Action
 			{
 				bool executed = false;
 				{
-					_State *					 state = _statePtr.get();
+					State *					 state = _statePtr.get();
 					std::unique_lock<std::mutex> lock( state->mutex );
 					state->conditionVariable.wait( lock, [ state ]() { return state->executed || state->cancelled; } );
 					executed = state->executed;
@@ -276,14 +271,14 @@ namespace VTX::App::Action
 			}
 
 		  private:
-			Waiter( std::shared_ptr<_interface> ptr, std::shared_ptr<_State> p_state ) :
+			Waiter( std::shared_ptr<_interface> ptr, std::shared_ptr<State> p_state ) :
 				_ptr( std::move( ptr ) ), _statePtr( std::move( p_state ) )
 			{
 			}
 
 			friend QueuedAction;
 			std::shared_ptr<_interface> _ptr;
-			std::shared_ptr<_State>		_statePtr;
+			std::shared_ptr<State>		_statePtr;
 		};
 	};
 

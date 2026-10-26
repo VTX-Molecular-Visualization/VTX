@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP__
-#define __VTX_TOOL_TOOLS_MDPREP__
+#ifndef VTX_TOOL_MDPREP_MDPREP_HPP
+#define VTX_TOOL_MDPREP_MDPREP_HPP
 
 #include <app/tool/base_tool.hpp>
 

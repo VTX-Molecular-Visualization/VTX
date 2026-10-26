@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_DATALOCKER__
-#define __VTX_UTIL_DATALOCKER__
+#ifndef VTX_UTIL_DATALOCKER_HPP
+#define VTX_UTIL_DATALOCKER_HPP
 
 #include "concepts.hpp"
 #include <mutex>
@@ -21,7 +21,8 @@ namespace VTX::Util
 		DataType _data;
 		mutable std::mutex
 			_mutex; // This member is mutable so the lock can be tested on a const DataLocker, which make sense as we
-					// expect a const object to prevent Data modification but to be lockable anyway
+
+		// expect a const object to prevent Data modification but to be lockable anyway
 
 		static DataType lock_and_copy( const DataType & p_data, std::mutex & p_mutex )
 		{

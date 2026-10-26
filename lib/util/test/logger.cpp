@@ -27,8 +27,7 @@ TEST_CASE( "Util::Logger", "[unit]" )
 				state->received[ p_log.message ] = p_log.hint;
 			}
 			state->cv.notify_one();
-		}
-	);
+		} );
 
 	VTX::VTX_INFO( "info without args" );
 	VTX::VTX_INFO( "info with args: {} {}", "test", 42 );
@@ -39,16 +38,15 @@ TEST_CASE( "Util::Logger", "[unit]" )
 
 	{
 		std::unique_lock<std::mutex> lock( state->mutex );
-		REQUIRE( state->cv.wait_for(
-			lock,
-			std::chrono::seconds( 2 ),
-			[ & ]()
-			{
-				return state->received.contains( "info without args" )
-					   && state->received.contains( "info with args: test 42" )
-					   && state->received.contains( "python in" ) && state->received.contains( "python out" );
-			}
-		) );
+		REQUIRE( state->cv.wait_for( lock,
+									 std::chrono::seconds( 2 ),
+									 [ & ]()
+									 {
+										 return state->received.contains( "info without args" )
+												&& state->received.contains( "info with args: test 42" )
+												&& state->received.contains( "python in" )
+												&& state->received.contains( "python out" );
+									 } ) );
 		CHECK( state->received.at( "info without args" ) == VTX::Util::LOG_HINT::STD );
 		CHECK( state->received.at( "info with args: test 42" ) == VTX::Util::LOG_HINT::STD );
 		CHECK( state->received.at( "python in" ) == VTX::Util::LOG_HINT::PY_IN );

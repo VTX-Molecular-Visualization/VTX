@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_EXTRACTOR_TRAJECTORY_BUFFER__
-#define __VTX_APP_EXTRACTOR_TRAJECTORY_BUFFER__
+#ifndef VTX_APP_EXTRACTOR_TRAJECTORY_BUFFER_HPP
+#define VTX_APP_EXTRACTOR_TRAJECTORY_BUFFER_HPP
 
 #include "app/trajectory/types.hpp"
 #include <cstddef>

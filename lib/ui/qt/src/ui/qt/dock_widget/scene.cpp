@@ -194,12 +194,10 @@ namespace VTX::UI::QT::DockWidget
 			_mapThreadWidgets.emplace( p_event.id, Helper::makeQObject<Widget::Thread>( this ) );
 			_layout->insertWidget( _layout->indexOf( _filler ), _mapThreadWidgets[ p_event.id ] );
 
-			connect(
-				_mapThreadWidgets[ p_event.id ],
-				&Widget::Thread::cancelClicked,
-				this,
-				[ p_event ]() { App::ACTION().execute<App::Action::Application::StopThread>( p_event.id ); }
-			);
+			connect( _mapThreadWidgets[ p_event.id ],
+					 &Widget::Thread::cancelClicked,
+					 this,
+					 [ p_event ]() { App::ACTION().execute<App::Action::Application::StopThread>( p_event.id ); } );
 		}
 
 		_mapThreadWidgets[ p_event.id ]->set( QString::fromStdString( p_event.text ), p_event.progress );

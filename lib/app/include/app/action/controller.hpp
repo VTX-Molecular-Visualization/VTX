@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_CONTROLLER__
-#define __VTX_APP_ACTION_CONTROLLER__
+#ifndef VTX_APP_ACTION_CONTROLLER_HPP
+#define VTX_APP_ACTION_CONTROLLER_HPP
 
 #include "app/services.hpp"
 #include "app/setting/controller.hpp"

@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS__
-#define __VTX_TOOL_TOOLS_MDPREP_GROMACS__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMACS_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMACS_HPP
 
 #include <array>
 #include <cstdint>
@@ -80,14 +80,14 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		bool isSystemOk() const noexcept;
 
 	  private:
-		class _Impl;
+		class Impl;
 
 		struct Del
 		{
-			void operator()( const _Impl * p ) const;
+			void operator()( const Impl * p ) const;
 		};
 
-		std::unique_ptr<_Impl, Del> _pimpl = nullptr;
+		std::unique_ptr<Impl, Del> _pimpl = nullptr;
 	};
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs

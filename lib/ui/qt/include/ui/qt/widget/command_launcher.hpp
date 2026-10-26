@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_COMMAND_LAUNCHER__
-#define __VTX_UI_QT_WIDGET_COMMAND_LAUNCHER__
+#ifndef VTX_UI_QT_WIDGET_COMMAND_LAUNCHER_HPP
+#define VTX_UI_QT_WIDGET_COMMAND_LAUNCHER_HPP
 
 #include "ui/qt/widget/base_widget.hpp"
 #include <QCompleter>

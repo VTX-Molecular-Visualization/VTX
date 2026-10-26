@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_MATH_BITSET__
-#define __VTX_UTIL_MATH_BITSET__
+#ifndef VTX_UTIL_MATH_BITSET_HPP
+#define VTX_UTIL_MATH_BITSET_HPP
 
 #include "util/math/range_list.hpp"
 #include <algorithm>
@@ -220,9 +220,9 @@ namespace VTX::Util::Math
 		template<typename T>
 		[[nodiscard]] bool test( const RangeList<T> & p_ranges ) const noexcept
 		{
-			return std::ranges::all_of(
-				p_ranges.rangeBegin(), p_ranges.rangeEnd(), [ this ]( const Range<T> & range ) { return test( range ); }
-			);
+			return std::ranges::all_of( p_ranges.rangeBegin(),
+										p_ranges.rangeEnd(),
+										[ this ]( const Range<T> & range ) { return test( range ); } );
 		}
 
 		/**
@@ -283,11 +283,9 @@ namespace VTX::Util::Math
 		template<typename T>
 		[[nodiscard]] bool any( const RangeList<T> & p_ranges ) const noexcept
 		{
-			return std::ranges::any_of(
-				p_ranges.rangeBegin(),
-				p_ranges.rangeEnd(),
-				[ this ]( const Range<T> & p_range ) { return any( p_range ); }
-			);
+			return std::ranges::any_of( p_ranges.rangeBegin(),
+										p_ranges.rangeEnd(),
+										[ this ]( const Range<T> & p_range ) { return any( p_range ); } );
 		}
 
 		/**
@@ -764,8 +762,7 @@ namespace VTX::Util::Math
 					ranges.addRange( Range<T>( first, last ) );
 					first = index;
 					last  = index + T( 1 );
-				}
-			);
+				} );
 
 			if ( hasRange )
 			{

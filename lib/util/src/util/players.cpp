@@ -182,13 +182,11 @@ namespace VTX::Util::Players
 
 	namespace
 	{
-		uint pingpongNstepfurther(
-			const bool & p_forward,
-			const uint & p_lastIndex,
-			const uint & p_currentStep,
-			const uint & p_N,
-			int64_t &	 p_outOfBoundNewStep
-		)
+		uint pingpongNstepfurther( const bool & p_forward,
+								   const uint & p_lastIndex,
+								   const uint & p_currentStep,
+								   const uint & p_N,
+								   int64_t &	p_outOfBoundNewStep )
 		{
 			/*
 			The idea is that for a pingpong of 0..M, adding N is equivalent to adding N + 2M.
@@ -199,16 +197,12 @@ namespace VTX::Util::Players
 			*/
 			const int64_t valueToAdd
 				= ( p_forward * 2 - 1 )
-				  * static_cast<int64_t>(
-					  static_cast<uint64_t>( p_N ) % ( static_cast<uint64_t>( p_lastIndex ) << 1 /*Multiply by 2*/ )
-				  );
+				  * static_cast<int64_t>( static_cast<uint64_t>( p_N )
+										  % ( static_cast<uint64_t>( p_lastIndex ) << 1 /*Multiply by 2*/ ) );
 			p_outOfBoundNewStep = p_currentStep + valueToAdd;
-			return static_cast<uint>( std::abs(
-				static_cast<int64_t>( p_lastIndex ) * p_forward
-				- std::abs(
-					valueToAdd + static_cast<int64_t>( p_currentStep ) - static_cast<int64_t>( p_lastIndex ) * p_forward
-				)
-			) );
+			return static_cast<uint>( std::abs( static_cast<int64_t>( p_lastIndex ) * p_forward
+												- std::abs( valueToAdd + static_cast<int64_t>( p_currentStep )
+															- static_cast<int64_t>( p_lastIndex ) * p_forward ) ) );
 		}
 	} // namespace
 

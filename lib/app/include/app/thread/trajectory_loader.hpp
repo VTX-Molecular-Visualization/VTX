@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_THREAD_TRAJECTORY_LOADER__
-#define __VTX_APP_THREAD_TRAJECTORY_LOADER__
+#ifndef VTX_APP_THREAD_TRAJECTORY_LOADER_HPP
+#define VTX_APP_THREAD_TRAJECTORY_LOADER_HPP
 
 #include "app/trajectory/types.hpp"
 #include <condition_variable>
@@ -31,11 +31,9 @@ namespace VTX::App::Thread
 		/**
 		 * @brief Update frame request.
 		 */
-		void requestFrameWindow(
-			Trajectory::FrameRange,
-			Trajectory::TRAJECTORY_READ_DIRECTION,
-			Trajectory::FrameRange
-		);
+		void requestFrameWindow( Trajectory::FrameRange,
+								 Trajectory::TRAJECTORY_READ_DIRECTION,
+								 Trajectory::FrameRange );
 
 		/**
 		 * @brief Cancel request.

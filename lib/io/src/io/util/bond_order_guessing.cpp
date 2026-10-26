@@ -138,12 +138,10 @@ namespace VTX::IO::Util
 		}
 
 		// Estimate ring planarity from consecutive cross-product alignment.
-		float _computeAverageRingDotCross(
-			const Frame &			   p_frame,
-			const std::vector<Index> & p_atoms,
-			const size_t			   p_atomCount,
-			Vec3f &					   p_dir
-		)
+		float _computeAverageRingDotCross( const Frame &			  p_frame,
+										   const std::vector<Index> & p_atoms,
+										   const size_t				  p_atomCount,
+										   Vec3f &					  p_dir )
 		{
 			std::vector<Vec3f> positions;
 			positions.resize( p_atomCount + 2 );
@@ -186,15 +184,13 @@ namespace VTX::IO::Util
 		}
 
 		// Check that ring bonds stay close to the candidate aromatic plane.
-		bool _verifyPlanarBonds(
-			const Topology &		   p_topology,
-			const Frame &			   p_frame,
-			const std::vector<Index> & p_atoms,
-			const size_t			   p_atomCount,
-			const NeighbourIndexes &   p_linkedAtomsVector,
-			const Vec3f &			   p_dir,
-			const float				   p_cutoff
-		)
+		bool _verifyPlanarBonds( const Topology &			p_topology,
+								 const Frame &				p_frame,
+								 const std::vector<Index> & p_atoms,
+								 const size_t				p_atomCount,
+								 const NeighbourIndexes &	p_linkedAtomsVector,
+								 const Vec3f &				p_dir,
+								 const float				p_cutoff )
 		{
 			for ( size_t i = 0; i < p_atomCount; i++ )
 			{
@@ -231,14 +227,12 @@ namespace VTX::IO::Util
 		}
 
 		// Recursively search small cycles and tag planar ones.
-		void _tagCyclesRecursive(
-			const Topology &		  p_topology,
-			const Frame &			  p_frame,
-			const NeighbourIndexes &  p_linkedAtomsVector,
-			std::vector<CycleState> & p_cycleStatePerAtoms,
-			std::vector<Index> &	  p_cycleIndexes,
-			const int				  p_counter
-		)
+		void _tagCyclesRecursive( const Topology &			p_topology,
+								  const Frame &				p_frame,
+								  const NeighbourIndexes &	p_linkedAtomsVector,
+								  std::vector<CycleState> & p_cycleStatePerAtoms,
+								  std::vector<Index> &		p_cycleIndexes,
+								  const int					p_counter )
 		{
 			const Index currentAtomIndex = p_cycleIndexes[ p_counter - 1 ];
 			for ( const LinkedAtom & nextAtom : p_linkedAtomsVector[ currentAtomIndex ] )
@@ -260,8 +254,7 @@ namespace VTX::IO::Util
 						const bool isPlanar
 							= avgDotCross > 0.96f
 							  && _verifyPlanarBonds(
-								  p_topology, p_frame, p_cycleIndexes, p_counter, p_linkedAtomsVector, dir, 0.35f
-							  );
+								  p_topology, p_frame, p_cycleIndexes, p_counter, p_linkedAtomsVector, dir, 0.35f );
 
 						const CycleState cycleState = isPlanar ? CycleState::Planar : CycleState::Cyclic;
 
@@ -275,19 +268,16 @@ namespace VTX::IO::Util
 				{
 					p_cycleIndexes[ p_counter ] = nextAtomIndex;
 					_tagCyclesRecursive(
-						p_topology, p_frame, p_linkedAtomsVector, p_cycleStatePerAtoms, p_cycleIndexes, p_counter + 1
-					);
+						p_topology, p_frame, p_linkedAtomsVector, p_cycleStatePerAtoms, p_cycleIndexes, p_counter + 1 );
 				}
 			}
 		}
 
 		// Tag atoms that belong to cyclic or planar cyclic structures.
-		void _tagCycles(
-			const Topology &		  p_topology,
-			const Frame &			  p_frame,
-			const NeighbourIndexes &  p_linkedAtomsVector,
-			std::vector<CycleState> & p_cycleStatePerAtoms
-		)
+		void _tagCycles( const Topology &		   p_topology,
+						 const Frame &			   p_frame,
+						 const NeighbourIndexes &  p_linkedAtomsVector,
+						 std::vector<CycleState> & p_cycleStatePerAtoms )
 		{
 			std::vector<Index> cycleIndexes;
 			cycleIndexes.resize( 6, 0 );
@@ -303,14 +293,12 @@ namespace VTX::IO::Util
 		}
 
 		// Set a bond order from an atom local adjacency list.
-		void _setBondOrder(
-			Topology &						p_topology,
-			const std::vector<LinkedAtom> & p_linkedAtoms,
-			size_t &						p_recomputedBondOrderCount,
-			const Index						p_secondAtomIndex,
-			const ORDER						p_bondOrder,
-			const bool						p_force = false
-		)
+		void _setBondOrder( Topology &						p_topology,
+							const std::vector<LinkedAtom> & p_linkedAtoms,
+							size_t &						p_recomputedBondOrderCount,
+							const Index						p_secondAtomIndex,
+							const ORDER						p_bondOrder,
+							const bool						p_force = false )
 		{
 			for ( const LinkedAtom & linkedAtom : p_linkedAtoms )
 			{
@@ -331,13 +319,11 @@ namespace VTX::IO::Util
 		}
 
 		// Apply legacy geometric heuristics to unknown bond orders.
-		void _checkBondOrders(
-			Topology &						p_topology,
-			const Frame &					p_frame,
-			const NeighbourIndexes &		p_linkedAtomsVector,
-			const std::vector<CycleState> & p_cycleStatePerAtom,
-			size_t &						p_recomputedBondOrderCount
-		)
+		void _checkBondOrders( Topology &					   p_topology,
+							   const Frame &				   p_frame,
+							   const NeighbourIndexes &		   p_linkedAtomsVector,
+							   const std::vector<CycleState> & p_cycleStatePerAtom,
+							   size_t &						   p_recomputedBondOrderCount )
 		{
 			const float planarCutoff = 0.96f;
 
@@ -399,9 +385,11 @@ namespace VTX::IO::Util
 							if ( neighbourData.oxygens[ 0 ].distance < 1.38f
 								 && p_linkedAtomsVector[ firstOxygenIndex ].size() == 1 )
 							{
-								_setBondOrder(
-									p_topology, linkedAtoms, p_recomputedBondOrderCount, firstOxygenIndex, ORDER::DOUBLE
-								);
+								_setBondOrder( p_topology,
+											   linkedAtoms,
+											   p_recomputedBondOrderCount,
+											   firstOxygenIndex,
+											   ORDER::DOUBLE );
 							}
 						}
 						else if ( nitrogenCountInNeighbours >= 1 && oxygenCountInNeighbours >= 2 )
@@ -416,32 +404,32 @@ namespace VTX::IO::Util
 
 							if ( firstOxygenIsValid && secondOxygenIsValid )
 							{
-								_setBondOrder(
-									p_topology, linkedAtoms, p_recomputedBondOrderCount, firstOxygenIndex, ORDER::DOUBLE
-								);
-								_setBondOrder(
-									p_topology,
-									linkedAtoms,
-									p_recomputedBondOrderCount,
-									secondOxygenIndex,
-									ORDER::SINGLE
-								);
+								_setBondOrder( p_topology,
+											   linkedAtoms,
+											   p_recomputedBondOrderCount,
+											   firstOxygenIndex,
+											   ORDER::DOUBLE );
+								_setBondOrder( p_topology,
+											   linkedAtoms,
+											   p_recomputedBondOrderCount,
+											   secondOxygenIndex,
+											   ORDER::SINGLE );
 							}
 							else if ( firstOxygenIsValid )
 							{
-								_setBondOrder(
-									p_topology, linkedAtoms, p_recomputedBondOrderCount, firstOxygenIndex, ORDER::DOUBLE
-								);
+								_setBondOrder( p_topology,
+											   linkedAtoms,
+											   p_recomputedBondOrderCount,
+											   firstOxygenIndex,
+											   ORDER::DOUBLE );
 							}
 							else if ( secondOxygenIsValid )
 							{
-								_setBondOrder(
-									p_topology,
-									linkedAtoms,
-									p_recomputedBondOrderCount,
-									secondOxygenIndex,
-									ORDER::DOUBLE
-								);
+								_setBondOrder( p_topology,
+											   linkedAtoms,
+											   p_recomputedBondOrderCount,
+											   secondOxygenIndex,
+											   ORDER::DOUBLE );
 							}
 						}
 						else if ( nitrogenCountInNeighbours == 0 && oxygenCountInNeighbours == 1 )
@@ -451,9 +439,11 @@ namespace VTX::IO::Util
 							if ( neighbourData.oxygens[ 0 ].distance < 1.31f
 								 && p_linkedAtomsVector[ firstOxygenIndex ].size() == 1 )
 							{
-								_setBondOrder(
-									p_topology, linkedAtoms, p_recomputedBondOrderCount, firstOxygenIndex, ORDER::DOUBLE
-								);
+								_setBondOrder( p_topology,
+											   linkedAtoms,
+											   p_recomputedBondOrderCount,
+											   firstOxygenIndex,
+											   ORDER::DOUBLE );
 							}
 						}
 						else if ( nitrogenCountInNeighbours == 0 && oxygenCountInNeighbours >= 2 )
@@ -468,32 +458,32 @@ namespace VTX::IO::Util
 
 							if ( firstOxygenIsValid && secondOxygenIsValid )
 							{
-								_setBondOrder(
-									p_topology, linkedAtoms, p_recomputedBondOrderCount, firstOxygenIndex, ORDER::DOUBLE
-								);
-								_setBondOrder(
-									p_topology,
-									linkedAtoms,
-									p_recomputedBondOrderCount,
-									secondOxygenIndex,
-									ORDER::SINGLE
-								);
+								_setBondOrder( p_topology,
+											   linkedAtoms,
+											   p_recomputedBondOrderCount,
+											   firstOxygenIndex,
+											   ORDER::DOUBLE );
+								_setBondOrder( p_topology,
+											   linkedAtoms,
+											   p_recomputedBondOrderCount,
+											   secondOxygenIndex,
+											   ORDER::SINGLE );
 							}
 							else if ( firstOxygenIsValid )
 							{
-								_setBondOrder(
-									p_topology, linkedAtoms, p_recomputedBondOrderCount, firstOxygenIndex, ORDER::DOUBLE
-								);
+								_setBondOrder( p_topology,
+											   linkedAtoms,
+											   p_recomputedBondOrderCount,
+											   firstOxygenIndex,
+											   ORDER::DOUBLE );
 							}
 							else if ( secondOxygenIsValid )
 							{
-								_setBondOrder(
-									p_topology,
-									linkedAtoms,
-									p_recomputedBondOrderCount,
-									secondOxygenIndex,
-									ORDER::DOUBLE
-								);
+								_setBondOrder( p_topology,
+											   linkedAtoms,
+											   p_recomputedBondOrderCount,
+											   secondOxygenIndex,
+											   ORDER::DOUBLE );
 							}
 						}
 						else if ( nitrogenCountInNeighbours >= 3 )
@@ -513,29 +503,23 @@ namespace VTX::IO::Util
 								if ( n0NeighbourCount == 1 && n1NeighbourCount == 1 && n2NeighbourCount >= 2 )
 								{
 									_setBondOrder(
-										p_topology, linkedAtoms, p_recomputedBondOrderCount, n0Index, ORDER::SINGLE
-									);
+										p_topology, linkedAtoms, p_recomputedBondOrderCount, n0Index, ORDER::SINGLE );
 									_setBondOrder(
-										p_topology, linkedAtoms, p_recomputedBondOrderCount, n1Index, ORDER::SINGLE
-									);
+										p_topology, linkedAtoms, p_recomputedBondOrderCount, n1Index, ORDER::SINGLE );
 								}
 								else if ( n0NeighbourCount == 1 && n1NeighbourCount >= 2 && n2NeighbourCount == 1 )
 								{
 									_setBondOrder(
-										p_topology, linkedAtoms, p_recomputedBondOrderCount, n0Index, ORDER::SINGLE
-									);
+										p_topology, linkedAtoms, p_recomputedBondOrderCount, n0Index, ORDER::SINGLE );
 									_setBondOrder(
-										p_topology, linkedAtoms, p_recomputedBondOrderCount, n2Index, ORDER::SINGLE
-									);
+										p_topology, linkedAtoms, p_recomputedBondOrderCount, n2Index, ORDER::SINGLE );
 								}
 								else if ( n0NeighbourCount >= 2 && n1NeighbourCount == 1 && n2NeighbourCount == 1 )
 								{
 									_setBondOrder(
-										p_topology, linkedAtoms, p_recomputedBondOrderCount, n1Index, ORDER::SINGLE
-									);
+										p_topology, linkedAtoms, p_recomputedBondOrderCount, n1Index, ORDER::SINGLE );
 									_setBondOrder(
-										p_topology, linkedAtoms, p_recomputedBondOrderCount, n2Index, ORDER::DOUBLE
-									);
+										p_topology, linkedAtoms, p_recomputedBondOrderCount, n2Index, ORDER::DOUBLE );
 								}
 							}
 						}
@@ -553,11 +537,9 @@ namespace VTX::IO::Util
 									 && p_cycleStatePerAtom[ n1Index ] == CycleState::None )
 								{
 									_setBondOrder(
-										p_topology, linkedAtoms, p_recomputedBondOrderCount, n0Index, ORDER::SINGLE
-									);
+										p_topology, linkedAtoms, p_recomputedBondOrderCount, n0Index, ORDER::SINGLE );
 									_setBondOrder(
-										p_topology, linkedAtoms, p_recomputedBondOrderCount, n1Index, ORDER::SINGLE
-									);
+										p_topology, linkedAtoms, p_recomputedBondOrderCount, n1Index, ORDER::SINGLE );
 								}
 							}
 						}
@@ -588,8 +570,7 @@ namespace VTX::IO::Util
 						if ( n0DotCross > planarCutoff )
 						{
 							_setBondOrder(
-								p_topology, linkedAtoms, p_recomputedBondOrderCount, n0Index, ORDER::DOUBLE
-							);
+								p_topology, linkedAtoms, p_recomputedBondOrderCount, n0Index, ORDER::DOUBLE );
 
 							if ( neighbourData.nitrogens[ 0 ].distance < 1.24f && not neighbourData.carbons.empty()
 								 && p_linkedAtomsVector[ n0Index ].size() == 1 )
@@ -602,8 +583,7 @@ namespace VTX::IO::Util
 								if ( dot( n0Vector, c0Vector ) < -0.9f )
 								{
 									_setBondOrder(
-										p_topology, linkedAtoms, p_recomputedBondOrderCount, n0Index, ORDER::TRIPLE
-									);
+										p_topology, linkedAtoms, p_recomputedBondOrderCount, n0Index, ORDER::TRIPLE );
 								}
 							}
 						}
@@ -618,16 +598,14 @@ namespace VTX::IO::Util
 						if ( p_linkedAtomsVector[ firstOxygenIndex ].size() == 1 )
 						{
 							_setBondOrder(
-								p_topology, linkedAtoms, p_recomputedBondOrderCount, firstOxygenIndex, ORDER::SINGLE
-							);
+								p_topology, linkedAtoms, p_recomputedBondOrderCount, firstOxygenIndex, ORDER::SINGLE );
 						}
 
 						const Index secondOxygenIndex = neighbourData.oxygens[ 1 ].index;
 						if ( p_linkedAtomsVector[ secondOxygenIndex ].size() == 1 )
 						{
 							_setBondOrder(
-								p_topology, linkedAtoms, p_recomputedBondOrderCount, secondOxygenIndex, ORDER::SINGLE
-							);
+								p_topology, linkedAtoms, p_recomputedBondOrderCount, secondOxygenIndex, ORDER::SINGLE );
 						}
 					}
 				}
@@ -640,8 +618,7 @@ namespace VTX::IO::Util
 							if ( p_linkedAtomsVector[ oxygen.index ].size() == 1 )
 							{
 								_setBondOrder(
-									p_topology, linkedAtoms, p_recomputedBondOrderCount, oxygen.index, ORDER::DOUBLE
-								);
+									p_topology, linkedAtoms, p_recomputedBondOrderCount, oxygen.index, ORDER::DOUBLE );
 								break;
 							}
 						}
@@ -653,8 +630,7 @@ namespace VTX::IO::Util
 							if ( p_linkedAtomsVector[ oxygen.index ].size() == 1 )
 							{
 								_setBondOrder(
-									p_topology, linkedAtoms, p_recomputedBondOrderCount, oxygen.index, ORDER::DOUBLE
-								);
+									p_topology, linkedAtoms, p_recomputedBondOrderCount, oxygen.index, ORDER::DOUBLE );
 							}
 						}
 					}
@@ -669,8 +645,7 @@ namespace VTX::IO::Util
 							 && _isConjugableRingAtom( p_topology.getAtomSymbol( neighbourIndex ) ) )
 						{
 							_setBondOrder(
-								p_topology, linkedAtoms, p_recomputedBondOrderCount, neighbourIndex, ORDER::AROMATIC
-							);
+								p_topology, linkedAtoms, p_recomputedBondOrderCount, neighbourIndex, ORDER::AROMATIC );
 						}
 					}
 				}

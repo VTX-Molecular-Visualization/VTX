@@ -32,11 +32,9 @@ namespace VTX::IO
 
 	namespace
 	{
-		void _computeSpatialData(
-			const std::span<const Vec3f>   p_positions,
-			VTX::Util::Math::AABB &		   p_aabb,
-			VTX::Util::Math::Grid<Index> & p_atomGrid
-		)
+		void _computeSpatialData( const std::span<const Vec3f>	 p_positions,
+								  VTX::Util::Math::AABB &		 p_aabb,
+								  VTX::Util::Math::Grid<Index> & p_atomGrid )
 		{
 			p_aabb	   = {};
 			p_atomGrid = {};
@@ -50,7 +48,7 @@ namespace VTX::IO
 		}
 	} // namespace
 
-	struct SystemReader::_Impl
+	struct SystemReader::Impl
 	{
 		FilePath								_filePath;
 		READER_OPTION							_readerOption;
@@ -69,38 +67,31 @@ namespace VTX::IO
 		Frame									_firstFrame;
 		bool									_hasSecondaryStructureData = false;
 
-		_Impl( const FilePath & p_path, const READER_OPTION p_options, const StopToken & p_stopToken ) :
+		Impl( const FilePath & p_path, const READER_OPTION p_options, const StopToken & p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
 			_trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
 		{ _init(); }
 
-		_Impl(
-			MemoryBuffer &&		p_buffer,
-			const FilePath &	p_path,
-			const READER_OPTION p_options,
-			const StopToken &	p_stopToken
-		) :
+		Impl( MemoryBuffer &&	   p_buffer,
+			   const FilePath &	   p_path,
+			   const READER_OPTION p_options,
+			   const StopToken &   p_stopToken ) :
 			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
-			_buffer( std::move( p_buffer ) ), _trajectory(
-												  chemfiles::Trajectory::memory_reader(
-													  _buffer->c_str(),
-													  _buffer->size(),
-													  chemfiles::guess_format( p_path.string() )
-												  )
-											  )
+			_buffer( std::move( p_buffer ) ),
+			_trajectory( chemfiles::Trajectory::memory_reader( _buffer->c_str(),
+															   _buffer->size(),
+															   chemfiles::guess_format( p_path.string() ) ) )
 		{ _init(); }
 
 		size_t frameCount() const { return _trajectory.size(); }
 
-		void get(
-			const Category::Dictionary &   p_categories,
-			Topology &					   p_topology,
-			Metadata &					   p_metadata,
-			VTX::Util::Math::AABB &		   p_aabb,
-			VTX::Util::Math::Grid<Index> & p_atomGrid
-		)
+		void get( const Category::Dictionary &	 p_categories,
+				  Topology &					 p_topology,
+				  Metadata &					 p_metadata,
+				  VTX::Util::Math::AABB &		 p_aabb,
+				  VTX::Util::Math::Grid<Index> & p_atomGrid )
 		{
-			const ScopedChrono chrono( "SystemReader::_Impl::get" );
+			const ScopedChrono chrono( "SystemReader::Impl::get" );
 			VTX_INFO( "Reading topology" );
 
 			if ( _stopToken.stop_requested() )
@@ -369,9 +360,7 @@ namespace VTX::IO
 			return opt ? opt.value().as_string() : p_default;
 		}
 
-		static Category::TYPE _findCategoryType(
-			const std::string & p_ext,
-			const std::string & /*p_residueName*/
+		static Category::TYPE _findCategoryType( const std::string & p_ext, const std::string & /*p_residueName*/
 		)
 		{
 			if ( p_ext == "pdb" || p_ext == "mmcif" || p_ext == "mmtf" )
@@ -381,15 +370,13 @@ namespace VTX::IO
 			return Category::TYPE::POLYMER;
 		}
 
-		void _retopologize(
-			const Category::Dictionary &   p_categories,
-			Topology &					   p_topology,
-			Metadata &					   p_metadata,
-			VTX::Util::Math::AABB &		   p_aabb,
-			VTX::Util::Math::Grid<Index> & p_atomGrid
-		)
+		void _retopologize( const Category::Dictionary &   p_categories,
+							Topology &					   p_topology,
+							Metadata &					   p_metadata,
+							VTX::Util::Math::AABB &		   p_aabb,
+							VTX::Util::Math::Grid<Index> & p_atomGrid )
 		{
-			const ScopedChrono chrono( "SystemReader::_Impl::_retopologize" );
+			const ScopedChrono chrono( "SystemReader::Impl::_retopologize" );
 			VTX_INFO( "Retopologizing structure" );
 
 			// Clean previous data.
@@ -524,11 +511,9 @@ namespace VTX::IO
 
 			for ( Chain & chain : chains )
 			{
-				std::ranges::sort(
-					chain.residueIndexes,
-					[ &residues ]( const Index p_lhs, const Index p_rhs )
-					{ return residues[ p_lhs ].firstAtomIndex < residues[ p_rhs ].firstAtomIndex; }
-				);
+				std::ranges::sort( chain.residueIndexes,
+								   [ &residues ]( const Index p_lhs, const Index p_rhs )
+								   { return residues[ p_lhs ].firstAtomIndex < residues[ p_rhs ].firstAtomIndex; } );
 			}
 
 			topology.initChains( static_cast<Index>( chains.size() ) );
@@ -615,12 +600,10 @@ namespace VTX::IO
 			p_topology.residueSecondaryStructureTypes[ p_targetResidueIndex ] = SecondaryStructure::TYPE::UNKNOWN;
 		}
 
-		void _fillResidue(
-			const Category::Dictionary & p_categories,
-			const Index					 p_sourceResidueIndex,
-			const Index					 p_targetResidueIndex,
-			Topology &					 p_topology
-		)
+		void _fillResidue( const Category::Dictionary & p_categories,
+						   const Index					p_sourceResidueIndex,
+						   const Index					p_targetResidueIndex,
+						   Topology &					p_topology )
 		{
 			_currentResidue = &( ( *_residues )[ p_sourceResidueIndex ] );
 
@@ -644,12 +627,10 @@ namespace VTX::IO
 			}
 		}
 
-		void _fillAtom(
-			const Index p_sourceAtomIndex,
-			const Index p_targetAtomIndex,
-			const Index p_targetResidueIndex,
-			Topology &	p_topology
-		)
+		void _fillAtom( const Index p_sourceAtomIndex,
+						const Index p_targetAtomIndex,
+						const Index p_targetResidueIndex,
+						Topology &	p_topology )
 		{
 			_currentAtom	  = &_currentFrame[ p_sourceAtomIndex ];
 			_currentAtomIndex = p_sourceAtomIndex;
@@ -713,12 +694,10 @@ namespace VTX::IO
 			assert( p_topology.getBondCount() == static_cast<Index>( validBondIndexes.size() ) );
 		}
 
-		void _fillBond(
-			const Index					 p_sourceBondIndex,
-			const Index					 p_targetBondIndex,
-			Topology &					 p_topology,
-			const std::span<const Index> p_oldAtomToNewAtom = {}
-		) const
+		void _fillBond( const Index					 p_sourceBondIndex,
+						const Index					 p_targetBondIndex,
+						Topology &					 p_topology,
+						const std::span<const Index> p_oldAtomToNewAtom = {} ) const
 		{
 			const std::vector<chemfiles::Bond::BondOrder> & bondOrders = _topology.bond_orders();
 			const chemfiles::Bond &							bond	   = ( *_bonds )[ p_sourceBondIndex ];
@@ -747,11 +726,9 @@ namespace VTX::IO
 			p_topology.bondOrders[ p_targetBondIndex ]										   = bondOrder;
 		}
 
-		void _recomputeMissingData(
-			Topology &							 p_topology,
-			const Frame &						 p_positions,
-			const VTX::Util::Math::Grid<Index> & p_atomGrid
-		) const
+		void _recomputeMissingData( Topology &							 p_topology,
+									const Frame &						 p_positions,
+									const VTX::Util::Math::Grid<Index> & p_atomGrid ) const
 		{
 			assert( p_positions.size() == p_topology.getAtomCount() );
 
@@ -777,26 +754,23 @@ namespace VTX::IO
 		{ return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] ); }
 	};
 
-	void SystemReader::Del::operator()( _Impl * const p_impl ) noexcept
+	void SystemReader::Del::operator()( Impl * const p_impl ) noexcept
 	{
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		delete p_impl;
 	}
 
-	SystemReader::SystemReader(
-		const FilePath &	p_path,
-		const READER_OPTION p_options,
-		const StopToken &	p_stopToken
-	) : _impl( new _Impl( p_path, p_options, p_stopToken ) )
+	SystemReader::SystemReader( const FilePath &	p_path,
+								const READER_OPTION p_options,
+								const StopToken &	p_stopToken ) : _impl( new Impl( p_path, p_options, p_stopToken ) )
 	{
 	}
 
-	SystemReader::SystemReader(
-		MemoryBuffer &&		p_buffer,
-		const FilePath &	p_path,
-		const READER_OPTION p_options,
-		const StopToken &	p_stopToken
-	) : _impl( new _Impl( std::move( p_buffer ), p_path, p_options, p_stopToken ) )
+	SystemReader::SystemReader( MemoryBuffer &&		p_buffer,
+								const FilePath &	p_path,
+								const READER_OPTION p_options,
+								const StopToken &	p_stopToken ) :
+		_impl( new Impl( std::move( p_buffer ), p_path, p_options, p_stopToken ) )
 	{
 	}
 
@@ -807,13 +781,11 @@ namespace VTX::IO
 		_impl->get( p_d, p_t, p_m, aabb, atomGrid );
 	}
 
-	void SystemReader::get(
-		const Category::Dictionary &   p_d,
-		Topology &					   p_t,
-		Metadata &					   p_m,
-		VTX::Util::Math::AABB &		   p_a,
-		VTX::Util::Math::Grid<Index> & p_g
-	)
+	void SystemReader::get( const Category::Dictionary &   p_d,
+							Topology &					   p_t,
+							Metadata &					   p_m,
+							VTX::Util::Math::AABB &		   p_a,
+							VTX::Util::Math::Grid<Index> & p_g )
 	{ _impl->get( p_d, p_t, p_m, p_a, p_g ); }
 
 	void SystemReader::get( Frame & p_f, const FrameIndex p_i ) { _impl->get( p_i, p_f ); }
@@ -830,9 +802,8 @@ namespace VTX::IO
 		const auto		  trajectoryFileFormatList
 			= std::to_array<std::string_view>( { ".xtc", ".dcd", ".lammpstrj", ".trj" } );
 
-		return std::ranges::any_of(
-			trajectoryFileFormatList, [ &extension ]( const std::string_view & v ) { return v == extension; }
-		);
+		return std::ranges::any_of( trajectoryFileFormatList,
+									[ &extension ]( const std::string_view & v ) { return v == extension; } );
 	};
 
 } // namespace VTX::IO

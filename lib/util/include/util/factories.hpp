@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_FACTORIES__
-#define __VTX_UTIL_FACTORIES__
+#ifndef VTX_UTIL_FACTORIES_HPP
+#define VTX_UTIL_FACTORIES_HPP
 
 #include <memory>
 

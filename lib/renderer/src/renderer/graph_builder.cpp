@@ -7,35 +7,29 @@ namespace VTX::Renderer
 {
 	namespace
 	{
-		void _requirePassType(
-			const Desc::Pass &		p_pass,
-			const Desc::E_PASS_TYPE p_expected,
-			const std::string_view	p_action
-		)
+		void _requirePassType( const Desc::Pass &	   p_pass,
+							   const Desc::E_PASS_TYPE p_expected,
+							   const std::string_view  p_action )
 		{
 			if ( p_pass.type == p_expected )
 			{
 				return;
 			}
 
-			throw GraphicException(
-				"Cannot call '{}' in pass '{}': expected pass type {}, got {}",
-				p_action,
-				p_pass.name,
-				Util::Enum::enumName( p_expected ),
-				Util::Enum::enumName( p_pass.type )
-			);
+			throw GraphicException( "Cannot call '{}' in pass '{}': expected pass type {}, got {}",
+									p_action,
+									p_pass.name,
+									Util::Enum::enumName( p_expected ),
+									Util::Enum::enumName( p_pass.type ) );
 		}
 
 		void _ensureNoProgramExecution( const Desc::Program & p_program, const std::string_view p_action )
 		{
 			if ( p_program.drawCall || p_program.dispatch || p_program.dispatchIndirect )
 			{
-				throw GraphicException(
-					"Program '{}': cannot add '{}' because an execution command is already set",
-					p_program.name,
-					p_action
-				);
+				throw GraphicException( "Program '{}': cannot add '{}' because an execution command is already set",
+										p_program.name,
+										p_action );
 			}
 		}
 	} // namespace
@@ -43,22 +37,18 @@ namespace VTX::Renderer
 	GraphBuilder::GraphBuilder()
 	{
 		// Create default sampler.
-		sampler(
-			"Default",
-			Desc::E_WRAPPING::CLAMP_TO_EDGE,
-			Desc::E_WRAPPING::CLAMP_TO_EDGE,
-			Desc::E_FILTERING::NEAREST,
-			Desc::E_FILTERING::NEAREST
-		);
+		sampler( "Default",
+				 Desc::E_WRAPPING::CLAMP_TO_EDGE,
+				 Desc::E_WRAPPING::CLAMP_TO_EDGE,
+				 Desc::E_FILTERING::NEAREST,
+				 Desc::E_FILTERING::NEAREST );
 	}
 
-	GraphBuilder & GraphBuilder::texture(
-		const Desc::Key &			 p_name,
-		const Desc::E_FORMAT		 p_format,
-		const Desc::Size2D &		 p_size,
-		const Desc::E_TEXTURE_TARGET p_target,
-		const bool					 p_external
-	)
+	GraphBuilder & GraphBuilder::texture( const Desc::Key &			   p_name,
+										  const Desc::E_FORMAT		   p_format,
+										  const Desc::Size2D &		   p_size,
+										  const Desc::E_TEXTURE_TARGET p_target,
+										  const bool				   p_external )
 	{
 		Desc::Texture texture { p_format, p_size };
 		texture.target				 = p_target;
@@ -67,22 +57,18 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::sampler(
-		const Desc::Key &		p_name,
-		const Desc::E_WRAPPING	p_wrapS,
-		const Desc::E_WRAPPING	p_wrapT,
-		const Desc::E_FILTERING p_minFilter,
-		const Desc::E_FILTERING p_magFilter
-	)
+	GraphBuilder & GraphBuilder::sampler( const Desc::Key &		  p_name,
+										  const Desc::E_WRAPPING  p_wrapS,
+										  const Desc::E_WRAPPING  p_wrapT,
+										  const Desc::E_FILTERING p_minFilter,
+										  const Desc::E_FILTERING p_magFilter )
 	{
 		resources.samplers[ p_name ] = Desc::Sampler { p_wrapS, p_wrapT, p_minFilter, p_magFilter };
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::vertexLayout(
-		const Desc::Key &								   p_name,
-		const std::initializer_list<Desc::VertexAttribute> p_attributes
-	)
+	GraphBuilder & GraphBuilder::vertexLayout( const Desc::Key &								  p_name,
+											   const std::initializer_list<Desc::VertexAttribute> p_attributes )
 	{
 		Desc::VertexLayout layout;
 		layout.attributes.assign( p_attributes.begin(), p_attributes.end() );
@@ -104,16 +90,14 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::buffer(
-		const Desc::Key &								p_name,
-		const Desc::E_BUFFER_USAGE						p_usage,
-		const Desc::E_UPDATE_FREQUENCY					p_frequency,
-		const Desc::E_BUFFER_ALLOCATION					p_allocation,
-		const Desc::E_BUFFER_MUTABILITY					p_mutability,
-		const Desc::E_BUFFER_ACCESS						p_access,
-		const std::optional<uint32_t>					p_binding,
-		const std::initializer_list<Desc::UniformValue> p_values
-	)
+	GraphBuilder & GraphBuilder::buffer( const Desc::Key &								 p_name,
+										 const Desc::E_BUFFER_USAGE						 p_usage,
+										 const Desc::E_UPDATE_FREQUENCY					 p_frequency,
+										 const Desc::E_BUFFER_ALLOCATION				 p_allocation,
+										 const Desc::E_BUFFER_MUTABILITY				 p_mutability,
+										 const Desc::E_BUFFER_ACCESS					 p_access,
+										 const std::optional<uint32_t>					 p_binding,
+										 const std::initializer_list<Desc::UniformValue> p_values )
 	{
 		Desc::Buffer & desc = resources.buffers[ p_name ];
 		desc.name			= p_name;
@@ -139,12 +123,10 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	GraphBuilder & GraphBuilder::geometry(
-		const Desc::Key &				 p_name,
-		const Desc::Key &				 p_vertexLayout,
-		const std::optional<Desc::Key> & p_indiceBuffer,
-		const std::optional<Desc::Key> & p_indirectBuffer
-	)
+	GraphBuilder & GraphBuilder::geometry( const Desc::Key &				p_name,
+										   const Desc::Key &				p_vertexLayout,
+										   const std::optional<Desc::Key> & p_indiceBuffer,
+										   const std::optional<Desc::Key> & p_indirectBuffer )
 	{
 		if ( p_indiceBuffer && not resources.buffers.contains( *p_indiceBuffer ) )
 		{
@@ -152,11 +134,9 @@ namespace VTX::Renderer
 		}
 		if ( p_indirectBuffer && not resources.buffers.contains( *p_indirectBuffer ) )
 		{
-			buffer(
-				*p_indirectBuffer,
-				Desc::E_BUFFER_USAGE::INDIRECT | Desc::E_BUFFER_USAGE::STORAGE,
-				Desc::E_UPDATE_FREQUENCY::DYNAMIC
-			);
+			buffer( *p_indirectBuffer,
+					Desc::E_BUFFER_USAGE::INDIRECT | Desc::E_BUFFER_USAGE::STORAGE,
+					Desc::E_UPDATE_FREQUENCY::DYNAMIC );
 		}
 
 		Desc::Geometry geom;
@@ -175,22 +155,18 @@ namespace VTX::Renderer
 		}
 		if ( p_geometry.indirectBuffer && not resources.buffers.contains( *p_geometry.indirectBuffer ) )
 		{
-			buffer(
-				*p_geometry.indirectBuffer,
-				Desc::E_BUFFER_USAGE::INDIRECT | Desc::E_BUFFER_USAGE::STORAGE,
-				Desc::E_UPDATE_FREQUENCY::DYNAMIC
-			);
+			buffer( *p_geometry.indirectBuffer,
+					Desc::E_BUFFER_USAGE::INDIRECT | Desc::E_BUFFER_USAGE::STORAGE,
+					Desc::E_UPDATE_FREQUENCY::DYNAMIC );
 		}
 
 		resources.geometries[ p_name ] = p_geometry;
 		return *this;
 	}
 
-	PassBuilder GraphBuilder::pass(
-		const Desc::Key &			 p_name,
-		const Desc::E_PASS_TYPE		 p_type,
-		const Desc::E_PASS_EXECUTION p_execution
-	)
+	PassBuilder GraphBuilder::pass( const Desc::Key &			 p_name,
+									const Desc::E_PASS_TYPE		 p_type,
+									const Desc::E_PASS_EXECUTION p_execution )
 	{ return PassBuilder( *this, p_name, p_type, p_execution ); }
 
 	PassBuilder GraphBuilder::computePass( const Desc::Key & p_name, const Desc::E_PASS_EXECUTION p_execution )
@@ -222,11 +198,9 @@ namespace VTX::Renderer
 	ProgramBuilder & ProgramBuilder::draw( const Desc::Key & p_geometry, const Desc::E_PRIMITIVE p_primitive )
 	{ return draw( p_geometry, p_primitive, Desc::DrawCall::Indirect {} ); }
 
-	ProgramBuilder & ProgramBuilder::draw(
-		const Desc::Key &					  p_geometry,
-		const Desc::E_PRIMITIVE				  p_primitive,
-		const Desc::DrawCall::RangesVariant & p_ranges
-	)
+	ProgramBuilder & ProgramBuilder::draw( const Desc::Key &					 p_geometry,
+										   const Desc::E_PRIMITIVE				 p_primitive,
+										   const Desc::DrawCall::RangesVariant & p_ranges )
 	{
 		_requirePassType( parent.pass, Desc::E_PASS_TYPE::GRAPHICS, "draw" );
 		_ensureNoProgramExecution( program, "draw" );
@@ -248,23 +222,18 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	ProgramBuilder & ProgramBuilder::dispatch(
-		const uint32_t				 p_groupX,
-		const uint32_t				 p_groupY,
-		const uint32_t				 p_groupZ,
-		const Desc::E_MEMORY_BARRIER p_barriers
-	)
+	ProgramBuilder & ProgramBuilder::dispatch( const uint32_t				p_groupX,
+											   const uint32_t				p_groupY,
+											   const uint32_t				p_groupZ,
+											   const Desc::E_MEMORY_BARRIER p_barriers )
 	{
 		return dispatch(
-			Desc::Dispatch { .groupX = p_groupX, .groupY = p_groupY, .groupZ = p_groupZ, .barriers = p_barriers }
-		);
+			Desc::Dispatch { .groupX = p_groupX, .groupY = p_groupY, .groupZ = p_groupZ, .barriers = p_barriers } );
 	}
 
-	ProgramBuilder & ProgramBuilder::dispatchIndirect(
-		const Desc::Key &			 p_indirectBuffer,
-		const uint32_t				 p_offset,
-		const Desc::E_MEMORY_BARRIER p_barriers
-	)
+	ProgramBuilder & ProgramBuilder::dispatchIndirect( const Desc::Key &			p_indirectBuffer,
+													   const uint32_t				p_offset,
+													   const Desc::E_MEMORY_BARRIER p_barriers )
 	{
 		_requirePassType( parent.pass, Desc::E_PASS_TYPE::COMPUTE, "dispatchIndirect" );
 		_ensureNoProgramExecution( program, "dispatchIndirect" );
@@ -281,12 +250,10 @@ namespace VTX::Renderer
 
 	PassBuilder & ProgramBuilder::endProgram() { return parent; }
 
-	PassBuilder::PassBuilder(
-		GraphBuilder &				 p_g,
-		const Desc::Key &			 p_name,
-		const Desc::E_PASS_TYPE		 p_type,
-		const Desc::E_PASS_EXECUTION p_execution
-	) : graph( p_g )
+	PassBuilder::PassBuilder( GraphBuilder &			   p_g,
+							  const Desc::Key &			   p_name,
+							  const Desc::E_PASS_TYPE	   p_type,
+							  const Desc::E_PASS_EXECUTION p_execution ) : graph( p_g )
 	{
 		pass.name	   = p_name;
 		pass.type	   = p_type;
@@ -305,11 +272,9 @@ namespace VTX::Renderer
 		return *this;
 	}
 
-	PassBuilder & PassBuilder::in(
-		const Desc::E_RESOURCE_TYPE		 p_type,
-		const Desc::Key &				 p_primary,
-		const std::optional<Desc::Key> & p_secondary
-	)
+	PassBuilder & PassBuilder::in( const Desc::E_RESOURCE_TYPE		p_type,
+								   const Desc::Key &				p_primary,
+								   const std::optional<Desc::Key> & p_secondary )
 	{
 		pass.inputs.push_back( { p_type, p_primary, p_secondary } );
 		return *this;
@@ -318,15 +283,12 @@ namespace VTX::Renderer
 	PassBuilder & PassBuilder::in( const Desc::Key & p_texture, const std::optional<Desc::Key> & p_sampler )
 	{
 		return in(
-			Desc::E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : Desc::Key { DEFAULT_SAMPLER_NAME }
-		);
+			Desc::E_RESOURCE_TYPE::TEXTURE, p_texture, p_sampler ? *p_sampler : Desc::Key { DEFAULT_SAMPLER_NAME } );
 	}
 
-	PassBuilder & PassBuilder::out(
-		const Desc::E_RESOURCE_TYPE		 p_type,
-		const Desc::Key &				 p_primary,
-		const std::optional<Desc::Key> & p_secondary
-	)
+	PassBuilder & PassBuilder::out( const Desc::E_RESOURCE_TYPE		 p_type,
+									const Desc::Key &				 p_primary,
+									const std::optional<Desc::Key> & p_secondary )
 	{
 		pass.outputs.push_back( { p_type, p_primary, p_secondary } );
 		return *this;

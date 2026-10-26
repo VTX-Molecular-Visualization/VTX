@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TRANSFORM__
-#define __VTX_UI_QT_WIDGET_TRANSFORM__
+#ifndef VTX_UI_QT_WIDGET_TRANSFORM_HPP
+#define VTX_UI_QT_WIDGET_TRANSFORM_HPP
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/widget/vector.hpp"
@@ -50,11 +50,9 @@ namespace VTX::UI::QT::Widget
 				_position = Helper::makeQObject<Widget::Vector<Vec3f>>( this );
 				layout->addWidget( Helper::makeQObject<QLabel>( "Position", this ) );
 				layout->addWidget( _position );
-				connect(
-					_position,
-					&Widget::Vector<Vec3f>::valueEdited,
-					[ this ]() { emit positionChanged( _position->value() ); }
-				);
+				connect( _position,
+						 &Widget::Vector<Vec3f>::valueEdited,
+						 [ this ]() { emit positionChanged( _position->value() ); } );
 			}
 
 			// Rotation vector.
@@ -66,11 +64,9 @@ namespace VTX::UI::QT::Widget
 				_rotation->setSuffix( QChar( 0x00B0 ) );
 				layout->addWidget( Helper::makeQObject<QLabel>( "Rotation", this ) );
 				layout->addWidget( _rotation );
-				connect(
-					_rotation,
-					&Widget::Vector<Vec3f>::valueEdited,
-					[ this ]() { emit rotationChanged( Quatf( radians( _rotation->value() ) ) ); }
-				);
+				connect( _rotation,
+						 &Widget::Vector<Vec3f>::valueEdited,
+						 [ this ]() { emit rotationChanged( Quatf( radians( _rotation->value() ) ) ); } );
 			}
 
 			// Scale vector.
@@ -80,8 +76,7 @@ namespace VTX::UI::QT::Widget
 				layout->addWidget( Helper::makeQObject<QLabel>( "Scale", this ) );
 				layout->addWidget( _scale );
 				connect(
-					_scale, &Widget::Vector<Vec3f>::valueEdited, [ this ]() { emit scaleChanged( _scale->value() ); }
-				);
+					_scale, &Widget::Vector<Vec3f>::valueEdited, [ this ]() { emit scaleChanged( _scale->value() ); } );
 			}
 
 			setLayout( layout );

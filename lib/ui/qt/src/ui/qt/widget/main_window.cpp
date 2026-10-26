@@ -113,8 +113,7 @@ namespace VTX::UI::QT::Widget
 		resizeDocks(
 			{ dwScene, dwInspector, dwOptions },
 			{ Style::DEFAULT_LATERAL_DOCK_WIDTH, Style::DEFAULT_LATERAL_DOCK_WIDTH, Style::DEFAULT_LATERAL_DOCK_WIDTH },
-			Qt::Horizontal
-		);
+			Qt::Horizontal );
 		resizeDocks( { dwConsole }, { Style::DEFAULT_CONSOLE_HEIGHT }, Qt::Vertical );
 
 		// Status bar.
@@ -131,8 +130,7 @@ namespace VTX::UI::QT::Widget
 			= App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
 		_blockingOperationProgressConnection
 			= App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>(
-				this
-			);
+				this );
 		_blockingOperationEndConnection
 			= App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
 		_updateAvailableConnection

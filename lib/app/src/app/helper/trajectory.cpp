@@ -9,12 +9,10 @@
 namespace VTX::App::Helper::Trajectory
 {
 
-	App::Trajectory::FrameRange getFrameWindow(
-		const uint										 p_frame,
-		const uint										 p_frameCount,
-		const size_t									 p_windowFrameCount,
-		const App::Trajectory::TRAJECTORY_READ_DIRECTION p_direction
-	) noexcept
+	App::Trajectory::FrameRange getFrameWindow( const uint										 p_frame,
+												const uint										 p_frameCount,
+												const size_t									 p_windowFrameCount,
+												const App::Trajectory::TRAJECTORY_READ_DIRECTION p_direction ) noexcept
 	{
 		if ( p_frameCount == 0 || p_frame >= p_frameCount )
 		{
@@ -22,8 +20,7 @@ namespace VTX::App::Helper::Trajectory
 		}
 
 		const uint windowFrameCount = static_cast<uint>(
-			std::min( static_cast<size_t>( p_frameCount ), std::max( static_cast<size_t>( 1 ), p_windowFrameCount ) )
-		);
+			std::min( static_cast<size_t>( p_frameCount ), std::max( static_cast<size_t>( 1 ), p_windowFrameCount ) ) );
 		if ( p_direction == App::Trajectory::TRAJECTORY_READ_DIRECTION::FORWARD )
 		{
 			const uint firstFrame = std::min( p_frame, p_frameCount - windowFrameCount );
@@ -34,13 +31,11 @@ namespace VTX::App::Helper::Trajectory
 		return App::Trajectory::FrameRange( lastFrame - windowFrameCount, lastFrame );
 	}
 
-	std::optional<size_t> resolveStorageFrameIndex(
-		const uint									  p_frame,
-		const size_t								  p_frameStorageCount,
-		const App::Trajectory::TRAJECTORY_BUFFER_MODE p_mode,
-		const uint									  p_firstFrameAvailable,
-		const uint									  p_loadedFrameCount
-	) noexcept
+	std::optional<size_t> resolveStorageFrameIndex( const uint									  p_frame,
+													const size_t								  p_frameStorageCount,
+													const App::Trajectory::TRAJECTORY_BUFFER_MODE p_mode,
+													const uint									  p_firstFrameAvailable,
+													const uint p_loadedFrameCount ) noexcept
 	{
 		if ( p_frameStorageCount == 0 || p_frame < p_firstFrameAvailable
 			 || p_frame >= p_firstFrameAvailable + p_loadedFrameCount )
@@ -81,13 +76,12 @@ namespace VTX::App::Helper::Trajectory
 
 		if ( const auto * const loader = REG().try_get<App::Trajectory::Loader>( p_entity ) )
 		{
-			const std::optional<size_t> storageFrameIndex = resolveStorageFrameIndex(
-				p_frame,
-				trajectory->frames.size(),
-				loader->mode,
-				loader->availableFrames.getFirst(),
-				static_cast<uint>( loader->availableFrames.getCount() )
-			);
+			const std::optional<size_t> storageFrameIndex
+				= resolveStorageFrameIndex( p_frame,
+											trajectory->frames.size(),
+											loader->mode,
+											loader->availableFrames.getFirst(),
+											static_cast<uint>( loader->availableFrames.getCount() ) );
 			if ( not storageFrameIndex )
 			{
 				return false;
@@ -129,12 +123,10 @@ namespace VTX::App::Helper::Trajectory
 				}
 
 				Core::Struct::Frame frame;
-				if ( visitFrame(
-						 p_entity,
-						 p_frame,
-						 [ &frame ]( const Core::Struct::FrameView p_positions )
-						 { frame.assign( p_positions.begin(), p_positions.end() ); }
-					 ) )
+				if ( visitFrame( p_entity,
+								 p_frame,
+								 [ &frame ]( const Core::Struct::FrameView p_positions )
+								 { frame.assign( p_positions.begin(), p_positions.end() ); } ) )
 				{
 					return frame;
 				}
@@ -146,8 +138,7 @@ namespace VTX::App::Helper::Trajectory
 				}
 
 				return loader->thread->readFrame( p_frame );
-			}
-		);
+			} );
 	}
 
 	bool hasMultiFrameTrajectory( const Entity p_entity ) { return REG().any_of<App::Trajectory::Player>( p_entity ); }
@@ -174,10 +165,8 @@ namespace VTX::App::Helper::Trajectory
 
 			uint frameCount() const { return static_cast<uint>( _frames.getCount() ); }
 
-			bool visitAtomPositions(
-				const uint													 p_index,
-				const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor
-			) const
+			bool visitAtomPositions( const uint													  p_index,
+									 const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor ) const
 			{
 				return p_index < _frames.getCount()
 					   && visitFrame( _entity, static_cast<uint>( _frames.getFirst() + p_index ), p_visitor );

@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_LAYOUT_ATOMS__
-#define __VTX_RENDERER_LAYOUT_ATOMS__
+#ifndef VTX_RENDERER_LAYOUT_ATOMS_HPP
+#define VTX_RENDERER_LAYOUT_ATOMS_HPP
 
 #include "base_layout.hpp"
 #include "renderer/caches.hpp"

@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS_PACK__
-#define __VTX_TOOL_TOOLS_MDPREP_GROMACS_PACK__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_PACK_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_PACK_HPP
 
 #include <filesystem>
 #include <util/filesystem.hpp>

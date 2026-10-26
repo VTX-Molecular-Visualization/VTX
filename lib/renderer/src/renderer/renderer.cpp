@@ -23,8 +23,7 @@ namespace VTX::Renderer
 				_queue,
 				_graph.getResources(),
 				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
-				reinterpret_cast<uintptr_t>( this )
-			);
+				reinterpret_cast<uintptr_t>( this ) );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -37,9 +36,8 @@ namespace VTX::Renderer
 
 	void Renderer::setOpenGL( const Desc::NativeContextInfo & p_contextInfo, const FilePath & p_applicationDir )
 	{
-		const Util::ScopedChrono timer(
-			"[RENDERER] setOpenGL46 / surface: " + std::to_string( p_contextInfo.surface )
-		);
+		const Util::ScopedChrono timer( "[RENDERER] setOpenGL46 / surface: "
+										+ std::to_string( p_contextInfo.surface ) );
 
 		_context.setOpenGL( _width, _height, p_contextInfo, getShadersDir( p_applicationDir ) );
 		try
@@ -49,8 +47,7 @@ namespace VTX::Renderer
 				_queue,
 				_graph.getResources(),
 				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
-				reinterpret_cast<uintptr_t>( this )
-			);
+				reinterpret_cast<uintptr_t>( this ) );
 			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ENVIRONMENT;
 			_context.fillInfos( _infos );
 			onReady( _infos );
@@ -72,12 +69,10 @@ namespace VTX::Renderer
 		_width	= p_width;
 		_height = p_height;
 
-		_context.resize(
-			static_cast<uint32_t>( p_width ),
-			static_cast<uint32_t>( p_height ),
-			_graph.getPasses(),
-			_graph.getResources().textures
-		);
+		_context.resize( static_cast<uint32_t>( p_width ),
+						 static_cast<uint32_t>( p_height ),
+						 _graph.getPasses(),
+						 _graph.getResources().textures );
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COMMAND_BUFFER | Cache::E_RENDERER_DIRTY::CAMERA
 						  | Cache::E_RENDERER_DIRTY::NEED_UPDATE;
 	}
@@ -138,10 +133,8 @@ namespace VTX::Renderer
 		return false;
 	}
 
-	std::vector<std::byte> Renderer::snapshot(
-		const std::optional<Util::Resolution> & p_resolution,
-		const std::optional<float>				p_backgroundOpacity
-	)
+	std::vector<std::byte> Renderer::snapshot( const std::optional<Util::Resolution> & p_resolution,
+											   const std::optional<float>			   p_backgroundOpacity )
 	{
 		const Util::ScopedChrono timer( "[RENDERER] snapshot" );
 
@@ -342,8 +335,7 @@ namespace VTX::Renderer
 		if ( fullRefresh || hasDirty( _dirtyRenderer, RendererDirty::GRAPH ) )
 		{
 			graphChanged = Builder::RenderGraphRuntime::refreshGraph(
-				_graphicsConfig.data, _config, _graph, _queue, _layouts, _geometries
-			);
+				_graphicsConfig.data, _config, _graph, _queue, _layouts, _geometries );
 			if ( graphChanged )
 			{
 				Builder::RenderGraphRuntime::rebuildCommandBuffer(
@@ -351,8 +343,7 @@ namespace VTX::Renderer
 					_queue,
 					_graph.getResources(),
 					reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
-					reinterpret_cast<uintptr_t>( this )
-				);
+					reinterpret_cast<uintptr_t>( this ) );
 			}
 		}
 		bool updateGraphicsConfig
@@ -399,8 +390,7 @@ namespace VTX::Renderer
 			for ( const auto & system : geometryRefreshSystems )
 			{
 				Builder::SystemVisibility::refreshGeometryVisibility(
-					_context, _systems, _representations, _layouts, _geometries, system
-				);
+					_context, _systems, _representations, _layouts, _geometries, system );
 			}
 			geometryVisibilityRefreshed = true;
 
@@ -411,8 +401,7 @@ namespace VTX::Renderer
 				const Desc::Handle system = entry.handle;
 				Builder::ResidueLayout::uploadInput( _context, _layouts, _geometries, system, _systems.get( system ) );
 				Builder::RibbonGeometry::uploadPositions(
-					_context, _layouts, _geometries, system, _systems.get( system ).data.trajectory
-				);
+					_context, _layouts, _geometries, system, _systems.get( system ).data.trajectory );
 			}
 
 			Builder::GeometryBuffers::allocateOutputs( _context, _geometries );
@@ -446,11 +435,9 @@ namespace VTX::Renderer
 			_layouts.voxels.resizeStorage( _context, _geometries.grid.voxelCount() );
 
 			_layouts.voxels.upload<Layout::VOXEL_ATTR::MINS, Vec3f>(
-				_context, Desc::NO_HANDLE, std::span<const Vec3f> { _voxels.mins }
-			);
+				_context, Desc::NO_HANDLE, std::span<const Vec3f> { _voxels.mins } );
 			_layouts.voxels.upload<Layout::VOXEL_ATTR::MAXS, Vec3f>(
-				_context, Desc::NO_HANDLE, std::span<const Vec3f> { _voxels.maxs }
-			);
+				_context, Desc::NO_HANDLE, std::span<const Vec3f> { _voxels.maxs } );
 
 			updateDrawRanges = true;
 		}
@@ -478,8 +465,7 @@ namespace VTX::Renderer
 				{
 					Builder::AtomLayout::uploadPositions( _context, _systems, _layouts, system, cache.data.trajectory );
 					Builder::RibbonGeometry::uploadPositions(
-						_context, _layouts, _geometries, system, cache.data.trajectory
-					);
+						_context, _layouts, _geometries, system, cache.data.trajectory );
 					if ( _geometries.ses.built( system ) )
 					{
 						_geometries.ses.invalidateForRecompute( _context, system );
@@ -496,11 +482,9 @@ namespace VTX::Renderer
 					const std::vector<RepresentationIndex> atomRepresentations
 						= Builder::AtomLayout::buildAtomRepresentations( cache );
 					Builder::AtomLayout::uploadRepresentations(
-						_context, _layouts, system, atomRepresentations, geometryRefreshSystems
-					);
+						_context, _layouts, system, atomRepresentations, geometryRefreshSystems );
 					Builder::ResidueLayout::uploadRepresentations(
-						_context, _layouts, _geometries, system, atomRepresentations
-					);
+						_context, _layouts, _geometries, system, atomRepresentations );
 					geometryRefreshSystems.insert( system );
 				}
 				if ( hasDirty( flags, SystemDirty::VISIBILITY ) )
@@ -528,8 +512,7 @@ namespace VTX::Renderer
 			for ( const auto & system : geometryRefreshSystems )
 			{
 				Builder::SystemVisibility::refreshGeometryVisibility(
-					_context, _systems, _representations, _layouts, _geometries, system
-				);
+					_context, _systems, _representations, _layouts, _geometries, system );
 			}
 		}
 		if ( not geometryIndexesUploaded )
@@ -542,11 +525,9 @@ namespace VTX::Renderer
 				{
 					const Desc::Handle system = entry.handle;
 					Builder::ResidueLayout::uploadInput(
-						_context, _layouts, _geometries, system, _systems.get( system )
-					);
+						_context, _layouts, _geometries, system, _systems.get( system ) );
 					Builder::RibbonGeometry::uploadPositions(
-						_context, _layouts, _geometries, system, _systems.get( system ).data.trajectory
-					);
+						_context, _layouts, _geometries, system, _systems.get( system ).data.trajectory );
 				}
 
 				Builder::GeometryBuffers::allocateOutputs( _context, _geometries );
@@ -583,8 +564,7 @@ namespace VTX::Renderer
 				_queue,
 				_graph.getResources(),
 				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
-				reinterpret_cast<uintptr_t>( this )
-			);
+				reinterpret_cast<uintptr_t>( this ) );
 		}
 		if ( hasDirty( _dirtyRenderer, RendererDirty::ENVIRONMENT )
 			 && _graphicsConfig.data.shading.backgroundMode == E_BACKGROUND_MODE::ENVIRONMENT
@@ -645,12 +625,10 @@ namespace VTX::Renderer
 		}
 	}
 
-	void Renderer::setCamera(
-		const Camera & p_camera,
-		const Vec3f &  p_position,
-		const Mat4f &  p_matView,
-		const Mat4f &  p_matProj
-	)
+	void Renderer::setCamera( const Camera & p_camera,
+							  const Vec3f &	 p_position,
+							  const Mat4f &	 p_matView,
+							  const Mat4f &	 p_matProj )
 	{
 		_camera = { p_camera, p_position, p_matView, p_matProj };
 		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::CAMERA;
@@ -707,10 +685,8 @@ namespace VTX::Renderer
 		return handle;
 	}
 
-	void Renderer::patchRepresentation(
-		const Desc::Handle					p_handle,
-		const Cache::Representation::Data & p_representation
-	)
+	void Renderer::patchRepresentation( const Desc::Handle					p_handle,
+										const Cache::Representation::Data & p_representation )
 	{
 		assert( _representations.contains( p_handle ) );
 
@@ -802,8 +778,7 @@ namespace VTX::Renderer
 			_queue,
 			_graph.getResources(),
 			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
-			reinterpret_cast<uintptr_t>( this )
-		);
+			reinterpret_cast<uintptr_t>( this ) );
 
 		return true;
 	}
@@ -821,8 +796,7 @@ namespace VTX::Renderer
 			_queue,
 			_graph.getResources(),
 			reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
-			reinterpret_cast<uintptr_t>( this )
-		);
+			reinterpret_cast<uintptr_t>( this ) );
 
 		return true;
 	}

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SYSTEM_WRITER__
-#define __VTX_APP_SYSTEM_WRITER__
+#ifndef VTX_APP_SYSTEM_WRITER_HPP
+#define VTX_APP_SYSTEM_WRITER_HPP
 
 #include <memory>
 #include <util/filesystem.hpp>

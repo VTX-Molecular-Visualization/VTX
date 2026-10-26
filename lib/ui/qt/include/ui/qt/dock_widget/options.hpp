@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_OPTIONS__
-#define __VTX_UI_QT_DOCK_WIDGET_OPTIONS__
+#ifndef VTX_UI_QT_DOCK_WIDGET_OPTIONS_HPP
+#define VTX_UI_QT_DOCK_WIDGET_OPTIONS_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/events.hpp"
@@ -46,14 +46,12 @@ namespace VTX::UI::QT::DockWidget
 		void		_syncThemeComboBox();
 		void		_onThemeChanged( const Events::ThemeChanged & );
 		QGroupBox * _createDiskUsageGroupBox();
-		void		_addDiskUsageRow(
-			QVBoxLayout *	   p_layout,
-			const QString &	   p_title,
-			const FilePath &   p_path,
-			QPointer<QLabel> & p_labelSize
-		);
-		void _refreshFolderInfos( const FilePath & p_path, QLabel * p_labelSize, const QString & p_title ) const;
-		void _refreshFoldersInfos();
+		void		_addDiskUsageRow( QVBoxLayout *		 p_layout,
+									  const QString &	 p_title,
+									  const FilePath &	 p_path,
+									  QPointer<QLabel> & p_labelSize );
+		void		_refreshFolderInfos( const FilePath & p_path, QLabel * p_labelSize, const QString & p_title ) const;
+		void		_refreshFoldersInfos();
 
 		VTX::Util::EventHub::ScopedConnection _themeChangedConnection;
 	};

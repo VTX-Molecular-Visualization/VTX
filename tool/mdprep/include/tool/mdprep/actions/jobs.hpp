@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_ACTIONS_JOBS__
-#define __VTX_TOOL_TOOLS_MDPREP_ACTIONS_JOBS__
+#ifndef VTX_TOOL_MDPREP_ACTIONS_JOBS_HPP
+#define VTX_TOOL_MDPREP_ACTIONS_JOBS_HPP
 
 #include <memory>
 #include <string>
@@ -23,14 +23,14 @@ namespace VTX::Tool::Mdprep::Actions
 		void wait();
 
 	  private:
-		struct _Impl;
+		struct Impl;
 
-		struct _Del
+		struct Del
 		{
-			void operator()( _Impl * ) const noexcept;
+			void operator()( Impl * ) const noexcept;
 		};
 
-		std::unique_ptr<_Impl, _Del> _impl = nullptr;
+		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
 
 	/**
@@ -46,14 +46,14 @@ namespace VTX::Tool::Mdprep::Actions
 		void wait();
 
 	  private:
-		struct _Impl;
+		struct Impl;
 
-		struct _Del
+		struct Del
 		{
-			void operator()( _Impl * ) const noexcept;
+			void operator()( Impl * ) const noexcept;
 		};
 
-		std::unique_ptr<_Impl, _Del> _impl = nullptr;
+		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
 } // namespace VTX::Tool::Mdprep::Actions
 #endif

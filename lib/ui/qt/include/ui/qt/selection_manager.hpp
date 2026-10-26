@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_SELECTION_MANAGER__
-#define __VTX_UI_QT_SELECTION_MANAGER__
+#ifndef VTX_UI_QT_SELECTION_MANAGER_HPP
+#define VTX_UI_QT_SELECTION_MANAGER_HPP
 
 #include <QAbstractItemView>
 #include <QItemSelectionModel>

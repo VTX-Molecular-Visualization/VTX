@@ -14,8 +14,7 @@ TEST_CASE( "VTX_APP - System - Load", "[system][load]" )
 	const App::Fixture app;
 
 	App::ACTION().execute<App::Action::IO::LoadSystem>(
-		VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" )
-	);
+		VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" ) );
 
 	uint num_system = 0;
 	for ( auto it_topolNTT : App::REG().view<Core::Struct::Topology>() )

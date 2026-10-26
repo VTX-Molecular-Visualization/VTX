@@ -17,14 +17,12 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 {
 	using namespace VTX::Tool::Mdprep::Gateway;
 
-	SettingsDialog::SettingsDialog(
-		QWidget * const											p_parent,
-		const char *											p_title,
-		SupportedData											p_dataFields,
-		MdEngineSpecificFieldPlacer								p_engineFieldPlacer,
-		std::optional<Gateway::EngineSpecificCommonInformation> p_engineInfo,
-		ApplyVisitor											p_applyVisitor
-	) :
+	SettingsDialog::SettingsDialog( QWidget * const											p_parent,
+									const char *											p_title,
+									SupportedData											p_dataFields,
+									MdEngineSpecificFieldPlacer								p_engineFieldPlacer,
+									std::optional<Gateway::EngineSpecificCommonInformation> p_engineInfo,
+									ApplyVisitor											p_applyVisitor ) :
 		_data( p_dataFields ), _engineFieldPlacer( std::move( p_engineFieldPlacer ) ),
 		_uiObjects( UiData { .engineInfo = std::move( p_engineInfo ) } ), _applyVisitor( std::move( p_applyVisitor ) )
 	{
@@ -40,11 +38,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		}
 	}
 
-	void SettingsDialog::_setupDataUi(
-		QVBoxLayout * const				   p_qMainLayout,
-		UiData &						   p_uiObjects,
-		const MdParametersStepData * const p_data
-	)
+	void SettingsDialog::_setupDataUi( QVBoxLayout * const				  p_qMainLayout,
+									   UiData &							  p_uiObjects,
+									   const MdParametersStepData * const p_data )
 	{
 		QWidget *			label	= nullptr;
 		QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
@@ -55,24 +51,20 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		p_uiObjects.fieldDt->setValue( p_data->dt );
 
 		VTX::Tool::Mdprep::ui::get(
-			E_COMMON_FIELDS_UINT64::coordinateSaveInterval, label, p_uiObjects.fieldSaveInterval
-		);
+			E_COMMON_FIELDS_UINT64::coordinateSaveInterval, label, p_uiObjects.fieldSaveInterval );
 		qLayout->addRow( label, p_uiObjects.fieldSaveInterval );
 		p_uiObjects.fieldSaveInterval->setText( QString::number( p_data->nsteps ) );
 	}
 
-	void SettingsDialog::_setupDataUi(
-		QVBoxLayout * const			   p_qMainLayout,
-		UiData &					   p_uiObjects,
-		const MinimizationData * const p_data
-	)
+	void SettingsDialog::_setupDataUi( QVBoxLayout * const			  p_qMainLayout,
+									   UiData &						  p_uiObjects,
+									   const MinimizationData * const p_data )
 	{
 		QWidget *			label	= nullptr;
 		QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
 
 		VTX::Tool::Mdprep::ui::get(
-			E_COMMON_FIELDS_DOUBLE::minimizationEnergyBreakpoint, label, p_uiObjects.fieldMinEnergyBreakpoint
-		);
+			E_COMMON_FIELDS_DOUBLE::minimizationEnergyBreakpoint, label, p_uiObjects.fieldMinEnergyBreakpoint );
 		qLayout->addRow( label, p_uiObjects.fieldMinEnergyBreakpoint );
 		p_uiObjects.fieldMinEnergyBreakpoint->setValue( p_data->energyBreakpoint );
 
@@ -81,11 +73,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		p_uiObjects.fieldMinStepSize->setValue( p_data->stepSize );
 	}
 
-	void SettingsDialog::_setupDataUi(
-		QVBoxLayout * const		 p_qMainLayout,
-		UiData &				 p_uiObjects,
-		const SystemData * const p_data
-	)
+	void SettingsDialog::_setupDataUi( QVBoxLayout * const		p_qMainLayout,
+									   UiData &					p_uiObjects,
+									   const SystemData * const p_data )
 	{
 		QFormLayout * const qLayout = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *p_qMainLayout );
 		QWidget *			w		= nullptr;
@@ -155,23 +145,17 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 		if ( std::holds_alternative<SystemData *>( _data ) && _uiObjects.engineInfo.has_value() )
 		{
-			this->_engineFieldPlacer.update(
-				EngineSpecificCommonInformationFieldUpdate {
-					.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
-					.newValue = std::get<SystemData *>( this->_data )->boxShapeIdx }
-			);
-			QObject::connect(
-				_uiObjects.fieldBoxShape,
-				&QComboBox::currentTextChanged,
-				[ & ]
-				{
-					this->_engineFieldPlacer.update(
-						EngineSpecificCommonInformationFieldUpdate {
-							.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
-							.newValue = static_cast<size_t>( _uiObjects.fieldBoxShape->currentIndex() ) }
-					);
-				}
-			);
+			this->_engineFieldPlacer.update( EngineSpecificCommonInformationFieldUpdate {
+				.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
+				.newValue = std::get<SystemData *>( this->_data )->boxShapeIdx } );
+			QObject::connect( _uiObjects.fieldBoxShape,
+							  &QComboBox::currentTextChanged,
+							  [ & ]
+							  {
+								  this->_engineFieldPlacer.update( EngineSpecificCommonInformationFieldUpdate {
+									  .field	= E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
+									  .newValue = static_cast<size_t>( _uiObjects.fieldBoxShape->currentIndex() ) } );
+							  } );
 		}
 
 		qMainLayout->addSpacerItem( std::make_unique<QSpacerItem>( 0, 20 ).release() );

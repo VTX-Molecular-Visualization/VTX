@@ -122,8 +122,7 @@ namespace VTX::Tool::Mdprep::ui
 			_titleLabel( VTX::UI::QT::Helper::makeQObject<QLabel>( p_title, _header ) ),
 			_stateLabel( VTX::UI::QT::Helper::makeQObject<QLabel>( _header ) ),
 			_arrow(
-				VTX::UI::QT::Helper::makeQObject<QLabel>( QStringLiteral( "▸" ), _header )
-			), // right-pointing triangle
+				VTX::UI::QT::Helper::makeQObject<QLabel>( QStringLiteral( "▸" ), _header ) ), // right-pointing triangle
 			_details( VTX::UI::QT::Helper::makeQObject<QWidget>( this ) ),
 			_whyLabel( VTX::UI::QT::Helper::makeQObject<QLabel>( p_why, _details ) ),
 			_errorsLabel( VTX::UI::QT::Helper::makeQObject<QLabel>( _details ) ),
@@ -291,8 +290,7 @@ namespace VTX::Tool::Mdprep::ui
 			// QSS is kept strictly for the rounded geometry that the widget API cannot express: the dot circle and the
 			// card corners / left accent. The injected color is a fixed semantic status color, not a theme role.
 			_dot->setStyleSheet(
-				QStringLiteral( "background-color:%1; border-radius:6px;" ).arg( style.color.name() )
-			);
+				QStringLiteral( "background-color:%1; border-radius:6px;" ).arg( style.color.name() ) );
 			setStyleSheet( QStringLiteral( "QFrame#mdprepStepNode { border-left:3px solid %1; border-radius:4px; }" )
 							   .arg( style.color.name() ) );
 
@@ -323,8 +321,7 @@ namespace VTX::Tool::Mdprep::ui
 		QLabel * intro = VTX::UI::QT::Helper::makeQObject<QLabel>(
 			"Progress of the Molecular Dynamics preparation. Click a step to read what it does and, once finished, its "
 			"GROMACS output.",
-			_layout->parentWidget()
-		);
+			_layout->parentWidget() );
 		intro->setWordWrap( true );
 		intro->setContentsMargins( 10, 10, 10, 4 );
 		_layout->addWidget( intro );
@@ -332,8 +329,7 @@ namespace VTX::Tool::Mdprep::ui
 		for ( size_t i = 0; i < g_steps.size(); i++ )
 		{
 			StepNode * node = VTX::UI::QT::Helper::makeQObject<StepNode>(
-				g_steps[ i ].title, g_steps[ i ].why, _layout->parentWidget()
-			);
+				g_steps[ i ].title, g_steps[ i ].why, _layout->parentWidget() );
 			_layout->addWidget( node );
 			if ( i + 1 == g_steps.size() )
 			{
@@ -347,9 +343,8 @@ namespace VTX::Tool::Mdprep::ui
 
 		_layout->addStretch( 1 );
 
-		_openFolderBtn = VTX::UI::QT::Helper::makeQObject<QPushButton>(
-			QStringLiteral( "Open system folder" ), _layout->parentWidget()
-		);
+		_openFolderBtn = VTX::UI::QT::Helper::makeQObject<QPushButton>( QStringLiteral( "Open system folder" ),
+																		_layout->parentWidget() );
 		_openFolderBtn->setEnabled( false );
 		_openFolderBtn->setToolTip( QStringLiteral( "Available once the system has been packed successfully." ) );
 		{
@@ -358,20 +353,17 @@ namespace VTX::Tool::Mdprep::ui
 			_openFolderBtn->setFont( f );
 		}
 		_openFolderBtn->setContentsMargins( 10, 10, 10, 10 );
-		QObject::connect(
-			_openFolderBtn,
-			&QPushButton::clicked,
-			[ this ]
-			{
-				if ( _packedPath.empty() )
-				{
-					return;
-				}
-				QDesktopServices::openUrl(
-					QUrl::fromLocalFile( QDir( QString::fromStdString( _packedPath ) ).absolutePath() )
-				);
-			}
-		);
+		QObject::connect( _openFolderBtn,
+						  &QPushButton::clicked,
+						  [ this ]
+						  {
+							  if ( _packedPath.empty() )
+							  {
+								  return;
+							  }
+							  QDesktopServices::openUrl(
+								  QUrl::fromLocalFile( QDir( QString::fromStdString( _packedPath ) ).absolutePath() ) );
+						  } );
 		_layout->addWidget( _openFolderBtn );
 	}
 

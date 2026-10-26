@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_BACKEND_OPENGL__
-#define __VTX_RENDERER_CONTEXT_BACKEND_OPENGL__
+#ifndef VTX_RENDERER_CONTEXT_BACKEND_OPENGL_HPP
+#define VTX_RENDERER_CONTEXT_BACKEND_OPENGL_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/backend/gl/buffer.hpp"
@@ -93,10 +93,8 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Map graphics buffers to an external compute backend pointer.
 		 */
 		Desc::InteropBufferMapping				mapInteropBuffer( Desc::E_INTEROP_API, const Desc::BufferRef & );
-		std::vector<Desc::InteropBufferMapping> mapInteropBuffers(
-			Desc::E_INTEROP_API,
-			std::span<const Desc::BufferRef>
-		);
+		std::vector<Desc::InteropBufferMapping> mapInteropBuffers( Desc::E_INTEROP_API,
+																   std::span<const Desc::BufferRef> );
 		void unmapInteropBuffer( Desc::E_INTEROP_API, const Desc::InteropBufferMapping & );
 		void unmapInteropBuffers( Desc::E_INTEROP_API, std::span<const Desc::InteropBufferMapping> );
 		void unregisterInteropBuffer( Desc::E_INTEROP_API, const Desc::BufferRef & );
@@ -109,22 +107,18 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Get texture data at a given pixel, or full texture.
 		 */
-		std::vector<std::byte> getTextureData(
-			const Desc::Key &,
-			std::optional<Desc::E_FORMAT>,
-			std::optional<size_t>,
-			std::optional<size_t>
-		) const;
+		std::vector<std::byte> getTextureData( const Desc::Key &,
+											   std::optional<Desc::E_FORMAT>,
+											   std::optional<size_t>,
+											   std::optional<size_t> ) const;
 
 		/**
 		 * @brief Set texture data.
 		 */
-		void setTextureData(
-			const Desc::Key &,
-			SpanBytes,
-			std::optional<size_t> p_width  = {},
-			std::optional<size_t> p_height = {}
-		);
+		void setTextureData( const Desc::Key &,
+							 SpanBytes,
+							 std::optional<size_t> p_width	= {},
+							 std::optional<size_t> p_height = {} );
 
 		/**
 		 * @brief Set render target.
@@ -212,23 +206,19 @@ namespace VTX::Renderer::Context::Backend
 		Desc::Handle _getOrCreateTexture( const Desc::Key &, const Desc::Texture & );
 		Desc::Handle _getOrCreateSampler( const Desc::Key &, const Desc::Sampler & );
 		Desc::Handle _getOrCreateVertexLayout( const Desc::Key &, const Desc::VertexLayout & );
-		Desc::Handle _getOrCreateGeometryVertexArray(
-			const Desc::Geometry &,
-			const Desc::Resources &,
-			Desc::BufferChunk
-		);
+		Desc::Handle _getOrCreateGeometryVertexArray( const Desc::Geometry &,
+													  const Desc::Resources &,
+													  Desc::BufferChunk );
 		Desc::Handle _getOrCreateBuffer( const Desc::Key &, const Desc::Buffer & );
 		Desc::Handle _getOrCreateBufferChunk( const Desc::Key &, const Desc::Buffer &, Desc::BufferChunk );
 		Desc::Handle _getOrCreateProgram( const Desc::Program & );
 		Desc::Handle _bufferHandle( const Desc::Key &, const Desc::Resources &, Desc::BufferChunk );
 		Desc::Key	 _physicalBufferKey( const Desc::BufferRef & );
 		void		 _setBufferData( const Desc::Key &, SpanBytes, size_t );
-		std::vector<Desc::InteropBufferMapping> _mapPhysicalInteropBuffers(
-			Desc::E_INTEROP_API,
-			std::span<const Desc::Key>
-		);
-		static Desc::Key _bufferChunkKey( const Desc::Key &, Desc::BufferChunk );
-		static Desc::Key _vertexArrayChunkKey( const Desc::Key &, Desc::BufferChunk );
+		std::vector<Desc::InteropBufferMapping> _mapPhysicalInteropBuffers( Desc::E_INTEROP_API,
+																			std::span<const Desc::Key> );
+		static Desc::Key						_bufferChunkKey( const Desc::Key &, Desc::BufferChunk );
+		static Desc::Key						_vertexArrayChunkKey( const Desc::Key &, Desc::BufferChunk );
 
 		/**
 		 * @brief Build resources.
@@ -241,19 +231,17 @@ namespace VTX::Renderer::Context::Backend
 		 * @brief Bind resources.
 		 */
 		void _attachTexturesToFramebuffer( const Desc::Pass &, const Desc::ResourceMap<Desc::Texture> & );
-		void _bindGeometryToVao(
-			const Desc::Key &,
-			const Desc::Geometry &,
-			const Desc::Resources &,
-			Desc::BufferChunk
-		);
+		void _bindGeometryToVao( const Desc::Key &,
+								 const Desc::Geometry &,
+								 const Desc::Resources &,
+								 Desc::BufferChunk );
 
 		/**
 		 * @brief Create the screen quad.
 		 */
-		static constexpr std::string_view _QUAD		   = "Quad";
-		static constexpr std::string_view _QUAD_VBO	   = "Quad.Position";
-		static constexpr std::string_view _DEFAULT_FBO = "Default";
+		static constexpr std::string_view QUAD		   = "Quad";
+		static constexpr std::string_view QUAD_VBO	   = "Quad.Position";
+		static constexpr std::string_view DEFAULT_FBO = "Default";
 
 		/**
 		 * @brief Specs.

@@ -18,23 +18,18 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_checkBoxBackground = Helper::makeQObject<QCheckBox>( "Background", this );
 		addWidget( _checkBoxBackground );
 
-		connect(
-			this,
-			&HideableGroupBox::toggled,
-			[ this ]( const bool p_state ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_PIXELIZE, bool>( p_state ); }
-		);
-		connect(
-			_sliderSize,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::PIXELIZE_SIZE, uint>( static_cast<uint>( p_value ) ); }
-		);
-		connect(
-			_checkBoxBackground,
-			&QCheckBox::toggled,
-			[ this ]( const bool p_state )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::PIXELIZE_BACKGROUND, bool>( p_state ); }
-		);
+		connect( this,
+				 &HideableGroupBox::toggled,
+				 [ this ]( const bool p_state )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_PIXELIZE, bool>( p_state ); } );
+		connect( _sliderSize,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::PIXELIZE_SIZE, uint>( static_cast<uint>( p_value ) ); } );
+		connect( _checkBoxBackground,
+				 &QCheckBox::toggled,
+				 [ this ]( const bool p_state )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::PIXELIZE_BACKGROUND, bool>( p_state ); } );
 	}
 
 	void PixelizeSection::setConfig( const Entity p_preset, const VTX::Renderer::GraphicsConfig & p_config )

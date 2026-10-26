@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BAKER__
-#define __VTX_RENDERER_BAKER__
+#ifndef VTX_RENDERER_BAKER_HPP
+#define VTX_RENDERER_BAKER_HPP
 
 #include <util/filesystem.hpp>
 #include <util/types.hpp>

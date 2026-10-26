@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_MATERIAL__
-#define __VTX_RENDERER_MATERIAL__
+#ifndef VTX_RENDERER_MATERIAL_HPP
+#define VTX_RENDERER_MATERIAL_HPP
 
 #include <cstddef>
 #include <optional>

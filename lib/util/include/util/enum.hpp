@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_ENUM__
-#define __VTX_UTIL_ENUM__
+#ifndef VTX_UTIL_ENUM_HPP
+#define VTX_UTIL_ENUM_HPP
 
 #include "exceptions.hpp"
 #include "types.hpp"

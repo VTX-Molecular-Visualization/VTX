@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_VTX_APP__
-#define __VTX_APP_VTX_APP__
+#ifndef VTX_APP_VTX_APP_HPP
+#define VTX_APP_VTX_APP_HPP
 
 #include "app/arguments.hpp"
 #include "app/ecs.hpp"

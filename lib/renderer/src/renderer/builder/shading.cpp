@@ -18,10 +18,8 @@ namespace VTX::Renderer::Builder::PostProcess
 			return Baker::loadEnvironmentCubemapKtx( *p_config.environmentPath, p_config.environmentFaceSize );
 		}
 
-		const std::optional<MaterialTexture> & _materialTexture(
-			const Material &		  p_material,
-			const Material::E_TEXTURE p_texture
-		)
+		const std::optional<MaterialTexture> & _materialTexture( const Material &		   p_material,
+																 const Material::E_TEXTURE p_texture )
 		{
 			switch ( p_texture )
 			{
@@ -65,9 +63,8 @@ namespace VTX::Renderer::Builder::PostProcess
 		const std::vector<Baker::EnvironmentTexel> pixels = _buildCubemap( p_config );
 		if ( not pixels.empty() )
 		{
-			p_context.setTextureData<Baker::EnvironmentTexel>(
-				Desc::Key { ENVIRONMENT_TEXTURE }, std::span<const Baker::EnvironmentTexel> { pixels }
-			);
+			p_context.setTextureData<Baker::EnvironmentTexel>( Desc::Key { ENVIRONMENT_TEXTURE },
+															   std::span<const Baker::EnvironmentTexel> { pixels } );
 		}
 	}
 
@@ -84,9 +81,10 @@ namespace VTX::Renderer::Builder::PostProcess
 
 			const uint8_t				 channels = _isScalarTexture( textureType ) ? 1 : 4;
 			const Util::Image::ByteImage image	  = Util::Image::readByteImage( FilePath( texture->path ), channels );
-			p_context.setTextureData<uint8_t>(
-				_materialTextureKey( textureType ), std::span<const uint8_t> { image.pixels }, image.width, image.height
-			);
+			p_context.setTextureData<uint8_t>( _materialTextureKey( textureType ),
+											   std::span<const uint8_t> { image.pixels },
+											   image.width,
+											   image.height );
 		}
 	}
 } // namespace VTX::Renderer::Builder::PostProcess

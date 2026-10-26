@@ -6,13 +6,11 @@
 
 namespace VTX::App::Controller
 {
-	Animation::Animation(
-		const AnimationData &	   p_dataStart,
-		const AnimationData &	   p_dataEnd,
-		const float				   p_duration,
-		const InterpPositionFunc & p_interpPosition,
-		const InterpRotationFunc & p_interRotation
-	) :
+	Animation::Animation( const AnimationData &		 p_dataStart,
+						  const AnimationData &		 p_dataEnd,
+						  const float				 p_duration,
+						  const InterpPositionFunc & p_interpPosition,
+						  const InterpRotationFunc & p_interRotation ) :
 		_animationDataStart( p_dataStart ), _animationDataEnd( p_dataEnd ), _duration( p_duration ),
 		_interpPosition( p_interpPosition ), _interpRotation( p_interRotation )
 	{
@@ -21,12 +19,10 @@ namespace VTX::App::Controller
 	/**
 	 * @brief Called each frame.
 	 */
-	bool Animation::update(
-		const float p_delta,
-		const Setting::Controller &,
-		Util::Math::Transform & p_transform,
-		Vec3f &
-	)
+	bool Animation::update( const float p_delta,
+							const Setting::Controller &,
+							Util::Math::Transform & p_transform,
+							Vec3f & )
 	{
 		using namespace Util;
 

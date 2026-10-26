@@ -18,11 +18,10 @@ namespace VTX::Util::String
 	{
 		std::string result = p_str;
 
-		std::ranges::transform(
-			result,
-			result.begin(),
-			[]( const unsigned char p_char ) { return static_cast<char>( std::toupper( p_char ) ); }
-		);
+		std::ranges::transform( result,
+								result.begin(),
+								[]( const unsigned char p_char )
+								{ return static_cast<char>( std::toupper( p_char ) ); } );
 
 		return result;
 	}
@@ -31,11 +30,10 @@ namespace VTX::Util::String
 	{
 		std::string result = p_str;
 
-		std::ranges::transform(
-			result,
-			result.begin(),
-			[]( const unsigned char p_char ) { return static_cast<char>( std::tolower( p_char ) ); }
-		);
+		std::ranges::transform( result,
+								result.begin(),
+								[]( const unsigned char p_char )
+								{ return static_cast<char>( std::tolower( p_char ) ); } );
 
 		return result;
 	}

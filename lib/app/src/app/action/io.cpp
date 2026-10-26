@@ -68,7 +68,7 @@ namespace VTX::App::Action::IO
 		}
 	}
 
-	struct _SystemIo
+	struct SystemIo
 	{
 		// RAII guard.
 		struct CreationGuard
@@ -104,26 +104,26 @@ namespace VTX::App::Action::IO
 		}
 	};
 
-	void _SystemIoDel::operator()( _SystemIo * const p_ ) noexcept
+	void SystemIoDel::operator()( SystemIo * const p_ ) noexcept
 	{
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		delete p_;
 	}
 
-	LoadSystem::LoadSystem() : _data( new _SystemIo() ) {}
+	LoadSystem::LoadSystem() : _data( new SystemIo() ) {}
 
-	LoadSystem::LoadSystem( Util::Thread::ThreadData p_ ) : _data( new _SystemIo { std::move( p_ ) } ) {}
+	LoadSystem::LoadSystem( Util::Thread::ThreadData p_ ) : _data( new SystemIo { std::move( p_ ) } ) {}
 
 	void LoadSystem::execute( FilePath p_path )
 	{
-		const _SystemIo::CreationGuard guard { _data->extractorCreation };
+		const SystemIo::CreationGuard guard { _data->extractorCreation };
 		_data->extractor.emplace( std::move( p_path ) );
 		_data->startExtraction();
 	}
 
 	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
 	{
-		const _SystemIo::CreationGuard guard { _data->extractorCreation };
+		const SystemIo::CreationGuard guard { _data->extractorCreation };
 		_data->extractor.emplace( std::move( p_path ), std::move( p_buffer ) );
 		_data->startExtraction();
 	}
@@ -149,15 +149,15 @@ namespace VTX::App::Action::IO
 		writer();
 	}
 
-	AssociateTrajectory::AssociateTrajectory() : _data( new _SystemIo() ) {}
+	AssociateTrajectory::AssociateTrajectory() : _data( new SystemIo() ) {}
 
-	AssociateTrajectory::AssociateTrajectory( Util::Thread::ThreadData p_ ) : _data( new _SystemIo { std::move( p_ ) } )
+	AssociateTrajectory::AssociateTrajectory( Util::Thread::ThreadData p_ ) : _data( new SystemIo { std::move( p_ ) } )
 	{
 	}
 
 	void AssociateTrajectory::execute( FilePath p_path, const Entity & p_entity )
 	{
-		const _SystemIo::CreationGuard guard { _data->extractorCreation };
+		const SystemIo::CreationGuard guard { _data->extractorCreation };
 		if ( p_entity == InvalidEntity )
 		{
 			VTX_ERROR( "System entity null." );
@@ -170,7 +170,7 @@ namespace VTX::App::Action::IO
 
 	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
 	{
-		const _SystemIo::CreationGuard guard { _data->extractorCreation };
+		const SystemIo::CreationGuard guard { _data->extractorCreation };
 		if ( p_e == InvalidEntity )
 		{
 			VTX_ERROR( "System entity null." );
@@ -195,10 +195,8 @@ namespace VTX::App::Action::IO
 	{
 		execute(
 			Util::String::replaceFirst(
-				std::string( RCSB_PDB_DOWNLOAD_URL_TEMPLATE ), std::string( SYSTEM_REPLACEMENT_TOKEN ), p_systemId
-			),
-			p_systemId + std::string( RCSB_PDB_DOWNLOAD_FILE_EXTENSION )
-		);
+				std::string( RCSB_PDB_DOWNLOAD_URL_TEMPLATE ), std::string( SYSTEM_REPLACEMENT_TOKEN ), p_systemId ),
+			p_systemId + std::string( RCSB_PDB_DOWNLOAD_FILE_EXTENSION ) );
 	}
 
 	void DownloadSystem::execute( const std::string & p_url, FilePath p_path )
@@ -208,41 +206,34 @@ namespace VTX::App::Action::IO
 			p_url,
 			filename,
 			[ path = std::move( p_path ) ]( std::string && p_text ) mutable
-			{ ACTION().execute<Action::IO::LoadSystem>( std::move( path ), std::move( p_text ) ); }
-		);
+			{ ACTION().execute<Action::IO::LoadSystem>( std::move( path ), std::move( p_text ) ); } );
 	}
 
 	void Snapshot::execute()
 	{ execute( std::nullopt, std::nullopt, Util::Image::E_FORMAT::PNG, std::nullopt, std::nullopt, std::nullopt ); }
 
-	void Snapshot::execute(
-		const std::optional<FilePath> & p_path,
-		const std::optional<FilePath> & p_filename,
-		const Util::Image::E_FORMAT		p_format,
-		const std::optional<size_t>		p_width,
-		const std::optional<size_t>		p_height,
-		const std::optional<float>		p_backgroundOpacity
-	)
+	void Snapshot::execute( const std::optional<FilePath> & p_path,
+							const std::optional<FilePath> & p_filename,
+							const Util::Image::E_FORMAT		p_format,
+							const std::optional<size_t>		p_width,
+							const std::optional<size_t>		p_height,
+							const std::optional<float>		p_backgroundOpacity )
 	{
 		const FilePath directory = p_path.value_or( SESSION().getSnapshotsDir() );
 		const FilePath filename	 = p_filename.value_or( FilePath( std::to_string( Util::Chrono::getTimestamp() ) ) );
 
-		execute(
-			directory / filename,
-			p_format,
-			p_width.value_or( RENDERER().width() ),
-			p_height.value_or( RENDERER().height() ),
-			p_backgroundOpacity
-		);
+		execute( directory / filename,
+				 p_format,
+				 p_width.value_or( RENDERER().width() ),
+				 p_height.value_or( RENDERER().height() ),
+				 p_backgroundOpacity );
 	}
 
-	void Snapshot::execute(
-		const FilePath &			p_path,
-		const Util::Image::E_FORMAT p_format,
-		const size_t				p_width,
-		const size_t				p_height,
-		const std::optional<float>	p_backgroundOpacity
-	)
+	void Snapshot::execute( const FilePath &			p_path,
+							const Util::Image::E_FORMAT p_format,
+							const size_t				p_width,
+							const size_t				p_height,
+							const std::optional<float>	p_backgroundOpacity )
 	{
 		try
 		{

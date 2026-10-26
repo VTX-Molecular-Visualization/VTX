@@ -42,17 +42,14 @@ namespace VTX::IO::test
 	typedef allocator<RereadResultMap, managed_shared_memory::segment_manager>				  RereadResultMapAllocator;
 
 	using _RereadResultInt = std::underlying_type<RereadResult>::type;
+
 	inline RereadResult operator|( const RereadResult & l, const RereadResult & r ) noexcept
-	{
-		return static_cast<RereadResult>( static_cast<_RereadResultInt>( l ) | static_cast<_RereadResultInt>( r ) );
-	}
+	{ return static_cast<RereadResult>( static_cast<_RereadResultInt>( l ) | static_cast<_RereadResultInt>( r ) ); }
+
 	inline RereadResult operator&( const RereadResult & l, const RereadResult & r ) noexcept
-	{
-		return static_cast<RereadResult>( static_cast<_RereadResultInt>( l ) & static_cast<_RereadResultInt>( r ) );
-	}
+	{ return static_cast<RereadResult>( static_cast<_RereadResultInt>( l ) & static_cast<_RereadResultInt>( r ) ); }
+
 	inline RereadResult operator*( const bool & l, const RereadResult & r ) noexcept
-	{
-		return static_cast<RereadResult>( l * static_cast<_RereadResultInt>( r ) );
-	}
+	{ return static_cast<RereadResult>( l * static_cast<_RereadResultInt>( r ) ); }
 
 } // namespace VTX::IO::test

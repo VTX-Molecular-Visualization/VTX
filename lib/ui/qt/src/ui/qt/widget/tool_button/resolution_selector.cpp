@@ -42,15 +42,12 @@ namespace VTX::UI::QT::ToolButton
 			const size_t height = preset.height;
 
 			const QAction * const action = menu->addAction(
-				QString( "%1 (%2x%3)" ).arg( QString::fromUtf8( preset.name ) ).arg( width ).arg( height )
-			);
+				QString( "%1 (%2x%3)" ).arg( QString::fromUtf8( preset.name ) ).arg( width ).arg( height ) );
 
-			connect(
-				action,
-				&QAction::triggered,
-				this,
-				[ this, width, height ]() { emit resolutionChanged( width, height ); }
-			);
+			connect( action,
+					 &QAction::triggered,
+					 this,
+					 [ this, width, height ]() { emit resolutionChanged( width, height ); } );
 		}
 
 		menu->addSeparator();
@@ -62,48 +59,46 @@ namespace VTX::UI::QT::ToolButton
 		customResolutionAction->setDefaultWidget( customResolutionInput );
 		menu->addAction( customResolutionAction );
 
-		connect(
-			customResolutionInput,
-			&QLineEdit::returnPressed,
-			this,
-			[ this, menu, customResolutionInput ]()
-			{
-				static const QRegularExpression numberRegex( "\\d+" );
+		connect( customResolutionInput,
+				 &QLineEdit::returnPressed,
+				 this,
+				 [ this, menu, customResolutionInput ]()
+				 {
+					 static const QRegularExpression numberRegex( "\\d+" );
 
-				size_t values[ 2 ] {};
-				int	   count = 0;
+					 size_t values[ 2 ] {};
+					 int	count = 0;
 
-				QRegularExpressionMatchIterator it = numberRegex.globalMatch( customResolutionInput->text() );
-				while ( it.hasNext() && count < 2 )
-				{
-					bool		   ok	 = false;
-					const uint64_t value = it.next().captured().toULongLong( &ok );
-					if ( not ok || value == 0 )
-					{
-						return;
-					}
+					 QRegularExpressionMatchIterator it = numberRegex.globalMatch( customResolutionInput->text() );
+					 while ( it.hasNext() && count < 2 )
+					 {
+						 bool			ok	  = false;
+						 const uint64_t value = it.next().captured().toULongLong( &ok );
+						 if ( not ok || value == 0 )
+						 {
+							 return;
+						 }
 
-					values[ count++ ] = value;
-				}
+						 values[ count++ ] = value;
+					 }
 
-				if ( count == 1 )
-				{
-					values[ 1 ] = values[ 0 ];
-				}
-				else if ( count != 2 )
-				{
-					return;
-				}
+					 if ( count == 1 )
+					 {
+						 values[ 1 ] = values[ 0 ];
+					 }
+					 else if ( count != 2 )
+					 {
+						 return;
+					 }
 
-				if ( values[ 0 ] > CUSTOM_RESOLUTION_MAX_WIDTH || values[ 1 ] > CUSTOM_RESOLUTION_MAX_HEIGHT )
-				{
-					return;
-				}
+					 if ( values[ 0 ] > CUSTOM_RESOLUTION_MAX_WIDTH || values[ 1 ] > CUSTOM_RESOLUTION_MAX_HEIGHT )
+					 {
+						 return;
+					 }
 
-				emit resolutionChanged( values[ 0 ], values[ 1 ] );
-				menu->hide();
-			}
-		);
+					 emit resolutionChanged( values[ 0 ], values[ 1 ] );
+					 menu->hide();
+				 } );
 
 		setMenu( menu );
 	}

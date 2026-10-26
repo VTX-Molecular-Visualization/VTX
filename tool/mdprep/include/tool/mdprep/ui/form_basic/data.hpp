@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_DATA__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_DATA__
+#ifndef VTX_TOOL_MDPREP_UI_FORM_BASIC_DATA_HPP
+#define VTX_TOOL_MDPREP_UI_FORM_BASIC_DATA_HPP
 
 #include <functional>
 
@@ -25,12 +25,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	{
 	  public:
 		Data() = delete;
-		Data(
-			Gateway::MdParameters,
-			ReportManager &,
-			SpecificFieldsPlacerCallback,
-			Gateway::EngineSpecificCommonInformation p_info = Gateway::EngineSpecificCommonInformation()
-		) noexcept;
+		Data( Gateway::MdParameters,
+			  ReportManager &,
+			  SpecificFieldsPlacerCallback,
+			  Gateway::EngineSpecificCommonInformation p_info = Gateway::EngineSpecificCommonInformation() ) noexcept;
 
 		void get( Gateway::MdParameters *& ) noexcept;
 		void get( Gateway::EngineSpecificCommonInformation *& ) noexcept;
@@ -38,7 +36,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void get( SpecificFieldsPlacerCallback *& ) noexcept;
 
 	  private:
-		struct _Data
+		struct Impl
 		{
 			Gateway::EngineSpecificCommonInformation lastFormData;
 			Gateway::MdParameters					 parameters;
@@ -46,7 +44,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			SpecificFieldsPlacerCallback			 specificFieldsCallback;
 		};
 
-		_Data _data;
+		Impl _data;
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
 #endif

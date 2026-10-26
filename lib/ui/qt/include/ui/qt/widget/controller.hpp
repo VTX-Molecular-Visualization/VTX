@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_CONTROLLER__
-#define __VTX_UI_QT_WIDGET_CONTROLLER__
+#ifndef VTX_UI_QT_WIDGET_CONTROLLER_HPP
+#define VTX_UI_QT_WIDGET_CONTROLLER_HPP
 
 #include "ui/qt/widget/editable_slider.hpp"
 #include <QCheckBox>

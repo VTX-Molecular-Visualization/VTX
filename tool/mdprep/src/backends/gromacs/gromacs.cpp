@@ -31,9 +31,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			for ( auto & fileStrPtrIdx : p_currentJobData.expectedOutputFilesIndexes )
 			{
-				p_in.outputs.fileStringPtrs.emplace(
-					p_in.outputs.fileStringPtrs.begin(), &p_currentJobData.arguments.at( fileStrPtrIdx )
-				);
+				p_in.outputs.fileStringPtrs.emplace( p_in.outputs.fileStringPtrs.begin(),
+													 &p_currentJobData.arguments.at( fileStrPtrIdx ) );
 			}
 		}
 
@@ -52,11 +51,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		template<>
-		void fillOutputs(
-			GromacsInstructions & p_in,
-			Pdb2gmxInstructions & p_stepIn,
-			GromacsJobData &	  p_currentJobData
-		)
+		void fillOutputs( GromacsInstructions & p_in,
+						  Pdb2gmxInstructions & p_stepIn,
+						  GromacsJobData &		p_currentJobData )
 		{
 			fillOutputsFromExpectations( p_in, p_currentJobData );
 			if ( const auto * const fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
@@ -66,11 +63,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		template<>
-		void fillOutputs(
-			GromacsInstructions & p_in,
-			SolvateInstructions & p_stepIn,
-			GromacsJobData &	  p_currentJobData
-		)
+		void fillOutputs( GromacsInstructions & p_in,
+						  SolvateInstructions & p_stepIn,
+						  GromacsJobData &		p_currentJobData )
 		{
 			fillOutputsFromExpectations( p_in, p_currentJobData );
 			if ( const auto * const fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
@@ -80,12 +75,10 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		template<typename Instruction>
-		bool carryPreparationStep(
-			GromacsInstructions & p_in,
-			Instruction &		  p_stepIn,
-			const char *		  p_stepName,
-			int &				  stepNum
-		)
+		bool carryPreparationStep( GromacsInstructions & p_in,
+								   Instruction &		 p_stepIn,
+								   const char *			 p_stepName,
+								   int &				 stepNum )
 		{
 			const int displayIndex = stepNum;
 			App::THREAD().dispatch( [ event = Gateway::PreparationStepStarted { displayIndex, p_stepName } ]() mutable
@@ -122,11 +115,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 			if ( currentJobData.report.errorOccured )
 			{
-				VTX_ERROR(
-					"[MDPREP] Preparation step <{}> failed with {} error(s).",
-					p_stepName,
-					currentJobData.report.errors.size()
-				);
+				VTX_ERROR( "[MDPREP] Preparation step <{}> failed with {} error(s).",
+						   p_stepName,
+						   currentJobData.report.errors.size() );
 				for ( const std::string & error : currentJobData.report.errors )
 				{
 					VTX_ERROR( "[MDPREP] Step <{}>: {}", p_stepName, error );
@@ -153,11 +144,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	} // namespace
 
-	void prepareStructure(
-		VTX::Util::Thread::ThreadData & p_thrData,
-		const FilePath &				p_structurePdb,
-		GromacsInstructions &			p_in
-	)
+	void prepareStructure( VTX::Util::Thread::ThreadData & p_thrData,
+						   const FilePath &				   p_structurePdb,
+						   GromacsInstructions &		   p_in )
 	{
 		p_in.fileStem		  = p_structurePdb.stem().string();
 		p_in.pdb2gmx.inputPdb = p_structurePdb;
@@ -252,7 +241,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	void createMdDirectory( const GromacsInstructions &, const FilePath & p_dest ) noexcept {}
 
-	class SystemTester::_Impl
+	class SystemTester::Impl
 	{
 		struct TestData
 		{
@@ -281,7 +270,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		void test() {}
 
 	  public:
-		_Impl( const FilePath & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
+		Impl( const FilePath & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
 			_testData( TestData { p_structurePdb, p_ff, p_w } )
 		{
 			const FilePath rootDir = createRootDir();
@@ -331,7 +320,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	};
 
 	SystemTester::SystemTester( const FilePath & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
-		_pimpl( new _Impl( p_structurePdb, p_ff, p_w ) )
+		_pimpl( new Impl( p_structurePdb, p_ff, p_w ) )
 	{
 	}
 
@@ -341,6 +330,6 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	SystemTester::operator bool() const noexcept { return _pimpl->isSystemOk(); }
 
-	void SystemTester::Del::operator()( const _Impl * p ) const { std::default_delete<const _Impl>()( p ); }
+	void SystemTester::Del::operator()( const Impl * p ) const { std::default_delete<const Impl>()( p ); }
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs

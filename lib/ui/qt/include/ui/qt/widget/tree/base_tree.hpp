@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_TREE_BASE_TREE__
-#define __VTX_UI_QT_DOCK_WIDGET_TREE_BASE_TREE__
+#ifndef VTX_UI_QT_WIDGET_TREE_BASE_TREE_HPP
+#define VTX_UI_QT_WIDGET_TREE_BASE_TREE_HPP
 
 #include "ui/qt/widget/base_widget.hpp"
 #include <QTreeWidget>

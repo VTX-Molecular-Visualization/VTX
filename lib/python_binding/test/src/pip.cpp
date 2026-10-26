@@ -49,14 +49,14 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 
 	interpretor.runCommand( fmt::format( "subprocess.run('{} -m pip install numpy', shell=True)", pythonPath ) );
 	bool has_numpy = false;
-	std::ranges::for_each(
-		std::filesystem::directory_iterator( pip_install_dir ),
-		[ has_numpy = &has_numpy ]( const std::filesystem::path & dir_entry )
-		{
-			if ( dir_entry.string().find( "numpy" ) != std::string::npos )
-				*has_numpy = true;
-		}
-	);
+	std::ranges::for_each( std::filesystem::directory_iterator( pip_install_dir ),
+						   [ has_numpy = &has_numpy ]( const std::filesystem::path & dir_entry )
+						   {
+							   if ( dir_entry.string().find( "numpy" ) != std::string::npos )
+							   {
+								   *has_numpy = true;
+							   }
+						   } );
 
 	CHECK( has_numpy );
 	// interpretor.runCommand( "import pip" );

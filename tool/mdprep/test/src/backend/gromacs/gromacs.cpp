@@ -18,11 +18,9 @@ namespace VTX::test
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		in.pdb2gmx.forcefields = listForcefields( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
-		auto it				   = std::find_if(
-			in.pdb2gmx.forcefields.begin(),
-			in.pdb2gmx.forcefields.end(),
-			[ & ]( const forcefield & p_ ) { return p_.getName() == p_ffName; }
-		);
+		auto it				   = std::find_if( in.pdb2gmx.forcefields.begin(),
+											   in.pdb2gmx.forcefields.end(),
+											   [ & ]( const forcefield & p_ ) { return p_.getName() == p_ffName; } );
 		if ( it != std::end( in.pdb2gmx.forcefields ) )
 		{
 			in.pdb2gmx.forcefieldIndex = std::distance( in.pdb2gmx.forcefields.begin(), it );

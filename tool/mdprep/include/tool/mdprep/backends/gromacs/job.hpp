@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_JOBS__
-#define __VTX_TOOL_TOOLS_MDPREP_JOBS__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_JOB_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_JOB_HPP
 
 #include <filesystem>
 #include <functional>

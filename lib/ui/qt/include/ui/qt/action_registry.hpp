@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_ACTION_REGISTRY__
-#define __VTX_UI_QT_ACTION_REGISTRY__
+#ifndef VTX_UI_QT_ACTION_REGISTRY_HPP
+#define VTX_UI_QT_ACTION_REGISTRY_HPP
 
 #include <QAction>
 #include <QMenu>

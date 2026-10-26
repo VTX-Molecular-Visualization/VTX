@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PASS_CONTROLLER_TRACKBALL__
-#define __VTX_APP_PASS_CONTROLLER_TRACKBALL__
+#ifndef VTX_APP_CONTROLLER_TRACKBALL_HPP
+#define VTX_APP_CONTROLLER_TRACKBALL_HPP
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"

@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_GL_BUFFER__
-#define __VTX_RENDERER_CONTEXT_GL_BUFFER__
+#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_BUFFER_HPP
+#define VTX_RENDERER_CONTEXT_BACKEND_GL_BUFFER_HPP
 
 #include "include_opengl.hpp"
 #include <cassert>
@@ -72,12 +72,10 @@ namespace VTX::Renderer::Context::Backend::GL
 			glBindBufferBase( p_target, p_index, _id );
 		}
 
-		void bind(
-			const GLenum	 p_target,
-			const GLuint	 p_index,
-			const GLsizeiptr p_size,
-			const GLintptr	 p_offset = 0
-		) const noexcept
+		void bind( const GLenum		p_target,
+				   const GLuint		p_index,
+				   const GLsizeiptr p_size,
+				   const GLintptr	p_offset = 0 ) const noexcept
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_target != 0 );
@@ -93,12 +91,10 @@ namespace VTX::Renderer::Context::Backend::GL
 		static void unbindRange( GLenum p_target, GLuint p_index ) noexcept
 		{ glBindBufferRange( p_target, p_index, 0, 0, 0 ); }
 
-		void setData(
-			const void * const p_data,
-			const GLsizei	   p_size,
-			const GLintptr	   p_offset = 0,
-			const GLenum	   p_usage	= GL_DYNAMIC_DRAW
-		)
+		void setData( const void * const p_data,
+					  const GLsizei		 p_size,
+					  const GLintptr	 p_offset = 0,
+					  const GLenum		 p_usage  = GL_DYNAMIC_DRAW )
 		{
 			assert( glIsBuffer( _id ) );
 			assert( p_size > 0 );
@@ -173,4 +169,4 @@ namespace VTX::Renderer::Context::Backend::GL
 	};
 } // namespace VTX::Renderer::Context::Backend::GL
 
-#endif // __VTX_GL_UNIFORM_BUFFER__
+#endif // VTX_RENDERER_CONTEXT_BACKEND_GL_BUFFER_HPP

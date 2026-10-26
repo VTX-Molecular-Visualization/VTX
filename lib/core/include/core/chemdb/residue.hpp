@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_CHEMDB_RESIDUE__
-#define __VTX_CORE_CHEMDB_RESIDUE__
+#ifndef VTX_CORE_CHEMDB_RESIDUE_HPP
+#define VTX_CORE_CHEMDB_RESIDUE_HPP
 
 #include <array>
 #include <cstdint>

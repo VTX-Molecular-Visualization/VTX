@@ -29,8 +29,7 @@ namespace VTX::App::PythonBinding
 			void execute( const std::string & p_name )
 			{
 				App::Action::Scene::SetColorLayout().execute(
-					_getPresetByName<Renderer::Color::Layout>( p_name, "Color layout" )
-				);
+					_getPresetByName<Renderer::Color::Layout>( p_name, "Color layout" ) );
 			}
 		};
 
@@ -39,8 +38,7 @@ namespace VTX::App::PythonBinding
 			void execute( const std::string & p_name )
 			{
 				App::Action::Scene::SetGraphicsConfig().execute(
-					_getPresetByName<Renderer::GraphicsConfig>( p_name, "Graphics config" )
-				);
+					_getPresetByName<Renderer::GraphicsConfig>( p_name, "Graphics config" ) );
 			}
 		};
 	} // namespace
@@ -49,16 +47,12 @@ namespace VTX::App::PythonBinding
 	{
 		p_vtxModule.bindAction<App::Action::Scene::Clear>( "newScene", "Clear scene." );
 		p_vtxModule.bindAction<App::Action::Scene::DeleteSystem, const Entity>(
-			"deleteSystem", "Delete a system from the scene.", VTX::PythonBinding::Wrapper::Arg( "systemId" )
-		);
+			"deleteSystem", "Delete a system from the scene.", VTX::PythonBinding::Wrapper::Arg( "systemId" ) );
 		p_vtxModule.bindAction<App::Action::Scene::DeleteSystemSelected>(
-			"deleteSystemSelected", "Delete all selected systems from the scene."
-		);
+			"deleteSystemSelected", "Delete all selected systems from the scene." );
 		p_vtxModule.bindAction<SetColorLayoutByName, const std::string &>(
-			"setColorLayout", "Set the scene color layout preset.", VTX::PythonBinding::Wrapper::Arg( "name" )
-		);
+			"setColorLayout", "Set the scene color layout preset.", VTX::PythonBinding::Wrapper::Arg( "name" ) );
 		p_vtxModule.bindAction<SetGraphicsConfigByName, const std::string &>(
-			"setGraphicsConfig", "Set the scene graphics config preset.", VTX::PythonBinding::Wrapper::Arg( "name" )
-		);
+			"setGraphicsConfig", "Set the scene graphics config preset.", VTX::PythonBinding::Wrapper::Arg( "name" ) );
 	}
 } // namespace VTX::App::PythonBinding

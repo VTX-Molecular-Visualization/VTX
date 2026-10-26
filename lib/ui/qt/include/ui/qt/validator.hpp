@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_VALIDATOR__
-#define __VTX_UI_QT_VALIDATOR__
+#ifndef VTX_UI_QT_VALIDATOR_HPP
+#define VTX_UI_QT_VALIDATOR_HPP
 
 #include <qvalidator.h>
 

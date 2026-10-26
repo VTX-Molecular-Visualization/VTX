@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_TYPE_TRAITS__
-#define __VTX_UTIL_TYPE_TRAITS__
+#ifndef VTX_UTIL_TYPE_TRAITS_HPP
+#define VTX_UTIL_TYPE_TRAITS_HPP
 
 #include "color/rgba.hpp"
 #include "types.hpp"

@@ -35,8 +35,7 @@ namespace VTX::PythonBinding
 	FilterResult filter( const std::string & p_command )
 	{
 		const auto findResult = std::ranges::find_if(
-			g_FILTERED_COMMANDS, [ &p_command ]( const UnwantedCommand & p_ ) { return p_ == p_command; }
-		);
+			g_FILTERED_COMMANDS, [ &p_command ]( const UnwantedCommand & p_ ) { return p_ == p_command; } );
 		if ( findResult == std::end( g_FILTERED_COMMANDS ) )
 		{
 			return FilterResult( false );

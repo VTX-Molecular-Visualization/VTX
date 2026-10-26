@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_TOOL_SNAPSHOT__
-#define __VTX_UI_QT_TOOL_SNAPSHOT__
+#ifndef VTX_UI_QT_TOOL_BAR_SNAPSHOT_HPP
+#define VTX_UI_QT_TOOL_BAR_SNAPSHOT_HPP
 
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"

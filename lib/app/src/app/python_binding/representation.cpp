@@ -39,17 +39,14 @@ namespace VTX::App::PythonBinding
 
 		struct SetRepresentationByName
 		{
-			void execute(
-				const Entity		p_ent,
-				const std::string & p_presetName,
-				const SystemItem	p_item,
-				const RangeList &	p_ranges
-			)
+			void execute( const Entity		  p_ent,
+						  const std::string & p_presetName,
+						  const SystemItem	  p_item,
+						  const RangeList &	  p_ranges )
 			{
 				_validateSystem( p_ent );
 				App::Action::Representation::AddItem().execute(
-					p_ent, p_item, _getRepresentationPreset( p_presetName ), p_ranges
-				);
+					p_ent, p_item, _getRepresentationPreset( p_presetName ), p_ranges );
 			}
 		};
 
@@ -64,8 +61,7 @@ namespace VTX::App::PythonBinding
 			void execute( const std::string & p_presetName )
 			{
 				App::Action::Preset::Apply<Renderer::Representation>().execute(
-					_getRepresentationPreset( p_presetName )
-				);
+					_getRepresentationPreset( p_presetName ) );
 			}
 		};
 	} // namespace
@@ -75,25 +71,21 @@ namespace VTX::App::PythonBinding
 		p_vtxModule.bindAction<SetRepresentationAllByName, const std::string &>(
 			"setRepresentation",
 			"Set the representation preset of all systems.",
-			VTX::PythonBinding::Wrapper::Arg( "presetName" )
-		);
-		p_vtxModule.bindAction<
-			SetRepresentationByName,
-			const Entity,
-			const std::string &,
-			const SystemItem,
-			const RangeList &>(
+			VTX::PythonBinding::Wrapper::Arg( "presetName" ) );
+		p_vtxModule.bindAction<SetRepresentationByName,
+							   const Entity,
+							   const std::string &,
+							   const SystemItem,
+							   const RangeList &>(
 			"setRepresentation",
 			"Set the representation preset of system items.",
 			VTX::PythonBinding::Wrapper::Arg( "systemId" ),
 			VTX::PythonBinding::Wrapper::Arg( "presetName" ),
 			VTX::PythonBinding::Wrapper::VArg<SystemItem>( "item", SystemItem::SYSTEM ),
-			VTX::PythonBinding::Wrapper::VArg<RangeList>( "ranges", RangeList() )
-		);
+			VTX::PythonBinding::Wrapper::VArg<RangeList>( "ranges", RangeList() ) );
 		p_vtxModule.bindAction<SetRepresentationSelectedByName, const std::string &>(
 			"setRepresentationSelected",
 			"Set the representation preset of the current selection.",
-			VTX::PythonBinding::Wrapper::Arg( "presetName" )
-		);
+			VTX::PythonBinding::Wrapper::Arg( "presetName" ) );
 	}
 } // namespace VTX::App::PythonBinding

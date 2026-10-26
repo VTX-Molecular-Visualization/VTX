@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_MATH_TRANSFORM__
-#define __VTX_UTIL_MATH_TRANSFORM__
+#ifndef VTX_UTIL_MATH_TRANSFORM_HPP
+#define VTX_UTIL_MATH_TRANSFORM_HPP
 
 #include "util/math.hpp"
 #include "util/types.hpp"
@@ -76,8 +76,7 @@ namespace VTX::Util::Math
 		void setRotation( const float p_pitch, const float p_yaw, const float p_roll ) noexcept
 		{
 			_rotation = Math::normalize(
-				Quatf( Vec3f( Math::radians( p_pitch ), Math::radians( p_yaw ), Math::radians( p_roll ) ) )
-			);
+				Quatf( Vec3f( Math::radians( p_pitch ), Math::radians( p_yaw ), Math::radians( p_roll ) ) ) );
 		}
 
 		void setRotation( const Vec3f & p_vec ) noexcept { _rotation = Math::normalize( Quatf( p_vec ) ); }

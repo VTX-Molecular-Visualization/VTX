@@ -20,12 +20,13 @@ namespace pdb100
 			"5ze0", // chemfiles crashed
 			"3zc0", // chemfiles crashed
 		};
+
 		bool notAnException( const fs::path & f )
 		{
 			std::string code( f.stem().string().data(), 4 );
-			return std::find_if(
-					   g_exceptionList.begin(), g_exceptionList.end(), [ &code ]( const char * e ) { return code == e; }
-				   )
+			return std::find_if( g_exceptionList.begin(),
+								 g_exceptionList.end(),
+								 [ &code ]( const char * e ) { return code == e; } )
 				   == std::end( g_exceptionList );
 		}
 	} // namespace
@@ -49,12 +50,17 @@ namespace pdb100
 			// if ( contextData.size() >= maxFiles )
 			// break;
 			if ( fs::is_directory( it_fsItem ) )
+			{
 				walkDir( contextData, it_fsItem.path() );
+			}
 			if ( fs::is_regular_file( it_fsItem ) /*and not notAnException( it_fsItem )*/ )
+			{
 				contextData.push_back( it_fsItem.path().string() );
+			}
 		}
 		return;
 	}
+
 	/**
 	 * @brief Open each directory from the dbDir and list the files in the pdb100_system collection
 	 * @param contextData

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_SELECTION__
-#define __VTX_UI_QT_WIDGET_SELECTION__
+#ifndef VTX_UI_QT_WIDGET_SELECTION_HPP
+#define VTX_UI_QT_WIDGET_SELECTION_HPP
 
 #include "ui/qt/widget/transform.hpp"
 #include <QListWidget>

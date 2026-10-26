@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BENCH_CAMERA__
-#define __VTX_RENDERER_BENCH_CAMERA__
+#ifndef VTX_BENCH_CAMERA_CONTROLLER_HPP
+#define VTX_BENCH_CAMERA_CONTROLLER_HPP
 
 #include <algorithm>
 #include <renderer/camera.hpp>
@@ -25,7 +25,8 @@ namespace VTX::Bench
 		static constexpr float VELOCITY_ZOOM_MIN	 = 10.f;
 		static constexpr float VELOCITY_ZOOM_MAX	 = 2000.f;
 
-		CameraController( const size_t p_width, const size_t p_height ) : _camera { .screenWidth = p_width, .screenHeight = p_height }
+		CameraController( const size_t p_width, const size_t p_height ) :
+			_camera { .screenWidth = p_width, .screenHeight = p_height }
 		{
 			_transform.setPosition( 0.f, 0.f, 250.f );
 			_updateTarget();
@@ -78,9 +79,7 @@ namespace VTX::Bench
 		{ _camera.far = std::clamp( p_value, Renderer::FAR_CLIP_MIN, Renderer::FAR_CLIP_MAX ); }
 
 		void setFov( const float p_value ) noexcept
-		{
-			_camera.fov = std::clamp( p_value, Renderer::FOV_MIN, Renderer::FOV_MAX );
-		}
+		{ _camera.fov = std::clamp( p_value, Renderer::FOV_MIN, Renderer::FOV_MAX ); }
 
 		void setVelocityTranslation( const float p_value ) noexcept
 		{ _velocityTranslation = std::clamp( p_value, VELOCITY_TRANSLATION_MIN, VELOCITY_TRANSLATION_MAX ); }
@@ -101,8 +100,8 @@ namespace VTX::Bench
 		Util::Math::Transform _transform;
 		Renderer::Camera	  _camera;
 		float				  _velocityTranslation = VELOCITY_TRANSLATION_DEFAULT;
-		float				  _velocityRotation	  = VELOCITY_ROTATION_DEFAULT;
-		float				  _velocityZoom		  = VELOCITY_ZOOM_DEFAULT;
+		float				  _velocityRotation	   = VELOCITY_ROTATION_DEFAULT;
+		float				  _velocityZoom		   = VELOCITY_ZOOM_DEFAULT;
 	};
 } // namespace VTX::Bench
 

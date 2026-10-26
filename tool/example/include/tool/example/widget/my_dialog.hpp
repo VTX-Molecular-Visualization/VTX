@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_EXAMPLE_WIDGET_MY_DIALOG__
-#define __VTX_TOOL_EXAMPLE_WIDGET_MY_DIALOG__
+#ifndef VTX_TOOL_EXAMPLE_WIDGET_MY_DIALOG_HPP
+#define VTX_TOOL_EXAMPLE_WIDGET_MY_DIALOG_HPP
 
 #include <QDialogButtonBox>
 #include <QPushButton>
@@ -25,8 +25,7 @@ namespace VTX::Tool::Example::Widget
 
 			// Buttons.
 			QDialogButtonBox * buttonBox = new QDialogButtonBox(
-				QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open, this
-			);
+				QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open, this );
 
 			layout->addWidget( buttonBox );
 			setLayout( layout );
@@ -35,15 +34,14 @@ namespace VTX::Tool::Example::Widget
 			connect( buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept );
 			connect( buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
 
-			connect(
-				this,
-				&QDialog::accepted,
-				[ this ]()
-				{
-					// TODO: logic
-				}
-			);
+			connect( this,
+					 &QDialog::accepted,
+					 [ this ]()
+					 {
+						 // TODO: logic
+					 } );
 		}
+
 		virtual ~MyDialog() {}
 	};
 

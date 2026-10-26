@@ -60,8 +60,7 @@ namespace
 				{
 					_executed = true;
 					return 0u;
-				}
-			);
+				} );
 		}
 
 	  private:
@@ -109,8 +108,7 @@ TEST_CASE( "VTX_UTIL - Threading - Stop", "[threading][stop]" )
 
 	uint					   result		= 0;
 	Util::Thread::BaseThread & threadToStop = threadManager.createThread(
-		asyncOp, [ &result ]( Util::Thread::BaseThread &, const uint p_result, const bool ) { result = p_result; }
-	);
+		asyncOp, [ &result ]( Util::Thread::BaseThread &, const uint p_result, const bool ) { result = p_result; } );
 	CHECK( not threadToStop.isFinished() );
 
 	threadToStop.stop();
@@ -133,9 +131,8 @@ TEST_CASE( "VTX_UTIL - Threading - Synchronize", "[threading][synchronize]" )
 	bool			 exceptionCaught  = false;
 	std::atomic_bool completed		  = false;
 	threadManager.createThread(
-		[ &result, &workerVoidResult, &exceptionCaught, &completed, &threadManager ](
-			Util::Thread::StopToken, Util::Thread::BaseThread &
-		)
+		[ &result, &workerVoidResult, &exceptionCaught, &completed, &threadManager ]( Util::Thread::StopToken,
+																					  Util::Thread::BaseThread & )
 		{
 			threadManager.synchronize( [ &workerVoidResult ] { workerVoidResult = true; } );
 			result = threadManager.synchronize( [] { return 42; } );
@@ -149,8 +146,7 @@ TEST_CASE( "VTX_UTIL - Threading - Synchronize", "[threading][synchronize]" )
 			}
 			completed = true;
 			return 0u;
-		}
-	);
+		} );
 
 	while ( not completed )
 	{
@@ -170,20 +166,19 @@ TEST_CASE( "VTX_UTIL - Threading - Cancel synchronization", "[threading][synchro
 	std::atomic_bool		   waiting	 = false;
 	bool					   cancelled = false;
 	Util::Thread::BaseThread & thread	 = threadManager.createThread(
-		   [ &waiting, &cancelled, &threadManager ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
-		   {
-			   waiting = true;
-			   try
-			   {
-				   threadManager.synchronize( [] { return 42; } );
-			   }
-			   catch ( const std::future_error & )
-			   {
-				   cancelled = true;
-			   }
-			   return 0u;
-		   }
-	   );
+		[ &waiting, &cancelled, &threadManager ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
+		{
+			waiting = true;
+			try
+			{
+				threadManager.synchronize( [] { return 42; } );
+			}
+			catch ( const std::future_error & )
+			{
+				cancelled = true;
+			}
+			return 0u;
+		} );
 
 	while ( not waiting )
 	{
@@ -209,13 +204,12 @@ TEST_CASE( "VTX_UTIL - Threading - Dispatch", "[threading][dispatch]" )
 	int						   workerResult = 0;
 	std::atomic_bool		   workerQueued = false;
 	Util::Thread::BaseThread & thread		= threadManager.createThread(
-		  [ &threadManager, &workerResult, &workerQueued ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
-		  {
-			  threadManager.dispatch( [ &workerResult ] { workerResult = 42; } );
-			  workerQueued = true;
-			  return 0u;
-		  }
-	  );
+		[ &threadManager, &workerResult, &workerQueued ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
+		{
+			threadManager.dispatch( [ &workerResult ] { workerResult = 42; } );
+			workerQueued = true;
+			return 0u;
+		} );
 	while ( not workerQueued )
 	{
 		std::this_thread::yield();
@@ -250,8 +244,7 @@ TEST_CASE( "VTX_UTIL - Threading - Progress", "[threading][progress]" )
 				onProgressCallNum++;
 				lastProgress = p_thread.getProgress();
 			}
-		}
-	);
+		} );
 	threadManager.setDefaultTerminatedCallback(
 		[ & ]( const Util::Thread::BaseThread & p_thread )
 		{
@@ -259,20 +252,17 @@ TEST_CASE( "VTX_UTIL - Threading - Progress", "[threading][progress]" )
 			{
 				terminated = true;
 			}
-		}
-	);
+		} );
 
 	const Util::Thread::BaseThread & thread = threadManager.createThread(
 		asyncOp,
-		[ &callbackCalled,
-		  &callbackStopped,
-		  &callbackThreadData ]( Util::Thread::BaseThread &, const uint p_result, const bool p_manuallyStopped )
+		[ &callbackCalled, &callbackStopped, &callbackThreadData ](
+			Util::Thread::BaseThread &, const uint p_result, const bool p_manuallyStopped )
 		{
 			callbackCalled	   = true;
 			callbackStopped	   = p_manuallyStopped;
 			callbackThreadData = p_result;
-		}
-	);
+		} );
 	threadId = thread.getId();
 
 	while ( not terminated )
@@ -294,12 +284,11 @@ TEST_CASE( "VTX_UTIL - Threading - Non-stoppable operation", "[threading][operat
 	Util::Thread::ThreadManager threadManager;
 	std::atomic_bool			executed = false;
 	Util::Thread::BaseThread &	thread	 = threadManager.createThread(
-		   [ &executed ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
-		   {
-			   executed = true;
-			   return 0u;
-		   }
-	   );
+		[ &executed ]( Util::Thread::StopToken, Util::Thread::BaseThread & )
+		{
+			executed = true;
+			return 0u;
+		} );
 
 	thread.wait();
 
@@ -328,8 +317,7 @@ TEST_CASE( "VTX_UTIL - Threading - Manager lookup and stop", "[threading][stop]"
 			return 0u;
 		},
 		[ &endManuallyStopped ]( Util::Thread::BaseThread &, const uint, const bool p_manuallyStopped )
-		{ endManuallyStopped = p_manuallyStopped; }
-	);
+		{ endManuallyStopped = p_manuallyStopped; } );
 
 	REQUIRE( waitFor( started ) );
 	const Util::Thread::ID	   id		   = thread.getId();
@@ -367,8 +355,7 @@ TEST_CASE( "VTX_UTIL - Threading - Manager destruction", "[threading][lifecycle]
 					}
 					stopped = true;
 					return 0u;
-				}
-			);
+				} );
 			REQUIRE( waitFor( started ) );
 		}
 		CHECK( stopped.load() );
@@ -393,8 +380,7 @@ TEST_CASE( "VTX_UTIL - Threading - Manager destruction", "[threading][lifecycle]
 						cancelled = true;
 					}
 					return 0u;
-				}
-			);
+				} );
 			REQUIRE( waitFor( waiting ) );
 		}
 		CHECK( cancelled );
@@ -407,15 +393,14 @@ TEST_CASE( "VTX_UTIL - Threading - Thread state", "[threading][state]" )
 	Util::Thread::ThreadManager threadManager;
 	std::atomic_bool			release = false;
 	Util::Thread::BaseThread &	thread	= threadManager.createThread(
-		  [ &release ]( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & )
-		  {
-			  while ( not release && not p_stopToken.stop_requested() )
-			  {
-				  std::this_thread::yield();
-			  }
-			  return 0u;
-		  }
-	  );
+		[ &release ]( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & )
+		{
+			while ( not release && not p_stopToken.stop_requested() )
+			{
+				std::this_thread::yield();
+			}
+			return 0u;
+		} );
 
 	thread.setProgress( -1.f );
 	CHECK( thread.getProgress() == 0.f );
@@ -446,8 +431,7 @@ TEST_CASE( "VTX_UTIL - Threading - Disabled callbacks", "[threading][callbacks]"
 				std::this_thread::yield();
 			}
 			return 0u;
-		}
-	);
+		} );
 	thread.setProgressCallback( {} );
 	thread.setTerminatedCallback( {} );
 	release = true;
@@ -492,15 +476,13 @@ TEST_CASE( "VTX_UTIL - Threading - Callback failure", "[threading][failure]" )
 		{
 			progressCalled = true;
 			throw std::runtime_error( "Expected progress callback failure." );
-		}
-	);
+		} );
 	threadManager.setDefaultTerminatedCallback(
 		[ &terminatedCalled ]( const Util::Thread::BaseThread & )
 		{
 			terminatedCalled = true;
 			throw std::runtime_error( "Expected terminated callback failure." );
-		}
-	);
+		} );
 
 	Util::Thread::BaseThread & thread
 		= threadManager.createThread( []( Util::Thread::StopToken, Util::Thread::BaseThread & ) { return 0u; } );

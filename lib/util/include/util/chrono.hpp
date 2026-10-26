@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_CHRONO__
-#define __VTX_UTIL_CHRONO__
+#ifndef VTX_UTIL_CHRONO_HPP
+#define VTX_UTIL_CHRONO_HPP
 
 #include "util/logger.hpp"
 #include "util/string.hpp"
@@ -91,8 +91,7 @@ namespace VTX::Util
 			try
 			{
 				VTX_LOG(
-					_level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() )
-				);
+					_level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() ) );
 			}
 			catch ( ... ) // NOLINT(bugprone-empty-catch)
 			{

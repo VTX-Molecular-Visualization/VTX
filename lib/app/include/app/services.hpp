@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SERVICES__
-#define __VTX_APP_SERVICES__
+#ifndef VTX_APP_SERVICES_HPP
+#define VTX_APP_SERVICES_HPP
 
 #include "app/ecs.hpp"
 

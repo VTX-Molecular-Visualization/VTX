@@ -99,8 +99,7 @@ namespace VTX::App::Pass
 					const auto & [ aabb, transform ] = meshes.get<Util::Math::AABB, Util::Math::Transform>( mesh );
 					p_sceneAABB.extend( aabb.transformed( transform ) );
 				}
-			}
-		);
+			} );
 	}
 
 	void SceneUpdater::_onUpdateGraphicsConfig( Registry & p_r, Entity )

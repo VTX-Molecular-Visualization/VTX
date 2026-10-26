@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PASS_MESH_UPDATER__
-#define __VTX_APP_PASS_MESH_UPDATER__
+#ifndef VTX_APP_PASS_MESH_UPDATER_HPP
+#define VTX_APP_PASS_MESH_UPDATER_HPP
 
 #include "app/ecs.hpp"
 #include "app/events.hpp"
@@ -49,4 +49,4 @@ namespace VTX::App::Pass
 	};
 } // namespace VTX::App::Pass
 
-#endif // !__VTX_APP_PASS_MESH_UPDATER__
+#endif // !VTX_APP_PASS_MESH_UPDATER_HPP

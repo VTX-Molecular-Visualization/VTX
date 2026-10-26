@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SYSTEM_REPRESENTATION__
-#define __VTX_APP_SYSTEM_REPRESENTATION__
+#ifndef VTX_APP_SYSTEM_REPRESENTATION_HPP
+#define VTX_APP_SYSTEM_REPRESENTATION_HPP
 
 #include <core/struct/topology.hpp>
 #include <renderer/representation.hpp>

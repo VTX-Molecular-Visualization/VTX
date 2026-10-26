@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_BINDING_BINDER__
-#define __VTX_PYTHON_BINDING_BINDER__
+#ifndef VTX_PYTHON_BINDING_BINDER_HPP
+#define VTX_PYTHON_BINDING_BINDER_HPP
 
 #include "python_binding/wrapper/module.hpp"
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_EVENTS__
-#define __VTX_APP_EVENTS__
+#ifndef VTX_APP_EVENTS_HPP
+#define VTX_APP_EVENTS_HPP
 
 #include "app/controller/animation.hpp"
 #include "app/ecs.hpp"

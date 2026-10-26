@@ -9,18 +9,14 @@
 
 namespace VTX::Tool::Mdprep::ui::form_basic
 {
-	Data::Data(
-		Gateway::MdParameters					 p_param,
-		ReportManager &							 p_reportManager,
-		SpecificFieldsPlacerCallback			 p_specificFieldsCallback,
-		Gateway::EngineSpecificCommonInformation p_info
-	) noexcept :
-		_data(
-			_Data { .lastFormData			= std::move( p_info ),
-					.parameters				= std::move( p_param ),
-					.reportManager			= &p_reportManager,
-					.specificFieldsCallback = std::move( p_specificFieldsCallback ) }
-		)
+	Data::Data( Gateway::MdParameters					 p_param,
+				ReportManager &							 p_reportManager,
+				SpecificFieldsPlacerCallback			 p_specificFieldsCallback,
+				Gateway::EngineSpecificCommonInformation p_info ) noexcept :
+		_data( Impl { .lastFormData		   = std::move( p_info ),
+					   .parameters			   = std::move( p_param ),
+					   .reportManager		   = &p_reportManager,
+					   .specificFieldsCallback = std::move( p_specificFieldsCallback ) } )
 	{
 	}
 

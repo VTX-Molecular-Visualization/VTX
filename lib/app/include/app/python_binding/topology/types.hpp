@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHON_BINDING_TOPOLOGY_TYPES__
-#define __VTX_APP_PYTHON_BINDING_TOPOLOGY_TYPES__
+#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_TYPES_HPP
+#define VTX_APP_PYTHON_BINDING_TOPOLOGY_TYPES_HPP
 
 #include "app/ecs.hpp"
 #include <core/struct/topology.hpp>

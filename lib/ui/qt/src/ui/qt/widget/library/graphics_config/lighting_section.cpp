@@ -107,58 +107,46 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_materialSection = Helper::makeQObject<MaterialSection>( this );
 		addWidget( _materialSection );
 
-		connect(
-			_comboBoxShadingMode,
-			QOverload<int>::of( &QComboBox::currentIndexChanged ),
-			[ this ]( const int p_index )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::SHADING_MODE, E_SHADING>( E_SHADING( p_index ) ); }
-		);
+		connect( _comboBoxShadingMode,
+				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
+				 [ this ]( const int p_index )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::SHADING_MODE, E_SHADING>( E_SHADING( p_index ) ); } );
 		_colorPickerLight->onColorChanged += [ this ]( const QColor & p_color )
 		{ _changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_LIGHT, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
-		connect(
-			_sliderLightIntensity,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::LIGHT_INTENSITY, float>( p_value ); }
-		);
-		connect(
-			_sliderAmbientIntensity,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::AMBIENT_INTENSITY, float>( p_value ); }
-		);
+		connect( _sliderLightIntensity,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::LIGHT_INTENSITY, float>( p_value ); } );
+		connect( _sliderAmbientIntensity,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::AMBIENT_INTENSITY, float>( p_value ); } );
 		connect(
 			_comboBoxToneMappingMode,
 			QOverload<int>::of( &QComboBox::currentIndexChanged ),
 			[ this ]( const int p_index )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::TONE_MAPPING_MODE, E_TONE_MAPPING>( E_TONE_MAPPING( p_index ) ); }
-		);
-		connect(
-			_sliderToneMappingExposure,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
 			{
-				_changeValue<E_GRAPHICS_CONFIG_VALUES::TONE_MAPPING_EXPOSURE, float>(
-					_exposureMultiplierFromEv( p_value )
-				);
-			}
-		);
-		connect(
-			_sliderSpecularFactor,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::SPECULAR_FACTOR, float>( p_value ); }
-		);
-		connect(
-			_sliderShininess,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::SHININESS, float>( p_value ); }
-		);
-		connect(
-			_sliderToonSteps,
-			&EditableSlider::valueChanged,
-			[ this ]( const uint p_value ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::TOON_STEPS, uint>( p_value ); }
-		);
+				_changeValue<E_GRAPHICS_CONFIG_VALUES::TONE_MAPPING_MODE, E_TONE_MAPPING>( E_TONE_MAPPING( p_index ) );
+			} );
+		connect( _sliderToneMappingExposure,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 {
+					 _changeValue<E_GRAPHICS_CONFIG_VALUES::TONE_MAPPING_EXPOSURE, float>(
+						 _exposureMultiplierFromEv( p_value ) );
+				 } );
+		connect( _sliderSpecularFactor,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::SPECULAR_FACTOR, float>( p_value ); } );
+		connect( _sliderShininess,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::SHININESS, float>( p_value ); } );
+		connect( _sliderToonSteps,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const uint p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::TOON_STEPS, uint>( p_value ); } );
 	}
 
 	void LightingSection::setConfig( const Entity p_preset, const VTX::Renderer::GraphicsConfig & p_config )

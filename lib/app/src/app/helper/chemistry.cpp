@@ -19,10 +19,8 @@ namespace VTX::App::Helper::Chemistry
 		return res;
 	}
 
-	std::vector<Index> findResiduesByName(
-		const Core::Struct::Topology & p_topology,
-		const std::string &			   p_residueName
-	)
+	std::vector<Index> findResiduesByName( const Core::Struct::Topology & p_topology,
+										   const std::string &			  p_residueName )
 	{
 		using namespace VTX::Core;
 

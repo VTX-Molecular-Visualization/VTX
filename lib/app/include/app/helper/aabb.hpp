@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_HELPER_AABB__
-#define __VTX_APP_HELPER_AABB__
+#ifndef VTX_APP_HELPER_AABB_HPP
+#define VTX_APP_HELPER_AABB_HPP
 
 #include "app/ecs.hpp"
 #include <core/struct/topology.hpp>
@@ -27,11 +27,9 @@ namespace VTX::App::Helper::AABB
 	/**
 	 * @brief Compute topology item ranges AABB.
 	 */
-	Util::Math::AABB get(
-		Entity								 p_entity,
-		Core::Struct::E_SYSTEM_ITEM			 p_item,
-		const Core::Struct::IndexRangeList & p_ranges
-	);
+	Util::Math::AABB get( Entity							   p_entity,
+						  Core::Struct::E_SYSTEM_ITEM		   p_item,
+						  const Core::Struct::IndexRangeList & p_ranges );
 
 	/**
 	 * @brief Compute bond ranges AABB.

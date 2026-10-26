@@ -14,13 +14,11 @@ namespace bcs
 	class Ssesdf
 	{
 	  public:
-		Ssesdf(
-			ConstSpan<Vec4f> molecule,
-			const Aabb &	 aabb,
-			float			 probeRadius  = 1.4f,
-			bool			 buildSurface = true,
-			bool			 graphics	  = true
-		);
+		Ssesdf( ConstSpan<Vec4f> molecule,
+				const Aabb &	 aabb,
+				float			 probeRadius  = 1.4f,
+				bool			 buildSurface = true,
+				bool			 graphics	  = true );
 
 		Ssesdf( const Ssesdf & )			 = delete;
 		Ssesdf & operator=( const Ssesdf & ) = delete;

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_HELPER_PRESET__
-#define __VTX_APP_HELPER_PRESET__
+#ifndef VTX_APP_HELPER_PRESET_HPP
+#define VTX_APP_HELPER_PRESET_HPP
 
 #include "app/ecs.hpp"
 #include "app/generic/name.hpp"
@@ -18,14 +18,12 @@ namespace VTX::App::Helper::Preset
 	{
 		const std::string name = Util::String::toLower( std::string( p_name ) );
 		auto			  view = REG().view<App::Generic::Name, T>();
-		return std::ranges::any_of(
-			view,
-			[ &view, &name ]( const Entity entity )
-			{
-				const auto & presetName = view.template get<App::Generic::Name>( entity ).name;
-				return Util::String::toLower( presetName ) == name;
-			}
-		);
+		return std::ranges::any_of( view,
+									[ &view, &name ]( const Entity entity )
+									{
+										const auto & presetName = view.template get<App::Generic::Name>( entity ).name;
+										return Util::String::toLower( presetName ) == name;
+									} );
 
 	} // namespace VTX::App::Helper::Scene
 

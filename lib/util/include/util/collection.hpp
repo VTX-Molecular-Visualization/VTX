@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_COLLECTION__
-#define __VTX_UTIL_COLLECTION__
+#ifndef VTX_UTIL_COLLECTION_HPP
+#define VTX_UTIL_COLLECTION_HPP
 
 #include <functional>
 #include <iostream>

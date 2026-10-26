@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_SPLASH_SCREEN__
-#define __VTX_UI_QT_WIDGET_SPLASH_SCREEN__
+#ifndef VTX_UI_QT_WIDGET_SPLASHSCREEN_HPP
+#define VTX_UI_QT_WIDGET_SPLASHSCREEN_HPP
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/resources.hpp"
@@ -35,8 +35,7 @@ namespace VTX::UI::QT::Widget
 			layout->addWidget( _splashLabel );
 
 			_splashMovie = Helper::makeQObject<QMovie>(
-				QString::fromStdString( std::string( SPRITE_SPLASH_GIF ) ), QByteArray(), this
-			);
+				QString::fromStdString( std::string( SPRITE_SPLASH_GIF ) ), QByteArray(), this );
 			if ( _splashMovie->isValid() )
 			{
 				_splashLabel->setMovie( _splashMovie );

@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_API_COLECTION__
-#define __VTX_PYTHON_API_COLECTION__
+#ifndef VTX_PYTHON_BINDING_API_COLLECTION_HPP
+#define VTX_PYTHON_BINDING_API_COLLECTION_HPP
 
 #include <concepts>
 #include <cstddef>

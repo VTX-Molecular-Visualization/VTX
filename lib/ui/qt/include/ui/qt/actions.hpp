@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_ACTIONS__
-#define __VTX_UI_QT_ACTIONS__
+#ifndef VTX_UI_QT_ACTIONS_HPP
+#define VTX_UI_QT_ACTIONS_HPP
 
 #include "ui/qt/style/icons.hpp"
 #include <app/ui/concepts.hpp>

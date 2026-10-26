@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_WRITER_SYSTEM__
-#define __VTX_IO_WRITER_SYSTEM__
+#ifndef VTX_IO_WRITER_SYSTEM_HPP
+#define VTX_IO_WRITER_SYSTEM_HPP
 
 #include <concepts>
 #include <core/struct/topology.hpp>

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_BASE_WIDGET__
-#define __VTX_UI_QT_WIDGET_BASE_WIDGET__
+#ifndef VTX_UI_QT_WIDGET_BASE_WIDGET_HPP
+#define VTX_UI_QT_WIDGET_BASE_WIDGET_HPP
 
 #include <QWidget>
 #include <type_traits>

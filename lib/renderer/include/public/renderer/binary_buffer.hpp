@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BINARY_BUFFER__
-#define __VTX_RENDERER_BINARY_BUFFER__
+#ifndef VTX_RENDERER_BINARY_BUFFER_HPP
+#define VTX_RENDERER_BINARY_BUFFER_HPP
 
 #include "descriptors.hpp"
 #include <cstring>

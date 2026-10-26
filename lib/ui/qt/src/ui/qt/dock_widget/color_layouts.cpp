@@ -19,7 +19,6 @@ namespace VTX::UI::QT::DockWidget
 		_layout->addWidget( colorLayoutWidget );
 
 		_layout->addSpacerItem(
-			std::make_unique<QSpacerItem>( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ).release()
-		);
+			std::make_unique<QSpacerItem>( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ).release() );
 	}
 } // namespace VTX::UI::QT::DockWidget

@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BUILDER_RENDER_GRAPH_BUILD__
-#define __VTX_RENDERER_BUILDER_RENDER_GRAPH_BUILD__
+#ifndef VTX_RENDERER_BUILDER_RENDER_GRAPH_BUILD_HPP
+#define VTX_RENDERER_BUILDER_RENDER_GRAPH_BUILD_HPP
 
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/geometry/geometries.hpp"
@@ -41,14 +41,12 @@ namespace VTX::Renderer::Builder
 	{
 		static PipelineConfig pipelineConfig( const GraphicsConfig & );
 
-		static bool refreshGraph(
-			const GraphicsConfig &,
-			std::optional<PipelineConfig> &,
-			RenderGraph &,
-			Desc::RenderQueue &,
-			const Layouts &,
-			const Geometries &
-		);
+		static bool refreshGraph( const GraphicsConfig &,
+								  std::optional<PipelineConfig> &,
+								  RenderGraph &,
+								  Desc::RenderQueue &,
+								  const Layouts &,
+								  const Geometries & );
 
 		static bool syncGeometryChunks( RenderGraph &, const Geometries & );
 
@@ -56,13 +54,11 @@ namespace VTX::Renderer::Builder
 
 		static void markSESDirty( Context::ContextWrapper &, const Geometries & );
 
-		static void rebuildCommandBuffer(
-			Context::ContextWrapper &,
-			const Desc::RenderQueue &,
-			const Desc::Resources &,
-			uintptr_t p_externalFunction,
-			uintptr_t p_externalContext
-		);
+		static void rebuildCommandBuffer( Context::ContextWrapper &,
+										  const Desc::RenderQueue &,
+										  const Desc::Resources &,
+										  uintptr_t p_externalFunction,
+										  uintptr_t p_externalContext );
 	};
 } // namespace VTX::Renderer::Builder
 

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PIPELINE__
-#define __VTX_APP_PIPELINE__
+#ifndef VTX_APP_PIPELINE_HPP
+#define VTX_APP_PIPELINE_HPP
 
 #include <util/hashing.hpp>
 

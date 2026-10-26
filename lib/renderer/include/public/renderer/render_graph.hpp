@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_RENDER_GRAPH__
-#define __VTX_RENDERER_RENDER_GRAPH__
+#ifndef VTX_RENDERER_RENDER_GRAPH_HPP
+#define VTX_RENDERER_RENDER_GRAPH_HPP
 
 #include "renderer/descriptors.hpp"
 #include "renderer/graph_builder.hpp"

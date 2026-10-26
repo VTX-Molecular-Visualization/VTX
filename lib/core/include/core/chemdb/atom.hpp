@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_CHEMDB_ATOM__
-#define __VTX_CORE_CHEMDB_ATOM__
+#ifndef VTX_CORE_CHEMDB_ATOM_HPP
+#define VTX_CORE_CHEMDB_ATOM_HPP
 
 #include <algorithm>
 #include <array>

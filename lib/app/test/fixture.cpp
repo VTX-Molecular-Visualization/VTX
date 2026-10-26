@@ -18,6 +18,7 @@ TEST_CASE( "VTX_APP - Fixture 3", "[integration]" )
 	using namespace VTX;
 	const App::Fixture app;
 }
+
 TEST_CASE( "VTX_APP - Fixture 4", "[integration]" )
 {
 	using namespace VTX;

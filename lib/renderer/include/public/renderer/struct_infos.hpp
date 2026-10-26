@@ -1,5 +1,5 @@
-#ifndef __VTX_STRUCT_INFOS__
-#define __VTX_STRUCT_INFOS__
+#ifndef VTX_RENDERER_STRUCT_INFOS_HPP
+#define VTX_RENDERER_STRUCT_INFOS_HPP
 
 #include <array>
 #include <cstddef>

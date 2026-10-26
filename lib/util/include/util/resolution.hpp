@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_RESOLUTION__
-#define __VTX_UTIL_RESOLUTION__
+#ifndef VTX_UTIL_RESOLUTION_HPP
+#define VTX_UTIL_RESOLUTION_HPP
 
 #include <cstddef>
 #include <string_view>

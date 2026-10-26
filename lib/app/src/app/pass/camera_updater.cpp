@@ -46,14 +46,12 @@ namespace VTX::App::Pass
 
 	void CameraUpdater::_onCameraAnimationStart( const Events::CameraAnimationStart & p_event )
 	{
-		addController<Controller::Animation>(
-			CTRL_INSERTION_MODE::FRONT,
-			p_event.start,
-			p_event.end,
-			p_event.duration,
-			p_event.interpPosition,
-			p_event.interpRotation
-		);
+		addController<Controller::Animation>( CTRL_INSERTION_MODE::FRONT,
+											  p_event.start,
+											  p_event.end,
+											  p_event.duration,
+											  p_event.interpPosition,
+											  p_event.interpRotation );
 	}
 
 	void CameraUpdater::_onUpdateCamera()
@@ -62,8 +60,7 @@ namespace VTX::App::Pass
 		auto & camera	 = REG().get<Renderer::Camera>( _entity );
 
 		const Mat4f viewMatrix = Util::Math::lookAt(
-			transform.getPosition(), transform.getPosition() + transform.getFront(), transform.getUp()
-		);
+			transform.getPosition(), transform.getPosition() + transform.getFront(), transform.getUp() );
 		const Mat4f projectionMatrix = camera.computeProjectionMatrix( transform.getPosition() );
 
 		RENDERER().setCamera( camera, transform.getPosition(), viewMatrix, projectionMatrix );

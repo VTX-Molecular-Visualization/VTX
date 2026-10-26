@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DIALOG_BASE_DIALOG__
-#define __VTX_UI_QT_DIALOG_BASE_DIALOG__
+#ifndef VTX_UI_QT_DIALOG_BASE_DIALOG_HPP
+#define VTX_UI_QT_DIALOG_BASE_DIALOG_HPP
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/base_widget.hpp"

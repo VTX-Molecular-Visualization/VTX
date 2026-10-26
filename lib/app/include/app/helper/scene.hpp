@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_HELPER_SCENE__
-#define __VTX_APP_HELPER_SCENE__
+#ifndef VTX_APP_HELPER_SCENE_HPP
+#define VTX_APP_HELPER_SCENE_HPP
 
 #include "app/ecs.hpp"
 #include <optional>

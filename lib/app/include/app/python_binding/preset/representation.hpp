@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHON_BINDING_PRESET_REPRESENTATION__
-#define __VTX_APP_PYTHON_BINDING_PRESET_REPRESENTATION__
+#ifndef VTX_APP_PYTHON_BINDING_PRESET_REPRESENTATION_HPP
+#define VTX_APP_PYTHON_BINDING_PRESET_REPRESENTATION_HPP
 
 #include "app/python_binding/module.hpp"
 #include "app/python_binding/preset/types.hpp"

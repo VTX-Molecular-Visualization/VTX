@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_CONSOLE__
-#define __VTX_UI_QT_DOCK_WIDGET_CONSOLE__
+#ifndef VTX_UI_QT_DOCK_WIDGET_CONSOLE_HPP
+#define VTX_UI_QT_DOCK_WIDGET_CONSOLE_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/widget/command_launcher.hpp"

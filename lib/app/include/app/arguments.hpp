@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ARGUMENTS__
-#define __VTX_APP_ARGUMENTS__
+#ifndef VTX_APP_ARGUMENTS_HPP
+#define VTX_APP_ARGUMENTS_HPP
 
 #include <memory>
 #include <string>

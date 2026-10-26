@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_BINDING_WRAPPER_ARG__
-#define __VTX_PYTHON_BINDING_WRAPPER_ARG__
+#ifndef VTX_PYTHON_BINDING_WRAPPER_ARG_HPP
+#define VTX_PYTHON_BINDING_WRAPPER_ARG_HPP
 
 #include <pybind11/pybind11.h>
 #include <string>

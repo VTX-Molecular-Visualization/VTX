@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_COLOR_PICKER__
-#define __VTX_UI_QT_WIDGET_COLOR_PICKER__
+#ifndef VTX_UI_QT_WIDGET_COLOR_PICKER_HPP
+#define VTX_UI_QT_WIDGET_COLOR_PICKER_HPP
 
 #include <QColor>
 #include <QPushButton>
@@ -16,8 +16,9 @@ namespace VTX::UI::QT::Widget
 
 		const QColor & getColor() const { return _color; }
 
-		QColor				  getColor() { return _color; }
-		void				  setColor( const QColor & );
+		QColor getColor() { return _color; }
+
+		void setColor( const QColor & );
 
 		Util::Callback<QColor> onColorChanged;
 

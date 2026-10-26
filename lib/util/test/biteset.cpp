@@ -30,8 +30,7 @@ TEST_CASE( "BitSet range operations", "[util][math][bitset]" )
 			a.mergeInPlace( R( 128, 130 ) );
 			a.subtractInPlace( L { R( 63, 65 ) } );
 			return a.test( R( 128, 130 ) ) && a.count() == 3 && a.any( L { R( 129, 130 ) } );
-		}()
-	) );
+		}() ) );
 }
 
 TEST_CASE( "BitSet storage and iteration", "[util][math][bitset]" )
@@ -70,8 +69,7 @@ TEST_CASE( "BitSet storage and iteration", "[util][math][bitset]" )
 			bits.set( 0, false );
 			return bits.count() == 128 && not bits.test( 64 ) && not bits.test( 0 ) && BitSet().empty()
 				   && BitSet().none();
-		}()
-	) );
+		}() ) );
 }
 
 TEST_CASE( "BitSet construct empty", "[util][math][bitset]" )

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_RENDERER__
-#define __VTX_UI_QT_WIDGET_RENDERER__
+#ifndef VTX_UI_QT_WIDGET_RENDERER_HPP
+#define VTX_UI_QT_WIDGET_RENDERER_HPP
 
 #include "ui/qt/events.hpp"
 #include "ui/qt/widget/base_widget.hpp"

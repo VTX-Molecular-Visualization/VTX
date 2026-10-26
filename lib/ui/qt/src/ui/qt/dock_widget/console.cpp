@@ -124,23 +124,20 @@ namespace VTX::UI::QT::DockWidget
 		_textEdit->setOpenExternalLinks( false );
 
 		connect(
-			_textEdit, &QTextBrowser::anchorClicked, this, []( const QUrl & p_url ) { _openConsoleLink( p_url ); }
-		);
+			_textEdit, &QTextBrowser::anchorClicked, this, []( const QUrl & p_url ) { _openConsoleLink( p_url ); } );
 
 		// Context menu.
-		connect(
-			_textEdit,
-			&QTextBrowser::customContextMenuRequested,
-			this,
-			[ & ]( const QPoint & p_pos )
-			{
-				QMenu			menu( this );
-				QAction * const clearAction = Helper::makeQObject<QAction>( "Clear", &menu );
-				connect( clearAction, &QAction::triggered, this, &Console::clear );
-				menu.addAction( clearAction );
-				menu.exec( _textEdit->mapToGlobal( p_pos ) );
-			}
-		);
+		connect( _textEdit,
+				 &QTextBrowser::customContextMenuRequested,
+				 this,
+				 [ & ]( const QPoint & p_pos )
+				 {
+					 QMenu			 menu( this );
+					 QAction * const clearAction = Helper::makeQObject<QAction>( "Clear", &menu );
+					 connect( clearAction, &QAction::triggered, this, &Console::clear );
+					 menu.addAction( clearAction );
+					 menu.exec( _textEdit->mapToGlobal( p_pos ) );
+				 } );
 
 		// Get logs and push to main thread.
 		_logConnection = App::HUB().connect<Util::LogInfo, &Console::log>( this );

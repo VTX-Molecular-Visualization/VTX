@@ -19,20 +19,19 @@ namespace VTX::App::PythonBinding
 		};
 	} // namespace
 
-	class Interpretor::_Impl
+	class Interpretor::Impl
 	{
 	  public:
-		_Impl() :
+		Impl() :
 			_thread( &THREAD().createThread(
 				[ this ]( const Util::Thread::StopToken & p_stopToken, Util::Thread::BaseThread & p_thread )
-				{ return runPythonThread( p_stopToken, p_thread ); }
-			) )
+				{ return runPythonThread( p_stopToken, p_thread ); } ) )
 		{
 			_thread->setProgressCallback( {} );
 			_thread->setTerminatedCallback( {} );
 		}
 
-		~_Impl()
+		~Impl()
 		{
 			while ( not _threadedLoopStarted )
 			{
@@ -186,10 +185,8 @@ namespace VTX::App::PythonBinding
 			}
 		}
 
-		void _actuallyRunScript(
-			const FilePath &									  p_path,
-			const std::shared_ptr<std::promise<AsyncJobResult>> & p_promise
-		)
+		void _actuallyRunScript( const FilePath &									   p_path,
+								 const std::shared_ptr<std::promise<AsyncJobResult>> & p_promise )
 		{
 			AsyncJobResult jobResult;
 			try
@@ -226,7 +223,7 @@ namespace VTX::App::PythonBinding
 		Util::Thread::StopToken										 _stopToken;
 	};
 
-	Interpretor::Interpretor() : _impl( new _Impl() ) {}
+	Interpretor::Interpretor() : _impl( new Impl() ) {}
 
 	void Interpretor::runCommand( const std::string & p_ ) { _impl->runCommand( p_ ); }
 
@@ -235,10 +232,8 @@ namespace VTX::App::PythonBinding
 
 	void Interpretor::runScript( const FilePath & p_path ) { _impl->runScript( p_path ); }
 
-	void Interpretor::runScript(
-		const FilePath &									  p_path,
-		const std::shared_ptr<std::promise<AsyncJobResult>> & p_future
-	)
+	void Interpretor::runScript( const FilePath &									   p_path,
+								 const std::shared_ptr<std::promise<AsyncJobResult>> & p_future )
 	{ _impl->runScript( p_path, p_future ); }
 
 	std::string Interpretor::getRuntimePythonVersion()
@@ -257,7 +252,7 @@ namespace VTX::App::PythonBinding
 
 	void Interpretor::subscribe( InterpretorInstructionsOneShot _ ) { _impl->subscribe( std::move( _ ) ); }
 
-	void Interpretor::Del::operator()( Interpretor::_Impl * const p_ ) noexcept
+	void Interpretor::Del::operator()( Interpretor::Impl * const p_ ) noexcept
 	{
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		delete p_;

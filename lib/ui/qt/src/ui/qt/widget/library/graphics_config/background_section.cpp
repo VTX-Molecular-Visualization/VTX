@@ -110,94 +110,79 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_colorPicker->onColorChanged += [ this ]( const QColor & p_color )
 		{
 			_changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_BACKGROUND, Util::Color::Rgba>(
-				Helper::fromQColor( p_color )
-			);
+				Helper::fromQColor( p_color ) );
 		};
 
-		connect(
-			_radioBackgroundColor,
-			&QRadioButton::toggled,
-			[ this ]( const bool p_checked )
-			{
-				if ( p_checked )
-				{
-					_changeValue<E_GRAPHICS_CONFIG_VALUES::BACKGROUND_MODE, E_BACKGROUND_MODE>(
-						E_BACKGROUND_MODE::COLOR
-					);
-				}
-			}
-		);
-		connect(
-			_radioBackgroundEnvironment,
-			&QRadioButton::toggled,
-			[ this ]( const bool p_checked )
-			{
-				if ( p_checked )
-				{
-					_changeValue<E_GRAPHICS_CONFIG_VALUES::BACKGROUND_MODE, E_BACKGROUND_MODE>(
-						E_BACKGROUND_MODE::ENVIRONMENT
-					);
-				}
-			}
-		);
-		connect(
-			_listEnvironmentMaps,
-			&QListWidget::itemClicked,
-			[ this ]( QListWidgetItem * const p_item )
-			{
-				_changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH, FilePath>(
-					FilePath( p_item->data( Qt::UserRole ).toString().toStdString() )
-				);
-			}
-		);
-		connect(
-			_buttonEnvironmentBrowse,
-			&QPushButton::clicked,
-			[ this ]
-			{
-				const auto &  config = App::REG().get<VTX::Renderer::GraphicsConfig>( _getCurrentPreset() );
-				const QString initialPath
-					= config.shading.environmentPath
-						  ? QString::fromStdString( config.shading.environmentPath->parent_path().string() )
-						  : QString::fromStdString( App::SESSION().getHdriDir().string() );
-				const QString selectedPath = QFileDialog::getOpenFileName(
-					this,
-					"Select environment map",
-					initialPath,
-					"Environment maps (*.ktx2 *.KTX2 *.exr *.EXR *.hdr *.HDR)"
-				);
-				if ( not selectedPath.isEmpty() )
-				{
-					_changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH, FilePath>(
-						FilePath( selectedPath.toStdString() )
-					);
-				}
-			}
-		);
+		connect( _radioBackgroundColor,
+				 &QRadioButton::toggled,
+				 [ this ]( const bool p_checked )
+				 {
+					 if ( p_checked )
+					 {
+						 _changeValue<E_GRAPHICS_CONFIG_VALUES::BACKGROUND_MODE, E_BACKGROUND_MODE>(
+							 E_BACKGROUND_MODE::COLOR );
+					 }
+				 } );
+		connect( _radioBackgroundEnvironment,
+				 &QRadioButton::toggled,
+				 [ this ]( const bool p_checked )
+				 {
+					 if ( p_checked )
+					 {
+						 _changeValue<E_GRAPHICS_CONFIG_VALUES::BACKGROUND_MODE, E_BACKGROUND_MODE>(
+							 E_BACKGROUND_MODE::ENVIRONMENT );
+					 }
+				 } );
+		connect( _listEnvironmentMaps,
+				 &QListWidget::itemClicked,
+				 [ this ]( QListWidgetItem * const p_item )
+				 {
+					 _changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH, FilePath>(
+						 FilePath( p_item->data( Qt::UserRole ).toString().toStdString() ) );
+				 } );
+		connect( _buttonEnvironmentBrowse,
+				 &QPushButton::clicked,
+				 [ this ]
+				 {
+					 const auto &  config = App::REG().get<VTX::Renderer::GraphicsConfig>( _getCurrentPreset() );
+					 const QString initialPath
+						 = config.shading.environmentPath
+							   ? QString::fromStdString( config.shading.environmentPath->parent_path().string() )
+							   : QString::fromStdString( App::SESSION().getHdriDir().string() );
+					 const QString selectedPath
+						 = QFileDialog::getOpenFileName( this,
+														 "Select environment map",
+														 initialPath,
+														 "Environment maps (*.ktx2 *.KTX2 *.exr *.EXR *.hdr *.HDR)" );
+					 if ( not selectedPath.isEmpty() )
+					 {
+						 _changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH, FilePath>(
+							 FilePath( selectedPath.toStdString() ) );
+					 }
+				 } );
 
-		connect(
-			_buttonEnvironmentClear,
-			&QPushButton::clicked,
-			[ this ] { _changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH, FilePath>( FilePath {} ); }
-		);
+		connect( _buttonEnvironmentClear,
+				 &QPushButton::clicked,
+				 [ this ] { _changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH, FilePath>( FilePath {} ); } );
 		connect(
 			_sliderEnvironmentRotation,
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_ROTATION, float>( Util::Math::radians( p_value ) ); }
-		);
+			{
+				_changeValue<E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_ROTATION, float>( Util::Math::radians( p_value ) );
+			} );
 		connect(
 			_sliderSkyboxIntensity,
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::SKYBOX_INTENSITY, float>( _exposureMultiplierFromEv( p_value ) ); }
-		);
+			{
+				_changeValue<E_GRAPHICS_CONFIG_VALUES::SKYBOX_INTENSITY, float>( _exposureMultiplierFromEv( p_value ) );
+			} );
 		connect(
 			_sliderIblIntensity,
 			&EditableSlider::valueChanged,
 			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::IBL_INTENSITY, float>( _exposureMultiplierFromEv( p_value ) ); }
-		);
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::IBL_INTENSITY, float>( _exposureMultiplierFromEv( p_value ) ); } );
 	}
 
 	void BackgroundSection::_refreshEnvironmentMaps()
@@ -224,8 +209,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			const QString  path			 = QString::fromStdString( _normalizedPathString( entry.path() ) );
 			const FilePath thumbnailPath = FilePath( entry.path() ).replace_extension( ".png" );
 			auto * const   item			 = new QListWidgetItem(
-				QIcon( QString::fromStdString( thumbnailPath.string() ) ), QString {}, _listEnvironmentMaps
-			);
+				QIcon( QString::fromStdString( thumbnailPath.string() ) ), QString {}, _listEnvironmentMaps );
 			item->setData( Qt::UserRole, path );
 			item->setSizeHint( QSize( 208, 104 ) );
 			item->setToolTip( QString::fromStdString( displayPath.string() ) + "\n" + path );
@@ -245,9 +229,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const QSignalBlocker blockerIblIntensity( _sliderIblIntensity );
 
 		_radioBackgroundColor->setChecked( p_config.shading.backgroundMode == VTX::Renderer::E_BACKGROUND_MODE::COLOR );
-		_radioBackgroundEnvironment->setChecked(
-			p_config.shading.backgroundMode == VTX::Renderer::E_BACKGROUND_MODE::ENVIRONMENT
-		);
+		_radioBackgroundEnvironment->setChecked( p_config.shading.backgroundMode
+												 == VTX::Renderer::E_BACKGROUND_MODE::ENVIRONMENT );
 		_colorPicker->setColor( Helper::toQColor( p_config.shading.colorBackground ) );
 		const QString environmentPath = p_config.shading.environmentPath
 											? QString::fromStdString( p_config.shading.environmentPath->string() )

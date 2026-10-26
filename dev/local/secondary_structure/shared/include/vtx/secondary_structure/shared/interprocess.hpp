@@ -49,11 +49,13 @@ namespace pdb100
 	} // namespace shm
 
 	using namespace boost::interprocess;
+
 	struct MutexAndLock
 	{
 		std::optional<named_mutex>				mutex;
 		std::optional<scoped_lock<named_mutex>> lock;
 	};
+
 	inline void lock( MutexAndLock & ml, const char * p_name )
 	{
 	begin:
@@ -67,6 +69,7 @@ namespace pdb100
 			goto begin;
 		}
 	}
+
 	template<const char * MUTEX_NAME>
 	class LazyLock
 	{
@@ -76,7 +79,9 @@ namespace pdb100
 		~LazyLock()
 		{
 			if ( ml.lock )
+			{
 				ml.lock->unlock();
+			}
 		}
 
 	  private:
@@ -116,25 +121,21 @@ namespace pdb100
 	typedef vector<ReportItem<String>, ReportItemAllocator>						  ReportItemCollection;
 
 	using _ResultFlagInt = std::underlying_type<ResultFlag>::type;
+
 	inline ResultFlag operator|( const ResultFlag & l, const ResultFlag & r ) noexcept
-	{
-		return static_cast<ResultFlag>( static_cast<_ResultFlagInt>( l ) | static_cast<_ResultFlagInt>( r ) );
-	}
+	{ return static_cast<ResultFlag>( static_cast<_ResultFlagInt>( l ) | static_cast<_ResultFlagInt>( r ) ); }
+
 	inline ResultFlag operator&( const ResultFlag & l, const ResultFlag & r ) noexcept
-	{
-		return static_cast<ResultFlag>( static_cast<_ResultFlagInt>( l ) & static_cast<_ResultFlagInt>( r ) );
-	}
+	{ return static_cast<ResultFlag>( static_cast<_ResultFlagInt>( l ) & static_cast<_ResultFlagInt>( r ) ); }
+
 	inline ResultFlag operator*( const bool & l, const ResultFlag & r ) noexcept
-	{
-		return static_cast<ResultFlag>( l * static_cast<_ResultFlagInt>( r ) );
-	}
+	{ return static_cast<ResultFlag>( l * static_cast<_ResultFlagInt>( r ) ); }
 
 	inline uint64_t getTimeStamp()
 	{
 		return static_cast<uint64_t>(
 			std::chrono::duration_cast<std::chrono::seconds>( std::chrono::system_clock::now().time_since_epoch() )
-				.count()
-		);
+				.count() );
 	}
 
 } // namespace pdb100

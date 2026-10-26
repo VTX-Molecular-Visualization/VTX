@@ -9,12 +9,10 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		using namespace Renderer;
 		_colorPicker = Helper::makeQObject<ColorPicker>( this );
 		addWidget( _colorPicker );
-		connect(
-			this,
-			&HideableGroupBox::toggled,
-			[ this ]( const bool p_state )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_SELECTION, bool>( p_state ); }
-		);
+		connect( this,
+				 &HideableGroupBox::toggled,
+				 [ this ]( const bool p_state )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_SELECTION, bool>( p_state ); } );
 		_colorPicker->onColorChanged += [ this ]( const QColor & p_color )
 		{
 			_changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_SELECTION, Util::Color::Rgba>( Helper::fromQColor( p_color ) );

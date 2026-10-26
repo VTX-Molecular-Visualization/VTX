@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_CONSTANTS__
-#define __VTX_UTIL_CONSTANTS__
+#ifndef VTX_UTIL_CONSTANTS_HPP
+#define VTX_UTIL_CONSTANTS_HPP
 
 #include "util/color/rgba.hpp"
 #include "util/types.hpp"

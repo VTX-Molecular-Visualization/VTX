@@ -7,12 +7,10 @@
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
-	void prepareJob(
-		const CumulativeOuputFiles & p_previousJobsOutputs,
-		const FilePath &			 p_root,
-		const std::string_view &	 p_folderName,
-		SolvateInstructions &		 p_instructions
-	)
+	void prepareJob( const CumulativeOuputFiles & p_previousJobsOutputs,
+					 const FilePath &			  p_root,
+					 const std::string_view &	  p_folderName,
+					 SolvateInstructions &		  p_instructions )
 	{
 		if ( fs::exists( p_root ) && not fs::is_directory( p_root ) )
 		{
@@ -21,9 +19,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
-		auto lastGroFile = std::ranges::find_if(
-			p_previousJobsOutputs.fileStringPtrs, []( const std::string * const p_ ) { return p_->ends_with( ".gro" ); }
-		);
+		auto lastGroFile
+			= std::ranges::find_if( p_previousJobsOutputs.fileStringPtrs,
+									[]( const std::string * const p_ ) { return p_->ends_with( ".gro" ); } );
 		if ( lastGroFile != std::end( p_previousJobsOutputs.fileStringPtrs ) )
 		{
 			p_instructions.inputGro = *lastGroFile.operator*();
@@ -38,10 +36,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		if ( sourceTop.empty() || not fs::is_regular_file( sourceTop ) )
 		{
-			VTX_ERROR(
-				"[MDPREP] Solvate input topology <{}> is missing before copy.",
-				sourceTop.empty() ? "<empty>" : sourceTop.string()
-			);
+			VTX_ERROR( "[MDPREP] Solvate input topology <{}> is missing before copy.",
+					   sourceTop.empty() ? "<empty>" : sourceTop.string() );
 		}
 		else
 		{
@@ -49,21 +45,17 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			fs::copy_file( sourceTop, p_instructions.inputTop, fs::copy_options::overwrite_existing, copyError );
 			if ( copyError )
 			{
-				VTX_ERROR(
-					"[MDPREP] Unable to copy solvate topology from <{}> to <{}>: {}",
-					sourceTop.string(),
-					p_instructions.inputTop.string(),
-					copyError.message()
-				);
+				VTX_ERROR( "[MDPREP] Unable to copy solvate topology from <{}> to <{}>: {}",
+						   sourceTop.string(),
+						   p_instructions.inputTop.string(),
+						   copyError.message() );
 			}
 			else
 			{
-				VTX_DEBUG(
-					"[MDPREP] Solvate topology copied from <{}> to <{}> ({} bytes).",
-					sourceTop.string(),
-					p_instructions.inputTop.string(),
-					fs::file_size( p_instructions.inputTop )
-				);
+				VTX_DEBUG( "[MDPREP] Solvate topology copied from <{}> to <{}> ({} bytes).",
+						   sourceTop.string(),
+						   p_instructions.inputTop.string(),
+						   fs::file_size( p_instructions.inputTop ) );
 			}
 		}
 

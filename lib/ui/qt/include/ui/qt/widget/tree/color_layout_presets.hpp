@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TREE_COLOR_LAYOUT_PRESETS__
-#define __VTX_UI_QT_WIDGET_TREE_COLOR_LAYOUT_PRESETS__
+#ifndef VTX_UI_QT_WIDGET_TREE_COLOR_LAYOUT_PRESETS_HPP
+#define VTX_UI_QT_WIDGET_TREE_COLOR_LAYOUT_PRESETS_HPP
 
 #include "ui/qt/widget/tree/base_tree_presets.hpp"
 #include <app/scene/color_layout.hpp>
@@ -25,8 +25,7 @@ namespace VTX::UI::QT::Widget::Tree
 		{
 			_appliedPresetConstructedConnection
 				= p_reg.on_construct<App::Scene::ColorLayout>().connect<&ColorLayoutPresets::_onSceneColorLayout>(
-					this
-				);
+					this );
 			_appliedPresetUpdatedConnection
 				= p_reg.on_update<App::Scene::ColorLayout>().connect<&ColorLayoutPresets::_onSceneColorLayout>( this );
 			_restoreCurrentSceneColorLayout( p_reg );

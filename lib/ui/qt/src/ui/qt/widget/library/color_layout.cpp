@@ -33,39 +33,33 @@ namespace VTX::UI::QT::Widget::Library
 
 		// Group boxes.
 		_createGroupBox( "Atom", LAYOUT_OFFSET_ATOMS, LAYOUT_COUNT_ATOMS, Atom::SYMBOL_STR, Atom::SYMBOL_NAME );
-		_createGroupBox(
-			"Residue",
+		_createGroupBox( "Residue",
 
-			LAYOUT_OFFSET_RESIDUES,
-			LAYOUT_COUNT_RESIDUES,
-			Residue::SYMBOL_STR,
-			Residue::SYMBOL_NAME
-		);
+						 LAYOUT_OFFSET_RESIDUES,
+						 LAYOUT_COUNT_RESIDUES,
+						 Residue::SYMBOL_STR,
+						 Residue::SYMBOL_NAME );
 		_createGroupBox( "Chain", LAYOUT_OFFSET_CHAINS, LAYOUT_COUNT_CHAINS, Chain::NAME );
 		_createGroupBox( "Ribbon", LAYOUT_OFFSET_RIBBONS, LAYOUT_COUNT_RIBBONS );
 		_createGroupBox( "Custom", LAYOUT_OFFSET_CUSTOM, LAYOUT_COUNT_CUSTOM );
 
 		// Randomize.
 		auto * const buttonRandomize = Helper::makeQObject<QPushButton>( "Randomize", this );
-		connect(
-			buttonRandomize,
-			&QPushButton::clicked,
-			[ this ]() { App::ACTION().execute<App::Action::ColorLayout::Randomize>( currentPreset() ); }
-		);
+		connect( buttonRandomize,
+				 &QPushButton::clicked,
+				 [ this ]() { App::ACTION().execute<App::Action::ColorLayout::Randomize>( currentPreset() ); } );
 
 		addWidget( buttonRandomize );
 
-		connect(
-			_checkBoxHideNonUsual,
-			&QCheckBox::checkStateChanged,
-			this,
-			[ this ]( const int p_state )
-			{
-				const bool hide = p_state == Qt::Checked;
-				SETTINGS().setValue( SETTING_KEY_COLORS_HIDE_NON_USUAL, hide );
-				refreshVisibility( hide );
-			}
-		);
+		connect( _checkBoxHideNonUsual,
+				 &QCheckBox::checkStateChanged,
+				 this,
+				 [ this ]( const int p_state )
+				 {
+					 const bool hide = p_state == Qt::Checked;
+					 SETTINGS().setValue( SETTING_KEY_COLORS_HIDE_NON_USUAL, hide );
+					 refreshVisibility( hide );
+				 } );
 
 		_checkBoxHideNonUsual->setChecked( SETTINGS().value( SETTING_KEY_COLORS_HIDE_NON_USUAL, true ).toBool() );
 	}
@@ -89,13 +83,11 @@ namespace VTX::UI::QT::Widget::Library
 		_refreshButtonVisibility( p_hide, LAYOUT_OFFSET_RESIDUES, LAYOUT_COUNT_RESIDUES, Residue::SYMBOL_IS_COMMON );
 	}
 
-	void ColorLayout::_createGroupBox(
-		const std::string_view			  p_title,
-		const size_t					  p_start,
-		const size_t					  p_count,
-		std::span<const std::string_view> p_text,
-		std::span<const std::string_view> p_tip
-	)
+	void ColorLayout::_createGroupBox( const std::string_view			 p_title,
+									   const size_t						 p_start,
+									   const size_t						 p_count,
+									   std::span<const std::string_view> p_text,
+									   std::span<const std::string_view> p_tip )
 	{
 		auto * groupBox = new QGroupBox( QString::fromUtf8( p_title ) );
 		auto * layout	= Helper::makeQObject<Layout::FlowLayout>( groupBox );
@@ -107,7 +99,7 @@ namespace VTX::UI::QT::Widget::Library
 			// QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
 
 			_buttons[ i ] = Helper::makeQObject<ColorPicker>( groupBox );
-			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
+			_buttons[ i ]->setFixedSize( BUTTON_SIZE, BUTTON_SIZE );
 
 			if ( not p_text.empty() )
 			{
@@ -137,8 +129,7 @@ namespace VTX::UI::QT::Widget::Library
 	void ColorLayout::_changeColor( const size_t p_index, const QColor & p_color )
 	{
 		App::ACTION().execute<App::Action::ColorLayout::Change>(
-			currentPreset(), static_cast<Index>( p_index ), Helper::fromQColor( p_color )
-		);
+			currentPreset(), static_cast<Index>( p_index ), Helper::fromQColor( p_color ) );
 	}
 
 	void ColorLayout::_updateColor( const size_t p_index, const Util::Color::Rgba & p_color )
@@ -150,12 +141,10 @@ namespace VTX::UI::QT::Widget::Library
 		}
 	}
 
-	void ColorLayout::_refreshButtonVisibility(
-		const bool			  p_hide,
-		const size_t		  p_start,
-		const size_t		  p_count,
-		std::span<const bool> p_isCommonValues
-	)
+	void ColorLayout::_refreshButtonVisibility( const bool			  p_hide,
+												const size_t		  p_start,
+												const size_t		  p_count,
+												std::span<const bool> p_isCommonValues )
 	{
 		using namespace VTX::Core::ChemDB;
 

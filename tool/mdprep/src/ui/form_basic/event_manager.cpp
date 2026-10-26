@@ -128,46 +128,39 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 	void EventManager::_connectSettingsMinimization() noexcept
 	{
-		QPushButton::connect(
-			_uiObjects._buttonMinimizationSettings,
-			&QPushButton::clicked,
-			[ & ]() { this->_openSettingsMinimization(); }
-		);
+		QPushButton::connect( _uiObjects._buttonMinimizationSettings,
+							  &QPushButton::clicked,
+							  [ & ]() { this->_openSettingsMinimization(); } );
 	}
 
 	void EventManager::_connectSettingsNvt() noexcept
 	{
 		QPushButton::connect(
-			_uiObjects._buttonEquilibrationNvtSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNvt(); }
-		);
+			_uiObjects._buttonEquilibrationNvtSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNvt(); } );
 	}
 
 	void EventManager::_connectSettingsNpt() noexcept
 	{
 		QPushButton::connect(
-			_uiObjects._buttonEquilibrationNptSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNpt(); }
-		);
+			_uiObjects._buttonEquilibrationNptSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNpt(); } );
 	}
 
 	void EventManager::_connectSettingsProd() noexcept
 	{
 		QPushButton::connect(
-			_uiObjects._buttonProductionSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsProd(); }
-		);
+			_uiObjects._buttonProductionSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsProd(); } );
 	}
 
 	void EventManager::_connectSettingsManager() noexcept
 	{
 		QPushButton::connect(
-			_uiObjects._buttonSystemSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsManager(); }
-		);
+			_uiObjects._buttonSystemSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsManager(); } );
 	}
 
 	void EventManager::_connectInputCheck() noexcept
 	{
 		QPushButton::connect(
-			_uiObjects._buttonInputCheck, &QPushButton::clicked, [ & ]() { this->_startInputCheck(); }
-		);
+			_uiObjects._buttonInputCheck, &QPushButton::clicked, [ & ]() { this->_startInputCheck(); } );
 	}
 
 	void EventManager::_openSettingsMinimization() noexcept
@@ -176,12 +169,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_data->get( params );
 		SpecificFieldsPlacerCallback * callback = nullptr;
 		_data->get( callback );
-		_settingsDialog.emplace(
-			_uiObjects._buttonMinimizationSettings,
-			"Minimization Settings",
-			&params->minimization,
-			( *callback )( E_FIELD_SECTION::minimization )
-		);
+		_settingsDialog.emplace( _uiObjects._buttonMinimizationSettings,
+								 "Minimization Settings",
+								 &params->minimization,
+								 ( *callback )( E_FIELD_SECTION::minimization ) );
 	}
 
 	void EventManager::_openSettingsNvt() noexcept
@@ -190,12 +181,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_data->get( params );
 		SpecificFieldsPlacerCallback * callback = nullptr;
 		_data->get( callback );
-		_settingsDialog.emplace(
-			_uiObjects._buttonEquilibrationNvtSettings,
-			"Nvt Equilibration Settings",
-			&params->nvt,
-			( *callback )( E_FIELD_SECTION::equilibrationNvt )
-		);
+		_settingsDialog.emplace( _uiObjects._buttonEquilibrationNvtSettings,
+								 "Nvt Equilibration Settings",
+								 &params->nvt,
+								 ( *callback )( E_FIELD_SECTION::equilibrationNvt ) );
 	}
 
 	void EventManager::_openSettingsNpt() noexcept
@@ -204,12 +193,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_data->get( params );
 		SpecificFieldsPlacerCallback * callback = nullptr;
 		_data->get( callback );
-		_settingsDialog.emplace(
-			_uiObjects._buttonEquilibrationNptSettings,
-			"Npt Equilibration Settings",
-			&params->npt,
-			( *callback )( E_FIELD_SECTION::equilibrationNpt )
-		);
+		_settingsDialog.emplace( _uiObjects._buttonEquilibrationNptSettings,
+								 "Npt Equilibration Settings",
+								 &params->npt,
+								 ( *callback )( E_FIELD_SECTION::equilibrationNpt ) );
 	}
 
 	void EventManager::_openSettingsProd() noexcept
@@ -218,12 +205,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_data->get( params );
 		SpecificFieldsPlacerCallback * callback = nullptr;
 		_data->get( callback );
-		_settingsDialog.emplace(
-			_uiObjects._buttonProductionSettings,
-			"Production run Settings",
-			&params->prod,
-			( *callback )( E_FIELD_SECTION::production )
-		);
+		_settingsDialog.emplace( _uiObjects._buttonProductionSettings,
+								 "Production run Settings",
+								 &params->prod,
+								 ( *callback )( E_FIELD_SECTION::production ) );
 	}
 
 	namespace
@@ -248,14 +233,12 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_data->get( callback );
 		Gateway::EngineSpecificCommonInformation * info = nullptr;
 		_data->get( info );
-		_settingsDialog.emplace(
-			_uiObjects._buttonSystemSettings,
-			"System Settings",
-			&params->system,
-			( *callback )( E_FIELD_SECTION::system ),
-			*info,
-			ApplyVisitorBasic( [ & ]() { this->_startInputCheck(); } )
-		);
+		_settingsDialog.emplace( _uiObjects._buttonSystemSettings,
+								 "System Settings",
+								 &params->system,
+								 ( *callback )( E_FIELD_SECTION::system ),
+								 *info,
+								 ApplyVisitorBasic( [ & ]() { this->_startInputCheck(); } ) );
 	}
 
 	void EventManager::performFirstInputCheck()

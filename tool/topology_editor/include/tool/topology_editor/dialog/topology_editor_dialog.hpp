@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOPOLOGY_EDITOR_DIALOG_TOPOLOGY_EDITOR_DIALOG__
-#define __VTX_TOOL_TOPOLOGY_EDITOR_DIALOG_TOPOLOGY_EDITOR_DIALOG__
+#ifndef VTX_TOOL_TOPOLOGY_EDITOR_DIALOG_TOPOLOGY_EDITOR_DIALOG_HPP
+#define VTX_TOOL_TOPOLOGY_EDITOR_DIALOG_TOPOLOGY_EDITOR_DIALOG_HPP
 
 #include <QPointer>
 #include <app/ecs.hpp>
@@ -26,23 +26,23 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		void showEvent( QShowEvent * p_event ) override;
 
 	  private:
-		QPointer<QLabel>	  _systemName;
-		QPointer<QLabel>	  _systemStatus;
-		QPointer<QLineEdit>	  _chainsFilter;
-		QPointer<QLineEdit>	  _residuesFilter;
-		QPointer<QLineEdit>	  _atomsFilter;
-		QPointer<QLineEdit>	  _bondsFilter;
-		QPointer<QLineEdit>	  _validationFilter;
-		QPointer<QTableWidget> _chainsTable;
-		QPointer<QTableWidget> _residuesTable;
-		QPointer<QTableWidget> _atomsTable;
-		QPointer<QTableWidget> _bondsTable;
-		QPointer<QTableWidget> _validationTable;
-		QPointer<QLineEdit>	  _selectedType;
-		QPointer<QLineEdit>	  _selectedName;
-		std::array<QPointer<QLabel>, 6>	  _propertyLabels;
+		QPointer<QLabel>				   _systemName;
+		QPointer<QLabel>				   _systemStatus;
+		QPointer<QLineEdit>				   _chainsFilter;
+		QPointer<QLineEdit>				   _residuesFilter;
+		QPointer<QLineEdit>				   _atomsFilter;
+		QPointer<QLineEdit>				   _bondsFilter;
+		QPointer<QLineEdit>				   _validationFilter;
+		QPointer<QTableWidget>			   _chainsTable;
+		QPointer<QTableWidget>			   _residuesTable;
+		QPointer<QTableWidget>			   _atomsTable;
+		QPointer<QTableWidget>			   _bondsTable;
+		QPointer<QTableWidget>			   _validationTable;
+		QPointer<QLineEdit>				   _selectedType;
+		QPointer<QLineEdit>				   _selectedName;
+		std::array<QPointer<QLabel>, 6>	   _propertyLabels;
 		std::array<QPointer<QLineEdit>, 6> _propertyValues;
-		QPointer<QPushButton> _applyButton;
+		QPointer<QPushButton>			   _applyButton;
 
 		Entity _system;
 

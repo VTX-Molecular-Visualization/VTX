@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_VIEWPOINT__
-#define __VTX_UI_QT_WIDGET_VIEWPOINT__
+#ifndef VTX_UI_QT_WIDGET_VIEWPOINT_HPP
+#define VTX_UI_QT_WIDGET_VIEWPOINT_HPP
 
 #include "ui/qt/widget/transform.hpp"
 #include <QLineEdit>

@@ -16,10 +16,10 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][topology][metadata]" )
 	const std::string systemPathname = systemName + ".mmtf";
 	const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
-	VTX::Core::Struct::Topology				topology;
-	VTX::IO::Metadata						metadata;
+	VTX::Core::Struct::Topology					  topology;
+	VTX::IO::Metadata							  metadata;
 	const Util::Thread::StopToken				  t;
-	IO::SystemReader						systemReader( systemPath, IO::READER_OPTION::ALL, t );
+	IO::SystemReader							  systemReader( systemPath, IO::READER_OPTION::ALL, t );
 	const VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 
 	systemReader.get( dict, topology, metadata );
@@ -41,9 +41,9 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][positions]" )
 	const std::string systemPathname = systemName + ".mmtf";
 	const FilePath	  systemPath	 = Util::Filesystem::getExecutableDir() / "data" / systemPathname;
 
-	std::vector<VTX::Vec3f> pos;
+	std::vector<VTX::Vec3f>		  pos;
 	const Util::Thread::StopToken t;
-	IO::SystemReader		systemReader( systemPath, IO::READER_OPTION::ALL, t );
+	IO::SystemReader			  systemReader( systemPath, IO::READER_OPTION::ALL, t );
 
 	systemReader.get( pos );
 

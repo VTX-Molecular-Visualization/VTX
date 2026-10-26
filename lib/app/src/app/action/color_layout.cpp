@@ -13,15 +13,13 @@ namespace VTX::App::Action::ColorLayout
 			{
 				assert( p_index >= 0 && p_index < Renderer::Color::COLOR_LAYOUT_SIZE );
 				p_layout.colors[ p_index ] = p_color;
-			}
-		);
+			} );
 	}
 
 	void ChangeAll::execute( const Entity p_e, const Renderer::Color::LayoutArray & p_colors )
 	{
 		REG().patch<Renderer::Color::Layout>(
-			p_e, [ p_colors ]( Renderer::Color::Layout & p_layout ) { p_layout.colors = p_colors; }
-		);
+			p_e, [ p_colors ]( Renderer::Color::Layout & p_layout ) { p_layout.colors = p_colors; } );
 	}
 
 	void Randomize::execute( const Entity p_e )
@@ -29,8 +27,7 @@ namespace VTX::App::Action::ColorLayout
 		REG().patch<Renderer::Color::Layout>(
 			p_e,
 			[]( Renderer::Color::Layout & p_layout )
-			{ std::ranges::generate( p_layout.colors, [] { return Util::Color::Rgba::random(); } ); }
-		);
+			{ std::ranges::generate( p_layout.colors, [] { return Util::Color::Rgba::random(); } ); } );
 	}
 
 } // namespace VTX::App::Action::ColorLayout

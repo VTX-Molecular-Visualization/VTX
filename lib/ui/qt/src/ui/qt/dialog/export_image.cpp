@@ -30,8 +30,8 @@ namespace
 	constexpr int	 PREVIEW_FALLBACK_HEIGHT = 220;
 	constexpr int	 PREVIEW_DEBOUNCE_MS	 = 200;
 
-	constexpr auto FORMATS = std::to_array<std::string_view>( { "PNG - Portable Network Graphics",
-																"JPEG - Joint Photographic Experts Group" } );
+	constexpr auto FORMATS = std::to_array<std::string_view>(
+		{ "PNG - Portable Network Graphics", "JPEG - Joint Photographic Experts Group" } );
 
 	constexpr VTX::Util::Resolution CURRENT_RESOLUTION_PRESET = { "Current", 0, 0 };
 
@@ -158,8 +158,7 @@ namespace VTX::UI::QT::Dialog
 		_comboBoxFormat->addItem( QString::fromUtf8( FORMATS[ 1 ] ) );
 
 		connect(
-			_comboBoxFormat, QOverload<int>::of( &QComboBox::currentIndexChanged ), this, &ExportImage::_onFormat
-		);
+			_comboBoxFormat, QOverload<int>::of( &QComboBox::currentIndexChanged ), this, &ExportImage::_onFormat );
 
 		layoutFormat->addWidget( _comboBoxFormat );
 
@@ -199,8 +198,7 @@ namespace VTX::UI::QT::Dialog
 
 		// Buttons.
 		QDialogButtonBox * buttonBox = Helper::makeQObject<QDialogButtonBox>(
-			QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Save, this
-		);
+			QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Save, this );
 
 		// Layout.
 		layout->addWidget( groupResolution );
@@ -231,8 +229,7 @@ namespace VTX::UI::QT::Dialog
 					_comboBoxFormat->currentIndex() == 0 ? Util::Image::E_FORMAT::PNG : Util::Image::E_FORMAT::JPEG,
 					_spinBoxWidth->value(),
 					_spinBoxHeight->value(),
-					_comboBoxFormat->currentIndex() == 0 ? _sliderBackgroundOpacity->value() / 100.f : 1.f
-				);
+					_comboBoxFormat->currentIndex() == 0 ? _sliderBackgroundOpacity->value() / 100.f : 1.f );
 
 				const FilePath lastExportFolder = FilePath( path.toStdString() ).parent_path();
 				_lastExportFolder				= QString::fromStdString( lastExportFolder.string() );
@@ -244,19 +241,16 @@ namespace VTX::UI::QT::Dialog
 				SETTINGS().setValue( SETTING_KEY_EXPORT_FOLDER, _lastExportFolder );
 
 				accept();
-			}
-		);
+			} );
 
-		connect(
-			buttonBox,
-			&QDialogButtonBox::rejected,
-			this,
-			[ this ]()
-			{
-				_previewTimer->stop();
-				reject();
-			}
-		);
+		connect( buttonBox,
+				 &QDialogButtonBox::rejected,
+				 this,
+				 [ this ]()
+				 {
+					 _previewTimer->stop();
+					 reject();
+				 } );
 
 		{
 			const QSignalBlocker b( _spinBoxWidth );
@@ -413,12 +407,10 @@ namespace VTX::UI::QT::Dialog
 			return;
 		}
 
-		const QImage previewImage(
-			reinterpret_cast<const uchar *>( image.data() ),
-			static_cast<int>( width ),
-			static_cast<int>( height ),
-			QImage::Format::Format_RGBA8888
-		);
+		const QImage previewImage( reinterpret_cast<const uchar *>( image.data() ),
+								   static_cast<int>( width ),
+								   static_cast<int>( height ),
+								   QImage::Format::Format_RGBA8888 );
 
 		_preview->setPixmap( QPixmap::fromImage( previewImage.copy().flipped( Qt::Orientation::Vertical ) ) );
 	}

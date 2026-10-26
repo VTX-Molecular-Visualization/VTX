@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_SSAO_SECTION__
-#define __VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_SSAO_SECTION__
+#ifndef VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_SSAO_SECTION_HPP
+#define VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_SSAO_SECTION_HPP
 
 #include "ui/qt/widget/editable_slider.hpp"
 #include "ui/qt/widget/library/graphics_config/section.hpp"

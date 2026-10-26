@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_LAYOUT_RESIDUES__
-#define __VTX_RENDERER_LAYOUT_RESIDUES__
+#ifndef VTX_RENDERER_LAYOUT_RESIDUES_HPP
+#define VTX_RENDERER_LAYOUT_RESIDUES_HPP
 
 #include "base_layout.hpp"
 #include "renderer/caches.hpp"

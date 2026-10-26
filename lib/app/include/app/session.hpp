@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_VTX_UPDATER__
-#define __VTX_APP_VTX_UPDATER__
+#ifndef VTX_APP_SESSION_HPP
+#define VTX_APP_SESSION_HPP
 
 #include "app/constants.hpp"
 #include "app/events.hpp"

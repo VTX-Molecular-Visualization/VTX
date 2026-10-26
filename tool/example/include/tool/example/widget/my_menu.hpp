@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_EXAMPLE_WIDGET_MY_MENU__
-#define __VTX_TOOL_EXAMPLE_WIDGET_MY_MENU__
+#ifndef VTX_TOOL_EXAMPLE_WIDGET_MY_MENU_HPP
+#define VTX_TOOL_EXAMPLE_WIDGET_MY_MENU_HPP
 
 #include "tool/example/actions.hpp"
 #include <QMenu>
@@ -24,6 +24,7 @@ namespace VTX::Tool::Example::Widget
 			addSeparator();
 			UI::QT::UI_ACTIONS().addTo( *this, Action::MY_ACTION_4 );
 		}
+
 		virtual ~MyMenu() {}
 
 	  private:

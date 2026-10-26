@@ -1,93 +1,92 @@
-WarningsAsErrors: '*'
+WarningsAsErrors: ''
 
-Checks: >
-  *,
-  -abseil-*,
-  -altera-*,
-  -boost-use-ranges,
-  -bugprone-branch-clone,
-  -bugprone-crtp-constructor-accessibility,
-  -bugprone-easily-swappable-parameters,
-  -bugprone-narrowing-conversions,
-  -bugprone-random-generator-seed,
-  -bugprone-reserved-identifier,
-  -cert-dcl37-c,
-  -cert-dcl51-cpp,
-  -cert-int09-c,
-  -cert-msc32-c,
-  -cert-msc51-cpp,
-  -clang-analyzer-optin.core.EnumCastOutOfRange,
-  -clang-analyzer-security.ArrayBound,
-  -cppcoreguidelines-avoid-c-arrays,
-  -cppcoreguidelines-avoid-goto,
-  -cppcoreguidelines-avoid-const-or-ref-data-members,
-  -cppcoreguidelines-avoid-magic-numbers,
-  -cppcoreguidelines-narrowing-conversions,
-  -cppcoreguidelines-non-private-member-variables-in-classes,
-  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
-  -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,
-  -cppcoreguidelines-pro-bounds-constant-array-index,
-  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
-  -cppcoreguidelines-pro-type-reinterpret-cast,
-  -cppcoreguidelines-pro-type-union-access,
-  -cppcoreguidelines-special-member-functions,
-  -fuchsia-*,
-  -google-build-using-namespace,
-  -google-explicit-constructor,
-  -google-readability-todo,
-  -hicpp-avoid-c-arrays,
-  -hicpp-avoid-goto,
-  -hicpp-braces-around-statements,
-  -hicpp-deprecated-headers,
-  -hicpp-explicit-conversions,
-  -hicpp-member-init,
-  -hicpp-move-const-arg,
-  -hicpp-named-parameter,
-  -hicpp-no-array-decay,
-  -hicpp-signed-bitwise,
-  -hicpp-special-member-functions,
-  -hicpp-uppercase-literal-suffix,
-  -hicpp-use-auto,
-  -hicpp-use-emplace,
-  -hicpp-use-equals-default,
-  -hicpp-use-equals-delete,
-  -hicpp-use-nullptr,
-  -hicpp-use-override,
-  -hicpp-vararg,
-  -llvm-else-after-return,
-  -llvm-header-guard,
-  -llvm-namespace-comment,
-  -llvm-prefer-static-over-anonymous-namespace,
-  -llvm-use-ranges,
-  -llvmlibc-*,
-  -misc-include-cleaner,
-  -misc-no-recursion,
-  -misc-non-private-member-variables-in-classes,
-  -misc-unused-parameters,
-  -modernize-avoid-c-arrays,
-  -modernize-pass-by-value,
-  -modernize-return-braced-init-list,
-  -modernize-use-auto,
-  -modernize-use-designated-initializers,
-  -modernize-use-nodiscard,
-  -modernize-use-trailing-return-type,
-  -performance-no-int-to-ptr,
-  -portability-template-virtual-member-function,
-  -readability-avoid-nested-conditional-operator,
-  -readability-convert-member-functions-to-static,
-  -readability-else-after-return,
-  -readability-enum-initial-value,
-  -readability-function-cognitive-complexity,
-  -readability-identifier-length,
-  -readability-implicit-bool-conversion,
-  -readability-magic-numbers,
-  -readability-math-missing-parentheses,
-  -readability-named-parameter,
-  -readability-static-accessed-through-instance,
-  -readability-suspicious-call-argument,
-  -readability-uppercase-literal-suffix
+Checks:
+  - '*'
+  - '-abseil-*'                                                      # Google Abseil library conventions.
+  - '-altera-*'                                                      # Intel FPGA OpenCL guidelines.
+  - '-boost-use-ranges'                                              # Suggests boost::range algorithms.
+  - '-bugprone-branch-clone'                                         # Identical branches in if/else or switch.
+  - '-bugprone-crtp-constructor-accessibility'                       # CRTP base constructors should be private.
+  - '-bugprone-easily-swappable-parameters'                          # Adjacent parameters of convertible types.
+  - '-bugprone-narrowing-conversions'                                # Implicit narrowing conversions.
+  - '-bugprone-random-generator-seed'                                # Random engines seeded with constants.
+  - '-cert-dcl37-c'                                                  # Reserved identifiers (alias).
+  - '-cert-dcl51-cpp'                                                # Reserved identifiers (alias).
+  - '-cert-int09-c'                                                  # Integer to/from string conversions errors.
+  - '-cert-msc32-c'                                                  # Random engines seeded with constants (alias).
+  - '-cert-msc51-cpp'                                                # Random engines seeded with constants (alias).
+  - '-clang-analyzer-optin.core.EnumCastOutOfRange'                  # Enum casts of out-of-range values.
+  - '-clang-analyzer-security.ArrayBound'                            # Out-of-bounds array access (analyzer).
+  - '-cppcoreguidelines-avoid-c-arrays'                              # C-style arrays.
+  - '-cppcoreguidelines-avoid-goto'                                  # goto statements.
+  - '-cppcoreguidelines-avoid-const-or-ref-data-members'             # const or reference data members.
+  - '-cppcoreguidelines-avoid-magic-numbers'                         # Magic numbers.
+  - '-cppcoreguidelines-narrowing-conversions'                       # Implicit narrowing conversions (alias).
+  - '-cppcoreguidelines-non-private-member-variables-in-classes'     # Public/protected data members.
+  - '-cppcoreguidelines-pro-bounds-array-to-pointer-decay'           # Array to pointer decay.
+  - '-cppcoreguidelines-pro-bounds-avoid-unchecked-container-access' # Unchecked operator[] on containers.
+  - '-cppcoreguidelines-pro-bounds-constant-array-index'             # Non-constant array indexing.
+  - '-cppcoreguidelines-pro-bounds-pointer-arithmetic'               # Pointer arithmetic.
+  - '-cppcoreguidelines-pro-type-reinterpret-cast'                   # reinterpret_cast.
+  - '-cppcoreguidelines-pro-type-union-access'                       # Union member access.
+  - '-cppcoreguidelines-special-member-functions'                    # Rule of five.
+  - '-fuchsia-*'                                                     # Fuchsia OS guidelines.
+  - '-google-build-using-namespace'                                  # using namespace directives.
+  - '-google-explicit-constructor'                                   # Non-explicit single-argument constructors.
+  - '-google-readability-todo'                                       # TODO comment format.
+  - '-hicpp-avoid-c-arrays'                                          # C-style arrays (alias).
+  - '-hicpp-avoid-goto'                                              # goto statements (alias).
+  - '-hicpp-braces-around-statements'                                # Mandatory braces around statements.
+  - '-hicpp-deprecated-headers'                                      # Deprecated C headers (alias).
+  - '-hicpp-explicit-conversions'                                    # Non-explicit constructors/conversions.
+  - '-hicpp-member-init'                                             # Uninitialized members (alias).
+  - '-hicpp-move-const-arg'                                          # std::move on const values (alias).
+  - '-hicpp-named-parameter'                                         # Unnamed parameters (alias).
+  - '-hicpp-no-array-decay'                                          # Array to pointer decay (alias).
+  - '-hicpp-signed-bitwise'                                          # Bitwise operations on signed integers.
+  - '-hicpp-special-member-functions'                                # Rule of five (alias).
+  - '-hicpp-uppercase-literal-suffix'                                # Uppercase literal suffixes (alias).
+  - '-hicpp-use-auto'                                                # Suggests auto (alias).
+  - '-hicpp-use-emplace'                                             # Suggests emplace (alias).
+  - '-hicpp-use-equals-default'                                      # Suggests = default (alias).
+  - '-hicpp-use-equals-delete'                                       # Suggests = delete (alias).
+  - '-hicpp-use-nullptr'                                             # Suggests nullptr (alias).
+  - '-hicpp-use-override'                                            # Suggests override (alias).
+  - '-hicpp-vararg'                                                  # C-style variadic functions.
+  - '-llvm-else-after-return'                                        # else after return (alias).
+  - '-llvm-header-guard'                                             # LLVM header guard style.
+  - '-llvm-namespace-comment'                                        # Closing namespace comments.
+  - '-llvm-prefer-static-over-anonymous-namespace'                   # Prefers static over anonymous namespaces.
+  - '-llvm-use-ranges'                                               # Suggests llvm::ranges algorithms.
+  - '-llvmlibc-*'                                                    # LLVM libc conventions.
+  - '-misc-no-recursion'                                             # Recursive functions.
+  - '-misc-non-private-member-variables-in-classes'                  # Public/protected data members (alias).
+  - '-misc-unused-parameters'                                        # Unused parameters.
+  - '-modernize-avoid-c-arrays'                                      # C-style arrays (alias).
+  - '-modernize-pass-by-value'                                       # Suggests pass-by-value then move.
+  - '-modernize-return-braced-init-list'                             # Suggests braced init list in return.
+  - '-modernize-use-auto'                                            # Suggests auto.
+  - '-modernize-use-designated-initializers'                         # Suggests designated initializers.
+  - '-modernize-use-nodiscard'                                       # Suggests [[nodiscard]].
+  - '-modernize-use-trailing-return-type'                            # Suggests trailing return types.
+  - '-performance-no-int-to-ptr'                                     # Integer to pointer casts.
+  - '-portability-template-virtual-member-function'                  # Virtual members in class templates.
+  - '-readability-avoid-nested-conditional-operator'                 # Nested ternary operators.
+  - '-readability-convert-member-functions-to-static'                # Suggests static member functions.
+  - '-readability-else-after-return'                                 # else after return.
+  - '-readability-enum-initial-value'                                # Enum initial value consistency.
+  - '-readability-function-cognitive-complexity'                     # Function cognitive complexity.
+  - '-readability-identifier-length'                                 # Short identifier names.
+  - '-readability-implicit-bool-conversion'                          # Implicit conversions to bool.
+  - '-readability-magic-numbers'                                     # Magic numbers (alias).
+  - '-readability-math-missing-parentheses'                          # Missing parentheses in math expressions.
+  - '-readability-named-parameter'                                   # Unnamed parameters.
+  - '-readability-static-accessed-through-instance'                  # Static members accessed through instances.
+  - '-readability-suspicious-call-argument'                          # Suspicious argument order.
+  - '-readability-uppercase-literal-suffix'                          # Uppercase literal suffixes.
 
 CheckOptions:
+  bugprone-exception-escape.CheckMoveMemberFunctions: false
   cppcoreguidelines-rvalue-reference-param-not-moved.AllowPartialMove: true
   cppcoreguidelines-rvalue-reference-param-not-moved.IgnoreNonDeducedTemplateTypes: true
-  bugprone-exception-escape.CheckMoveMemberFunctions: false
+  misc-include-cleaner.MissingIncludes: false

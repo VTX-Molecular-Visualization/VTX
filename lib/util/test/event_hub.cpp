@@ -133,8 +133,7 @@ TEST_CASE( "EventHub concurrent enqueue", "[unit]" )
 					hub.enqueue<Event>( producer * eventsPerProducer + index );
 				}
 				++completed;
-			}
-		);
+			} );
 	}
 	start = true;
 	while ( completed.load() != producerCount )

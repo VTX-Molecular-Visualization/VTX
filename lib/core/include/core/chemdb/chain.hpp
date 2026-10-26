@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_CHEMDB_CHAIN__
-#define __VTX_CORE_CHEMDB_CHAIN__
+#ifndef VTX_CORE_CHEMDB_CHAIN_HPP
+#define VTX_CORE_CHEMDB_CHAIN_HPP
 
 #include <array>
 #include <string>

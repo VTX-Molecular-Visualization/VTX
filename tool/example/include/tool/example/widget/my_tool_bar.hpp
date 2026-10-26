@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR__
-#define __VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR__
+#ifndef VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR_HPP
+#define VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR_HPP
 
 #include "tool/example/actions.hpp"
 #include <QGridLayout>

@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_IMAGE__
-#define __VTX_UTIL_IMAGE__
+#ifndef VTX_UTIL_IMAGE_HPP
+#define VTX_UTIL_IMAGE_HPP
 
 #include "types.hpp"
 #include <cstdint>
@@ -22,13 +22,11 @@ namespace VTX::Util::Image
 	/**
 	 * @brief Write image to disk.
 	 */
-	FilePath write(
-		const FilePath &  p_path,
-		E_FORMAT		  p_format,
-		size_t			  p_width,
-		size_t			  p_height,
-		const std::byte * p_data
-	);
+	FilePath write( const FilePath &  p_path,
+					E_FORMAT		  p_format,
+					size_t			  p_width,
+					size_t			  p_height,
+					const std::byte * p_data );
 
 	/**
 	 * @brief Write software metadata to an existing image.

@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_CALLBACK__
-#define __VTX_UTIL_CALLBACK__
+#ifndef VTX_UTIL_CALLBACK_HPP
+#define VTX_UTIL_CALLBACK_HPP
 
 #include <algorithm>
 #include <functional>
@@ -36,19 +36,14 @@ namespace VTX::Util
 		CallbackId add( Callable && p_callback )
 		{
 			// TODO: why is this not working?
-			static_assert(
-				std::is_convertible_v<Callable, Func>, "Callable must be convertible to std::function<void(Args...)>"
-			);
+			static_assert( std::is_convertible_v<Callable, Func>,
+						   "Callable must be convertible to std::function<void(Args...)>" );
 
-			static_assert(
-				not std::is_member_function_pointer_v<Callable>,
-				"Cannot pass a member function pointer. Use a lambda to capture the object."
-			);
+			static_assert( not std::is_member_function_pointer_v<Callable>,
+						   "Cannot pass a member function pointer. Use a lambda to capture the object." );
 
-			static_assert(
-				std::is_invocable_r_v<void, Callable, Args...>,
-				"Callable type is not invocable with the expected arguments."
-			);
+			static_assert( std::is_invocable_r_v<void, Callable, Args...>,
+						   "Callable type is not invocable with the expected arguments." );
 
 			const std::scoped_lock lock( _mutex );
 			_callbacks.emplace( _nextId++, std::forward<Callable>( p_callback ) );

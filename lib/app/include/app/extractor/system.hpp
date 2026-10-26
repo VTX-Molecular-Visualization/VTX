@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_EXTRACTOR_SYSTEM__
-#define __VTX_APP_EXTRACTOR_SYSTEM__
+#ifndef VTX_APP_EXTRACTOR_SYSTEM_HPP
+#define VTX_APP_EXTRACTOR_SYSTEM_HPP
 
 #include "app/ecs.hpp"
 #include "app/extractor/trajectory_buffer.hpp"
@@ -45,11 +45,11 @@ namespace VTX::App::Extractor
 		void wait();
 
 	  private:
-		struct _Data;
-		std::shared_ptr<_Data> _attributesPtr;
+		struct Data;
+		std::shared_ptr<Data> _attributesPtr;
 
 		void _clean();
 	};
 
 } // namespace VTX::App::Extractor
-#endif // !__VTX_APP_EXTRACTOR_SYSTEM__
+#endif // !VTX_APP_EXTRACTOR_SYSTEM_HPP

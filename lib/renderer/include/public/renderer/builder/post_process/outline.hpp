@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_OUTLINE__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_OUTLINE__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_OUTLINE_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_OUTLINE_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
@@ -49,14 +49,11 @@ namespace VTX::Renderer::Builder::PostProcess
 				.program( Desc::Key { PASS } )
 				.shaders( { "default.vert", "outline.frag" } )
 				.uniform( "Color", COLOR_WHITE.toLinear() )
+				.uniform( "Sensitivity",
+						  OUTLINE_SENSITIVITY_DEFAULT,
+						  std::pair { OUTLINE_SENSITIVITY_MIN, OUTLINE_SENSITIVITY_MAX } )
 				.uniform(
-					"Sensitivity",
-					OUTLINE_SENSITIVITY_DEFAULT,
-					std::pair { OUTLINE_SENSITIVITY_MIN, OUTLINE_SENSITIVITY_MAX }
-				)
-				.uniform(
-					"Thickness", OUTLINE_THICKNESS_DEFAULT, std::pair { OUTLINE_THICKNESS_MIN, OUTLINE_THICKNESS_MAX }
-				)
+					"Thickness", OUTLINE_THICKNESS_DEFAULT, std::pair { OUTLINE_THICKNESS_MIN, OUTLINE_THICKNESS_MAX } )
 				.endProgram()
 				.endPass();
 

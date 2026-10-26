@@ -167,15 +167,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			const std::string lineBuf {
 				currentPos, nextNewlinePos
 			}; // We need to used this buffer because the regex match function doesn't stop at the en of a string view
-			   // iterator but rather at the end of the entire super-string. So we need to copy the string data on a
-			   // separated buffer for it to work as intended.
+			// iterator but rather at the end of the entire super-string. So we need to copy the string data on a
+			// separated buffer for it to work as intended.
 			if ( not std::regex_match( lineBuf, match, lineRegex ) || match.size() < NUM_EXPECTED_GROUPS + 1 )
 			{
 				out.error	= true;
-				out.message = fmt::format(
-					"Line <{}> isn't understood.\nPattern is \n[chain] [kw][num] [value]\n",
-					std::string( currentPos, nextNewlinePos )
-				);
+				out.message = fmt::format( "Line <{}> isn't understood.\nPattern is \n[chain] [kw][num] [value]\n",
+										   std::string( currentPos, nextNewlinePos ) );
 				return out;
 			}
 			Pdb2gmxInputId new_id;
@@ -188,17 +186,15 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			{
 				out.error	= true;
 				out.message = fmt::format(
-					"residue <{}> isn't understood.\nCorrect values are HIS, LYS, ASP, GLN, GLU, ARG, TER, SS", buf
-				);
+					"residue <{}> isn't understood.\nCorrect values are HIS, LYS, ASP, GLN, GLU, ARG, TER, SS", buf );
 				return out;
 			}
 			buf = match[ 3 ].str();
 			if ( buf.empty() )
 			{
 				out.error	= true;
-				out.message = fmt::format(
-					"No residue num has been found in line <{}>.", std::string( currentPos, nextNewlinePos )
-				);
+				out.message = fmt::format( "No residue num has been found in line <{}>.",
+										   std::string( currentPos, nextNewlinePos ) );
 				return out;
 			}
 			try
@@ -232,12 +228,10 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		return out;
 	}
 
-	void prepareJob(
-		const CumulativeOuputFiles &,
-		const FilePath &		 p_root,
-		const std::string_view & p_folderName,
-		Pdb2gmxInstructions &	 p_instructions
-	)
+	void prepareJob( const CumulativeOuputFiles &,
+					 const FilePath &		  p_root,
+					 const std::string_view & p_folderName,
+					 Pdb2gmxInstructions &	  p_instructions )
 	{
 		if ( fs::exists( p_root ) && not fs::is_directory( p_root ) )
 		{

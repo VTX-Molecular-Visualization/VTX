@@ -6,7 +6,5 @@
 namespace VTX::Test::ExternalTool
 {
 	void Binder::bind( PythonBinding::Wrapper::Module & p_vtxModule )
-	{
-		p_vtxModule.bindAction<Action::ToolAction>( "ToolActionExecute", "Invoke a new command function" );
-	}
+	{ p_vtxModule.bindAction<Action::ToolAction>( "ToolActionExecute", "Invoke a new command function" ); }
 }; // namespace VTX::Test::ExternalTool

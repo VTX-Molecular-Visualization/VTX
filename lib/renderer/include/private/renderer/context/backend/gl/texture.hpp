@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_GL_TEXTURE__
-#define __VTX_RENDERER_CONTEXT_GL_TEXTURE__
+#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_TEXTURE_HPP
+#define VTX_RENDERER_CONTEXT_BACKEND_GL_TEXTURE_HPP
 
 #include "include_opengl.hpp"
 #include <cassert>
@@ -11,13 +11,11 @@ namespace VTX::Renderer::Context::Backend::GL
 	class Texture
 	{
 	  public:
-		Texture(
-			const GLsizei p_width,
-			const GLsizei p_height,
-			const GLenum  p_format,
-			const GLenum  p_target,
-			const bool	  p_mipmapped
-		) noexcept :
+		Texture( const GLsizei p_width,
+				 const GLsizei p_height,
+				 const GLenum  p_format,
+				 const GLenum  p_target,
+				 const bool	   p_mipmapped ) noexcept :
 			_width( p_width ), _height( p_height ), _format( p_format ), _target( p_target ), _mipmapped( p_mipmapped )
 		{
 			assert( p_width > 0 && p_height > 0 );
@@ -56,12 +54,10 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		GLuint getId() const noexcept { return _id; }
 
-		void clear(
-			const void * p_data,
-			const GLenum p_format,
-			const GLenum p_type,
-			const GLint	 p_level = 0
-		) const noexcept
+		void clear( const void * p_data,
+					const GLenum p_format,
+					const GLenum p_type,
+					const GLint	 p_level = 0 ) const noexcept
 		{ glClearTexImage( _id, p_level, p_format, p_type, p_data ); }
 
 		void resize( const GLsizei p_width, const GLsizei p_height ) noexcept
@@ -74,16 +70,14 @@ namespace VTX::Renderer::Context::Backend::GL
 			_create();
 		}
 
-		void fill(
-			const void *				 p_pixels,
-			const GLenum				 p_format,
-			const GLenum				 p_type,
-			const std::optional<GLsizei> p_width   = std::nullopt,
-			const std::optional<GLsizei> p_height  = std::nullopt,
-			const GLint					 p_level   = 0,
-			const GLint					 p_offsetX = 0,
-			const GLint					 p_offsetY = 0
-		) const noexcept
+		void fill( const void *					p_pixels,
+				   const GLenum					p_format,
+				   const GLenum					p_type,
+				   const std::optional<GLsizei> p_width	  = std::nullopt,
+				   const std::optional<GLsizei> p_height  = std::nullopt,
+				   const GLint					p_level	  = 0,
+				   const GLint					p_offsetX = 0,
+				   const GLint					p_offsetY = 0 ) const noexcept
 		{
 			assert( p_pixels != nullptr );
 
@@ -93,8 +87,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			if ( _target == GL_TEXTURE_CUBE_MAP )
 			{
 				glTextureSubImage3D(
-					_id, p_level, p_offsetX, p_offsetY, 0, width, height, 6, p_format, p_type, p_pixels
-				);
+					_id, p_level, p_offsetX, p_offsetY, 0, width, height, 6, p_format, p_type, p_pixels );
 			}
 			else
 			{
@@ -108,26 +101,22 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void generateMipmaps() const noexcept { glGenerateTextureMipmap( _id ); }
 
-		void getImage(
-			const GLint	  p_level,
-			const GLenum  p_format,
-			const GLenum  p_type,
-			const GLsizei p_bufSize,
-			void * const  p_pixels
-		) const noexcept
+		void getImage( const GLint	 p_level,
+					   const GLenum	 p_format,
+					   const GLenum	 p_type,
+					   const GLsizei p_bufSize,
+					   void * const	 p_pixels ) const noexcept
 		{ glGetTextureImage( _id, p_level, p_format, p_type, p_bufSize, p_pixels ); }
 
-		void getSubImage(
-			const GLint	  p_level,
-			const GLint	  p_xOffset,
-			const GLint	  p_yOffset,
-			const GLsizei p_width,
-			const GLsizei p_height,
-			const GLenum  p_format,
-			const GLenum  p_type,
-			const GLsizei p_bufSize,
-			void * const  p_pixels
-		) const noexcept
+		void getSubImage( const GLint	p_level,
+						  const GLint	p_xOffset,
+						  const GLint	p_yOffset,
+						  const GLsizei p_width,
+						  const GLsizei p_height,
+						  const GLenum	p_format,
+						  const GLenum	p_type,
+						  const GLsizei p_bufSize,
+						  void * const	p_pixels ) const noexcept
 		{
 			assert( _target == GL_TEXTURE_2D );
 
@@ -135,8 +124,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			glGetIntegerv( GL_PACK_ALIGNMENT, &previousAlignment );
 			glPixelStorei( GL_PACK_ALIGNMENT, 1 );
 			glGetTextureSubImage(
-				_id, p_level, p_xOffset, p_yOffset, 0, p_width, p_height, 1, p_format, p_type, p_bufSize, p_pixels
-			);
+				_id, p_level, p_xOffset, p_yOffset, 0, p_width, p_height, 1, p_format, p_type, p_bufSize, p_pixels );
 			glPixelStorei( GL_PACK_ALIGNMENT, previousAlignment );
 		}
 
@@ -184,4 +172,4 @@ namespace VTX::Renderer::Context::Backend::GL
 	};
 } // namespace VTX::Renderer::Context::Backend::GL
 
-#endif // __VTX_RENDERER_CONTEXT_GL_TEXTURE__
+#endif // VTX_RENDERER_CONTEXT_BACKEND_GL_TEXTURE_HPP

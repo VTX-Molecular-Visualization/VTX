@@ -20,8 +20,7 @@ namespace VTX::App::Action::Scene
 				{
 					REG().destroy( p_e );
 				}
-			}
-		);
+			} );
 	}
 
 	void Clear::execute()

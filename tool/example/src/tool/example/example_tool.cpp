@@ -1,7 +1,7 @@
 #include "tool/example/example_tool.hpp"
 #include "tool/example/actions.hpp"
-#include "tool/example/widget/my_dock_widget.hpp"
 #include "tool/example/widget/my_dialog.hpp"
+#include "tool/example/widget/my_dock_widget.hpp"
 #include "tool/example/widget/my_menu.hpp"
 #include "tool/example/widget/my_tool_bar.hpp"
 #include "ui/qt/action_registry.hpp"
@@ -22,28 +22,24 @@ namespace VTX::Tool::Example
 	void ExampleTool::registerActions()
 	{
 		App::UI::DescAction action;
-		action.key	   = ACTION_EXAMPLE;
-		action.name	   = "Example";
-		action.tip	   = "Example tool";
-		action.icon	   = "sprite/king.png";
+		action.key	= ACTION_EXAMPLE;
+		action.name = "Example";
+		action.tip	= "Example tool";
+		action.icon = "sprite/king.png";
 
-		UI::QT::UI_ACTIONS().registerAction(
-			action,
-			[ this ]( const UI::QT::ActionRegistry::ActionContext & )
-			{
-				VTX_DEBUG( "Action triggered" );
-				// Implement logic.
-			}
-		);
+		UI::QT::UI_ACTIONS().registerAction( action,
+											 [ this ]( const UI::QT::ActionRegistry::ActionContext & )
+											 {
+												 VTX_DEBUG( "Action triggered" );
+												 // Implement logic.
+											 } );
 
-		UI::QT::UI_ACTIONS().registerAction(
-			Action::myAction1(),
-			[]( const UI::QT::ActionRegistry::ActionContext & )
-			{
-				Widget::MyDialog dialog;
-				dialog.exec();
-			}
-		);
+		UI::QT::UI_ACTIONS().registerAction( Action::myAction1(),
+											 []( const UI::QT::ActionRegistry::ActionContext & )
+											 {
+												 Widget::MyDialog dialog;
+												 dialog.exec();
+											 } );
 		UI::QT::UI_ACTIONS().registerAction( Action::myAction2() );
 		UI::QT::UI_ACTIONS().registerAction( Action::myAction3() );
 		UI::QT::UI_ACTIONS().registerAction( Action::myAction4() );

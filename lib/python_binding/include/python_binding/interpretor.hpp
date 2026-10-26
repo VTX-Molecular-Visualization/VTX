@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_BINDING_INTERPRETOR__
-#define __VTX_PYTHON_BINDING_INTERPRETOR__
+#ifndef VTX_PYTHON_BINDING_INTERPRETOR_HPP
+#define VTX_PYTHON_BINDING_INTERPRETOR_HPP
 
 #include "python_binding/binder.hpp"
 #include <memory>

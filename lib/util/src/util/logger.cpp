@@ -77,8 +77,7 @@ namespace VTX::Util
 
 			// File sink.
 			auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-				( p_logDir / ( std::to_string( Chrono::getTimestamp() ) + ".log" ) ).string()
-			);
+				( p_logDir / ( std::to_string( Chrono::getTimestamp() ) + ".log" ) ).string() );
 			fileSink->set_level( spdlog::level::trace );
 
 			// Callback sink.
@@ -94,8 +93,7 @@ namespace VTX::Util
 					{
 						callback( _toLogInfo( p_msg ) );
 					}
-				}
-			);
+				} );
 			callbackSink->set_level( p_debug ? spdlog::level::debug : spdlog::level::info );
 
 			// Logger.
@@ -110,8 +108,7 @@ namespace VTX::Util
 			}
 
 			auto logger = std::make_shared<spdlog::async_logger>(
-				NAME.data(), sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block
-			);
+				NAME.data(), sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block );
 			logger->set_pattern( "[%t] [%H:%M:%S] [%^%l%$] %v" );
 			logger->set_level( spdlog::level::trace );
 			logger->flush_on( p_debug ? spdlog::level::trace : spdlog::level::info );

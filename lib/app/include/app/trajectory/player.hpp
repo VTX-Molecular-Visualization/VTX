@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_TRAJECTORY_PLAYER__
-#define __VTX_APP_TRAJECTORY_PLAYER__
+#ifndef VTX_APP_TRAJECTORY_PLAYER_HPP
+#define VTX_APP_TRAJECTORY_PLAYER_HPP
 
 #include <util/players.hpp>
 #include <util/types.hpp>

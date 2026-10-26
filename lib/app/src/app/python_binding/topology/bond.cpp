@@ -23,13 +23,11 @@ namespace VTX::App::PythonBinding::Topology
 			.def( "getSystem", &Bond::getSystem )
 			.def( "getFirstAtom", &Bond::getFirstAtom )
 			.def( "getSecondAtom", &Bond::getSecondAtom )
-			.def_property_readonly(
-				"order",
-				[]( const Bond & p_bond )
-				{
-					return Core::ChemDB::Bond::ORDER_STR[ static_cast<size_t>( getTopology( p_bond.entity )
-																				   .getBondOrder( p_bond.index ) ) ];
-				}
-			);
+			.def_property_readonly( "order",
+									[]( const Bond & p_bond )
+									{
+										return Core::ChemDB::Bond::ORDER_STR[ static_cast<size_t>(
+											getTopology( p_bond.entity ).getBondOrder( p_bond.index ) ) ];
+									} );
 	}
 } // namespace VTX::App::PythonBinding::Topology

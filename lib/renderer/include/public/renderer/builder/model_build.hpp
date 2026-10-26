@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BUILDER_MODEL_BUILD__
-#define __VTX_RENDERER_BUILDER_MODEL_BUILD__
+#ifndef VTX_RENDERER_BUILDER_MODEL_BUILD_HPP
+#define VTX_RENDERER_BUILDER_MODEL_BUILD_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/caches.hpp"
@@ -11,11 +11,9 @@ namespace VTX::Renderer::Builder
 	struct Models
 	{
 		template<typename... Resources>
-		static void upload(
-			Context::ContextWrapper & p_context,
-			const Cache::Camera &	  p_camera,
-			Resources &... p_resources
-		)
+		static void upload( Context::ContextWrapper & p_context,
+							const Cache::Camera &	  p_camera,
+							Resources &... p_resources )
 		{
 			if ( ( p_resources.empty() && ... ) )
 			{
@@ -32,12 +30,10 @@ namespace VTX::Renderer::Builder
 
 	  private:
 		template<typename Resources>
-		static void _append(
-			BinaryBuffer430 &	  p_buffer,
-			Resources &			  p_resources,
-			const Cache::Camera & p_camera,
-			uint32_t &			  p_modelIndex
-		)
+		static void _append( BinaryBuffer430 &	   p_buffer,
+							 Resources &		   p_resources,
+							 const Cache::Camera & p_camera,
+							 uint32_t &			   p_modelIndex )
 		{
 			for ( auto entry : p_resources.entries() )
 			{
@@ -56,4 +52,4 @@ namespace VTX::Renderer::Builder
 	};
 } // namespace VTX::Renderer::Builder
 
-#endif // !__VTX_RENDERER_BUILDER_MODEL_BUILD__
+#endif // !VTX_RENDERER_BUILDER_MODEL_BUILD_HPP

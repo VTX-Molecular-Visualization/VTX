@@ -30,11 +30,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			};
 		}
 
-		ErrorReport generateMdpFile(
-			const FilePath &										  p_template,
-			const FilePath &										  p_dest,
-			const std::vector<std::pair<const char *, std::string>> & p_replaceText
-		)
+		ErrorReport generateMdpFile( const FilePath &										   p_template,
+									 const FilePath &										   p_dest,
+									 const std::vector<std::pair<const char *, std::string>> & p_replaceText )
 		{
 			const FilePath templateFile = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "nvt.mdp";
 			if ( fs::exists( p_template ) )
@@ -58,11 +56,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			fs::create_directories( p_dest );
 		}
-		return generateMdpFile(
-			VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "nvt.mdp",
-			p_dest / "nvt.mdp",
-			generateKeyValues( p_in.nvt )
-		);
+		return generateMdpFile( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "nvt.mdp",
+								p_dest / "nvt.mdp",
+								generateKeyValues( p_in.nvt ) );
 	}
 
 	ErrorReport createNptMdp( const FilePath & p_dest, MdInstructions & p_in )
@@ -71,11 +67,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			fs::create_directories( p_dest );
 		}
-		return generateMdpFile(
-			VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "npt.mdp",
-			p_dest / "npt.mdp",
-			generateKeyValues( p_in.npt )
-		);
+		return generateMdpFile( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "npt.mdp",
+								p_dest / "npt.mdp",
+								generateKeyValues( p_in.npt ) );
 	}
 
 	ErrorReport createProdMdp( const FilePath & p_dest, MdInstructions & p_in )
@@ -84,11 +78,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			fs::create_directories( p_dest );
 		}
-		return generateMdpFile(
-			VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "prod.mdp",
-			p_dest / "prod.mdp",
-			generateKeyValues( p_in.prod )
-		);
+		return generateMdpFile( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "prod.mdp",
+								p_dest / "prod.mdp",
+								generateKeyValues( p_in.prod ) );
 	}
 
 	ErrorReport createWorkflowPy( const FilePath & p_dest, MdInstructions & p_in )
@@ -110,11 +102,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		return { true, fmt::format( "Template file <{}> not found.", templateFile.string() ) };
 	}
 
-	ErrorReport pack(
-		const FilePath &			 p_dest,
-		const CumulativeOuputFiles & p_prepareOutputs,
-		MdInstructions &			 p_instructions
-	)
+	ErrorReport pack( const FilePath &			   p_dest,
+					  const CumulativeOuputFiles & p_prepareOutputs,
+					  MdInstructions &			   p_instructions )
 	{
 		ErrorReport err = createNvtMdp( p_dest, p_instructions );
 		if ( err.error )

@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS_GROMPP__
-#define __VTX_TOOL_TOOLS_MDPREP_GROMACS_GROMPP__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMPP_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMPP_HPP
 
 #include <filesystem>
 #include <util/filesystem.hpp>
@@ -41,12 +41,10 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	// Setup job folder and place input files as the job need them
 	// Generate the .mdp file from template based on the user inputs in GromppInstructionsMinimization
 	// if .mdp found in previous output files, will use it instead
-	void prepareJob(
-		const CumulativeOuputFiles &,
-		const FilePath &		 p_root,
-		const std::string_view & p_folderName,
-		GromppInstructions &
-	);
+	void prepareJob( const CumulativeOuputFiles &,
+					 const FilePath &		  p_root,
+					 const std::string_view & p_folderName,
+					 GromppInstructions & );
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.

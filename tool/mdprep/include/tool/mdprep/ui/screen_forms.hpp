@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_SCREEN_FORMS__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_SCREEN_FORMS__
+#ifndef VTX_TOOL_MDPREP_UI_SCREEN_FORMS_HPP
+#define VTX_TOOL_MDPREP_UI_SCREEN_FORMS_HPP
 
 #include "tool/mdprep/ui/md_engine_factory.hpp"
 #include <functional>
@@ -62,7 +62,7 @@ namespace VTX::Tool::Mdprep::ui
 		void _preparationEnd();
 		void _setupSlots();
 
-		std::function<MdEngineSpecificFieldPlacer( const E_FIELD_SECTION & )> _SpecificFieldPlacerGetter();
+		std::function<MdEngineSpecificFieldPlacer( const E_FIELD_SECTION & )> SpecificFieldPlacerGetter();
 	};
 } // namespace VTX::Tool::Mdprep::ui
 

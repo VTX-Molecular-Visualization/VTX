@@ -78,8 +78,7 @@ namespace VTX::App::PythonBinding::Topology
 					const auto * const player = REG().try_get<App::Trajectory::Player>( entity );
 					const uint		   index  = player ? player->currentFrameIndex : 0;
 					return Frame { index, App::Helper::Trajectory::getFrame( entity, index ) };
-				}
-			);
+				} );
 		}
 
 		VTX::App::PythonBinding::Trajectory getTrajectory( const System & p_system )
@@ -136,110 +135,82 @@ namespace VTX::App::PythonBinding::Topology
 				"associateTrajectory",
 				[]( const System & p_system, const FilePath & p_path )
 				{ executeAction<App::Action::IO::AssociateTrajectory>( p_path, p_system.entity ); },
-				py::arg( "path" )
-			)
+				py::arg( "path" ) )
 			.def_property_readonly( "trajectory", &getTrajectory )
 			.def_property_readonly( "currentFrame", &getCurrentFrame )
+			.def_property_readonly( "name",
+									[]( const System & p_system ) -> const std::string &
+									{ return getMetadata( p_system.entity ).name; } )
 			.def_property_readonly(
-				"name",
-				[]( const System & p_system ) -> const std::string & { return getMetadata( p_system.entity ).name; }
-			)
+				"path", []( const System & p_system ) { return getMetadata( p_system.entity ).path.string(); } )
+			.def_property_readonly( "pdbIdCode",
+									[]( const System & p_system ) -> const std::string &
+									{ return getMetadata( p_system.entity ).pdbIDCode; } )
 			.def_property_readonly(
-				"path", []( const System & p_system ) { return getMetadata( p_system.entity ).path.string(); }
-			)
+				"chainCount", []( const System & p_system ) { return getTopology( p_system.entity ).getChainCount(); } )
+			.def_property_readonly( "residueCount",
+									[]( const System & p_system )
+									{ return getTopology( p_system.entity ).getResidueCount(); } )
 			.def_property_readonly(
-				"pdbIdCode",
-				[]( const System & p_system ) -> const std::string &
-				{ return getMetadata( p_system.entity ).pdbIDCode; }
-			)
+				"atomCount", []( const System & p_system ) { return getTopology( p_system.entity ).getAtomCount(); } )
 			.def_property_readonly(
-				"chainCount", []( const System & p_system ) { return getTopology( p_system.entity ).getChainCount(); }
-			)
-			.def_property_readonly(
-				"residueCount",
-				[]( const System & p_system ) { return getTopology( p_system.entity ).getResidueCount(); }
-			)
-			.def_property_readonly(
-				"atomCount", []( const System & p_system ) { return getTopology( p_system.entity ).getAtomCount(); }
-			)
-			.def_property_readonly(
-				"bondCount", []( const System & p_system ) { return getTopology( p_system.entity ).getBondCount(); }
-			)
-			.def_property_readonly(
-				"categoryCount",
-				[]( const System & p_system )
-				{
-					getTopology( p_system.entity );
-					return toUnderlying( Core::ChemDB::Category::TYPE::COUNT );
-				}
-			)
-			.def_property_readonly(
-				"aabb", []( const System & p_system ) { return Helper::AABB::get( p_system.entity ); }
-			)
-			.def_property_readonly(
-				"indexFirstChain",
-				[]( const System & p_system )
-				{
-					getTopology( p_system.entity );
-					return static_cast<Index>( 0 );
-				}
-			)
-			.def_property_readonly(
-				"indexLastChain",
-				[]( const System & p_system )
-				{
-					const Index count = getTopology( p_system.entity ).getChainCount();
-					return count;
-				}
-			)
-			.def_property_readonly(
-				"indexFirstResidue",
-				[]( const System & p_system )
-				{
-					getTopology( p_system.entity );
-					return static_cast<Index>( 0 );
-				}
-			)
-			.def_property_readonly(
-				"indexLastResidue",
-				[]( const System & p_system )
-				{
-					const Index count = getTopology( p_system.entity ).getResidueCount();
-					return count;
-				}
-			)
-			.def_property_readonly(
-				"indexFirstAtom",
-				[]( const System & p_system )
-				{
-					getTopology( p_system.entity );
-					return static_cast<Index>( 0 );
-				}
-			)
-			.def_property_readonly(
-				"indexLastAtom",
-				[]( const System & p_system )
-				{
-					const Index count = getTopology( p_system.entity ).getAtomCount();
-					return count;
-				}
-			)
-			.def_property_readonly(
-				"indexFirstBond",
-				[]( const System & p_system )
-				{
-					getTopology( p_system.entity );
-					return static_cast<Index>( 0 );
-				}
-			)
-			.def_property_readonly(
-				"indexLastBond",
-				[]( const System & p_system )
-				{
-					const Index count = getTopology( p_system.entity ).getBondCount();
-					return count;
-				}
-			)
+				"bondCount", []( const System & p_system ) { return getTopology( p_system.entity ).getBondCount(); } )
+			.def_property_readonly( "categoryCount",
+									[]( const System & p_system )
+									{
+										getTopology( p_system.entity );
+										return toUnderlying( Core::ChemDB::Category::TYPE::COUNT );
+									} )
+			.def_property_readonly( "aabb",
+									[]( const System & p_system ) { return Helper::AABB::get( p_system.entity ); } )
+			.def_property_readonly( "indexFirstChain",
+									[]( const System & p_system )
+									{
+										getTopology( p_system.entity );
+										return static_cast<Index>( 0 );
+									} )
+			.def_property_readonly( "indexLastChain",
+									[]( const System & p_system )
+									{
+										const Index count = getTopology( p_system.entity ).getChainCount();
+										return count;
+									} )
+			.def_property_readonly( "indexFirstResidue",
+									[]( const System & p_system )
+									{
+										getTopology( p_system.entity );
+										return static_cast<Index>( 0 );
+									} )
+			.def_property_readonly( "indexLastResidue",
+									[]( const System & p_system )
+									{
+										const Index count = getTopology( p_system.entity ).getResidueCount();
+										return count;
+									} )
+			.def_property_readonly( "indexFirstAtom",
+									[]( const System & p_system )
+									{
+										getTopology( p_system.entity );
+										return static_cast<Index>( 0 );
+									} )
+			.def_property_readonly( "indexLastAtom",
+									[]( const System & p_system )
+									{
+										const Index count = getTopology( p_system.entity ).getAtomCount();
+										return count;
+									} )
+			.def_property_readonly( "indexFirstBond",
+									[]( const System & p_system )
+									{
+										getTopology( p_system.entity );
+										return static_cast<Index>( 0 );
+									} )
+			.def_property_readonly( "indexLastBond",
+									[]( const System & p_system )
+									{
+										const Index count = getTopology( p_system.entity ).getBondCount();
+										return count;
+									} )
 			.def( "getChains", &getChains )
 			.def( "getResidues", &getResidues )
 			.def( "getAtoms", &getAtoms )
@@ -254,50 +225,35 @@ namespace VTX::App::PythonBinding::Topology
 				"setVisible",
 				[]( const System & p_system, const bool p_visible )
 				{ setVisible<SystemItem::SYSTEM>( p_system.entity, RangeList(), p_visible ); },
-				py::arg( "visible" ) = true
-			)
+				py::arg( "visible" ) = true )
 			.def(
 				"setSelected",
 				[]( const System & p_system, const bool p_selected, const bool p_append )
 				{ setSelected<SystemItem::SYSTEM>( p_system.entity, RangeList(), p_selected, p_append ); },
 				py::arg( "selected" ) = true,
-				py::arg( "append" )	  = false
-			)
-			.def_property_readonly(
-				"visibleState",
-				[]( const System & p_system )
-				{ return getVisibleState( p_system.entity, SystemItem::SYSTEM, std::nullopt ); }
-			)
-			.def_property_readonly(
-				"selectionState",
-				[]( const System & p_system )
-				{ return getSelectionState( p_system.entity, SystemItem::SYSTEM, std::nullopt ); }
-			)
-			.def(
-				"isVisible",
-				[]( const System & p_system ) { return isVisible( p_system.entity, SystemItem::SYSTEM, std::nullopt ); }
-			)
-			.def(
-				"isFullyVisible",
-				[]( const System & p_system )
-				{ return isFullyVisible( p_system.entity, SystemItem::SYSTEM, std::nullopt ); }
-			)
-			.def(
-				"isSelected",
-				[]( const System & p_system )
-				{ return isSelected( p_system.entity, SystemItem::SYSTEM, std::nullopt ); }
-			)
-			.def(
-				"isFullySelected",
-				[]( const System & p_system )
-				{ return isFullySelected( p_system.entity, SystemItem::SYSTEM, std::nullopt ); }
-			);
+				py::arg( "append" )	  = false )
+			.def_property_readonly( "visibleState",
+									[]( const System & p_system )
+									{ return getVisibleState( p_system.entity, SystemItem::SYSTEM, std::nullopt ); } )
+			.def_property_readonly( "selectionState",
+									[]( const System & p_system )
+									{ return getSelectionState( p_system.entity, SystemItem::SYSTEM, std::nullopt ); } )
+			.def( "isVisible",
+				  []( const System & p_system )
+				  { return isVisible( p_system.entity, SystemItem::SYSTEM, std::nullopt ); } )
+			.def( "isFullyVisible",
+				  []( const System & p_system )
+				  { return isFullyVisible( p_system.entity, SystemItem::SYSTEM, std::nullopt ); } )
+			.def( "isSelected",
+				  []( const System & p_system )
+				  { return isSelected( p_system.entity, SystemItem::SYSTEM, std::nullopt ); } )
+			.def( "isFullySelected",
+				  []( const System & p_system )
+				  { return isFullySelected( p_system.entity, SystemItem::SYSTEM, std::nullopt ); } );
 
-		p_vtxModule.def(
-			"getSystem",
-			&getSystem,
-			"Return a topology system handle matching given name.",
-			VTX::PythonBinding::Wrapper::Arg( "name" )
-		);
+		p_vtxModule.def( "getSystem",
+						 &getSystem,
+						 "Return a topology system handle matching given name.",
+						 VTX::PythonBinding::Wrapper::Arg( "name" ) );
 	}
 } // namespace VTX::App::PythonBinding::Topology

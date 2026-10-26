@@ -15,10 +15,12 @@ namespace bcs::ssesdf
 		// and false otherwise."
 		__device__ bool operator()( const int4 a, const int4 b ) { return abs( a.w ) > abs( b.w ); }
 	};
+
 	struct HasNeighbors
 	{
 		__device__ bool operator()( const int4 a ) { return abs( a.w ) == 2; }
 	};
+
 	struct IsComplete
 	{
 		__host__ __device__ uint8_t operator()( uint8_t x ) const { return uint8_t( x == 2 ); }
@@ -46,51 +48,43 @@ namespace bcs::ssesdf
 
 			// Place with-neighbors intersections at the begin of the array
 			int4 * intersectionIds = tempIntersectionsIds.get<int4>();
-			thrust::sort(
-				thrust::device, intersectionIds, intersectionIds + *sesContext.hIntersectionNb, HasNeighborsComparator()
-			);
+			thrust::sort( thrust::device,
+						  intersectionIds,
+						  intersectionIds + *sesContext.hIntersectionNb,
+						  HasNeighborsComparator() );
 			sesContext.intersectionWithNeighborNb = thrust::count_if(
-				thrust::device, intersectionIds, intersectionIds + *sesContext.hIntersectionNb, HasNeighbors()
-			);
+				thrust::device, intersectionIds, intersectionIds + *sesContext.hIntersectionNb, HasNeighbors() );
 			intersectionBuffer = ResultBuffer(
 				( *sesContext.hIntersectionNb ) * ( sizeof( int4 ) + sizeof( float4 ) )
 					+ sesContext.intersectionWithNeighborNb * sizeof( float4 ) * sesContext.maxIntersectionNeighbors,
 				false,
-				graphics
-			);
-			copy(
-				intersectionBuffer.get<int4>() + *sesContext.hIntersectionNb,
-				tempIntersectionsIds.get<int4>(),
-				*sesContext.hIntersectionNb
-			);
+				graphics );
+			copy( intersectionBuffer.get<int4>() + *sesContext.hIntersectionNb,
+				  tempIntersectionsIds.get<int4>(),
+				  *sesContext.hIntersectionNb );
 		}
 
 		{
 			auto [ blockNb, threadNb ] = KernelConfig::From( *sesContext.hIntersectionNb, 256 );
-			fillIntersections<<<blockNb, threadNb>>>(
-				sesContext,
-				intersectionBuffer.get<int4>() + *sesContext.hIntersectionNb,
-				intersectionBuffer.get<float4>()
-			);
+			fillIntersections<<<blockNb, threadNb>>>( sesContext,
+													  intersectionBuffer.get<int4>() + *sesContext.hIntersectionNb,
+													  intersectionBuffer.get<float4>() );
 			cudaCheck( "Intersection fill failed" );
 		}
 
-		uint32_t toroidalPatches = thrust::count_if(
-			thrust::device,
-			sesContext.visibilityStatus,
-			sesContext.visibilityStatus + sesContext.atomNb * sesContext.maxNeighborPerAtom,
-			IsComplete()
-		);
+		uint32_t toroidalPatches
+			= thrust::count_if( thrust::device,
+								sesContext.visibilityStatus,
+								sesContext.visibilityStatus + sesContext.atomNb * sesContext.maxNeighborPerAtom,
+								IsComplete() );
 
 		auto patchesIds = DeviceBuffer::Typed<uint32_t>( toroidalPatches );
-		thrust::copy_if(
-			thrust::device,
-			thrust::make_counting_iterator<uint32_t>( 0 ),
-			thrust::make_counting_iterator<uint32_t>( sesContext.getMaximumCircleNb() ),
-			sesContext.visibilityStatus,
-			patchesIds.get<uint32_t>(),
-			IsComplete {}
-		);
+		thrust::copy_if( thrust::device,
+						 thrust::make_counting_iterator<uint32_t>( 0 ),
+						 thrust::make_counting_iterator<uint32_t>( sesContext.getMaximumCircleNb() ),
+						 sesContext.visibilityStatus,
+						 patchesIds.get<uint32_t>(),
+						 IsComplete {} );
 
 		ResultBuffer circles   = ResultBuffer( ( sizeof( float4 ) * 3 ) * ( toroidalPatches ), false, graphics );
 		float4 *	 positions = circles.get<float4>();
@@ -99,8 +93,7 @@ namespace bcs::ssesdf
 
 		auto [ blockNb, threadNb ] = KernelConfig::From( toroidalPatches, 256 );
 		fillCircles<<<blockNb, threadNb>>>(
-			sesContext, toroidalPatches, patchesIds.get<uint32_t>(), positions, axis, visibilitySpheres
-		);
+			sesContext, toroidalPatches, patchesIds.get<uint32_t>(), positions, axis, visibilitySpheres );
 		cudaCheck( "Circles fill failed" );
 
 		return std::make_pair( std::move( circles ), std::move( intersectionBuffer ) );
@@ -111,10 +104,8 @@ namespace bcs::ssesdf
 	{
 		constexpr uint32_t WarpThreadNb	 = 32;
 		constexpr uint32_t BlockThreadNb = MaxNeighborPerAtom;
-		static_assert(
-			MaxNeighborPerAtom % WarpThreadNb == 0,
-			"MaxNeighborPerAtom must be a multiple of the number of warp threads."
-		);
+		static_assert( MaxNeighborPerAtom % WarpThreadNb == 0,
+					   "MaxNeighborPerAtom must be a multiple of the number of warp threads." );
 
 		constexpr uint32_t WarpNb		= BlockThreadNb / WarpThreadNb;
 		constexpr uint32_t HiddenCircle = 0xffffffff;
@@ -133,7 +124,9 @@ namespace bcs::ssesdf
 		auto workGroup = cg::this_thread_block();
 
 		if ( threadIdx.x == 0 )
+		{
 			groupIntersectionNb = startIntersectionId = trimmedCircleNb = 0;
+		}
 
 		workGroup.sync();
 
@@ -211,50 +204,52 @@ namespace bcs::ssesdf
 				uint32_t allowedToContinue = 0;
 				uint32_t jkIndex		   = 0xffffffff;
 				executeQueue<WarpThreadNb>( // format
-                    warp.ballot( mustBeProcessed ),
-                    [ & ]( uint32_t id )
-                    {
-                        const uint32_t currentK = warp.shfl( k, id );
+					warp.ballot( mustBeProcessed ),
+					[ & ]( uint32_t id )
+					{
+						const uint32_t currentK = warp.shfl( k, id );
 
-                        // Each thread of the warp check if its set of loaded j's neighbors contain k
-                        //                                k
-                        //                              / |
-                        //                            /   |       with i < j < k
-                        //       We just found      /     |
-                        //       this edge    --> /       |
-                        //                      /         | <- We want to make sure if this one exist
-                        //                    /           |
-                        //                  /             |
-                        //                /               |
-                        //              i _______________ j
-                        //                      ^
-                        //                      |
-                        //               We're processing
-                        //                   this edge
+						// Each thread of the warp check if its set of loaded j's neighbors contain k
+						//                                k
+						//                              / |
+						//                            /   |       with i < j < k
+						//       We just found      /     |
+						//       this edge    --> /       |
+						//                      /         | <- We want to make sure if this one exist
+						//                    /           |
+						//                  /             |
+						//                /               |
+						//              i _______________ j
+						//                      ^
+						//                      |
+						//               We're processing
+						//                   this edge
 
-                        uint32_t jKExist     = 0;
-                        uint32_t tempJKIndex = 0xffffffff;
-                        for ( uint32_t i = 0; !jKExist && i < neighborsPerThread; i++ )
-                        {
-                            const uint32_t index = i * warp.size() + warp.thread_rank();
-                            jKExist              = index < jNeighborNb && neighborSave[ i ] == currentK;
-                            if ( jKExist )
-                                tempJKIndex = index;
+						uint32_t jKExist	 = 0;
+						uint32_t tempJKIndex = 0xffffffff;
+						for ( uint32_t i = 0; !jKExist && i < neighborsPerThread; i++ )
+						{
+							const uint32_t index = i * warp.size() + warp.thread_rank();
+							jKExist				 = index < jNeighborNb && neighborSave[ i ] == currentK;
+							if ( jKExist )
+							{
+								tempJKIndex = index;
+							}
 
-                            jKExist = warp.ballot( jKExist );
-                        }
+							jKExist = warp.ballot( jKExist );
+						}
 
-                        // If a thread find k in its set, the corresponding thread save its value
-                        if ( jKExist )
-                        {
-                            tempJKIndex = warp.shfl( tempJKIndex, getIdFromMask<WarpThreadNb>( jKExist ) );
-                            if ( warp.thread_rank() == id )
-                            {
-                                jkIndex           = tempJKIndex;
-                                allowedToContinue = true;
-                            }
-                        }
-                    } );
+						// If a thread find k in its set, the corresponding thread save its value
+						if ( jKExist )
+						{
+							tempJKIndex = warp.shfl( tempJKIndex, getIdFromMask<WarpThreadNb>( jKExist ) );
+							if ( warp.thread_rank() == id )
+							{
+								jkIndex			  = tempJKIndex;
+								allowedToContinue = true;
+							}
+						}
+					} );
 
 				// All IK previously validated now compute their true intersection data
 				float3 x1, x2;
@@ -281,77 +276,81 @@ namespace bcs::ssesdf
 
 				// For every intersection found, the warp check if it isn't hidden by a neighbor of i
 				executeQueue<WarpThreadNb>( // format
-                    warp.ballot( allowedToContinue ),
-                    [ & ]( uint32_t id )
-                    {
-                        // Load ijk triplet from the corresponding thread
-                        const uint16_t iterationLocalK  = iteration * warp.size() + id;
-                        const uint32_t iterationKjIndex = warp.shfl( jkIndex, id );
+					warp.ballot( allowedToContinue ),
+					[ & ]( uint32_t id )
+					{
+						// Load ijk triplet from the corresponding thread
+						const uint16_t iterationLocalK	= iteration * warp.size() + id;
+						const uint32_t iterationKjIndex = warp.shfl( jkIndex, id );
 
-                        const float4 iterationAk = warp.shfl( ak, id );
+						const float4 iterationAk = warp.shfl( ak, id );
 
-                        const float3 x1ToProcess = warp.shfl( x1, id );
-                        const float3 x2ToProcess = warp.shfl( x2, id );
+						const float3 x1ToProcess = warp.shfl( x1, id );
+						const float3 x2ToProcess = warp.shfl( x2, id );
 
-                        // Check intersection visibility status
-                        bool x1Visible = true;
-                        bool x2Visible = true;
-                        for ( uint16_t lIndex = warp.thread_rank(); ( x1Visible || x2Visible ) && lIndex < iNeighborNb;
-                              lIndex += warp.size() )
-                        {
-                            if ( lIndex == localNeighbor || lIndex == iterationLocalK )
-                                continue;
+						// Check intersection visibility status
+						bool x1Visible = true;
+						bool x2Visible = true;
+						for ( uint16_t lIndex = warp.thread_rank(); ( x1Visible || x2Visible ) && lIndex < iNeighborNb;
+							  lIndex += warp.size() )
+						{
+							if ( lIndex == localNeighbor || lIndex == iterationLocalK )
+							{
+								continue;
+							}
 
-                            const float4 secondAtom        = blockNeighborhoodData[ lIndex ];
-                            const float3 secondAtomPos     = make_float3( secondAtom );
-                            float        lthExtendedRadius = secondAtom.w + sesContext.probeRadius;
-                            lthExtendedRadius *= lthExtendedRadius;
+							const float4 secondAtom		   = blockNeighborhoodData[ lIndex ];
+							const float3 secondAtomPos	   = make_float3( secondAtom );
+							float		 lthExtendedRadius = secondAtom.w + sesContext.probeRadius;
+							lthExtendedRadius *= lthExtendedRadius;
 
-                            x1Visible = x1Visible && length2( secondAtomPos - x1ToProcess ) - lthExtendedRadius > 0.f;
-                            x2Visible = x2Visible && length2( secondAtomPos - x2ToProcess ) - lthExtendedRadius > 0.f;
-                        }
+							x1Visible = x1Visible && length2( secondAtomPos - x1ToProcess ) - lthExtendedRadius > 0.f;
+							x2Visible = x2Visible && length2( secondAtomPos - x2ToProcess ) - lthExtendedRadius > 0.f;
+						}
 
-                        // First thread save intersections if they are visible
-                        x1Visible = warp.all( x1Visible );
-                        x2Visible = warp.all( x2Visible );
-                        if ( warp.thread_rank() == 0 && ( x1Visible || x2Visible ) )
-                        {
-                            const int3   ids  = make_int3( blockIdx.x * sesContext.maxNeighborPerAtom + localNeighbor,
-                                                        blockIdx.x * sesContext.maxNeighborPerAtom + iterationLocalK,
-                                                        ij.j * sesContext.maxNeighborPerAtom + iterationKjIndex );
-                            const float3 p2   = make_float3( ai );
-                            const float3 p3   = make_float3( aj );
-                            const float3 p4   = make_float3( iterationAk );
-                            const float3 p2p3 = normalize( p3 - p2 );
-                            const float3 p4p3 = normalize( p3 - p4 );
+						// First thread save intersections if they are visible
+						x1Visible = warp.all( x1Visible );
+						x2Visible = warp.all( x2Visible );
+						if ( warp.thread_rank() == 0 && ( x1Visible || x2Visible ) )
+						{
+							const int3	 ids  = make_int3( blockIdx.x * sesContext.maxNeighborPerAtom + localNeighbor,
+														   blockIdx.x * sesContext.maxNeighborPerAtom + iterationLocalK,
+														   ij.j * sesContext.maxNeighborPerAtom + iterationKjIndex );
+							const float3 p2	  = make_float3( ai );
+							const float3 p3	  = make_float3( aj );
+							const float3 p4	  = make_float3( iterationAk );
+							const float3 p2p3 = normalize( p3 - p2 );
+							const float3 p4p3 = normalize( p3 - p4 );
 
-                            if ( x1Visible )
-                            {
-                                const float    d = dot( p2 - x1ToProcess, normalize( cross( p2p3, p4p3 ) ) );
-                                const uint32_t hasNeighbors
-                                    = d * d - sesContext.probeRadius * sesContext.probeRadius < -1e-4f;
+							if ( x1Visible )
+							{
+								const float	   d = dot( p2 - x1ToProcess, normalize( cross( p2p3, p4p3 ) ) );
+								const uint32_t hasNeighbors
+									= d * d - sesContext.probeRadius * sesContext.probeRadius < -1e-4f;
 
-                                groupIntersectionsIds[::atomicAdd( &groupIntersectionNb, 1 ) ]
-                                    = make_int4( ids, ( 1 + hasNeighbors ) );
-                            }
-                            if ( x2Visible )
-                            {
-                                const float    d = dot( p2 - x2ToProcess, normalize( cross( p2p3, p4p3 ) ) );
-                                const uint32_t hasNeighbors
-                                    = d * d - sesContext.probeRadius * sesContext.probeRadius < -1e-4f;
+								groupIntersectionsIds[::atomicAdd( &groupIntersectionNb, 1 ) ]
+									= make_int4( ids, ( 1 + hasNeighbors ) );
+							}
+							if ( x2Visible )
+							{
+								const float	   d = dot( p2 - x2ToProcess, normalize( cross( p2p3, p4p3 ) ) );
+								const uint32_t hasNeighbors
+									= d * d - sesContext.probeRadius * sesContext.probeRadius < -1e-4f;
 
-                                groupIntersectionsIds[::atomicAdd( &groupIntersectionNb, 1 ) ]
-                                    = make_int4( ids, -( 1 + hasNeighbors ) );
-                            }
-                        }
-                    } );
+								groupIntersectionsIds[::atomicAdd( &groupIntersectionNb, 1 ) ]
+									= make_int4( ids, -( 1 + hasNeighbors ) );
+							}
+						}
+					} );
 			}
 		}
 
 		// Saving intersections data to global memory
 		workGroup.sync();
 		if ( workGroup.thread_rank() == 0 )
+		{
 			startIntersectionId = ::atomicAdd( sesContext.dIntersectionNb, groupIntersectionNb );
+		}
 		workGroup.sync();
 
 		for ( uint32_t i = workGroup.thread_rank(); i < groupIntersectionNb; i += workGroup.size() )

@@ -12,11 +12,10 @@
 namespace VTX::UI::QT::Delegate
 {
 
-	SystemDelegate::SystemDelegate(
-		const Entity			   p_system,
-		const Model::SystemModel & p_model,
-		QObject * const			   p_parent
-	) : QStyledItemDelegate( p_parent ), _system( p_system ), _model( p_model )
+	SystemDelegate::SystemDelegate( const Entity			   p_system,
+									const Model::SystemModel & p_model,
+									QObject * const			   p_parent ) :
+		QStyledItemDelegate( p_parent ), _system( p_system ), _model( p_model )
 	{
 		_icons[ 0 ] = STYLE().iconFromCodepoint( Style::Icons::VISIBILITY_OFF );
 		_icons[ 1 ] = STYLE().iconFromCodepoint( Style::Icons::COLOR_LAYOUT );
@@ -24,15 +23,12 @@ namespace VTX::UI::QT::Delegate
 		_icons[ 3 ] = STYLE().iconFromCodepoint( Style::Icons::CHAIN );
 	}
 
-	void SystemDelegate::paint(
-		QPainter *					 p_painter,
-		const QStyleOptionViewItem & p_option,
-		const QModelIndex &			 p_index
-	) const
+	void SystemDelegate::paint( QPainter *					 p_painter,
+								const QStyleOptionViewItem & p_option,
+								const QModelIndex &			 p_index ) const
 	{
 		const App::System::E_SELECTION_STATE selectionState = static_cast<App::System::E_SELECTION_STATE>(
-			p_index.data( toUnderlying( Model::SystemModel::Roles::SelectionStateRole ) ).toInt()
-		);
+			p_index.data( toUnderlying( Model::SystemModel::Roles::SelectionStateRole ) ).toInt() );
 
 		QStyleOptionViewItem option = p_option;
 		option.state.setFlag( QStyle::State_Selected, selectionState == App::System::E_SELECTION_STATE::FULL );
@@ -59,8 +55,7 @@ namespace VTX::UI::QT::Delegate
 
 		// Visibility.
 		const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
-			p_index.data( toUnderlying( Model::SystemModel::Roles::VisibleRole ) ).toInt()
-		);
+			p_index.data( toUnderlying( Model::SystemModel::Roles::VisibleRole ) ).toInt() );
 		pinButtons[ toUnderlying( ACTION::VISIBILITY ) ] = visible == App::System::E_VISIBLE_STATE::HIDDEN;
 
 		// Color scheme.
@@ -93,12 +88,10 @@ namespace VTX::UI::QT::Delegate
 	QSize SystemDelegate::sizeHint( const QStyleOptionViewItem & p_option, const QModelIndex & p_index ) const
 	{ return QStyledItemDelegate::sizeHint( p_option, p_index ); }
 
-	bool SystemDelegate::editorEvent(
-		QEvent *					 p_event,
-		QAbstractItemModel *		 p_model,
-		const QStyleOptionViewItem & p_option,
-		const QModelIndex &			 p_index
-	)
+	bool SystemDelegate::editorEvent( QEvent *					   p_event,
+									  QAbstractItemModel *		   p_model,
+									  const QStyleOptionViewItem & p_option,
+									  const QModelIndex &		   p_index )
 	{
 		auto * const e = dynamic_cast<QMouseEvent *>( p_event );
 		if ( e != nullptr
@@ -143,28 +136,22 @@ namespace VTX::UI::QT::Delegate
 		return QStyledItemDelegate::editorEvent( p_event, p_model, p_option, p_index );
 	}
 
-	QWidget * SystemDelegate::createEditor(
-		QWidget * const				 p_parent,
-		const QStyleOptionViewItem & p_option,
-		const QModelIndex &			 p_index
-	) const
+	QWidget * SystemDelegate::createEditor( QWidget * const				 p_parent,
+											const QStyleOptionViewItem & p_option,
+											const QModelIndex &			 p_index ) const
 	{ return QStyledItemDelegate::createEditor( p_parent, p_option, p_index ); }
 
 	void SystemDelegate::setEditorData( QWidget * p_editor, const QModelIndex & p_index ) const
 	{ QStyledItemDelegate::setEditorData( p_editor, p_index ); }
 
-	void SystemDelegate::setModelData(
-		QWidget *			 p_editor,
-		QAbstractItemModel * p_model,
-		const QModelIndex &	 p_index
-	) const
+	void SystemDelegate::setModelData( QWidget *			p_editor,
+									   QAbstractItemModel * p_model,
+									   const QModelIndex &	p_index ) const
 	{ QStyledItemDelegate::setModelData( p_editor, p_model, p_index ); }
 
-	bool SystemDelegate::hitsButton(
-		const QStyleOptionViewItem & p_option,
-		const QModelIndex &			 p_index,
-		const QPoint &				 p_pos
-	) const
+	bool SystemDelegate::hitsButton( const QStyleOptionViewItem & p_option,
+									 const QModelIndex &		  p_index,
+									 const QPoint &				  p_pos ) const
 	{ return _hitTestButton( p_option, p_index, p_pos ) >= 0; }
 
 	QRect SystemDelegate::_buttonsRect( const QStyleOptionViewItem & p_option, const QModelIndex & p_index ) const
@@ -176,11 +163,9 @@ namespace VTX::UI::QT::Delegate
 		return QRect( r.right() - totalW - MARGIN_R, r.center().y() - ICON_SIZE / 2, totalW, ICON_SIZE );
 	}
 
-	QRect SystemDelegate::_buttonRect(
-		const QStyleOptionViewItem & p_option,
-		const QModelIndex &			 p_index,
-		const int					 p_i
-	) const
+	QRect SystemDelegate::_buttonRect( const QStyleOptionViewItem & p_option,
+									   const QModelIndex &			p_index,
+									   const int					p_i ) const
 	{
 		const QRect br = _buttonsRect( p_option, p_index );
 
@@ -197,11 +182,9 @@ namespace VTX::UI::QT::Delegate
 		return p_i == 0 ? ACTION::DISPLAY_MODE : static_cast<ACTION>( p_i - 1 );
 	}
 
-	int SystemDelegate::_hitTestButton(
-		const QStyleOptionViewItem & p_option,
-		const QModelIndex &			 p_index,
-		const QPoint &				 p_pos
-	) const
+	int SystemDelegate::_hitTestButton( const QStyleOptionViewItem & p_option,
+										const QModelIndex &			 p_index,
+										const QPoint &				 p_pos ) const
 	{
 		for ( int i = 0; i < _buttonCount( p_index ); ++i )
 		{
@@ -225,10 +208,9 @@ namespace VTX::UI::QT::Delegate
 
 	QIcon SystemDelegate::_displayModeIcon( const QModelIndex & p_index ) const
 	{
-		return STYLE().iconFromCodepoint(
-			_model.getViewMode() == Model::SystemModel::ViewMode::ByCategory ? Style::Icons::CATEGORY
-																			 : Style::Icons::CHAIN
-		);
+		return STYLE().iconFromCodepoint( _model.getViewMode() == Model::SystemModel::ViewMode::ByCategory
+											  ? Style::Icons::CATEGORY
+											  : Style::Icons::CHAIN );
 	}
 
 } // namespace VTX::UI::QT::Delegate

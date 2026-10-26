@@ -17,7 +17,7 @@
 
 namespace VTX::Tool::Mdprep::Actions
 {
-	struct StartPreparation::_Impl
+	struct StartPreparation::Impl
 	{
 		VTX::Util::Thread::ThreadData thrData;
 		std::latch					  waiter { 1 };
@@ -27,11 +27,11 @@ namespace VTX::Tool::Mdprep::Actions
 	{
 	}
 
-	void StartPreparation::_Del::operator()( _Impl * _ptr ) const noexcept { std::default_delete<_Impl>()( _ptr ); }
+	void StartPreparation::Del::operator()( Impl * _ptr ) const noexcept { std::default_delete<Impl>()( _ptr ); }
 
-	StartPreparation::StartPreparation() : _impl( new _Impl ) {}
+	StartPreparation::StartPreparation() : _impl( new Impl ) {}
 
-	StartPreparation::StartPreparation( VTX::Util::Thread::ThreadData p_ ) : _impl( new _Impl { std::move( p_ ) } ) {}
+	StartPreparation::StartPreparation( VTX::Util::Thread::ThreadData p_ ) : _impl( new Impl { std::move( p_ ) } ) {}
 
 	void StartPreparation::execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions p_instr )
 	{
@@ -58,9 +58,9 @@ namespace VTX::Tool::Mdprep::Actions
 			{
 				VTX_ERROR( "[MDPREP] Packing failed: {}", packReport.errMsg );
 			}
-			App::THREAD().dispatch( [ event
-									  = Gateway::SystemPacked { not packReport.error, resultDir.string() } ]() mutable
-									{ App::HUB().trigger( std::move( event ) ); } );
+			App::THREAD().dispatch(
+				[ event = Gateway::SystemPacked { not packReport.error, resultDir.string() } ]() mutable
+				{ App::HUB().trigger( std::move( event ) ); } );
 			if ( _impl->thrData.stopToken.stop_requested() )
 			{
 				goto theEnd;
@@ -72,12 +72,10 @@ namespace VTX::Tool::Mdprep::Actions
 				noErrors &= not jobData.report.errorOccured;
 				if ( jobData.report.errorOccured )
 				{
-					VTX_ERROR(
-						"[MDPREP] Job {} failed (finished: {}, errors: {}).",
-						jobIndex,
-						jobData.report.finished,
-						jobData.report.errors.size()
-					);
+					VTX_ERROR( "[MDPREP] Job {} failed (finished: {}, errors: {}).",
+							   jobIndex,
+							   jobData.report.finished,
+							   jobData.report.errors.size() );
 					for ( const std::string & error : jobData.report.errors )
 					{
 						VTX_ERROR( "[MDPREP] Job {}: {}", jobIndex, error );
@@ -88,10 +86,8 @@ namespace VTX::Tool::Mdprep::Actions
 			{
 				App::ACTION().execute<App::Action::IO::LoadSystem>( p_instr.editconf2.out );
 				App::ACTION().execute<App::Action::Visibility::SetVisibleAll>( false );
-				VTX_INFO(
-					"System written at : {}",
-					fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), resultDir.string() )
-				);
+				VTX_INFO( "System written at : {}",
+						  fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), resultDir.string() ) );
 				App::THREAD().dispatch( [ event = Gateway::PreparationFinished { true } ]() mutable
 										{ App::HUB().trigger( event ); } );
 			}
@@ -115,15 +111,15 @@ namespace VTX::Tool::Mdprep::Actions
 		}
 	}
 
-	struct CheckSystem::_Impl
+	struct CheckSystem::Impl
 	{
 		VTX::Util::Thread::ThreadData thrData;
 		std::latch					  waiter { 1 };
 	};
 
-	CheckSystem::CheckSystem() : _impl( new _Impl ) {}
+	CheckSystem::CheckSystem() : _impl( new Impl ) {}
 
-	CheckSystem::CheckSystem( VTX::Util::Thread::ThreadData p_ ) : _impl( new _Impl { std::move( p_ ) } ) {}
+	CheckSystem::CheckSystem( VTX::Util::Thread::ThreadData p_ ) : _impl( new Impl { std::move( p_ ) } ) {}
 
 	void CheckSystem::execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions p_gmxIntructions )
 	{
@@ -134,8 +130,7 @@ namespace VTX::Tool::Mdprep::Actions
 														 0,
 														 true,
 														 "Nothing to check." } ]() mutable
-				{ App::HUB().trigger( std::move( event ) ); }
-			);
+				{ App::HUB().trigger( std::move( event ) ); } );
 			goto theEnd;
 		}
 		if ( _impl->thrData.thrRef )
@@ -150,16 +145,14 @@ namespace VTX::Tool::Mdprep::Actions
 			const backends::Gromacs::SystemTester tester(
 				dest,
 				p_gmxIntructions.pdb2gmx.forcefields[ p_gmxIntructions.pdb2gmx.forcefieldIndex ],
-				p_gmxIntructions.pdb2gmx.water
-			);
+				p_gmxIntructions.pdb2gmx.water );
 			auto reason = tester.why();
 			App::THREAD().dispatch(
 				[ event = Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
 														 0,
 														 tester.isSystemOk(),
 														 std::string( reason.begin(), reason.end() ) } ]() mutable
-				{ App::HUB().trigger( std::move( event ) ); }
-			);
+				{ App::HUB().trigger( std::move( event ) ); } );
 		}
 
 	theEnd:
@@ -174,5 +167,5 @@ namespace VTX::Tool::Mdprep::Actions
 		}
 	}
 
-	void CheckSystem::_Del::operator()( _Impl * _ptr ) const noexcept { std::default_delete<_Impl>()( _ptr ); }
+	void CheckSystem::Del::operator()( Impl * _ptr ) const noexcept { std::default_delete<Impl>()( _ptr ); }
 } // namespace VTX::Tool::Mdprep::Actions

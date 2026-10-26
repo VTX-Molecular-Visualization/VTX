@@ -10,8 +10,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		using namespace Renderer;
 		auto addSlider
 			= [ this ](
-				  const QString & p_label, QPointer<EditableSlider> & p_slider, const float p_min, const float p_max
-			  )
+				  const QString & p_label, QPointer<EditableSlider> & p_slider, const float p_min, const float p_max )
 		{
 			addWidget( Helper::makeQObject<QLabel>( p_label, this ) );
 			p_slider = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
@@ -25,25 +24,20 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		addSlider( "Graniness X", _sliderGraninessX, CRT_GRANINESS_MIN, CRT_GRANINESS_MAX );
 		addSlider( "Graniness Y", _sliderGraninessY, CRT_GRANINESS_MIN, CRT_GRANINESS_MAX );
 		addSlider(
-			"Vignette roundness", _sliderVignetteRoundness, CRT_VIGNETTE_ROUNDNESS_MIN, CRT_VIGNETTE_ROUNDNESS_MAX
-		);
+			"Vignette roundness", _sliderVignetteRoundness, CRT_VIGNETTE_ROUNDNESS_MIN, CRT_VIGNETTE_ROUNDNESS_MAX );
 		addSlider(
-			"Vignette intensity", _sliderVignetteIntensity, CRT_VIGNETTE_INTENSITY_MIN, CRT_VIGNETTE_INTENSITY_MAX
-		);
+			"Vignette intensity", _sliderVignetteIntensity, CRT_VIGNETTE_INTENSITY_MIN, CRT_VIGNETTE_INTENSITY_MAX );
 		addSlider( "Brightness", _sliderBrightness, CRT_BRIGHTNESS_MIN, CRT_BRIGHTNESS_MAX );
 
-		connect(
-			this,
-			&HideableGroupBox::toggled,
-			[ this ]( const bool p_state ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_CRT, bool>( p_state ); }
-		);
+		connect( this,
+				 &HideableGroupBox::toggled,
+				 [ this ]( const bool p_state )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_CRT, bool>( p_state ); } );
 		auto connectSlider = [ this ]<E_GRAPHICS_CONFIG_VALUES S>( EditableSlider * const p_slider )
 		{
-			connect(
-				p_slider,
-				&EditableSlider::valueChanged,
-				[ this ]( const float p_value ) { _changeValue<S, float>( p_value ); }
-			);
+			connect( p_slider,
+					 &EditableSlider::valueChanged,
+					 [ this ]( const float p_value ) { _changeValue<S, float>( p_value ); } );
 		};
 		connectSlider.operator()<E_GRAPHICS_CONFIG_VALUES::CRT_CURVATURE_X>( _sliderCurvatureX );
 		connectSlider.operator()<E_GRAPHICS_CONFIG_VALUES::CRT_CURVATURE_Y>( _sliderCurvatureY );

@@ -111,11 +111,9 @@ namespace VTX::Renderer
 				if ( program.dispatchIndirect
 					 && not _resources.buffers.contains( program.dispatchIndirect->indirectBuffer ) )
 				{
-					throw GraphicException(
-						"Program '{}': dispatch indirect buffer '{}' not found",
-						program.name,
-						program.dispatchIndirect->indirectBuffer
-					);
+					throw GraphicException( "Program '{}': dispatch indirect buffer '{}' not found",
+											program.name,
+											program.dispatchIndirect->indirectBuffer );
 				}
 			}
 		}
@@ -134,8 +132,7 @@ namespace VTX::Renderer
 			if ( geometry.indirectBuffer && not _resources.buffers.contains( *geometry.indirectBuffer ) )
 			{
 				throw GraphicException(
-					"Geometry '{}': indirect buffer '{}' not found", key, *geometry.indirectBuffer
-				);
+					"Geometry '{}': indirect buffer '{}' not found", key, *geometry.indirectBuffer );
 			}
 		}
 

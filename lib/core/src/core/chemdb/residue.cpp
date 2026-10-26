@@ -39,12 +39,10 @@ namespace VTX::Core::ChemDB::Residue
 		formattedName[ 0 ]		  = std::toupper( formattedName[ 0 ] );
 
 		// Downcase residue name
-		std::transform(
-			++p_residueName.begin(),
-			p_residueName.end(),
-			++formattedName.begin(),
-			[]( unsigned char c ) { return std::tolower( c ); }
-		);
+		std::transform( ++p_residueName.begin(),
+						p_residueName.end(),
+						++formattedName.begin(),
+						[]( unsigned char c ) { return std::tolower( c ); } );
 
 		for ( int i = 0; i < static_cast<int>( SYMBOL::COUNT ); i++ )
 		{

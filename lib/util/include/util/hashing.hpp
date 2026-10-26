@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_HASHING__
-#define __VTX_UTIL_HASHING__
+#ifndef VTX_UTIL_HASHING_HPP
+#define VTX_UTIL_HASHING_HPP
 
 #include "type_traits.hpp"
 #include "types.hpp"

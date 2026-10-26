@@ -76,45 +76,33 @@ namespace VTX::UI::QT::Widget
 		layout->addWidget( _labelElasticityFactor );
 		layout->addWidget( _sliderElasticityFactor );
 
-		connect(
-			_checkBoxInvertY,
-			&QCheckBox::toggled,
-			[]( const bool p_value ) { App::ACTION().execute<App::Action::Controller::SetInvertY>( p_value ); }
-		);
-		connect(
-			_sliderTranslationSpeed,
-			&EditableSlider::valueChanged,
-			[]( const float p_value )
-			{ App::ACTION().execute<App::Action::Controller::SetTranslationSpeed>( p_value ); }
-		);
-		connect(
-			_sliderRotationSpeed,
-			&EditableSlider::valueChanged,
-			[]( const float p_value ) { App::ACTION().execute<App::Action::Controller::SetRotationSpeed>( p_value ); }
-		);
-		connect(
-			_sliderAccelerationFactor,
-			&EditableSlider::valueChanged,
-			[]( const float p_value )
-			{ App::ACTION().execute<App::Action::Controller::SetAccelerationFactor>( p_value ); }
-		);
-		connect(
-			_sliderDecelerationFactor,
-			&EditableSlider::valueChanged,
-			[]( const float p_value )
-			{ App::ACTION().execute<App::Action::Controller::SetDecelerationFactor>( p_value ); }
-		);
-		connect(
-			_checkBoxElasticityActive,
-			&QCheckBox::toggled,
-			[]( const bool p_value ) { App::ACTION().execute<App::Action::Controller::SetElasticityActive>( p_value ); }
-		);
-		connect(
-			_sliderElasticityFactor,
-			&EditableSlider::valueChanged,
-			[]( const float p_value )
-			{ App::ACTION().execute<App::Action::Controller::SetElasticityFactor>( p_value ); }
-		);
+		connect( _checkBoxInvertY,
+				 &QCheckBox::toggled,
+				 []( const bool p_value ) { App::ACTION().execute<App::Action::Controller::SetInvertY>( p_value ); } );
+		connect( _sliderTranslationSpeed,
+				 &EditableSlider::valueChanged,
+				 []( const float p_value )
+				 { App::ACTION().execute<App::Action::Controller::SetTranslationSpeed>( p_value ); } );
+		connect( _sliderRotationSpeed,
+				 &EditableSlider::valueChanged,
+				 []( const float p_value )
+				 { App::ACTION().execute<App::Action::Controller::SetRotationSpeed>( p_value ); } );
+		connect( _sliderAccelerationFactor,
+				 &EditableSlider::valueChanged,
+				 []( const float p_value )
+				 { App::ACTION().execute<App::Action::Controller::SetAccelerationFactor>( p_value ); } );
+		connect( _sliderDecelerationFactor,
+				 &EditableSlider::valueChanged,
+				 []( const float p_value )
+				 { App::ACTION().execute<App::Action::Controller::SetDecelerationFactor>( p_value ); } );
+		connect( _checkBoxElasticityActive,
+				 &QCheckBox::toggled,
+				 []( const bool p_value )
+				 { App::ACTION().execute<App::Action::Controller::SetElasticityActive>( p_value ); } );
+		connect( _sliderElasticityFactor,
+				 &EditableSlider::valueChanged,
+				 []( const float p_value )
+				 { App::ACTION().execute<App::Action::Controller::SetElasticityFactor>( p_value ); } );
 
 		_controllerUpdatedConnection
 			= App::REG().on_update<App::Setting::Controller>().connect<&Controller::_setController>( this );

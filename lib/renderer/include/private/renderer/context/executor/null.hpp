@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_EXECUTOR_NULL__
-#define __VTX_RENDERER_CONTEXT_EXECUTOR_NULL__
+#ifndef VTX_RENDERER_CONTEXT_EXECUTOR_NULL_HPP
+#define VTX_RENDERER_CONTEXT_EXECUTOR_NULL_HPP
 
 #include "renderer/context/command_buffer.hpp"
 

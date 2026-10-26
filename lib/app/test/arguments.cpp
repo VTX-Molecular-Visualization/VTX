@@ -17,8 +17,8 @@ TEST_CASE( "VTX_APP - System - Load", "[arguments]" )
 
 	const std::string execPathStr	= Util::Filesystem::getExecutableDir().string();
 	const std::string systemPathStr = ( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" ).string();
-	const char *   argv[]		 = { execPathStr.c_str(), systemPathStr.c_str() };
-	ArgumentParser parser( 2, argv );
+	const char *	  argv[]		= { execPathStr.c_str(), systemPathStr.c_str() };
+	ArgumentParser	  parser( 2, argv );
 	parser.parse();
 
 	Arguments args;

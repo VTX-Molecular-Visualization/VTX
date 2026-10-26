@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_LAYOUT_MESHES__
-#define __VTX_RENDERER_LAYOUT_MESHES__
+#ifndef VTX_RENDERER_LAYOUT_MESHES_HPP
+#define VTX_RENDERER_LAYOUT_MESHES_HPP
 
 #include "base_layout.hpp"
 #include <core/struct/mesh.hpp>
@@ -22,11 +22,9 @@ namespace VTX::Renderer::Layout
 		void registerMesh( const Desc::Handle p_handle, const Core::Struct::Mesh & p_mesh )
 		{ add( p_handle, static_cast<Index>( p_mesh.vertices.size() ) ); }
 
-		void upload(
-			Context::ContextWrapper &  p_context,
-			const Desc::Handle		   p_handle,
-			const Core::Struct::Mesh & p_mesh
-		)
+		void upload( Context::ContextWrapper &	p_context,
+					 const Desc::Handle			p_handle,
+					 const Core::Struct::Mesh & p_mesh )
 		{
 			p_context.setBuffer<Vec3f>( { Desc::Key { POSITIONS } }, p_mesh.vertices, offset( p_handle ) );
 			p_context.setBuffer<Vec3f>( { Desc::Key { NORMALS } }, p_mesh.normals, offset( p_handle ) );
@@ -41,4 +39,4 @@ namespace VTX::Renderer::Layout
 	};
 } // namespace VTX::Renderer::Layout
 
-#endif // !__VTX_RENDERER_LAYOUT_MESHES__
+#endif // !VTX_RENDERER_LAYOUT_MESHES_HPP

@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_EDITCONF_GROMACS__
-#define __VTX_TOOL_TOOLS_EDITCONF_GROMACS__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_EDITCONF_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_EDITCONF_HPP
 
 #include <array>
 #include <filesystem>
@@ -53,12 +53,10 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	};
 
 	// Setup job folder and place input files as the job need them
-	void prepareJob(
-		const CumulativeOuputFiles &,
-		const FilePath &		 p_root,
-		const std::string_view & p_folderName,
-		EditconfInstructions &
-	);
+	void prepareJob( const CumulativeOuputFiles &,
+					 const FilePath &		  p_root,
+					 const std::string_view & p_folderName,
+					 EditconfInstructions & );
 
 	// Convert editconf instructions to gromacs command
 	//  Do not perform filesystem check

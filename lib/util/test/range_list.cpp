@@ -27,8 +27,7 @@ TEST_CASE( "Util::Math::RangeList operations", "[unit]" )
 			}
 			return sum == 27 && a.toVector<int>() == std::vector<int> { 1, 2, 7, 8, 9 }
 				   && R( 1, 4 ).toStdVector() == std::vector<int> { 1, 2, 3 };
-		}()
-	) );
+		}() ) );
 }
 
 TEST_CASE( "Util::Math::RangeList", "[unit]" )
@@ -121,8 +120,7 @@ TEST_CASE( "Util::Math::RangeList - Operators", "[unit]" )
 	// Check Intersect
 	rangeListRes1 = RangeList<size_t>::intersect( rangeListA, rangeListB );
 	CHECK( rangeListRes1.contains(
-		{ Range<size_t>( 5, 5 ), Range<size_t>( 7, 8 ), Range<size_t>( 12, 14 ), Range<size_t>( 18, 19 ) }
-	) );
+		{ Range<size_t>( 5, 5 ), Range<size_t>( 7, 8 ), Range<size_t>( 12, 14 ), Range<size_t>( 18, 19 ) } ) );
 
 	rangeListRes2 = RangeList<size_t>::intersect( rangeListB, rangeListA );
 	CHECK( rangeListRes1 == rangeListRes2 );
@@ -134,8 +132,7 @@ TEST_CASE( "Util::Math::RangeList - Operators", "[unit]" )
 	// Check Exclusive
 	rangeListRes1 = RangeList<size_t>::exclusive( rangeListA, rangeListB );
 	CHECK( rangeListRes1.contains(
-		{ Range<size_t>( 0, 1 ), Range<size_t>( 4, 4 ), Range<size_t>( 15, 17 ), Range<size_t>( 20, 20 ) }
-	) );
+		{ Range<size_t>( 0, 1 ), Range<size_t>( 4, 4 ), Range<size_t>( 15, 17 ), Range<size_t>( 20, 20 ) } ) );
 
 	rangeListRes2 = RangeList<size_t>::exclusive( rangeListB, rangeListA );
 	CHECK( rangeListRes1 == rangeListRes2 );

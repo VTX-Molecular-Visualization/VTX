@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <vector>
 namespace fs = std::filesystem;
+
 namespace pdb100
 {
 
@@ -16,19 +17,23 @@ namespace pdb100
 		uint32_t num = 0;
 		char	 chain_name[ 3 ] { '\0' };
 	};
+
 	struct SecondaryStruct
 	{
 		Residue begin;
 		Residue end;
 	};
+
 	struct Helix
 	{
 		SecondaryStruct ss;
 	};
+
 	struct Strand
 	{
 		SecondaryStruct ss;
 	};
+
 	struct System
 	{
 		char					  code[ 4 ] { '\0' };
@@ -38,6 +43,7 @@ namespace pdb100
 		std::vector<Helix>		  helixes;
 		std::vector<Strand>		  strands;
 	};
+
 	struct Rates
 	{
 		float	 beginBetaSheet			 = 0.f;
@@ -61,6 +67,7 @@ namespace pdb100
 		no_ss,	 // no secondary structure in file's data
 		crashed, // Structure reading failed miserably
 	};
+
 	template<typename StringType>
 	struct ReportItem
 	{
@@ -71,10 +78,9 @@ namespace pdb100
 		StringType	  pdb;
 		StringType	  details;
 	};
+
 	template<std::integral INT>
 	inline INT oneIfZero( const INT & i )
-	{
-		return i == 0 ? 1 : i;
-	}
+	{ return i == 0 ? 1 : i; }
 
 } // namespace pdb100

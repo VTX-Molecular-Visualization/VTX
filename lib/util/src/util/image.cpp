@@ -56,10 +56,8 @@ namespace VTX::Util::Image
 			if ( pixels == nullptr )
 			{
 				const char * const error = stbi_failure_reason();
-				throw std::runtime_error(
-					"Unable to load HDR '" + p_path.string()
-					+ "': " + ( error != nullptr ? error : "unknown stb_image error" )
-				);
+				throw std::runtime_error( "Unable to load HDR '" + p_path.string()
+										  + "': " + ( error != nullptr ? error : "unknown stb_image error" ) );
 			}
 
 			FloatImage image;
@@ -82,15 +80,12 @@ namespace VTX::Util::Image
 			int		  height		 = 0;
 			int		  sourceChannels = 0;
 			stbi_uc * pixels		 = stbi_load(
-				p_path.string().c_str(), &width, &height, &sourceChannels, static_cast<int>( p_channels )
-			);
+				p_path.string().c_str(), &width, &height, &sourceChannels, static_cast<int>( p_channels ) );
 			if ( pixels == nullptr )
 			{
 				const char * const error = stbi_failure_reason();
-				throw std::runtime_error(
-					"Unable to load image '" + p_path.string()
-					+ "': " + ( error != nullptr ? error : "unknown stb_image error" )
-				);
+				throw std::runtime_error( "Unable to load image '" + p_path.string()
+										  + "': " + ( error != nullptr ? error : "unknown stb_image error" ) );
 			}
 
 			ByteImage image;
@@ -100,20 +95,17 @@ namespace VTX::Util::Image
 			const std::unique_ptr<stbi_uc, decltype( &stbi_image_free )> pixelsOwner( pixels, &stbi_image_free );
 			image.pixels.assign(
 				pixelsOwner.get(),
-				pixelsOwner.get() + image.width * image.height * static_cast<size_t>( image.channels )
-			);
+				pixelsOwner.get() + image.width * image.height * static_cast<size_t>( image.channels ) );
 
 			return image;
 		}
 	} // namespace
 
-	FilePath write(
-		const FilePath &		p_path,
-		const E_FORMAT			p_format,
-		const size_t			p_width,
-		const size_t			p_height,
-		const std::byte * const p_data
-	)
+	FilePath write( const FilePath &		p_path,
+					const E_FORMAT			p_format,
+					const size_t			p_width,
+					const size_t			p_height,
+					const std::byte * const p_data )
 	{
 		// Remove extension from path.
 		FilePath path = p_path.parent_path() / p_path.stem();
@@ -130,14 +122,12 @@ namespace VTX::Util::Image
 			path += ".png";
 			stbi_write_png_compression_level = 0;
 			stbi_write_png(
-				path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 0
-			);
+				path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 0 );
 			break;
 		case E_FORMAT::JPEG:
 			path += ".jpg";
 			stbi_write_jpg(
-				path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 100
-			);
+				path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 100 );
 			break;
 
 		default: assert( 1 ); ;

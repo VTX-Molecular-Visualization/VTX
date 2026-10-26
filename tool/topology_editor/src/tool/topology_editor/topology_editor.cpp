@@ -79,42 +79,40 @@ namespace VTX::Tool::TopologyEditor
 
 	void TopologyEditor::registerActions()
 	{
-		UI::QT::UI_ACTIONS().registerAction(
-			openTopologyEditorAction(),
-			[]( const UI::QT::ActionRegistry::ActionContext & )
-			{
-				auto systems = App::REG().view<Core::Struct::Topology, IO::Metadata>();
-				if ( systems.begin() == systems.end() )
-				{
-					VTX_WARNING( "Topology Editor: no system available" );
-					return;
-				}
+		UI::QT::UI_ACTIONS().registerAction( openTopologyEditorAction(),
+											 []( const UI::QT::ActionRegistry::ActionContext & )
+											 {
+												 auto systems = App::REG().view<Core::Struct::Topology, IO::Metadata>();
+												 if ( systems.begin() == systems.end() )
+												 {
+													 VTX_WARNING( "Topology Editor: no system available" );
+													 return;
+												 }
 
-				const Entity firstSystem = *systems.begin();
-				auto		 secondIt	 = systems.begin();
-				++secondIt;
-				if ( secondIt == systems.end() )
-				{
-					openDialogForSystem( firstSystem );
-					return;
-				}
+												 const Entity firstSystem = *systems.begin();
+												 auto		  secondIt	  = systems.begin();
+												 ++secondIt;
+												 if ( secondIt == systems.end() )
+												 {
+													 openDialogForSystem( firstSystem );
+													 return;
+												 }
 
-				QMenu menu( &UI::QT::MAIN_WINDOW() );
-				for ( const Entity entity : systems )
-				{
-					QAction * const action = menu.addAction( entityLabel( entity ) );
-					action->setData( static_cast<uint>( entity ) );
-				}
+												 QMenu menu( &UI::QT::MAIN_WINDOW() );
+												 for ( const Entity entity : systems )
+												 {
+													 QAction * const action = menu.addAction( entityLabel( entity ) );
+													 action->setData( static_cast<uint>( entity ) );
+												 }
 
-				const QAction * const selected = menu.exec( QCursor::pos() );
-				if ( selected == nullptr )
-				{
-					return;
-				}
+												 const QAction * const selected = menu.exec( QCursor::pos() );
+												 if ( selected == nullptr )
+												 {
+													 return;
+												 }
 
-				openDialogForSystem( Entity( selected->data().toUInt() ) );
-			}
-		);
+												 openDialogForSystem( Entity( selected->data().toUInt() ) );
+											 } );
 	}
 
 	void TopologyEditor::buildUI()

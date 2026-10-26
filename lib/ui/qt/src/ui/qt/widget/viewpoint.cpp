@@ -30,30 +30,25 @@ namespace VTX::UI::QT::Widget
 		auto * buttonUpdateFromCamera = Helper::makeQObject<QPushButton>( "Update from current camera", this );
 		_layout->addWidget( buttonUpdateFromCamera );
 
-		connect(
-			_transform,
-			&Transform::positionChanged,
-			[ this ]( const Vec3f & p_position )
-			{ App::ACTION().execute<App::Action::Camera::SetViewPointPosition>( _entity, p_position ); }
-		);
-		connect(
-			_transform,
-			&Transform::rotationChanged,
-			[ this ]( const Quatf & p_rotation )
-			{ App::ACTION().execute<App::Action::Camera::SetViewPointRotation>( _entity, p_rotation ); }
-		);
-		connect(
-			buttonUpdateFromCamera,
-			&QPushButton::clicked,
-			[ this ]() { App::ACTION().execute<App::Action::Camera::UpdateViewPointFromCamera>( _entity ); }
-		);
-		connect(
-			_lineName,
-			&QLineEdit::editingFinished,
-			this,
-			[ this ]()
-			{ App::ACTION().execute<App::Action::Camera::RenameViewPoint>( _entity, _lineName->text().toStdString() ); }
-		);
+		connect( _transform,
+				 &Transform::positionChanged,
+				 [ this ]( const Vec3f & p_position )
+				 { App::ACTION().execute<App::Action::Camera::SetViewPointPosition>( _entity, p_position ); } );
+		connect( _transform,
+				 &Transform::rotationChanged,
+				 [ this ]( const Quatf & p_rotation )
+				 { App::ACTION().execute<App::Action::Camera::SetViewPointRotation>( _entity, p_rotation ); } );
+		connect( buttonUpdateFromCamera,
+				 &QPushButton::clicked,
+				 [ this ]() { App::ACTION().execute<App::Action::Camera::UpdateViewPointFromCamera>( _entity ); } );
+		connect( _lineName,
+				 &QLineEdit::editingFinished,
+				 this,
+				 [ this ]()
+				 {
+					 App::ACTION().execute<App::Action::Camera::RenameViewPoint>( _entity,
+																				  _lineName->text().toStdString() );
+				 } );
 
 		_viewPointRenamedConnection
 			= App::HUB().connect<App::Events::ViewPointRenamed, &ViewPoint::_onViewPointRenamed>( this );

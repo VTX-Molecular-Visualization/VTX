@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DIALOG_UPDATER__
-#define __VTX_UI_QT_DIALOG_UPDATER__
+#ifndef VTX_UI_QT_DIALOG_UPDATER_HPP
+#define VTX_UI_QT_DIALOG_UPDATER_HPP
 
 #include "ui/qt/dialog/base_dialog.hpp"
 #include <QDialogButtonBox>

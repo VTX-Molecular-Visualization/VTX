@@ -56,11 +56,9 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Check if a loaded frame is in the frame window.
 		 */
-		bool isLoadedFrameBatchCurrent(
-			const Trajectory::LoadedFrameBatch &	 p_batch,
-			const Trajectory::TRAJECTORY_BUFFER_MODE p_mode,
-			const uint								 p_requestedFrame
-		) noexcept
+		bool isLoadedFrameBatchCurrent( const Trajectory::LoadedFrameBatch &	 p_batch,
+										const Trajectory::TRAJECTORY_BUFFER_MODE p_mode,
+										const uint								 p_requestedFrame ) noexcept
 		{
 			return p_mode == Trajectory::TRAJECTORY_BUFFER_MODE::FULL
 				   || p_batch.availableFrames.contains( p_requestedFrame );
@@ -69,12 +67,10 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Add loaded frame to storage.
 		 */
-		void applyLoadedFrames(
-			const Entity			   p_entity,
-			Core::Struct::Trajectory & p_trajectory,
-			Trajectory::Loader &	   p_loader,
-			const Trajectory::Player & p_player
-		)
+		void applyLoadedFrames( const Entity			   p_entity,
+								Core::Struct::Trajectory & p_trajectory,
+								Trajectory::Loader &	   p_loader,
+								const Trajectory::Player & p_player )
 		{
 			std::optional<Trajectory::LoadedFrameBatch> batch = p_loader.thread->takeLoadedFrames();
 			if ( not batch )
@@ -106,8 +102,7 @@ namespace VTX::App::Pass
 			REG().patch<Trajectory::Loader>(
 				p_entity,
 				[ availableFrames = batch->availableFrames ]( Trajectory::Loader & p_component )
-				{ p_component.availableFrames = availableFrames; }
-			);
+				{ p_component.availableFrames = availableFrames; } );
 		}
 
 		/**
@@ -119,8 +114,7 @@ namespace VTX::App::Pass
 				p_entity,
 				p_player.requestedFrameIndex,
 				[ p_entity ]( const Core::Struct::FrameView p_frame )
-				{ HUB().trigger<Events::TrajectoryCurrentFrameChange>( { p_entity, p_frame } ); }
-			);
+				{ HUB().trigger<Events::TrajectoryCurrentFrameChange>( { p_entity, p_frame } ); } );
 		}
 
 		/**
@@ -138,10 +132,8 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Get buffer reading direction.
 		 */
-		Trajectory::TRAJECTORY_READ_DIRECTION getReadDirection(
-			const Trajectory::Player & p_player,
-			const uint				   p_targetFrame
-		) noexcept
+		Trajectory::TRAJECTORY_READ_DIRECTION getReadDirection( const Trajectory::Player & p_player,
+																const uint				   p_targetFrame ) noexcept
 		{
 			if ( p_targetFrame != p_player.currentFrameIndex )
 			{
@@ -158,21 +150,19 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Ask a frame window to the loader.
 		 */
-		void requestFrameWindow(
-			Trajectory::Loader &			 loader,
-			const Core::Struct::Trajectory & p_trajectory,
-			const Trajectory::Player &		 p_player,
-			const uint						 p_targetFrame
-		)
+		void requestFrameWindow( Trajectory::Loader &			  loader,
+								 const Core::Struct::Trajectory & p_trajectory,
+								 const Trajectory::Player &		  p_player,
+								 const uint						  p_targetFrame )
 		{
 			const Trajectory::TRAJECTORY_READ_DIRECTION direction = getReadDirection( p_player, p_targetFrame );
 			loader.thread->requestFrameWindow(
-				Helper::Trajectory::getFrameWindow(
-					p_targetFrame, static_cast<uint>( p_trajectory.frameCount ), p_trajectory.frames.size(), direction
-				),
+				Helper::Trajectory::getFrameWindow( p_targetFrame,
+													static_cast<uint>( p_trajectory.frameCount ),
+													p_trajectory.frames.size(),
+													direction ),
 				direction,
-				loader.availableFrames
-			);
+				loader.availableFrames );
 		}
 	} // namespace
 
@@ -240,17 +230,15 @@ namespace VTX::App::Pass
 					continue;
 				}
 
-				REG().patch<Trajectory::Player>(
-					entity,
-					[ entity ]( Trajectory::Player & p_player )
-					{
-						if ( tryUpdateFrame( entity, p_player ) )
-						{
-							p_player.currentFrameIndex = p_player.requestedFrameIndex;
-							p_player.frameElapsedTime  = 0;
-						}
-					}
-				);
+				REG().patch<Trajectory::Player>( entity,
+												 [ entity ]( Trajectory::Player & p_player )
+												 {
+													 if ( tryUpdateFrame( entity, p_player ) )
+													 {
+														 p_player.currentFrameIndex = p_player.requestedFrameIndex;
+														 p_player.frameElapsedTime	= 0;
+													 }
+												 } );
 				continue;
 			}
 

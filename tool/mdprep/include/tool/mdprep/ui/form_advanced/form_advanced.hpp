@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_FORM_ADVANCED_FORM_ADVANCED__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_FORM_ADVANCED_FORM_ADVANCED__
+#ifndef VTX_TOOL_MDPREP_UI_FORM_ADVANCED_FORM_ADVANCED_HPP
+#define VTX_TOOL_MDPREP_UI_FORM_ADVANCED_FORM_ADVANCED_HPP
 
 #include "tool/mdprep/ui/form_advanced/event_manager.hpp"
 #include "tool/mdprep/ui/form_advanced/shared.hpp"
@@ -55,11 +55,10 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		using SpecificFieldsPlacerCallback = std::function<MdEngineSpecificFieldPlacer( const E_FIELD_SECTION & )>;
 
 		FormAdvanced() = delete;
-		FormAdvanced(
-			QWidget *					 p_container,
-			SpecificFieldsPlacerCallback p_specificFieldGenerator,
-			const MdParameters &		 p_defaults,
-			ReportManager &				 p_reportManager
+		FormAdvanced( QWidget *					   p_container,
+					  SpecificFieldsPlacerCallback p_specificFieldGenerator,
+					  const MdParameters &		   p_defaults,
+					  ReportManager &			   p_reportManager
 
 		);
 

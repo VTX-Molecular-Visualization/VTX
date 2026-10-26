@@ -40,133 +40,131 @@ namespace VTX::UI::QT::DockWidget
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
 		_layout->addWidget( _filler );
 
-		connect(
-			&SELECTION(),
-			&SelectionManager::selectionChanged,
-			this,
-			[ this ]( const E_SELECTION_GROUP p_group, const QItemSelection & p_selection )
-			{
-				if ( p_selection.isEmpty() )
-				{
-					_clear();
-					return;
-				}
+		connect( &SELECTION(),
+				 &SelectionManager::selectionChanged,
+				 this,
+				 [ this ]( const E_SELECTION_GROUP p_group, const QItemSelection & p_selection )
+				 {
+					 if ( p_selection.isEmpty() )
+					 {
+						 _clear();
+						 return;
+					 }
 
-				const QModelIndex index
-					= p_selection.indexes().isEmpty() ? QModelIndex() : p_selection.indexes().first();
-				const QVariant data		 = index.data( Qt::UserRole );
-				const Entity   preset	 = data.value<Entity>();
-				const bool	   hasPreset = data.isValid();
+					 const QModelIndex index
+						 = p_selection.indexes().isEmpty() ? QModelIndex() : p_selection.indexes().first();
+					 const QVariant data	  = index.data( Qt::UserRole );
+					 const Entity	preset	  = data.value<Entity>();
+					 const bool		hasPreset = data.isValid();
 
-				// Insert widget.
-				switch ( p_group )
-				{
-				case E_SELECTION_GROUP::CAMERA:
-				{
-					_clear();
-					if ( hasPreset )
-					{
-						_viewPointWidget = Helper::makeQObject<Widget::ViewPoint>( preset, this );
-						_layout->insertWidget( _layout->indexOf( _filler ), _viewPointWidget );
-					}
-					else
-					{
-						const auto [ ent, _ ]	= App::ECS::getFirstEntityWithComponents<Renderer::Camera>();
-						auto * cameraWidget		= Helper::makeQObject<Widget::Camera>( ent, this );
-						auto * controllerWidget = Helper::makeQObject<Widget::Controller>( ent, this );
-						_layout->insertWidget( _layout->indexOf( _filler ), cameraWidget );
-						_layout->insertWidget( _layout->indexOf( _filler ), controllerWidget );
-					}
-					break;
-				}
-				case E_SELECTION_GROUP::GRAPHICS_CONFIG:
-				{
-					if ( _graphicsConfigWidget )
-					{
-						if ( hasPreset )
-						{
-							_graphicsConfigWidget->setCurrentPreset( preset );
-						}
-						else
-						{
-							_graphicsConfigWidget->refresh();
-						}
-						break;
-					}
+					 // Insert widget.
+					 switch ( p_group )
+					 {
+					 case E_SELECTION_GROUP::CAMERA:
+					 {
+						 _clear();
+						 if ( hasPreset )
+						 {
+							 _viewPointWidget = Helper::makeQObject<Widget::ViewPoint>( preset, this );
+							 _layout->insertWidget( _layout->indexOf( _filler ), _viewPointWidget );
+						 }
+						 else
+						 {
+							 const auto [ ent, _ ]	 = App::ECS::getFirstEntityWithComponents<Renderer::Camera>();
+							 auto * cameraWidget	 = Helper::makeQObject<Widget::Camera>( ent, this );
+							 auto * controllerWidget = Helper::makeQObject<Widget::Controller>( ent, this );
+							 _layout->insertWidget( _layout->indexOf( _filler ), cameraWidget );
+							 _layout->insertWidget( _layout->indexOf( _filler ), controllerWidget );
+						 }
+						 break;
+					 }
+					 case E_SELECTION_GROUP::GRAPHICS_CONFIG:
+					 {
+						 if ( _graphicsConfigWidget )
+						 {
+							 if ( hasPreset )
+							 {
+								 _graphicsConfigWidget->setCurrentPreset( preset );
+							 }
+							 else
+							 {
+								 _graphicsConfigWidget->refresh();
+							 }
+							 break;
+						 }
 
-					_clear();
-					_graphicsConfigWidget = Helper::makeQObject<Widget::Library::GraphicsConfigWidget>( this );
-					if ( hasPreset )
-					{
-						_graphicsConfigWidget->setCurrentPreset( preset );
-					}
-					else
-					{
-						_graphicsConfigWidget->refresh();
-					}
-					_layout->insertWidget( _layout->indexOf( _filler ), _graphicsConfigWidget );
-					break;
-				}
-				case E_SELECTION_GROUP::COLOR_LAYOUT:
-				{
-					if ( _colorLayoutWidget )
-					{
-						if ( hasPreset )
-						{
-							_colorLayoutWidget->setCurrentPreset( preset );
-						}
-						else
-						{
-							_colorLayoutWidget->refresh();
-						}
-						break;
-					}
+						 _clear();
+						 _graphicsConfigWidget = Helper::makeQObject<Widget::Library::GraphicsConfigWidget>( this );
+						 if ( hasPreset )
+						 {
+							 _graphicsConfigWidget->setCurrentPreset( preset );
+						 }
+						 else
+						 {
+							 _graphicsConfigWidget->refresh();
+						 }
+						 _layout->insertWidget( _layout->indexOf( _filler ), _graphicsConfigWidget );
+						 break;
+					 }
+					 case E_SELECTION_GROUP::COLOR_LAYOUT:
+					 {
+						 if ( _colorLayoutWidget )
+						 {
+							 if ( hasPreset )
+							 {
+								 _colorLayoutWidget->setCurrentPreset( preset );
+							 }
+							 else
+							 {
+								 _colorLayoutWidget->refresh();
+							 }
+							 break;
+						 }
 
-					_clear();
-					_colorLayoutWidget = Helper::makeQObject<Widget::Library::ColorLayout>( this );
-					if ( hasPreset )
-					{
-						_colorLayoutWidget->setCurrentPreset( preset );
-					}
-					else
-					{
-						_colorLayoutWidget->refresh();
-					}
-					_layout->insertWidget( _layout->indexOf( _filler ), _colorLayoutWidget );
-					break;
-				}
-				case E_SELECTION_GROUP::REPRESENTATION:
-				{
-					if ( _representationWidget )
-					{
-						if ( hasPreset )
-						{
-							_representationWidget->setCurrentPreset( preset );
-						}
-						else
-						{
-							_representationWidget->refresh();
-						}
-						break;
-					}
+						 _clear();
+						 _colorLayoutWidget = Helper::makeQObject<Widget::Library::ColorLayout>( this );
+						 if ( hasPreset )
+						 {
+							 _colorLayoutWidget->setCurrentPreset( preset );
+						 }
+						 else
+						 {
+							 _colorLayoutWidget->refresh();
+						 }
+						 _layout->insertWidget( _layout->indexOf( _filler ), _colorLayoutWidget );
+						 break;
+					 }
+					 case E_SELECTION_GROUP::REPRESENTATION:
+					 {
+						 if ( _representationWidget )
+						 {
+							 if ( hasPreset )
+							 {
+								 _representationWidget->setCurrentPreset( preset );
+							 }
+							 else
+							 {
+								 _representationWidget->refresh();
+							 }
+							 break;
+						 }
 
-					_clear();
-					_representationWidget = Helper::makeQObject<Widget::Library::Representation>( this );
-					if ( hasPreset )
-					{
-						_representationWidget->setCurrentPreset( preset );
-					}
-					else
-					{
-						_representationWidget->refresh();
-					}
-					_layout->insertWidget( _layout->indexOf( _filler ), _representationWidget );
-					break;
-				}
-				default: break;
-				}
-			}
-		);
+						 _clear();
+						 _representationWidget = Helper::makeQObject<Widget::Library::Representation>( this );
+						 if ( hasPreset )
+						 {
+							 _representationWidget->setCurrentPreset( preset );
+						 }
+						 else
+						 {
+							 _representationWidget->refresh();
+						 }
+						 _layout->insertWidget( _layout->indexOf( _filler ), _representationWidget );
+						 break;
+					 }
+					 default: break;
+					 }
+				 } );
 
 		_selectionUpdatedConnection
 			= App::REG().on_update<App::System::Selection>().connect<&Inspector::_onSystemSelectionUpdated>( this );
@@ -209,10 +207,9 @@ namespace VTX::UI::QT::DockWidget
 
 	bool Inspector::_hasSystemSelection() const
 	{
-		return std::ranges::any_of(
-			App::REG().view<App::System::Selection>(),
-			[]( const Entity entity ) { return App::REG().get<App::System::Selection>( entity ).atoms.any(); }
-		);
+		return std::ranges::any_of( App::REG().view<App::System::Selection>(),
+									[]( const Entity entity )
+									{ return App::REG().get<App::System::Selection>( entity ).atoms.any(); } );
 	}
 
 	void Inspector::_onSystemSelectionUpdated( Registry &, Entity )

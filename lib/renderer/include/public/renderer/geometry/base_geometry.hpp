@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
-#define __VTX_RENDERER_GEOMETRY_BASE_GEOMETRY__
+#ifndef VTX_RENDERER_GEOMETRY_BASE_GEOMETRY_HPP
+#define VTX_RENDERER_GEOMETRY_BASE_GEOMETRY_HPP
 
 #include "renderer/caches.hpp"
 #include "renderer/context/context_wrapper.hpp"
@@ -87,8 +87,7 @@ namespace VTX::Renderer::Geometry
 					return Desc::DrawIndirectRecord { Desc::DrawIndirectCommand {
 														  data.range.getCount(), 1, data.range.getFirst(), 0 },
 													  static_cast<uint32_t>( uid ) };
-				}
-			);
+				} );
 
 			return records;
 		}
@@ -114,8 +113,7 @@ namespace VTX::Renderer::Geometry
 																 static_cast<int32_t>( data.vertexFirst ),
 																 0 },
 															 static_cast<uint32_t>( uid ) };
-				}
-			);
+				} );
 
 			return records;
 		}

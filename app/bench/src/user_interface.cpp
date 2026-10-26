@@ -82,11 +82,9 @@ namespace VTX::Bench
 		SDL_Quit();
 	}
 
-	void UserInterface::draw(
-		CameraController * const   p_camera,
-		Scene * const			   p_scene,
-		Renderer::Renderer * const p_renderer
-	) const
+	void UserInterface::draw( CameraController * const	 p_camera,
+							  Scene * const				 p_scene,
+							  Renderer::Renderer * const p_renderer ) const
 	{
 		// ImGui_ImplSDL3_NewFrame();
 		// ImGui::NewFrame();
@@ -132,14 +130,12 @@ namespace VTX::Bench
 
 #ifdef _WIN32
 		return reinterpret_cast<uintptr_t>(
-			SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr )
-		);
+			SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr ) );
 #elif defined( __linux__ )
 		if ( getNativePlatform() == uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
 		{
 			return reinterpret_cast<uintptr_t>(
-				SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WAYLAND_SURFACE_POINTER, nullptr )
-			);
+				SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WAYLAND_SURFACE_POINTER, nullptr ) );
 		}
 
 		return uintptr_t( SDL_GetNumberProperty( windowProps, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0 ) );
@@ -167,13 +163,11 @@ namespace VTX::Bench
 		if ( getNativePlatform() == uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
 		{
 			return reinterpret_cast<uintptr_t>(
-				SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WAYLAND_DISPLAY_POINTER, nullptr )
-			);
+				SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WAYLAND_DISPLAY_POINTER, nullptr ) );
 		}
 
 		return reinterpret_cast<uintptr_t>(
-			SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr )
-		);
+			SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_X11_DISPLAY_POINTER, nullptr ) );
 #else
 		return 0;
 #endif
@@ -199,11 +193,9 @@ namespace VTX::Bench
 #endif
 	}
 
-	void UserInterface::_drawMenuBar(
-		CameraController * const   p_camera,
-		Renderer::Renderer * const p_renderer,
-		Scene * const			   p_scene
-	)
+	void UserInterface::_drawMenuBar( CameraController * const	 p_camera,
+									  Renderer::Renderer * const p_renderer,
+									  Scene * const				 p_scene )
 	{
 		if ( ImGui::BeginMainMenuBar() )
 		{

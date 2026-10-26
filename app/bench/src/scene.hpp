@@ -1,5 +1,5 @@
-#ifndef __VTX_BENCH_SCENE__
-#define __VTX_BENCH_SCENE__
+#ifndef VTX_BENCH_SCENE_HPP
+#define VTX_BENCH_SCENE_HPP
 
 #include "camera_controller.hpp"
 #include <core/struct/topology.hpp>

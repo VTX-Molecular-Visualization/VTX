@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_VECTOR__
-#define __VTX_UI_QT_WIDGET_VECTOR__
+#ifndef VTX_UI_QT_WIDGET_VECTOR_HPP
+#define VTX_UI_QT_WIDGET_VECTOR_HPP
 
 #include "ui/qt/helper.hpp"
 #include <QDoubleSpinBox>

@@ -33,16 +33,14 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 
 	namespace
 	{
-		QDoubleSpinBox * addDoubleTextbox(
-			QFormLayout *  p_dest,
-			const char *   p_label,
-			const char *   p_tooltip,
-			const double & p_defaultValue,
-			const double & p_step,
-			const double & p_min,
-			const double & p_max,
-			const int &	   p_precision
-		)
+		QDoubleSpinBox * addDoubleTextbox( QFormLayout *  p_dest,
+										   const char *	  p_label,
+										   const char *	  p_tooltip,
+										   const double & p_defaultValue,
+										   const double & p_step,
+										   const double & p_min,
+										   const double & p_max,
+										   const int &	  p_precision )
 		{
 			QDoubleSpinBox * out = VTX::UI::QT::Helper::makeQObject<QDoubleSpinBox>( p_dest->parentWidget() );
 			out->setDecimals( p_precision );
@@ -54,12 +52,11 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		}
 	} // namespace
 
-	FormAdvanced::FormAdvanced(
-		QWidget *					 p_container,
-		SpecificFieldsPlacerCallback p_specificFieldGenerator,
-		const MdParameters &		 p_defaults,
-		ReportManager &				 p_reportManager
-	) : _eventManager( p_reportManager, p_defaults ), _specificFieldGenerator( std::move( p_specificFieldGenerator ) )
+	FormAdvanced::FormAdvanced( QWidget *					 p_container,
+								SpecificFieldsPlacerCallback p_specificFieldGenerator,
+								const MdParameters &		 p_defaults,
+								ReportManager &				 p_reportManager ) :
+		_eventManager( p_reportManager, p_defaults ), _specificFieldGenerator( std::move( p_specificFieldGenerator ) )
 	{
 		_createAndPlaceUiItems( p_container );
 		_loadValues( p_defaults );
@@ -149,13 +146,11 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		QWidget * label = nullptr;
 
 		VTX::Tool::Mdprep::ui::get(
-			E_COMMON_FIELDS_COMBOBOX ::bioForcefield, label, _uiObjects._fieldSystemBioForceField
-		);
+			E_COMMON_FIELDS_COMBOBOX ::bioForcefield, label, _uiObjects._fieldSystemBioForceField );
 		_uiObjects._layoutSystemPreparation->addRow( label, _uiObjects._fieldSystemBioForceField );
 
 		VTX::Tool::Mdprep::ui::get(
-			E_COMMON_FIELDS_COMBOBOX ::chemForcefield, label, _uiObjects._fieldSystemChemForceField
-		);
+			E_COMMON_FIELDS_COMBOBOX ::chemForcefield, label, _uiObjects._fieldSystemChemForceField );
 		_uiObjects._fieldSystemChemForceField->addItem( "Not supported by VTX yet" );
 		_uiObjects._layoutSystemPreparation->addRow( label, _uiObjects._fieldSystemChemForceField );
 
@@ -184,8 +179,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 			"Not finding what you need ?",
 			"Pushing the button will open the simulation parameter file template so you can edit more advanced "
 			"options. Do it only if you know what you are doing.",
-			VTX::UI::QT::Util::LabelWithHelper ::E_QUESTIONMARK_POSITION::left
-		);
+			VTX::UI::QT::Util::LabelWithHelper ::E_QUESTIONMARK_POSITION::left );
 
 		layout->addWidget( label );
 		_uiObjects._buttonOpenExpertOptions
@@ -200,18 +194,15 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		QWidget * label				   = nullptr;
 
 		VTX::Tool::Mdprep::ui::get(
-			E_COMMON_FIELDS_UINT64::stepNumberMinimization, label, _uiObjects._fieldMinimizationStepNumber
-		);
+			E_COMMON_FIELDS_UINT64::stepNumberMinimization, label, _uiObjects._fieldMinimizationStepNumber );
 		_uiObjects._layoutMinimization->addRow( label, _uiObjects._fieldMinimizationStepNumber );
 
 		VTX::Tool::Mdprep::ui::get(
-			E_COMMON_FIELDS_DOUBLE::minimizationStepSize, label, _uiObjects._fieldMinimizationStepSize
-		);
+			E_COMMON_FIELDS_DOUBLE::minimizationStepSize, label, _uiObjects._fieldMinimizationStepSize );
 		_uiObjects._layoutMinimization->addRow( label, _uiObjects._fieldMinimizationStepSize );
 
 		VTX::Tool::Mdprep::ui::get(
-			E_COMMON_FIELDS_DOUBLE::minimizationEnergyBreakpoint, label, _uiObjects._fieldMinimizationStopThreshold
-		);
+			E_COMMON_FIELDS_DOUBLE::minimizationEnergyBreakpoint, label, _uiObjects._fieldMinimizationStopThreshold );
 		_uiObjects._layoutMinimization->addRow( label, _uiObjects._fieldMinimizationStopThreshold );
 
 		_fieldPlacer( 1 ) = _specificFieldGenerator( E_FIELD_SECTION::minimization );
@@ -273,8 +264,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 	void FormAdvanced::_loadValues( const MdParameters & p_defaults )
 	{
 		_uiObjects._fieldMinimizationStepNumber->setText( QString::number( p_defaults.minimization.stepNumber ) );
-		_uiObjects._fieldMinimizationStopThreshold->setValue(
-			p_defaults.minimization.energyBreakpoint
+		_uiObjects._fieldMinimizationStopThreshold->setValue( p_defaults.minimization.energyBreakpoint
 
 		);
 		_uiObjects._fieldMinimizationStepSize->setValue( p_defaults.minimization.stepSize );
@@ -326,11 +316,9 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		}
 		setMatchingValue( _uiObjects._fieldSystemWaterModel, _parameters().system.waterModel );
 
-		_fieldPlacer( 0 ).update(
-			EngineSpecificCommonInformationFieldUpdate {
-				.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD::boxShape,
-				.newValue = static_cast<size_t>( _uiObjects._fieldSystemBoxShape->currentIndex() ) }
-		);
+		_fieldPlacer( 0 ).update( EngineSpecificCommonInformationFieldUpdate {
+			.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD::boxShape,
+			.newValue = static_cast<size_t>( _uiObjects._fieldSystemBoxShape->currentIndex() ) } );
 
 		_eventManager.connectBioForceField( _uiObjects._fieldSystemBioForceField, _uiObjects._systemReportLayout );
 		_eventManager.connectBoxShape( _uiObjects._fieldSystemBoxShape );

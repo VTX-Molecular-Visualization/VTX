@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_THREAD_BASE_THREAD__
-#define __VTX_UTIL_THREAD_BASE_THREAD__
+#ifndef VTX_UTIL_THREAD_BASE_THREAD_HPP
+#define VTX_UTIL_THREAD_BASE_THREAD_HPP
 
 #include <atomic>
 #include <concepts>

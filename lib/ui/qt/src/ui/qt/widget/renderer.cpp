@@ -40,28 +40,25 @@ namespace VTX::UI::QT::Widget
 		setFocusProxy( _container );
 		_container->setFixedSize( 0, 0 );
 
-		connect(
-			_window,
-			&Window::Renderer::clicked,
-			this,
-			[ this ]( const Qt::MouseButton p_button, const QPoint p_pos )
-			{
-				const bool preserveSelection
-					= p_button == Qt::RightButton && ( QGuiApplication::keyboardModifiers() & Qt::ControlModifier );
-				if ( not preserveSelection && not UI_ACTIONS().isChecked( Action::Selection::LOCK ) )
-				{
-					SELECTION().pick(
-						Vec2i( p_pos.x(), p_pos.y() ), QGuiApplication::keyboardModifiers() & Qt::ControlModifier
-					);
-				}
+		connect( _window,
+				 &Window::Renderer::clicked,
+				 this,
+				 [ this ]( const Qt::MouseButton p_button, const QPoint p_pos )
+				 {
+					 const bool preserveSelection = p_button == Qt::RightButton
+													&& ( QGuiApplication::keyboardModifiers() & Qt::ControlModifier );
+					 if ( not preserveSelection && not UI_ACTIONS().isChecked( Action::Selection::LOCK ) )
+					 {
+						 SELECTION().pick( Vec2i( p_pos.x(), p_pos.y() ),
+										   QGuiApplication::keyboardModifiers() & Qt::ControlModifier );
+					 }
 
-				if ( p_button == Qt::RightButton )
-				{
-					Menu::Selection menu( this );
-					menu.exec( QCursor::pos() );
-				}
-			}
-		);
+					 if ( p_button == Qt::RightButton )
+					 {
+						 Menu::Selection menu( this );
+						 menu.exec( QCursor::pos() );
+					 }
+				 } );
 
 		_resizeTimer.setSingleShot( true );
 		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
@@ -72,8 +69,7 @@ namespace VTX::UI::QT::Widget
 		{
 			_rendererReady = true;
 			App::ACTION().execute<App::Action::Application::SetVSync>(
-				SETTINGS().value( SETTING_KEY_VSYNC, VSYNC_DEFAULT ).toBool()
-			);
+				SETTINGS().value( SETTING_KEY_VSYNC, VSYNC_DEFAULT ).toBool() );
 			QTimer::singleShot( 0, this, &Renderer::onResizeFinished );
 		};
 	}
@@ -172,12 +168,10 @@ namespace VTX::UI::QT::Widget
 
 		const int	maxSide	 = std::max( 1, std::min( std::min( width(), height() ) / 3, 180 ) );
 		const QSize logoSize = _backgroundLogo.size().scaled( maxSide, maxSide, Qt::KeepAspectRatio );
-		const QRect logoRect(
-			( width() - logoSize.width() ) / 2,
-			( height() - logoSize.height() ) / 2,
-			logoSize.width(),
-			logoSize.height()
-		);
+		const QRect logoRect( ( width() - logoSize.width() ) / 2,
+							  ( height() - logoSize.height() ) / 2,
+							  logoSize.width(),
+							  logoSize.height() );
 
 		painter.setOpacity( 0.5 );
 		painter.drawPixmap( logoRect, _backgroundLogo );
@@ -289,9 +283,8 @@ namespace VTX::UI::QT::Widget
 			dpr = 1;
 		}
 
-		const QSize size(
-			qRound( static_cast<qreal>( p_e.width ) / dpr ), qRound( static_cast<qreal>( p_e.height ) / dpr )
-		);
+		const QSize size( qRound( static_cast<qreal>( p_e.width ) / dpr ),
+						  qRound( static_cast<qreal>( p_e.height ) / dpr ) );
 
 		const QSize currentSize			 = this->size();
 		const bool	widgetSizeChanged	 = currentSize != size;
@@ -325,30 +318,28 @@ namespace VTX::UI::QT::Widget
 		{
 			_container->resize( appliedSize );
 		}
-		QTimer::singleShot(
-			0,
-			this,
-			[ this ]()
-			{
-				if ( _window == nullptr || _container == nullptr )
-				{
-					return;
-				}
+		QTimer::singleShot( 0,
+							this,
+							[ this ]()
+							{
+								if ( _window == nullptr || _container == nullptr )
+								{
+									return;
+								}
 
-				_resizeTimer.stop();
-				const QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
+								_resizeTimer.stop();
+								const QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
 
-				const QSize size = this->size();
-				if ( _window->size() != size )
-				{
-					_window->resize( size );
-				}
-				if ( _container->size() != size )
-				{
-					_container->resize( size );
-				}
-			}
-		);
+								const QSize size = this->size();
+								if ( _window->size() != size )
+								{
+									_window->resize( size );
+								}
+								if ( _container->size() != size )
+								{
+									_container->resize( size );
+								}
+							} );
 	}
 
 	/*

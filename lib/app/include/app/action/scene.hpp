@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_SCENE__
-#define __VTX_APP_ACTION_SCENE__
+#ifndef VTX_APP_ACTION_SCENE_HPP
+#define VTX_APP_ACTION_SCENE_HPP
 
 #include "app/ecs.hpp"
 #include <util/types.hpp>

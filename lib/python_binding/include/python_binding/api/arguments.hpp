@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_API_ARGUMENTS__
-#define __VTX_PYTHON_API_ARGUMENTS__
+#ifndef VTX_PYTHON_BINDING_API_ARGUMENTS_HPP
+#define VTX_PYTHON_BINDING_API_ARGUMENTS_HPP
 
 #include <cstdint>
 #include <memory>
@@ -49,11 +49,9 @@ namespace VTX::PythonBinding::API
 		 * @param p_value Output value
 		 */
 		template<typename T>
-		void get(
-			const char * p_key,
-			T ( *p_conversionFunction )( const std::string & ),
-			std::vector<T> & p_value
-		) const
+		void get( const char * p_key,
+				  T ( *p_conversionFunction )( const std::string & ),
+				  std::vector<T> & p_value ) const
 		{
 			std::vector<std::string> strValues;
 			get( p_key, strValues );

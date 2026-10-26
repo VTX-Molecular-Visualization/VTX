@@ -18,8 +18,7 @@ namespace VTX::UI::QT::DockWidget
 		auto * const graphicsConfigWidget = Helper::makeQObject<Widget::Library::GraphicsConfigWidget>( this );
 		_layout->addWidget( graphicsConfigWidget );
 		_layout->addSpacerItem(
-			std::make_unique<QSpacerItem>( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ).release()
-		);
+			std::make_unique<QSpacerItem>( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ).release() );
 	}
 
 } // namespace VTX::UI::QT::DockWidget

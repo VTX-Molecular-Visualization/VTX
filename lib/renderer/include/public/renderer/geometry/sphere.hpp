@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GEOMETRY_SPHERE__
-#define __VTX_RENDERER_GEOMETRY_SPHERE__
+#ifndef VTX_RENDERER_GEOMETRY_SPHERE_HPP
+#define VTX_RENDERER_GEOMETRY_SPHERE_HPP
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"

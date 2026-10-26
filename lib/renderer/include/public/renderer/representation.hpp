@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_REPRESENTATION__
-#define __VTX_RENDERER_REPRESENTATION__
+#ifndef VTX_RENDERER_REPRESENTATION_HPP
+#define VTX_RENDERER_REPRESENTATION_HPP
 
 #include <util/enum.hpp>
 #include <util/types.hpp>

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_NETWORK_NETWORK_SYSTEM__
-#define __VTX_APP_CORE_NETWORK_NETWORK_SYSTEM__
+#ifndef VTX_APP_NETWORK_NETWORK_MANAGER_HPP
+#define VTX_APP_NETWORK_NETWORK_MANAGER_HPP
 
 #include "app/events.hpp"
 #include <atomic>
@@ -25,11 +25,9 @@ namespace VTX::App::Network
 		/**
 		 * @brief Download a file from a URL and save it to a specified filename.
 		 */
-		DownloadId downloadFile(
-			std::string_view					   p_url,
-			std::string_view					   p_filename,
-			const Util::Network::CallbackHttpGet & p_callback
-		);
+		DownloadId downloadFile( std::string_view						p_url,
+								 std::string_view						p_filename,
+								 const Util::Network::CallbackHttpGet & p_callback );
 
 		/**
 		 * @brief Stop a download by ID.

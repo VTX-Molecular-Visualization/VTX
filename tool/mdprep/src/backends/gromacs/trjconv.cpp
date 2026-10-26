@@ -7,12 +7,10 @@
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 
-	void prepareJob(
-		const CumulativeOuputFiles & p_previousJobsOutputs,
-		const FilePath &			 p_root,
-		const std::string_view &	 p_folderName,
-		TrjconvInstructions &		 p_instructions
-	)
+	void prepareJob( const CumulativeOuputFiles & p_previousJobsOutputs,
+					 const FilePath &			  p_root,
+					 const std::string_view &	  p_folderName,
+					 TrjconvInstructions &		  p_instructions )
 	{
 		if ( fs::exists( p_root ) && not fs::is_directory( p_root ) )
 		{
@@ -21,9 +19,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		const FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
-		auto lastGroFile = std::ranges::find_if(
-			p_previousJobsOutputs.fileStringPtrs, []( const std::string * const p_ ) { return p_->ends_with( ".gro" ); }
-		);
+		auto lastGroFile
+			= std::ranges::find_if( p_previousJobsOutputs.fileStringPtrs,
+									[]( const std::string * const p_ ) { return p_->ends_with( ".gro" ); } );
 		if ( lastGroFile != std::end( p_previousJobsOutputs.fileStringPtrs ) )
 		{
 			p_instructions.inputGro = *lastGroFile.operator*();

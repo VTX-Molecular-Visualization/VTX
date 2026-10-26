@@ -28,8 +28,7 @@ namespace VTX::App::Pass
 		_systemLoadConnection = hub.connect<Events::SystemLoad, &SystemUpdater::_onSystemLoad>( this );
 		_trajectoryFrameChangedConnection
 			= hub.connect<Events::TrajectoryCurrentFrameChange, &SystemUpdater::_onTrajectoryCurrentFrameChange>(
-				this
-			);
+				this );
 		_topologyUpdatedConnection
 			= reg.on_update<Core::Struct::Topology>().connect<&SystemUpdater::_onUpdateTopology>( this );
 		_transformUpdatedConnection
@@ -47,20 +46,16 @@ namespace VTX::App::Pass
 		// Representation preset.
 		_representationPresetConstructedConnection
 			= reg.on_construct<Renderer::Representation>().connect<&SystemUpdater::_onConstructRepresentationPreset>(
-				this
-			);
+				this );
 		_representationPresetUpdatedConnection
 			= reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
 		_representationPresetDestroyedConnection
 			= reg.on_destroy<Renderer::Representation>().connect<&SystemUpdater::_onDestroyRepresentationPreset>(
-				this
-			);
+				this );
 	}
 
-	Renderer::Cache::System::Data SystemUpdater::_getSystemData(
-		const Entity				  p_entity,
-		const Core::Struct::FrameView p_positions
-	) const
+	Renderer::Cache::System::Data SystemUpdater::_getSystemData( const Entity				   p_entity,
+																 const Core::Struct::FrameView p_positions ) const
 	{
 		const auto & topology		= REG().get<Core::Struct::Topology>( p_entity );
 		const auto & uid			= REG().get<System::UID>( p_entity );
@@ -106,10 +101,8 @@ namespace VTX::App::Pass
 				{
 					_systems.emplace(
 						system,
-						RENDERER().addSystem( { transform.computeMatrix(), _getSystemData( system, p_positions ) } )
-					);
-				}
-			);
+						RENDERER().addSystem( { transform.computeMatrix(), _getSystemData( system, p_positions ) } ) );
+				} );
 			assert( currentFrameVisited );
 		}
 		for ( const auto representation : _representationAdded )
@@ -140,8 +133,7 @@ namespace VTX::App::Pass
 				Helper::Trajectory::visitCurrentFrame(
 					pair.first,
 					[ this, entity = pair.first, handle = pair.second ]( const Core::Struct::FrameView p_positions )
-					{ RENDERER().patchSystem( handle, _getSystemData( entity, p_positions ) ); }
-				);
+					{ RENDERER().patchSystem( handle, _getSystemData( entity, p_positions ) ); } );
 			}
 		}
 		if ( representationChanged )
@@ -199,10 +191,9 @@ namespace VTX::App::Pass
 			atomGrid.add( atomIndex, position );
 		}
 
-		REG().patch<Util::Math::Grid<Index>>(
-			p_event.system,
-			[ &atomGrid ]( Util::Math::Grid<Index> & p_atomGrid ) { p_atomGrid = std::move( atomGrid ); }
-		);
+		REG().patch<Util::Math::Grid<Index>>( p_event.system,
+											  [ &atomGrid ]( Util::Math::Grid<Index> & p_atomGrid )
+											  { p_atomGrid = std::move( atomGrid ); } );
 		REG().patch<Util::Math::AABB>( p_event.system, [ &aabb ]( Util::Math::AABB & p_aabb ) { p_aabb = aabb; } );
 		RENDERER().setSystemPositions( _systems[ p_event.system ], p_event.frame );
 	}

@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_DESCRIPTORS__
-#define __VTX_RENDERER_DESCRIPTORS__
+#ifndef VTX_RENDERER_DESCRIPTORS_HPP
+#define VTX_RENDERER_DESCRIPTORS_HPP
 
 #include <array>
 #include <memory>

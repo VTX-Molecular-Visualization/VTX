@@ -143,10 +143,8 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 
 		const App::Trajectory::FrameRange availableFrames = loader->availableFrames;
-		_slider->setLoadedRange(
-			static_cast<int>( availableFrames.getFirst() ),
-			availableFrames.isEmpty() ? 0 : static_cast<int>( availableFrames.getLast() - 1 )
-		);
+		_slider->setLoadedRange( static_cast<int>( availableFrames.getFirst() ),
+								 availableFrames.isEmpty() ? 0 : static_cast<int>( availableFrames.getLast() - 1 ) );
 	}
 
 	void TrajectoryPlayer::_refresh()
@@ -164,10 +162,8 @@ namespace VTX::UI::QT::Widget::Tree
 
 		// Update loaded range overlay
 		const App::Trajectory::FrameRange availableFrames = App::Helper::Trajectory::getAvailableFrames( _system );
-		_slider->setLoadedRange(
-			static_cast<int>( availableFrames.getFirst() ),
-			availableFrames.isEmpty() ? 0 : static_cast<int>( availableFrames.getLast() - 1 )
-		);
+		_slider->setLoadedRange( static_cast<int>( availableFrames.getFirst() ),
+								 availableFrames.isEmpty() ? 0 : static_cast<int>( availableFrames.getLast() - 1 ) );
 
 		// Update frame label
 		_frameLabel->setText( QString( "%1/%2" ).arg( currentFrame ).arg( totalFrames - 1 ) );

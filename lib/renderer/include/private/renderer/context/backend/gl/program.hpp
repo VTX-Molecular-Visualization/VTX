@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_GL_PROGRAM__
-#define __VTX_RENDERER_CONTEXT_GL_PROGRAM__
+#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_PROGRAM_HPP
+#define VTX_RENDERER_CONTEXT_BACKEND_GL_PROGRAM_HPP
 
 #include "renderer/context/backend/gl/debug.hpp"
 #include <array>
@@ -27,13 +27,11 @@ namespace VTX::Renderer::Context::Backend::GL
 	class Program
 	{
 	  public:
-		Program(
-			const std::string &									  p_name,
-			const FilePath &									  p_rootPath,
-			const std::variant<FilePath, std::vector<FilePath>> & p_shaderPaths,
-			const std::string &									  p_toInject = "",
-			const std::string &									  p_suffix	 = ""
-		) : _toInject( p_toInject )
+		Program( const std::string &								   p_name,
+				 const FilePath &									   p_rootPath,
+				 const std::variant<FilePath, std::vector<FilePath>> & p_shaderPaths,
+				 const std::string &								   p_toInject = "",
+				 const std::string &								   p_suffix	  = "" ) : _toInject( p_toInject )
 		{
 			const std::string name = p_name + p_suffix;
 
@@ -181,7 +179,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		static ENUM_SHADER_TYPE getShaderType( const FilePath & p_name )
 		{
 			const std::string extension = p_name.extension().string();
-			for ( const auto & [ suffix, type ] : _EXTENSIONS )
+			for ( const auto & [ suffix, type ] : EXTENSIONS )
 			{
 				if ( extension == suffix )
 				{
@@ -193,24 +191,21 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 
 	  private:
-		static constexpr auto _EXTENSIONS = std::to_array<std::pair<std::string_view, ENUM_SHADER_TYPE>>(
+		static constexpr auto EXTENSIONS = std::to_array<std::pair<std::string_view, ENUM_SHADER_TYPE>>(
 			{ { ".vert", ENUM_SHADER_TYPE::VERTEX },
 			  { ".geom", ENUM_SHADER_TYPE::GEOMETRY },
 			  { ".frag", ENUM_SHADER_TYPE::FRAGMENT },
 			  { ".comp", ENUM_SHADER_TYPE::COMPUTE },
 			  { ".tesc", ENUM_SHADER_TYPE::TESS_CONTROL },
-			  { ".tese", ENUM_SHADER_TYPE::TESS_EVALUATION } }
-		);
+			  { ".tese", ENUM_SHADER_TYPE::TESS_EVALUATION } } );
 
 		GLuint		_id = GL_INVALID_INDEX;
 		std::string _name;
 		std::string _toInject;
 
-		static GLuint _createShader(
-			const FilePath &	p_path,
-			const std::string & p_toInject,
-			const std::string & p_suffix
-		)
+		static GLuint _createShader( const FilePath &	 p_path,
+									 const std::string & p_toInject,
+									 const std::string & p_suffix )
 		{
 			const std::string name = p_path.filename().string() + p_suffix;
 

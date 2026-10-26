@@ -100,15 +100,13 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			if ( not fs::exists( f ) || not fs::is_regular_file( f ) )
 			{
 				p_in.report.errors.push_back(
-					fmt::format( "Expected output file <{}> not found.", p_in.arguments[ it ] )
-				);
+					fmt::format( "Expected output file <{}> not found.", p_in.arguments[ it ] ) );
 				break;
 			}
 			if ( fs::file_size( f ) == 0 )
 			{
 				p_in.report.errors.push_back(
-					fmt::format( "Expected output file <{}> is empty.", p_in.arguments[ it ] )
-				);
+					fmt::format( "Expected output file <{}> is empty.", p_in.arguments[ it ] ) );
 				break;
 			}
 		}
@@ -118,11 +116,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	const std::string * getFirstFileOfType( const CumulativeOuputFiles & p_list, const char * extension ) noexcept
 	{ return getFileOfType( p_list, 1, extension ); }
 
-	const std::string * getFileOfType(
-		const CumulativeOuputFiles & p_list,
-		const size_t &				 n,
-		const char *				 suffix
-	) noexcept
+	const std::string * getFileOfType( const CumulativeOuputFiles & p_list,
+									   const size_t &				n,
+									   const char *					suffix ) noexcept
 	{
 		size_t suffixSeen = 0;
 		for ( const auto & it_fileStrPtr : p_list.fileStringPtrs )

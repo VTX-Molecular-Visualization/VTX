@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_SEQUENCE__
-#define __VTX_UI_QT_WIDGET_SEQUENCE__
+#ifndef VTX_UI_QT_WIDGET_SEQUENCE_HPP
+#define VTX_UI_QT_WIDGET_SEQUENCE_HPP
 
 #include <QAbstractScrollArea>
 #include <QContextMenuEvent>

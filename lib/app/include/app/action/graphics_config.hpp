@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_GRAPHICS_CONFIG__
-#define __VTX_APP_ACTION_GRAPHICS_CONFIG__
+#ifndef VTX_APP_ACTION_GRAPHICS_CONFIG_HPP
+#define VTX_APP_ACTION_GRAPHICS_CONFIG_HPP
 
 #include "app/ecs.hpp"
 #include "app/services.hpp"
@@ -253,23 +253,20 @@ namespace VTX::App::Action::GraphicsConfig
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CHROMAB_RED )
 					{
-						Detail::ensure(
-							p_config.chromaticAberration, Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT
-						)
+						Detail::ensure( p_config.chromaticAberration,
+										Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT )
 							.red = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CHROMAB_GREEN )
 					{
-						Detail::ensure(
-							p_config.chromaticAberration, Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT
-						)
+						Detail::ensure( p_config.chromaticAberration,
+										Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT )
 							.green = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CHROMAB_BLUE )
 					{
-						Detail::ensure(
-							p_config.chromaticAberration, Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT
-						)
+						Detail::ensure( p_config.chromaticAberration,
+										Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT )
 							.blue = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_PIXELIZE )
@@ -343,8 +340,7 @@ namespace VTX::App::Action::GraphicsConfig
 					else
 					{
 					}
-				}
-			);
+				} );
 		}
 	};
 

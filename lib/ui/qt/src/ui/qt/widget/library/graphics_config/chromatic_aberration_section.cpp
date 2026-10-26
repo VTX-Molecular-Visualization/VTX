@@ -34,29 +34,22 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderBlue->setMinimum( minimum );
 		_sliderBlue->setMaximum( maximum );
 
-		connect(
-			this,
-			&HideableGroupBox::toggled,
-			[ this ]( const bool p_state ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_CHROMAB, bool>( p_state ); }
-		);
-		connect(
-			_sliderRed,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CHROMAB_RED, float>( _fromUi( p_value ) ); }
-		);
-		connect(
-			_sliderGreen,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CHROMAB_GREEN, float>( _fromUi( p_value ) ); }
-		);
-		connect(
-			_sliderBlue,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::CHROMAB_BLUE, float>( _fromUi( p_value ) ); }
-		);
+		connect( this,
+				 &HideableGroupBox::toggled,
+				 [ this ]( const bool p_state )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_CHROMAB, bool>( p_state ); } );
+		connect( _sliderRed,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::CHROMAB_RED, float>( _fromUi( p_value ) ); } );
+		connect( _sliderGreen,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::CHROMAB_GREEN, float>( _fromUi( p_value ) ); } );
+		connect( _sliderBlue,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::CHROMAB_BLUE, float>( _fromUi( p_value ) ); } );
 	}
 
 	void ChromaticAberrationSection::setConfig( const Entity p_preset, const VTX::Renderer::GraphicsConfig & p_config )

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DIALOG_PROGRESS__
-#define __VTX_UI_QT_DIALOG_PROGRESS__
+#ifndef VTX_UI_QT_DIALOG_PROGRESS_HPP
+#define VTX_UI_QT_DIALOG_PROGRESS_HPP
 
 #include "ui/qt/dialog/base_dialog.hpp"
 #include <QProgressDialog>

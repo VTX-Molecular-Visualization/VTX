@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_COLOR_SCHEME__
-#define __VTX_APP_ACTION_COLOR_SCHEME__
+#ifndef VTX_APP_ACTION_COLOR_HPP
+#define VTX_APP_ACTION_COLOR_HPP
 
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
@@ -15,12 +15,10 @@ namespace VTX::App::Action::Color
 	template<Core::Struct::E_SYSTEM_ITEM ITEM>
 	struct Add
 	{
-		void execute(
-			const Entity							  p_ent,
-			const Renderer::E_COLOR_SCHEME			  p_scheme,
-			const Core::Struct::IndexRangeList &	  p_ranges	   = {},
-			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
-		)
+		void execute( const Entity								p_ent,
+					  const Renderer::E_COLOR_SCHEME			p_scheme,
+					  const Core::Struct::IndexRangeList &		p_ranges	 = {},
+					  const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt )
 		{
 			auto &						 reg	= REG();
 			const auto &				 system = reg.get<Core::Struct::Topology>( p_ent );
@@ -28,9 +26,8 @@ namespace VTX::App::Action::Color
 			const bool					 isCustomScheme
 				= p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM || p_scheme == Renderer::E_COLOR_SCHEME::CARBON_CUSTOM;
 
-			assert(
-				( isCustomScheme && p_colorIndex.has_value() ) || ( not isCustomScheme && not p_colorIndex.has_value() )
-			);
+			assert( ( isCustomScheme && p_colorIndex.has_value() )
+					|| ( not isCustomScheme && not p_colorIndex.has_value() ) );
 
 			reg.patch<System::Color>(
 				p_ent,
@@ -43,9 +40,8 @@ namespace VTX::App::Action::Color
 					{
 						assert( p_colorIndex.has_value() );
 						assert( *p_colorIndex >= Renderer::Color::LAYOUT_OFFSET_CUSTOM );
-						assert(
-							*p_colorIndex < Renderer::Color::LAYOUT_OFFSET_CUSTOM + Renderer::Color::LAYOUT_COUNT_CUSTOM
-						);
+						assert( *p_colorIndex
+								< Renderer::Color::LAYOUT_OFFSET_CUSTOM + Renderer::Color::LAYOUT_COUNT_CUSTOM );
 
 						auto & targetColorAtoms = p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM
 													  ? p_color.customColorAtoms
@@ -119,44 +115,35 @@ namespace VTX::App::Action::Color
 					}
 
 					assert( count == system.getAtomCount() );
-				}
-			);
+				} );
 		}
 
-		void execute(
-			const Entity							  p_ent,
-			const Renderer::E_COLOR_SCHEME			  p_scheme,
-			const Core::Struct::IndexRange &		  p_range,
-			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
-		)
+		void execute( const Entity								p_ent,
+					  const Renderer::E_COLOR_SCHEME			p_scheme,
+					  const Core::Struct::IndexRange &			p_range,
+					  const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex ); }
 
-		void execute(
-			const Entity							  p_ent,
-			const Renderer::E_COLOR_SCHEME			  p_scheme,
-			const std::vector<Index> &				  p_values,
-			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
-		)
+		void execute( const Entity								p_ent,
+					  const Renderer::E_COLOR_SCHEME			p_scheme,
+					  const std::vector<Index> &				p_values,
+					  const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex ); }
 
-		void execute(
-			const Entity							  p_ent,
-			const Renderer::E_COLOR_SCHEME			  p_scheme,
-			const Index								  p_value,
-			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
-		)
+		void execute( const Entity								p_ent,
+					  const Renderer::E_COLOR_SCHEME			p_scheme,
+					  const Index								p_value,
+					  const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex ); }
 	};
 
 	struct AddItem
 	{
-		void execute(
-			const Entity							  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM		  p_item,
-			const Renderer::E_COLOR_SCHEME			  p_scheme,
-			const Core::Struct::IndexRangeList &	  p_ranges	   = {},
-			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
-		)
+		void execute( const Entity								p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM			p_item,
+					  const Renderer::E_COLOR_SCHEME			p_scheme,
+					  const Core::Struct::IndexRangeList &		p_ranges	 = {},
+					  const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt )
 		{
 			switch ( p_item )
 			{
@@ -179,45 +166,36 @@ namespace VTX::App::Action::Color
 			}
 		}
 
-		void execute(
-			const Entity							  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM		  p_item,
-			const Renderer::E_COLOR_SCHEME			  p_scheme,
-			const Core::Struct::IndexRange &		  p_range,
-			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
-		)
+		void execute( const Entity								p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM			p_item,
+					  const Renderer::E_COLOR_SCHEME			p_scheme,
+					  const Core::Struct::IndexRange &			p_range,
+					  const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex ); }
 
-		void execute(
-			const Entity							  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM		  p_item,
-			const Renderer::E_COLOR_SCHEME			  p_scheme,
-			const std::vector<Index> &				  p_values,
-			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
-		)
+		void execute( const Entity								p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM			p_item,
+					  const Renderer::E_COLOR_SCHEME			p_scheme,
+					  const std::vector<Index> &				p_values,
+					  const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex ); }
 
-		void execute(
-			const Entity							  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM		  p_item,
-			const Renderer::E_COLOR_SCHEME			  p_scheme,
-			const Index								  p_value,
-			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
-		)
+		void execute( const Entity								p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM			p_item,
+					  const Renderer::E_COLOR_SCHEME			p_scheme,
+					  const Index								p_value,
+					  const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex ); }
 	};
 
 	struct AddSelected
 	{
-		void execute(
-			const Renderer::E_COLOR_SCHEME			  p_scheme,
-			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
-		)
+		void execute( const Renderer::E_COLOR_SCHEME			p_scheme,
+					  const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt )
 		{
 			REG().view<System::Selection, System::Color>().each(
 				[ p_scheme, p_colorIndex ](
-					const Entity p_ent, const System::Selection & p_selection, const System::Color & p_color
-				)
+					const Entity p_ent, const System::Selection & p_selection, const System::Color & p_color )
 				{
 					const Core::Struct::IndexRangeList ranges = p_selection.atoms.toRangeList<Index>();
 					if ( ranges.isEmpty() )
@@ -226,29 +204,25 @@ namespace VTX::App::Action::Color
 					}
 
 					Add<Core::Struct::E_SYSTEM_ITEM::ATOM>().execute( p_ent, p_scheme, ranges, p_colorIndex );
-				}
-			);
+				} );
 		}
 	};
 
 	template<Core::Struct::E_SYSTEM_ITEM ITEM>
 	struct AddSecondaryStructure
 	{
-		void execute(
-			const Entity									   p_ent,
-			const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
-			const Core::Struct::IndexRangeList &			   p_ranges		= {},
-			const std::optional<Renderer::ColorIndex>		   p_colorIndex = std::nullopt
-		)
+		void execute( const Entity										 p_ent,
+					  const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
+					  const Core::Struct::IndexRangeList &				 p_ranges	  = {},
+					  const std::optional<Renderer::ColorIndex>			 p_colorIndex = std::nullopt )
 		{
 			auto &						 reg	  = REG();
 			const auto &				 system	  = reg.get<Core::Struct::Topology>( p_ent );
 			Core::Struct::IndexRangeList residues = Helper::System::getResidueRangeList<ITEM>( p_ent, p_ranges );
 			const bool isCustomScheme			  = p_scheme == Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::CUSTOM;
 
-			assert(
-				( isCustomScheme && p_colorIndex.has_value() ) || ( not isCustomScheme && not p_colorIndex.has_value() )
-			);
+			assert( ( isCustomScheme && p_colorIndex.has_value() )
+					|| ( not isCustomScheme && not p_colorIndex.has_value() ) );
 
 			reg.patch<System::Color>(
 				p_ent,
@@ -260,15 +234,13 @@ namespace VTX::App::Action::Color
 					{
 						assert( p_colorIndex.has_value() );
 						assert( *p_colorIndex >= Renderer::Color::LAYOUT_OFFSET_CUSTOM );
-						assert(
-							*p_colorIndex < Renderer::Color::LAYOUT_OFFSET_CUSTOM + Renderer::Color::LAYOUT_COUNT_CUSTOM
-						);
+						assert( *p_colorIndex
+								< Renderer::Color::LAYOUT_OFFSET_CUSTOM + Renderer::Color::LAYOUT_COUNT_CUSTOM );
 
 						if ( not p_color.customSecondaryStructureColorResidues.contains( *p_colorIndex ) )
 						{
-							p_color.customSecondaryStructureColorResidues.emplace(
-								*p_colorIndex, Core::Struct::IndexRangeList()
-							);
+							p_color.customSecondaryStructureColorResidues.emplace( *p_colorIndex,
+																				   Core::Struct::IndexRangeList() );
 						}
 
 						for ( auto & [ _, rangeList ] : p_color.colorSchemeSecondaryStructureResidues )
@@ -288,18 +260,15 @@ namespace VTX::App::Action::Color
 							}
 						}
 
-						assert(
-							Helper::System::countAssignedSecondaryStructureResidues( p_color )
-							== system.getResidueCount()
-						);
+						assert( Helper::System::countAssignedSecondaryStructureResidues( p_color )
+								== system.getResidueCount() );
 						return;
 					}
 
 					if ( not p_color.colorSchemeSecondaryStructureResidues.contains( p_scheme ) )
 					{
-						p_color.colorSchemeSecondaryStructureResidues.emplace(
-							p_scheme, Core::Struct::IndexRangeList()
-						);
+						p_color.colorSchemeSecondaryStructureResidues.emplace( p_scheme,
+																			   Core::Struct::IndexRangeList() );
 					}
 
 					size_t count = 0;
@@ -323,101 +292,81 @@ namespace VTX::App::Action::Color
 					}
 
 					assert( count == system.getResidueCount() );
-				}
-			);
+				} );
 		}
 
-		void execute(
-			const Entity									   p_ent,
-			const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
-			const Core::Struct::IndexRange &				   p_range,
-			const std::optional<Renderer::ColorIndex>		   p_colorIndex = std::nullopt
-		)
+		void execute( const Entity										 p_ent,
+					  const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
+					  const Core::Struct::IndexRange &					 p_range,
+					  const std::optional<Renderer::ColorIndex>			 p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex ); }
 
-		void execute(
-			const Entity									   p_ent,
-			const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
-			const std::vector<Index> &						   p_values,
-			const std::optional<Renderer::ColorIndex>		   p_colorIndex = std::nullopt
-		)
+		void execute( const Entity										 p_ent,
+					  const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
+					  const std::vector<Index> &						 p_values,
+					  const std::optional<Renderer::ColorIndex>			 p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex ); }
 
-		void execute(
-			const Entity									   p_ent,
-			const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
-			const Index										   p_value,
-			const std::optional<Renderer::ColorIndex>		   p_colorIndex = std::nullopt
-		)
+		void execute( const Entity										 p_ent,
+					  const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
+					  const Index										 p_value,
+					  const std::optional<Renderer::ColorIndex>			 p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex ); }
 	};
 
 	struct AddSecondaryStructureItem
 	{
-		void execute(
-			const Entity									   p_ent,
-			const Core::Struct::E_SYSTEM_ITEM				   p_item,
-			const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
-			const Core::Struct::IndexRangeList &			   p_ranges		= {},
-			const std::optional<Renderer::ColorIndex>		   p_colorIndex = std::nullopt
-		)
+		void execute( const Entity										 p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM					 p_item,
+					  const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
+					  const Core::Struct::IndexRangeList &				 p_ranges	  = {},
+					  const std::optional<Renderer::ColorIndex>			 p_colorIndex = std::nullopt )
 		{
 			switch ( p_item )
 			{
 			case Core::Struct::E_SYSTEM_ITEM::SYSTEM:
 				AddSecondaryStructure<Core::Struct::E_SYSTEM_ITEM::SYSTEM>().execute(
-					p_ent, p_scheme, p_ranges, p_colorIndex
-				);
+					p_ent, p_scheme, p_ranges, p_colorIndex );
 				break;
 			case Core::Struct::E_SYSTEM_ITEM::CATEGORY:
 				AddSecondaryStructure<Core::Struct::E_SYSTEM_ITEM::CATEGORY>().execute(
-					p_ent, p_scheme, p_ranges, p_colorIndex
-				);
+					p_ent, p_scheme, p_ranges, p_colorIndex );
 				break;
 			case Core::Struct::E_SYSTEM_ITEM::CHAIN:
 				AddSecondaryStructure<Core::Struct::E_SYSTEM_ITEM::CHAIN>().execute(
-					p_ent, p_scheme, p_ranges, p_colorIndex
-				);
+					p_ent, p_scheme, p_ranges, p_colorIndex );
 				break;
 			case Core::Struct::E_SYSTEM_ITEM::RESIDUE:
 				AddSecondaryStructure<Core::Struct::E_SYSTEM_ITEM::RESIDUE>().execute(
-					p_ent, p_scheme, p_ranges, p_colorIndex
-				);
+					p_ent, p_scheme, p_ranges, p_colorIndex );
 				break;
 			case Core::Struct::E_SYSTEM_ITEM::ATOM:
 				AddSecondaryStructure<Core::Struct::E_SYSTEM_ITEM::ATOM>().execute(
-					p_ent, p_scheme, p_ranges, p_colorIndex
-				);
+					p_ent, p_scheme, p_ranges, p_colorIndex );
 				break;
 			default: assert( false && "Unhandled E_SYSTEM_ITEM type in AddSecondaryStructureItem action." ); break;
 			}
 		}
 
-		void execute(
-			const Entity									   p_ent,
-			const Core::Struct::E_SYSTEM_ITEM				   p_item,
-			const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
-			const Core::Struct::IndexRange &				   p_range,
-			const std::optional<Renderer::ColorIndex>		   p_colorIndex = std::nullopt
-		)
+		void execute( const Entity										 p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM					 p_item,
+					  const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
+					  const Core::Struct::IndexRange &					 p_range,
+					  const std::optional<Renderer::ColorIndex>			 p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_range ), p_colorIndex ); }
 
-		void execute(
-			const Entity									   p_ent,
-			const Core::Struct::E_SYSTEM_ITEM				   p_item,
-			const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
-			const std::vector<Index> &						   p_values,
-			const std::optional<Renderer::ColorIndex>		   p_colorIndex = std::nullopt
-		)
+		void execute( const Entity										 p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM					 p_item,
+					  const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
+					  const std::vector<Index> &						 p_values,
+					  const std::optional<Renderer::ColorIndex>			 p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_values ), p_colorIndex ); }
 
-		void execute(
-			const Entity									   p_ent,
-			const Core::Struct::E_SYSTEM_ITEM				   p_item,
-			const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
-			const Index										   p_value,
-			const std::optional<Renderer::ColorIndex>		   p_colorIndex = std::nullopt
-		)
+		void execute( const Entity										 p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM					 p_item,
+					  const Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE p_scheme,
+					  const Index										 p_value,
+					  const std::optional<Renderer::ColorIndex>			 p_colorIndex = std::nullopt )
 		{ execute( p_ent, p_item, p_scheme, Core::Struct::IndexRangeList( p_value ), p_colorIndex ); }
 	};
 

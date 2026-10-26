@@ -18,8 +18,7 @@ namespace VTX::UI::QT::DockWidget
 		auto * const representationWidget = Helper::makeQObject<Widget::Library::Representation>( this );
 		_layout->addWidget( representationWidget );
 		_layout->addSpacerItem(
-			std::make_unique<QSpacerItem>( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ).release()
-		);
+			std::make_unique<QSpacerItem>( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ).release() );
 	}
 
 } // namespace VTX::UI::QT::DockWidget

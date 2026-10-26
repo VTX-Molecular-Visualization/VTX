@@ -23,8 +23,7 @@ namespace VTX::App
 		// Positional arg
 		_impl->parser.add_argument( "files" )
 			.help(
-				"List of files to submit to VTX. System will be loaded and python script will be executed at startup."
-			)
+				"List of files to submit to VTX. System will be loaded and python script will be executed at startup." )
 			.metavar( "FILES" )
 			.store_into( _impl->args.positionalFiles )
 			.nargs( argparse::nargs_pattern::any );

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_HELPER__
-#define __VTX_UI_QT_HELPER__
+#ifndef VTX_UI_QT_HELPER_HPP
+#define VTX_UI_QT_HELPER_HPP
 
 #include <QBoxLayout>
 #include <QColor>
@@ -36,9 +36,8 @@ namespace VTX::UI::QT::Helper
 	{
 		using Value = std::remove_cv_t<T>;
 
-		static_assert(
-			std::is_arithmetic_v<Value> && not std::is_same_v<Value, bool>, "formatNumber expects a numeric value"
-		);
+		static_assert( std::is_arithmetic_v<Value> && not std::is_same_v<Value, bool>,
+					   "formatNumber expects a numeric value" );
 
 		if constexpr ( std::is_floating_point_v<Value> )
 		{

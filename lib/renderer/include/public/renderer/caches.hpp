@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CACHES__
-#define __VTX_RENDERER_CACHES__
+#ifndef VTX_RENDERER_CACHES_HPP
+#define VTX_RENDERER_CACHES_HPP
 
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"

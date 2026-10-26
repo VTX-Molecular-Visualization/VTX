@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHONBINDING_COLOR__
-#define __VTX_APP_PYTHONBINDING_COLOR__
+#ifndef VTX_APP_PYTHON_BINDING_COLOR_HPP
+#define VTX_APP_PYTHON_BINDING_COLOR_HPP
 
 #include "app/python_binding/module.hpp"
 

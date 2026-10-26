@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_ECS__
-#define __VTX_UTIL_ECS__
+#ifndef VTX_UTIL_ECS_HPP
+#define VTX_UTIL_ECS_HPP
 
 #include <entt/entt.hpp>
 #include <util/hashing.hpp>

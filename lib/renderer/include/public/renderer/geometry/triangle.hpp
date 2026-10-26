@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GEOMETRY_TRIANGLE__
-#define __VTX_RENDERER_GEOMETRY_TRIANGLE__
+#ifndef VTX_RENDERER_GEOMETRY_TRIANGLE_HPP
+#define VTX_RENDERER_GEOMETRY_TRIANGLE_HPP
 
 #include "base_geometry.hpp"
 #include <core/struct/mesh.hpp>
@@ -26,11 +26,10 @@ namespace VTX::Renderer::Geometry
 		void registerMesh( const Desc::Handle p_handle, const Core::Struct::Mesh & p_mesh )
 		{
 			_addRange(
-				p_handle, static_cast<Index>( p_mesh.indices.size() ), static_cast<Index>( p_mesh.vertices.size() )
-			);
+				p_handle, static_cast<Index>( p_mesh.indices.size() ), static_cast<Index>( p_mesh.vertices.size() ) );
 			_indices( p_handle ) = p_mesh.indices;
 		}
 	};
 } // namespace VTX::Renderer::Geometry
 
-#endif // !__VTX_RENDERER_GEOMETRY_TRIANGLE__
+#endif // !VTX_RENDERER_GEOMETRY_TRIANGLE_HPP

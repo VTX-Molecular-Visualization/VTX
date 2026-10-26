@@ -34,12 +34,10 @@ namespace VTX::Util::Color
 	Rgba Rgba::mixedWith( const Rgba & p_other, const float p_factor ) const
 	{
 		const float factor = Util::Math::clamp( p_factor, 0.f, 1.f );
-		return Rgba(
-			Util::Math::lerp( r(), p_other.r(), factor ),
-			Util::Math::lerp( g(), p_other.g(), factor ),
-			Util::Math::lerp( b(), p_other.b(), factor ),
-			a()
-		);
+		return Rgba( Util::Math::lerp( r(), p_other.r(), factor ),
+					 Util::Math::lerp( g(), p_other.g(), factor ),
+					 Util::Math::lerp( b(), p_other.b(), factor ),
+					 a() );
 	}
 
 	Rgba Rgba::toLinear() const
@@ -65,8 +63,7 @@ namespace VTX::Util::Color
 	{
 		const float grey = brightness();
 		Rgba		result(
-			grey + ( r() - grey ) * p_factor, grey + ( g() - grey ) * p_factor, grey + ( b() - grey ) * p_factor, a()
-		);
+			grey + ( r() - grey ) * p_factor, grey + ( g() - grey ) * p_factor, grey + ( b() - grey ) * p_factor, a() );
 		result.saturate();
 		return result;
 	}

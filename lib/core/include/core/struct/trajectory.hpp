@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_STRUCT_TRAJECTORY__
-#define __VTX_CORE_STRUCT_TRAJECTORY__
+#ifndef VTX_CORE_STRUCT_TRAJECTORY_HPP
+#define VTX_CORE_STRUCT_TRAJECTORY_HPP
 
 #include <cstddef>
 #include <span>

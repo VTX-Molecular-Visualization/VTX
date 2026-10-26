@@ -59,15 +59,13 @@ namespace VTX::App::PythonBinding
 
 			REG().view<Core::Struct::Topology, App::System::Selection>().each(
 				[ &systems ](
-					const Entity p_ent, const Core::Struct::Topology &, const App::System::Selection & p_selection
-				)
+					const Entity p_ent, const Core::Struct::Topology &, const App::System::Selection & p_selection )
 				{
 					if ( p_selection.atoms.any() )
 					{
 						systems.append( Topology::System { p_ent } );
 					}
-				}
-			);
+				} );
 
 			return systems;
 		}
@@ -145,11 +143,9 @@ namespace VTX::App::PythonBinding
 			executeAction<App::Action::Representation::AddSelected>( Entity( p_preset.entity ) );
 		}
 
-		App::System::E_SELECTION_STATE _getSelectionState(
-			const Entity			   p_ent,
-			const SystemItem		   p_item,
-			const std::optional<Index> p_index = std::nullopt
-		)
+		App::System::E_SELECTION_STATE _getSelectionState( const Entity				  p_ent,
+														   const SystemItem			  p_item,
+														   const std::optional<Index> p_index = std::nullopt )
 		{
 			if ( not REG().all_of<Core::Struct::Topology, App::System::Selection>( p_ent ) )
 			{
@@ -165,9 +161,8 @@ namespace VTX::App::PythonBinding
 		const pybind11::module_ & module = p_vtxModule.pyModule();
 
 		VTX::PythonBinding::Helper::declareEnum<SystemItem>( module, "SYSTEM_ITEM" );
-		VTX::PythonBinding::Helper::declareEnum<App::Action::Selection::E_GRANULARITY>(
-			module, "SELECTION_GRANULARITY"
-		);
+		VTX::PythonBinding::Helper::declareEnum<App::Action::Selection::E_GRANULARITY>( module,
+																						"SELECTION_GRANULARITY" );
 		VTX::PythonBinding::Helper::declareEnum<SelectionMode>( module, "SELECTION_CLEAR_MODE" );
 		VTX::PythonBinding::Helper::declareEnum<App::System::E_SELECTION_STATE>( module, "SELECTION_STATE" );
 
@@ -180,34 +175,27 @@ namespace VTX::App::PythonBinding
 			.def( "isEmpty", &SelectionView::isEmpty, pybind11::arg( "system" ) )
 			.def( "show", &SelectionView::show, "Show the current selection." )
 			.def( "hide", &SelectionView::hide, "Hide the current selection." )
-			.def(
-				"setRepresentation",
-				pybind11::overload_cast<const std::string &>( &SelectionView::setRepresentation, pybind11::const_ ),
-				"Set the representation preset of the current selection.",
-				pybind11::arg( "name" )
-			)
-			.def(
-				"setRepresentation",
-				pybind11::overload_cast<const Preset::RepresentationHandle &>(
-					&SelectionView::setRepresentation, pybind11::const_
-				),
-				"Set the representation preset of the current selection.",
-				pybind11::arg( "preset" )
-			);
+			.def( "setRepresentation",
+				  pybind11::overload_cast<const std::string &>( &SelectionView::setRepresentation, pybind11::const_ ),
+				  "Set the representation preset of the current selection.",
+				  pybind11::arg( "name" ) )
+			.def( "setRepresentation",
+				  pybind11::overload_cast<const Preset::RepresentationHandle &>( &SelectionView::setRepresentation,
+																				 pybind11::const_ ),
+				  "Set the representation preset of the current selection.",
+				  pybind11::arg( "preset" ) );
 		module.attr( "selection" ) = SelectionView {};
 
 		p_vtxModule.bindAction<App::Action::Selection::SelectAll>( "selectAll", "Select all loaded systems." );
-		p_vtxModule.bindAction<App::Action::Selection::Clear>(
-			"clearSelection", "Clear the current selection on all loaded systems."
-		);
+		p_vtxModule.bindAction<App::Action::Selection::Clear>( "clearSelection",
+															   "Clear the current selection on all loaded systems." );
 		p_vtxModule.def(
 			"clearSelection",
 			[]( const Entity p_ent, const SelectionMode p_mode )
 			{ executeAction<App::Action::Selection::Clear>( p_ent, p_mode ); },
 			"Clear selection for one system.",
 			VTX::PythonBinding::Wrapper::Arg( "systemId" ),
-			VTX::PythonBinding::Wrapper::VArg<SelectionMode>( "mode", SelectionMode::THIS )
-		);
+			VTX::PythonBinding::Wrapper::VArg<SelectionMode>( "mode", SelectionMode::THIS ) );
 		p_vtxModule.def(
 			"select",
 			[]( const Entity	  p_ent,
@@ -222,23 +210,19 @@ namespace VTX::App::PythonBinding
 				}
 
 				executeAction<App::Action::Selection::SetSelectedItem>(
-					p_ent, p_item, p_indices, p_selected, p_append
-				);
+					p_ent, p_item, p_indices, p_selected, p_append );
 			},
 			"Set item selection for a system.",
 			VTX::PythonBinding::Wrapper::Arg( "systemId" ),
 			VTX::PythonBinding::Wrapper::Arg( "item" ),
 			VTX::PythonBinding::Wrapper::VArg<IndexList>( "indices", IndexList() ),
 			VTX::PythonBinding::Wrapper::VArg<bool>( "selected", true ),
-			VTX::PythonBinding::Wrapper::VArg<bool>( "append", false )
-		);
-		p_vtxModule.def(
-			"getSelectionState",
-			&_getSelectionState,
-			"Return the selection state of an item.",
-			VTX::PythonBinding::Wrapper::Arg( "systemId" ),
-			VTX::PythonBinding::Wrapper::VArg<SystemItem>( "item", SystemItem::SYSTEM ),
-			VTX::PythonBinding::Wrapper::VArg<std::optional<Index>>( "index", std::optional<Index>() )
-		);
+			VTX::PythonBinding::Wrapper::VArg<bool>( "append", false ) );
+		p_vtxModule.def( "getSelectionState",
+						 &_getSelectionState,
+						 "Return the selection state of an item.",
+						 VTX::PythonBinding::Wrapper::Arg( "systemId" ),
+						 VTX::PythonBinding::Wrapper::VArg<SystemItem>( "item", SystemItem::SYSTEM ),
+						 VTX::PythonBinding::Wrapper::VArg<std::optional<Index>>( "index", std::optional<Index>() ) );
 	}
 } // namespace VTX::App::PythonBinding

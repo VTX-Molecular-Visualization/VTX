@@ -11,8 +11,7 @@ TEST_CASE( "DenseGrid computes cell count", "[util][math][grid]" )
 TEST_CASE( "DenseGrid converts world position to grid position", "[util][math][grid]" )
 {
 	const VTX::Util::Math::DenseGrid grid(
-		VTX::Vec3f( -1.f, 2.f, 4.f ), VTX::Vec3f( 2.f, 4.f, 8.f ), VTX::Vec3u( 3u, 4u, 5u )
-	);
+		VTX::Vec3f( -1.f, 2.f, 4.f ), VTX::Vec3f( 2.f, 4.f, 8.f ), VTX::Vec3u( 3u, 4u, 5u ) );
 
 	const VTX::Vec3u position = grid.gridPosition( VTX::Vec3f( 3.2f, 10.5f, 20.1f ) );
 
@@ -34,8 +33,7 @@ TEST_CASE( "DenseGrid converts grid position to dense index", "[util][math][grid
 TEST_CASE( "DenseGrid returns world position at cell center", "[util][math][grid]" )
 {
 	const VTX::Util::Math::DenseGrid grid(
-		VTX::Vec3f( -1.f, 2.f, 4.f ), VTX::Vec3f( 2.f, 4.f, 8.f ), VTX::Vec3u( 3u, 4u, 5u )
-	);
+		VTX::Vec3f( -1.f, 2.f, 4.f ), VTX::Vec3f( 2.f, 4.f, 8.f ), VTX::Vec3u( 3u, 4u, 5u ) );
 
 	const VTX::Vec3f position = grid.worldPosition( VTX::Vec3u( 2u, 1u, 3u ) );
 

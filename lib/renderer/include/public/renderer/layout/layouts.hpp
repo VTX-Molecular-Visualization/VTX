@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_LAYOUTS__
-#define __VTX_RENDERER_LAYOUTS__
+#ifndef VTX_RENDERER_LAYOUT_LAYOUTS_HPP
+#define VTX_RENDERER_LAYOUT_LAYOUTS_HPP
 
 #include "renderer/layout/atoms.hpp"
 #include "renderer/layout/meshes.hpp"

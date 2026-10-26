@@ -33,22 +33,18 @@ namespace VTX::App::PythonBinding::Topology
 		return { entity };
 	}
 
-	App::System::E_VISIBLE_STATE getVisibleState(
-		const Entity			   p_entity,
-		const SystemItem		   p_item,
-		const std::optional<Index> p_index
-	)
+	App::System::E_VISIBLE_STATE getVisibleState( const Entity				 p_entity,
+												  const SystemItem			 p_item,
+												  const std::optional<Index> p_index )
 	{
 		getTopology( p_entity );
 
 		return Helper::System::getVisibleState( { p_entity, p_item, p_index } );
 	}
 
-	App::System::E_SELECTION_STATE getSelectionState(
-		const Entity			   p_entity,
-		const SystemItem		   p_item,
-		const std::optional<Index> p_index
-	)
+	App::System::E_SELECTION_STATE getSelectionState( const Entity				 p_entity,
+													  const SystemItem			 p_item,
+													  const std::optional<Index> p_index )
 	{
 		getTopology( p_entity );
 
@@ -56,22 +52,14 @@ namespace VTX::App::PythonBinding::Topology
 	}
 
 	bool isVisible( const Entity p_entity, const SystemItem p_item, const std::optional<Index> p_index )
-	{
-		return getVisibleState( p_entity, p_item, p_index ) != App::System::E_VISIBLE_STATE::HIDDEN;
-	}
+	{ return getVisibleState( p_entity, p_item, p_index ) != App::System::E_VISIBLE_STATE::HIDDEN; }
 
 	bool isFullyVisible( const Entity p_entity, const SystemItem p_item, const std::optional<Index> p_index )
-	{
-		return getVisibleState( p_entity, p_item, p_index ) == App::System::E_VISIBLE_STATE::VISIBLE;
-	}
+	{ return getVisibleState( p_entity, p_item, p_index ) == App::System::E_VISIBLE_STATE::VISIBLE; }
 
 	bool isSelected( const Entity p_entity, const SystemItem p_item, const std::optional<Index> p_index )
-	{
-		return getSelectionState( p_entity, p_item, p_index ) != App::System::E_SELECTION_STATE::NONE;
-	}
+	{ return getSelectionState( p_entity, p_item, p_index ) != App::System::E_SELECTION_STATE::NONE; }
 
 	bool isFullySelected( const Entity p_entity, const SystemItem p_item, const std::optional<Index> p_index )
-	{
-		return getSelectionState( p_entity, p_item, p_index ) == App::System::E_SELECTION_STATE::FULL;
-	}
+	{ return getSelectionState( p_entity, p_item, p_index ) == App::System::E_SELECTION_STATE::FULL; }
 } // namespace VTX::App::PythonBinding::Topology

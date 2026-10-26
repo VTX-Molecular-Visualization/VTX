@@ -117,45 +117,36 @@ namespace VTX::UI::QT::Widget::Tree
 
 		connect( this, &QTreeView::clicked, this, &Scripts::_selectScript );
 		connect( this, &QTreeView::doubleClicked, this, &Scripts::_runScript );
+		connect( this,
+				 &QTreeView::expanded,
+				 this,
+				 [ this, scriptsPath ]( const QModelIndex & p_index )
+				 {
+					 if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
+					 {
+						 SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, true );
+					 }
+				 } );
+		connect( this,
+				 &QTreeView::collapsed,
+				 this,
+				 [ this, scriptsPath ]( const QModelIndex & p_index )
+				 {
+					 if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
+					 {
+						 SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, false );
+					 }
+				 } );
 		connect(
-			this,
-			&QTreeView::expanded,
-			this,
-			[ this, scriptsPath ]( const QModelIndex & p_index )
-			{
-				if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
-				{
-					SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, true );
-				}
-			}
-		);
-		connect(
-			this,
-			&QTreeView::collapsed,
-			this,
-			[ this, scriptsPath ]( const QModelIndex & p_index )
-			{
-				if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
-				{
-					SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, false );
-				}
-			}
-		);
-		connect(
-			_fileModel, &QFileSystemModel::directoryLoaded, this, [ this ]( const QString & ) { updateGeometry(); }
-		);
-		connect(
-			_proxyModel,
-			&QAbstractItemModel::rowsInserted,
-			this,
-			[ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); }
-		);
-		connect(
-			_proxyModel,
-			&QAbstractItemModel::rowsRemoved,
-			this,
-			[ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); }
-		);
+			_fileModel, &QFileSystemModel::directoryLoaded, this, [ this ]( const QString & ) { updateGeometry(); } );
+		connect( _proxyModel,
+				 &QAbstractItemModel::rowsInserted,
+				 this,
+				 [ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); } );
+		connect( _proxyModel,
+				 &QAbstractItemModel::rowsRemoved,
+				 this,
+				 [ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); } );
 	}
 
 	void Scripts::_selectScript( const QModelIndex & p_index )
@@ -188,7 +179,6 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 
 		App::ACTION().execute<App::Action::IO::RunPythonScript>(
-			FilePath( _fileModel->filePath( sourceIndex ).toStdString() )
-		);
+			FilePath( _fileModel->filePath( sourceIndex ).toStdString() ) );
 	}
 } // namespace VTX::UI::QT::Widget::Tree

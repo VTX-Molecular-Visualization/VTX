@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_MATH__
-#define __VTX_UTIL_MATH__
+#ifndef VTX_UTIL_MATH_HPP
+#define VTX_UTIL_MATH_HPP
 
 #define GLM_FORCE_INLINE
 #define GLM_ENABLE_EXPERIMENTAL
@@ -228,12 +228,10 @@ namespace VTX::Util::Math
 		return angle;
 	}
 
-	constexpr Vec3f linearComb(
-		const float	  p_scalar0,
-		const Vec3f & p_vector0,
-		const float	  p_scalar1,
-		const Vec3f & p_vector1
-	) noexcept
+	constexpr Vec3f linearComb( const float	  p_scalar0,
+								const Vec3f & p_vector0,
+								const float	  p_scalar1,
+								const Vec3f & p_vector1 ) noexcept
 	{ return p_scalar0 * p_vector0 + p_scalar1 * p_vector1; }
 
 	constexpr uint nextPowerOfTwoValue( const uint p_baseNumber )
@@ -301,10 +299,8 @@ namespace VTX::Util::Math
 			[]
 			{
 				return Util::Math::normalize(
-					Vec3f( Util::Math::randomFloat() * 2.f - 1.f, Util::Math::randomFloat() * 2.f - 1.f, 0.f )
-				);
-			}
-		);
+					Vec3f( Util::Math::randomFloat() * 2.f - 1.f, Util::Math::randomFloat() * 2.f - 1.f, 0.f ) );
+			} );
 
 		return noiseData;
 	}

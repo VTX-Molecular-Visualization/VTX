@@ -61,15 +61,12 @@ namespace VTX::Bench
 		system.atomUids = Util::Math::Range<UID32>::fromFirstCount( _nextUID32, static_cast<UID32>( atomCount ) );
 		_nextUID32 += static_cast<UID32>( atomCount );
 
-		system.colorSchemeAtoms.emplace(
-			Renderer::E_COLOR_SCHEME::ATOM, Core::Struct::IndexRangeList( system.topology->getAtomRange() )
-		);
+		system.colorSchemeAtoms.emplace( Renderer::E_COLOR_SCHEME::ATOM,
+										 Core::Struct::IndexRangeList( system.topology->getAtomRange() ) );
 		system.colorSchemeSecondaryStructureResidues.emplace(
 			Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE,
 			Core::Struct::IndexRangeList(
-				Core::Struct::IndexRange::fromFirstCount( 0, static_cast<Index>( residueCount ) )
-			)
-		);
+				Core::Struct::IndexRange::fromFirstCount( 0, static_cast<Index>( residueCount ) ) ) );
 		system.representationHandles.emplace( Entity( 0 ), static_cast<Renderer::Desc::Handle>( 0 ) );
 		system.presetAtoms.emplace( Entity( 0 ), Core::Struct::IndexRangeList( system.topology->getAtomRange() ) );
 		system.visibility = Util::Math::BitSet( atomCount, true );

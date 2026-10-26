@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_LAYOUT_FLOW_LAYOUT__
-#define __VTX_UI_QT_LAYOUT_FLOW_LAYOUT__
+#ifndef VTX_UI_QT_LAYOUT_FLOW_LAYOUT_HPP
+#define VTX_UI_QT_LAYOUT_FLOW_LAYOUT_HPP
 
 #include <QLayout>
 #include <QRect>

@@ -86,51 +86,40 @@ namespace VTX::UI::QT::Widget
 			_textName->setFixedHeight( _textName->fontMetrics().lineSpacing() * 4 );
 			_layout->addWidget( _textName );
 
-			connect(
-				_textName,
-				&QPlainTextEdit::textChanged,
-				this,
-				[ this, editableSystemEntity ]()
-				{
-					App::ACTION().execute<App::Action::System::SetName>(
-						editableSystemEntity, _textName->toPlainText().toStdString()
-					);
-				}
-			);
+			connect( _textName,
+					 &QPlainTextEdit::textChanged,
+					 this,
+					 [ this, editableSystemEntity ]()
+					 {
+						 App::ACTION().execute<App::Action::System::SetName>( editableSystemEntity,
+																			  _textName->toPlainText().toStdString() );
+					 } );
 
 			// PDB.
-			_layout->addWidget(
-				Helper::makeQObject<QLabel>(
-					QString( "PDB: %1" ).arg( QString::fromStdString( metadata.pdbIDCode ) ), this
-				)
-			);
+			_layout->addWidget( Helper::makeQObject<QLabel>(
+				QString( "PDB: %1" ).arg( QString::fromStdString( metadata.pdbIDCode ) ), this ) );
 
 			// Path.
 			const QUrl parentFolderUrl
 				= QUrl::fromLocalFile( QString::fromStdString( metadata.path.parent_path().string() ) );
 			auto * labelFile = Helper::makeQObject<QLabel>(
-				QString( "File: %1" ).arg( QString::fromStdString( metadata.path.filename().string() ) ), this
-			);
+				QString( "File: %1" ).arg( QString::fromStdString( metadata.path.filename().string() ) ), this );
 			labelFile->setWordWrap( true );
 			labelFile->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 			labelFile->setToolTip( QString::fromStdString( metadata.path.generic_string() ) );
 			labelFile->setCursor( Qt::WhatsThisCursor );
 			labelFile->setContextMenuPolicy( Qt::CustomContextMenu );
-			connect(
-				labelFile,
-				&QLabel::customContextMenuRequested,
-				this,
-				[ labelFile, parentFolderUrl ]( const QPoint & p_pos )
-				{
-					QMenu menu( labelFile );
-					menu.addAction(
-						"Show in explorer",
-						labelFile,
-						[ parentFolderUrl ]() { QDesktopServices::openUrl( parentFolderUrl ); }
-					);
-					menu.exec( labelFile->mapToGlobal( p_pos ) );
-				}
-			);
+			connect( labelFile,
+					 &QLabel::customContextMenuRequested,
+					 this,
+					 [ labelFile, parentFolderUrl ]( const QPoint & p_pos )
+					 {
+						 QMenu menu( labelFile );
+						 menu.addAction( "Show in explorer",
+										 labelFile,
+										 [ parentFolderUrl ]() { QDesktopServices::openUrl( parentFolderUrl ); } );
+						 menu.exec( labelFile->mapToGlobal( p_pos ) );
+					 } );
 			_layout->addWidget( labelFile );
 
 			// Transform.
@@ -141,24 +130,18 @@ namespace VTX::UI::QT::Widget
 				= Helper::makeQObject<Transform>( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
 			_transform->setTransform( transform );
 
-			connect(
-				_transform,
-				&Transform::positionChanged,
-				[ editableSystemEntity ]( const Vec3f & p_position )
-				{ App::ACTION().execute<App::Action::System::SetPosition>( editableSystemEntity, p_position ); }
-			);
-			connect(
-				_transform,
-				&Transform::rotationChanged,
-				[ editableSystemEntity ]( const Quatf & p_rotation )
-				{ App::ACTION().execute<App::Action::System::SetRotation>( editableSystemEntity, p_rotation ); }
-			);
-			connect(
-				_transform,
-				&Transform::scaleChanged,
-				[ editableSystemEntity ]( const Vec3f & p_scale )
-				{ App::ACTION().execute<App::Action::System::SetScale>( editableSystemEntity, p_scale ); }
-			);
+			connect( _transform,
+					 &Transform::positionChanged,
+					 [ editableSystemEntity ]( const Vec3f & p_position )
+					 { App::ACTION().execute<App::Action::System::SetPosition>( editableSystemEntity, p_position ); } );
+			connect( _transform,
+					 &Transform::rotationChanged,
+					 [ editableSystemEntity ]( const Quatf & p_rotation )
+					 { App::ACTION().execute<App::Action::System::SetRotation>( editableSystemEntity, p_rotation ); } );
+			connect( _transform,
+					 &Transform::scaleChanged,
+					 [ editableSystemEntity ]( const Vec3f & p_scale )
+					 { App::ACTION().execute<App::Action::System::SetScale>( editableSystemEntity, p_scale ); } );
 
 			layout->addWidget( _transform );
 			_layout->addWidget( groupBoxTransform );
@@ -259,8 +242,7 @@ namespace VTX::UI::QT::Widget
 								*_list,
 								systemName + "/" + chainName + "/" + residueName + "/"
 									+ QString::fromStdString( topology.getAtomName( atom ) )
-									+ ( originalIndex ? QString( ":%1" ).arg( originalIndex.value() ) : "" )
-							);
+									+ ( originalIndex ? QString( ":%1" ).arg( originalIndex.value() ) : "" ) );
 						}
 					}
 				}
@@ -270,27 +252,15 @@ namespace VTX::UI::QT::Widget
 		// Display counters.
 		if ( countSystem > 1 )
 		{
-			_layout->addWidget(
-				Helper::makeQObject<QLabel>(
-					QString( "Systems: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countSystem ) ), this
-				)
-			);
+			_layout->addWidget( Helper::makeQObject<QLabel>(
+				QString( "Systems: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countSystem ) ), this ) );
 		}
-		_layout->addWidget(
-			Helper::makeQObject<QLabel>(
-				QString( "Chains: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countChain ) ), this
-			)
-		);
-		_layout->addWidget(
-			Helper::makeQObject<QLabel>(
-				QString( "Residues: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countResidue ) ), this
-			)
-		);
-		_layout->addWidget(
-			Helper::makeQObject<QLabel>(
-				QString( "Atoms: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countAtom ) ), this
-			)
-		);
+		_layout->addWidget( Helper::makeQObject<QLabel>(
+			QString( "Chains: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countChain ) ), this ) );
+		_layout->addWidget( Helper::makeQObject<QLabel>(
+			QString( "Residues: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countResidue ) ), this ) );
+		_layout->addWidget( Helper::makeQObject<QLabel>(
+			QString( "Atoms: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countAtom ) ), this ) );
 
 		// Connect.
 		_connTransformChanged

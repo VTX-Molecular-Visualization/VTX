@@ -29,8 +29,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		for ( const Entity entity : materialPresets )
 		{
 			auto * const item = new QListWidgetItem(
-				QString::fromStdString( materialPresets.get<App::Generic::Name>( entity ).name ), _listMaterials
-			);
+				QString::fromStdString( materialPresets.get<App::Generic::Name>( entity ).name ), _listMaterials );
 			item->setData( Qt::UserRole, QVariant::fromValue<Entity>( entity ) );
 		}
 
@@ -59,8 +58,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderTextureScale->setMaximum( MATERIAL_TEXTURE_SCALE_MAX );
 
 		constexpr auto TEXTURE_LABELS = std::to_array<std::string_view>(
-			{ "Albedo map", "Normal map", "Metallic map", "Roughness map", "Ambient occlusion map", "Emissive map" }
-		);
+			{ "Albedo map", "Normal map", "Metallic map", "Roughness map", "Ambient occlusion map", "Emissive map" } );
 		static_assert( TEXTURE_LABELS.size() == static_cast<size_t>( Material::E_TEXTURE::COUNT ) );
 		for ( size_t i = 0; i < _textureWidgets.size(); ++i )
 		{
@@ -90,76 +88,59 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			pathLayout->addWidget( widgets.buttonClear );
 			layout->addWidget( widgets.pathWidget );
 
-			connect(
-				buttonBrowse,
-				&QPushButton::clicked,
-				[ this, textureType, label ]
-				{
-					const auto &  config  = App::REG().get<VTX::Renderer::GraphicsConfig>( _currentPreset );
-					const auto &  texture = _texture( config.shading.material, textureType );
-					const QString initialPath
-						= texture ? QString::fromStdString( FilePath( texture->path ).parent_path().string() )
-								  : QString {};
-					const QString selectedPath = QFileDialog::getOpenFileName(
-						this,
-						"Select " + label.toLower(),
-						initialPath,
-						"Image maps (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.tga *.TGA)"
-					);
-					if ( not selectedPath.isEmpty() )
-					{
-						_changeTexture( textureType, FilePath( selectedPath.toStdString() ) );
-					}
-				}
-			);
-			connect(
-				widgets.buttonClear,
-				&QPushButton::clicked,
-				[ this, textureType ] { _changeTexture( textureType, FilePath {} ); }
-			);
+			connect( buttonBrowse,
+					 &QPushButton::clicked,
+					 [ this, textureType, label ]
+					 {
+						 const auto &  config  = App::REG().get<VTX::Renderer::GraphicsConfig>( _currentPreset );
+						 const auto &  texture = _texture( config.shading.material, textureType );
+						 const QString initialPath
+							 = texture ? QString::fromStdString( FilePath( texture->path ).parent_path().string() )
+									   : QString {};
+						 const QString selectedPath = QFileDialog::getOpenFileName(
+							 this,
+							 "Select " + label.toLower(),
+							 initialPath,
+							 "Image maps (*.png *.PNG *.jpg *.JPG *.jpeg *.JPEG *.bmp *.BMP *.tga *.TGA)" );
+						 if ( not selectedPath.isEmpty() )
+						 {
+							 _changeTexture( textureType, FilePath( selectedPath.toStdString() ) );
+						 }
+					 } );
+			connect( widgets.buttonClear,
+					 &QPushButton::clicked,
+					 [ this, textureType ] { _changeTexture( textureType, FilePath {} ); } );
 		}
 
-		connect(
-			_listMaterials,
-			&QListWidget::itemClicked,
-			[ this ]( QListWidgetItem * const p_item )
-			{
-				const Entity materialPreset = p_item->data( Qt::UserRole ).value<Entity>();
-				_changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL, Material>(
-					App::REG().get<Material>( materialPreset )
-				);
-			}
-		);
-		connect(
-			_sliderMetallic,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_METALLIC, float>( p_value ); }
-		);
-		connect(
-			_sliderRoughness,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_ROUGHNESS, float>( p_value ); }
-		);
-		connect(
-			_sliderEmissiveIntensity,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_EMISSIVE_INTENSITY, float>( p_value ); }
-		);
-		connect(
-			_sliderTextureScale,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_TEXTURE_SCALE, float>( p_value ); }
-		);
+		connect( _listMaterials,
+				 &QListWidget::itemClicked,
+				 [ this ]( QListWidgetItem * const p_item )
+				 {
+					 const Entity materialPreset = p_item->data( Qt::UserRole ).value<Entity>();
+					 _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL, Material>(
+						 App::REG().get<Material>( materialPreset ) );
+				 } );
+		connect( _sliderMetallic,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_METALLIC, float>( p_value ); } );
+		connect( _sliderRoughness,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_ROUGHNESS, float>( p_value ); } );
+		connect( _sliderEmissiveIntensity,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_EMISSIVE_INTENSITY, float>( p_value ); } );
+		connect( _sliderTextureScale,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_TEXTURE_SCALE, float>( p_value ); } );
 	}
 
 	const std::optional<VTX::Renderer::MaterialTexture> & MaterialSection::_texture(
 		const VTX::Renderer::Material &			 p_material,
-		const VTX::Renderer::Material::E_TEXTURE p_texture
-	)
+		const VTX::Renderer::Material::E_TEXTURE p_texture )
 	{
 		using TextureMember = std::optional<VTX::Renderer::MaterialTexture> VTX::Renderer::Material::*;
 		static constexpr auto												MEMBERS

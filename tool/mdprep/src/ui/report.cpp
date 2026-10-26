@@ -54,8 +54,7 @@ namespace VTX::Tool::Mdprep::ui
 				content = VTX::UI::QT::Util::LabelWithHelper(
 					getReportLabel( report ),
 					report.message.c_str(),
-					VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-				);
+					VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 
 				content.label->setWordWrap( true );
 			}
@@ -176,20 +175,20 @@ namespace VTX::Tool::Mdprep::ui
 
 	} // namespace
 
-	struct ReportManager::_Impl
+	struct ReportManager::Impl
 	{
 		InputChecker					 _inputChecker;
 		Util::EventHub::ScopedConnection _visibilityChanged {
-			App::REG().on_update<App::System::Visibility>().connect<&ReportManager::_Impl::visibilityChanged>( this )
+			App::REG().on_update<App::System::Visibility>().connect<&ReportManager::Impl::visibilityChanged>( this )
 		};
 		Util::EventHub::ScopedConnection _visibilityNew {
-			App::REG().on_construct<App::System::Visibility>().connect<&ReportManager::_Impl::visibilityChanged>( this )
+			App::REG().on_construct<App::System::Visibility>().connect<&ReportManager::Impl::visibilityChanged>( this )
 		};
 		Util::EventHub::ScopedConnection _visibilityDel {
-			App::REG().on_destroy<App::System::Visibility>().connect<&ReportManager::_Impl::visibilityChanged>( this )
+			App::REG().on_destroy<App::System::Visibility>().connect<&ReportManager::Impl::visibilityChanged>( this )
 		};
 		Util::EventHub::ScopedConnection _reportReception {
-			App::HUB().connect<Gateway::CheckReport, &ReportManager::_Impl::_receiveReport>( this )
+			App::HUB().connect<Gateway::CheckReport, &ReportManager::Impl::_receiveReport>( this )
 		};
 		FramedReportManager _manager;
 		Data				_reportData;
@@ -230,7 +229,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	};
 
-	ReportManager::ReportManager( InputChecker p_inputChecker ) : _impl( new _Impl( std::move( p_inputChecker ) ) ) {}
+	ReportManager::ReportManager( InputChecker p_inputChecker ) : _impl( new Impl( std::move( p_inputChecker ) ) ) {}
 
 	bool ReportManager::hasFirstCheckBeenDone() const noexcept { return _impl->hasFirstCheckBeenDone(); }
 

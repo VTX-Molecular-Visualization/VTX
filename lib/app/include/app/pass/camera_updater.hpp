@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PASS_CAMERA_UPDATER__
-#define __VTX_APP_PASS_CAMERA_UPDATER__
+#ifndef VTX_APP_PASS_CAMERA_UPDATER_HPP
+#define VTX_APP_PASS_CAMERA_UPDATER_HPP
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"

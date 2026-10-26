@@ -86,108 +86,85 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderSesProbeRadius->setSuffix( QStringLiteral( u"\u00C5" ) );
 
 		// Connect widget callbacks.
-		connect(
-			_groupboxSphere,
-			&HideableGroupBox::toggled,
-			[ this ]( const bool p_checked ) { _changeValue<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>( p_checked ); }
-		);
+		connect( _groupboxSphere,
+				 &HideableGroupBox::toggled,
+				 [ this ]( const bool p_checked )
+				 { _changeValue<E_REPRESENTATION_VALUES::HAS_SPHERE, bool>( p_checked ); } );
 
 		connect(
 			_comboBoxSphereRadiusType,
 			QOverload<int>::of( &QComboBox::currentIndexChanged ),
 			[ this ]( const int p_index )
-			{ _changeValue<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, bool>( static_cast<bool>( p_index ) ); }
-		);
+			{ _changeValue<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, bool>( static_cast<bool>( p_index ) ); } );
 
-		connect(
-			_sliderSphereRadiusAdd,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD, float>( p_value ); }
-		);
+		connect( _sliderSphereRadiusAdd,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_REPRESENTATION_VALUES::RADIUS_SPHERE_ADD, float>( p_value ); } );
 
-		connect(
-			_sliderSphereRadiusFixed,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED, float>( p_value ); }
-		);
+		connect( _sliderSphereRadiusFixed,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_REPRESENTATION_VALUES::RADIUS_SPHERE_FIXED, float>( p_value ); } );
 
-		connect(
-			_groupboxCylinder,
-			&HideableGroupBox::toggled,
-			[ this ]( const bool p_checked ) { _changeValue<E_REPRESENTATION_VALUES::HAS_CYLINDER, bool>( p_checked ); }
-		);
+		connect( _groupboxCylinder,
+				 &HideableGroupBox::toggled,
+				 [ this ]( const bool p_checked )
+				 { _changeValue<E_REPRESENTATION_VALUES::HAS_CYLINDER, bool>( p_checked ); } );
 
-		connect(
-			_sliderCylinderRadius,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float>( p_value ); }
-		);
+		connect( _sliderCylinderRadius,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float>( p_value ); } );
 
-		connect(
-			_checkBoxCylinderColorBlending,
-			&QCheckBox::toggled,
-			[ this ]( const bool p_checked )
-			{ _changeValue<E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING, bool>( p_checked ); }
-		);
+		connect( _checkBoxCylinderColorBlending,
+				 &QCheckBox::toggled,
+				 [ this ]( const bool p_checked )
+				 { _changeValue<E_REPRESENTATION_VALUES::CYLINDER_COLOR_BLENDING, bool>( p_checked ); } );
 
-		connect(
-			_groupboxRibbon,
-			&HideableGroupBox::toggled,
-			[ this ]( const bool p_checked ) { _changeValue<E_REPRESENTATION_VALUES::HAS_RIBBON, bool>( p_checked ); }
-		);
+		connect( _groupboxRibbon,
+				 &HideableGroupBox::toggled,
+				 [ this ]( const bool p_checked )
+				 { _changeValue<E_REPRESENTATION_VALUES::HAS_RIBBON, bool>( p_checked ); } );
 
-		connect(
-			_checkBoxRibbonColorBlending,
-			&QCheckBox::toggled,
-			[ this ]( const bool p_checked )
-			{ _changeValue<E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING, bool>( p_checked ); }
-		);
+		connect( _checkBoxRibbonColorBlending,
+				 &QCheckBox::toggled,
+				 [ this ]( const bool p_checked )
+				 { _changeValue<E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING, bool>( p_checked ); } );
 
-		connect(
-			_groupboxSes,
-			&HideableGroupBox::toggled,
-			[ this ]( const bool p_checked ) { _changeValue<E_REPRESENTATION_VALUES::HAS_SES, bool>( p_checked ); }
-		);
+		connect( _groupboxSes,
+				 &HideableGroupBox::toggled,
+				 [ this ]( const bool p_checked )
+				 { _changeValue<E_REPRESENTATION_VALUES::HAS_SES, bool>( p_checked ); } );
 
-		connect(
-			_comboBoxSesComputeMode,
-			QOverload<int>::of( &QComboBox::currentIndexChanged ),
-			[ this ]( const int p_index ) { _setSesMixedMode( p_index == 1 ); }
-		);
+		connect( _comboBoxSesComputeMode,
+				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
+				 [ this ]( const int p_index ) { _setSesMixedMode( p_index == 1 ); } );
 
-		connect(
-			_checkBoxSesPolymer,
-			&QCheckBox::toggled,
-			[ this ]( const bool p_checked ) { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::POLYMER, p_checked ); }
-		);
+		connect( _checkBoxSesPolymer,
+				 &QCheckBox::toggled,
+				 [ this ]( const bool p_checked )
+				 { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::POLYMER, p_checked ); } );
 
-		connect(
-			_checkBoxSesCarbohydrate,
-			&QCheckBox::toggled,
-			[ this ]( const bool p_checked ) { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::CARBOHYDRATE, p_checked ); }
-		);
+		connect( _checkBoxSesCarbohydrate,
+				 &QCheckBox::toggled,
+				 [ this ]( const bool p_checked )
+				 { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::CARBOHYDRATE, p_checked ); } );
 
-		connect(
-			_checkBoxSesLigand,
-			&QCheckBox::toggled,
-			[ this ]( const bool p_checked ) { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::LIGAND, p_checked ); }
-		);
+		connect( _checkBoxSesLigand,
+				 &QCheckBox::toggled,
+				 [ this ]( const bool p_checked )
+				 { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::LIGAND, p_checked ); } );
 
-		connect(
-			_checkBoxSesOthers,
-			&QCheckBox::toggled,
-			[ this ]( const bool p_checked ) { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::OTHERS, p_checked ); }
-		);
+		connect( _checkBoxSesOthers,
+				 &QCheckBox::toggled,
+				 [ this ]( const bool p_checked )
+				 { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::OTHERS, p_checked ); } );
 
-		connect(
-			_sliderSesProbeRadius,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>( p_value ); }
-		);
+		connect( _sliderSesProbeRadius,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float>( p_value ); } );
 
 		// Enable SES if available.
 		_refreshCUDAState();
@@ -240,20 +217,15 @@ namespace VTX::UI::QT::Widget::Library
 		_checkBoxRibbonColorBlending->setChecked( preset.ribbonColorBlending );
 		_groupboxSes->setChecked( preset.hasSes );
 		_comboBoxSesComputeMode->setCurrentIndex(
-			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::MIXED ) ? 1 : 0
-		);
+			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::MIXED ) ? 1 : 0 );
 		_checkBoxSesPolymer->setChecked(
-			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::POLYMER )
-		);
+			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::POLYMER ) );
 		_checkBoxSesCarbohydrate->setChecked(
-			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::CARBOHYDRATE )
-		);
+			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::CARBOHYDRATE ) );
 		_checkBoxSesLigand->setChecked(
-			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::LIGAND )
-		);
+			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::LIGAND ) );
 		_checkBoxSesOthers->setChecked(
-			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::OTHERS )
-		);
+			Util::Enum::hasAnyBit( preset.sesComputeMode, Renderer::E_SES_COMPUTE_MODE::OTHERS ) );
 		_sliderSesProbeRadius->setValue( preset.sesProbeRadius );
 
 		_applyLogic( preset );

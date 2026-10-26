@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_HIDEABLE_GROUP_BOX__
-#define __VTX_UI_QT_WIDGET_HIDEABLE_GROUP_BOX__
+#ifndef VTX_UI_QT_WIDGET_HIDEABLE_GOUPE_BOX_HPP
+#define VTX_UI_QT_WIDGET_HIDEABLE_GOUPE_BOX_HPP
 
 #include "ui/qt/helper.hpp"
 #include <QGroupBox>
@@ -39,17 +39,15 @@ namespace VTX::UI::QT::Widget
 			mainLayout->addWidget( _toggleButton );
 			mainLayout->addWidget( _groupbox );
 
-			connect(
-				_toggleButton,
-				&QToolButton::toggled,
-				this,
-				[ this ]( const bool p_visible )
-				{
-					_groupbox->setVisible( p_visible );
-					_toggleButton->setArrowType( p_visible ? Qt::DownArrow : Qt::RightArrow );
-					emit toggled( p_visible );
-				}
-			);
+			connect( _toggleButton,
+					 &QToolButton::toggled,
+					 this,
+					 [ this ]( const bool p_visible )
+					 {
+						 _groupbox->setVisible( p_visible );
+						 _toggleButton->setArrowType( p_visible ? Qt::DownArrow : Qt::RightArrow );
+						 emit toggled( p_visible );
+					 } );
 		}
 
 		void setChecked( const bool p_checked ) { _toggleButton->setChecked( p_checked ); }

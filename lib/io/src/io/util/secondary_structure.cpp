@@ -148,10 +148,8 @@ namespace VTX::IO::Util::SecondaryStructure
 				}
 
 				// Strand
-				if ( ( Math::distance(
-						   Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
-						   Vec2f( -Math::radians( 110.f ), Math::radians( 130.f ) )
-					   )
+				if ( ( Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
+									   Vec2f( -Math::radians( 110.f ), Math::radians( 130.f ) ) )
 					   < ( PIf / 6.f ) )
 					 && ( residueIdx < residueCount - 1 ) )
 				{

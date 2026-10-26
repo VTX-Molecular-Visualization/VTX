@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_FXAA__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_FXAA__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_FXAA_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_FXAA_HPP
 
 #include "renderer/descriptors.hpp"
 #include "renderer/graph_builder.hpp"

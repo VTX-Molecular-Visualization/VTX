@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_MATH_GRID__
-#define __VTX_UTIL_MATH_GRID__
+#ifndef VTX_UTIL_MATH_GRID_HPP
+#define VTX_UTIL_MATH_GRID_HPP
 
 #include "util/types.hpp"
 #include <algorithm>
@@ -23,11 +23,10 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Constructor.
 		 */
-		constexpr DenseGrid(
-			const Vec3f & p_worldOrigin = Vec3f( 0.f ),
-			const Vec3f & p_cellSize	= Vec3f( 10.f ),
-			const Vec3u & p_size		= Vec3u( 0u )
-		) : _worldOrigin( p_worldOrigin ), _cellSize( p_cellSize ), _size( p_size )
+		constexpr DenseGrid( const Vec3f & p_worldOrigin = Vec3f( 0.f ),
+							 const Vec3f & p_cellSize	 = Vec3f( 10.f ),
+							 const Vec3u & p_size		 = Vec3u( 0u ) ) :
+			_worldOrigin( p_worldOrigin ), _cellSize( p_cellSize ), _size( p_size )
 		{
 		}
 

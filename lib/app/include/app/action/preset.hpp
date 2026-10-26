@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_PRESET__
-#define __VTX_APP_ACTION_PRESET__
+#ifndef VTX_APP_ACTION_PRESET_HPP
+#define VTX_APP_ACTION_PRESET_HPP
 
 #include "app/action/action_manager.hpp"
 #include "app/action/representation.hpp"
@@ -34,10 +34,8 @@ namespace VTX::App::Action::Preset
 	struct Add
 	{
 	  public:
-		void execute(
-			const std::optional<std::string_view> p_name = std::nullopt,
-			const std::optional<T> &			  p_data = std::nullopt
-		)
+		void execute( const std::optional<std::string_view> p_name = std::nullopt,
+					  const std::optional<T> &				p_data = std::nullopt )
 		{
 			auto &		reg	 = REG();
 			std::string name = std::string { p_name.has_value() ? p_name.value() : DEFAULT_PRESET_NAME };
@@ -217,15 +215,12 @@ namespace VTX::App::Action::Preset
 		void execute()
 		{
 			ACTION().execute<Add<Renderer::Representation>>( "Sticks", Renderer::Representations::STICKS );
-			ACTION().execute<Add<Renderer::Representation>>(
-				"Sticks and Ribbons", Renderer::Representations::STICKS_AND_RIBBONS
-			);
-			ACTION().execute<Add<Renderer::Representation>>(
-				"Balls and sticks", Renderer::Representations::BALLS_AND_STICKS
-			);
-			ACTION().execute<Add<Renderer::Representation>>(
-				"Van der Waals", Renderer::Representations::VAN_DER_WAALS
-			);
+			ACTION().execute<Add<Renderer::Representation>>( "Sticks and Ribbons",
+															 Renderer::Representations::STICKS_AND_RIBBONS );
+			ACTION().execute<Add<Renderer::Representation>>( "Balls and sticks",
+															 Renderer::Representations::BALLS_AND_STICKS );
+			ACTION().execute<Add<Renderer::Representation>>( "Van der Waals",
+															 Renderer::Representations::VAN_DER_WAALS );
 			ACTION().execute<Add<Renderer::Representation>>( "Ribbons", Renderer::Representations::RIBBONS );
 			ACTION().execute<Add<Renderer::Representation>>( "SES", Renderer::Representations::SES );
 		}
@@ -237,15 +232,12 @@ namespace VTX::App::Action::Preset
 		void execute()
 		{
 			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Default", Renderer::GraphicsConfigs::DEFAULT() );
-			ACTION().execute<Add<Renderer::GraphicsConfig>>(
-				"Presentation", Renderer::GraphicsConfigs::PRESENTATION()
-			);
-			ACTION().execute<Add<Renderer::GraphicsConfig>>(
-				"Illustration", Renderer::GraphicsConfigs::ILLUSTRATION()
-			);
-			ACTION().execute<Add<Renderer::GraphicsConfig>>(
-				"PBR Metallic", Renderer::GraphicsConfigs::PBR_METALLIC()
-			);
+			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Presentation",
+															 Renderer::GraphicsConfigs::PRESENTATION() );
+			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Illustration",
+															 Renderer::GraphicsConfigs::ILLUSTRATION() );
+			ACTION().execute<Add<Renderer::GraphicsConfig>>( "PBR Metallic",
+															 Renderer::GraphicsConfigs::PBR_METALLIC() );
 		}
 	};
 

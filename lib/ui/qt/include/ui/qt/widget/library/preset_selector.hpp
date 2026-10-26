@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_PRESET_SELECTOR__
-#define __VTX_UI_QT_WIDGET_PRESET_SELECTOR__
+#ifndef VTX_UI_QT_WIDGET_LIBRARY_PRESET_SELECTOR_HPP
+#define VTX_UI_QT_WIDGET_LIBRARY_PRESET_SELECTOR_HPP
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
@@ -89,63 +89,52 @@ namespace VTX::UI::QT::Widget::Library
 
 			layout->addWidget( bApply );
 
-			connect(
-				_comboBox,
-				&QComboBox::currentIndexChanged,
-				this,
-				[ this ]( const int )
-				{
-					_lineRename->setText( _comboBox->currentText() );
-					emit presetChanged( getCurrentPreset() );
-				}
-			);
+			connect( _comboBox,
+					 &QComboBox::currentIndexChanged,
+					 this,
+					 [ this ]( const int )
+					 {
+						 _lineRename->setText( _comboBox->currentText() );
+						 emit presetChanged( getCurrentPreset() );
+					 } );
 
-			connect(
-				bNew,
-				&QToolButton::clicked,
-				this,
-				[]() { App::ACTION().execute<App::Action::Preset::Add<P>>( std::nullopt, std::nullopt ); }
-			);
+			connect( bNew,
+					 &QToolButton::clicked,
+					 this,
+					 []() { App::ACTION().execute<App::Action::Preset::Add<P>>( std::nullopt, std::nullopt ); } );
 
-			connect(
-				bDuplicate,
-				&QToolButton::clicked,
-				this,
-				[ this ]()
-				{
-					const Entity preset = getCurrentPreset();
-					if ( preset != InvalidEntity )
-					{
-						App::ACTION().execute<App::Action::Preset::Duplicate<P>>( preset, std::nullopt );
-					}
-				}
-			);
+			connect( bDuplicate,
+					 &QToolButton::clicked,
+					 this,
+					 [ this ]()
+					 {
+						 const Entity preset = getCurrentPreset();
+						 if ( preset != InvalidEntity )
+						 {
+							 App::ACTION().execute<App::Action::Preset::Duplicate<P>>( preset, std::nullopt );
+						 }
+					 } );
 
-			connect(
-				bApply,
-				&QToolButton::clicked,
-				this,
-				[ this ]()
-				{
-					const Entity preset = getCurrentPreset();
-					if ( preset != InvalidEntity )
-					{
-						App::ACTION().execute<App::Action::Preset::Apply<P>>( preset );
-					}
-				}
-			);
+			connect( bApply,
+					 &QToolButton::clicked,
+					 this,
+					 [ this ]()
+					 {
+						 const Entity preset = getCurrentPreset();
+						 if ( preset != InvalidEntity )
+						 {
+							 App::ACTION().execute<App::Action::Preset::Apply<P>>( preset );
+						 }
+					 } );
 
-			connect(
-				_lineRename,
-				&QLineEdit::editingFinished,
-				this,
-				[ this ]()
-				{
-					App::ACTION().execute<App::Action::Preset::Rename<P>>(
-						getCurrentPreset(), _lineRename->text().toStdString()
-					);
-				}
-			);
+			connect( _lineRename,
+					 &QLineEdit::editingFinished,
+					 this,
+					 [ this ]()
+					 {
+						 App::ACTION().execute<App::Action::Preset::Rename<P>>( getCurrentPreset(),
+																				_lineRename->text().toStdString() );
+					 } );
 
 			// Callbacks.
 			auto & reg = App::REG();
@@ -194,12 +183,10 @@ namespace VTX::UI::QT::Widget::Library
 		VTX::Util::EventHub::ScopedConnection _onNameUpdateConnection;
 		VTX::Util::EventHub::ScopedConnection _onPresetUpdateConnection;
 
-		QToolButton * _addButton(
-			QToolBar &			   p_toolbar,
-			const QString &		   p_text,
-			const Style::Codepoint p_icon,
-			const QString &		   p_tip
-		)
+		QToolButton * _addButton( QToolBar &			 p_toolbar,
+								  const QString &		 p_text,
+								  const Style::Codepoint p_icon,
+								  const QString &		 p_tip )
 		{
 			auto * const button = Helper::makeQObject<QToolButton>( &p_toolbar );
 			button->setText( p_text );
@@ -234,12 +221,10 @@ namespace VTX::UI::QT::Widget::Library
 				presets.emplace_back( QString::fromStdString( presetName ), entity );
 			}
 
-			std::sort(
-				presets.begin(),
-				presets.end(),
-				[]( const auto & p_left, const auto & p_right )
-				{ return QString::localeAwareCompare( p_left.first, p_right.first ) < 0; }
-			);
+			std::sort( presets.begin(),
+					   presets.end(),
+					   []( const auto & p_left, const auto & p_right )
+					   { return QString::localeAwareCompare( p_left.first, p_right.first ) < 0; } );
 
 			for ( int i = 0; std::cmp_less( i, presets.size() ); ++i )
 			{

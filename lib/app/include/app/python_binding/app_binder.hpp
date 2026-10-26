@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHONBINDING_APP_BINDER__
-#define __VTX_APP_PYTHONBINDING_APP_BINDER__
+#ifndef VTX_APP_PYTHON_BINDING_APP_BINDER_HPP
+#define VTX_APP_PYTHON_BINDING_APP_BINDER_HPP
 
 #include <python_binding/binder.hpp>
 
@@ -12,4 +12,4 @@ namespace VTX::App::PythonBinding
 	};
 } // namespace VTX::App::PythonBinding
 
-#endif // !__VTX_APP_PYTHONBINDING_APP_BINDER__
+#endif // !VTX_APP_PYTHON_BINDING_APP_BINDER_HPP

@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_MD_ENGINE_FIELD_PLACER__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_MD_ENGINE_FIELD_PLACER__
+#ifndef VTX_TOOL_MDPREP_UI_MD_ENGINE_FIELD_PLACER_HPP
+#define VTX_TOOL_MDPREP_UI_MD_ENGINE_FIELD_PLACER_HPP
 
 #include <string>
 //
@@ -52,23 +52,19 @@ namespace VTX::Tool::Mdprep::ui
 			static_assert(
 				requires( T t, FormLayouts f ) {
 					{ t.assign( f ) };
-				}, "You must implement 'void assign( FormLayouts p_layouts ) noexcept' class method."
-			);
+				}, "You must implement 'void assign( FormLayouts p_layouts ) noexcept' class method." );
 			static_assert(
 				requires( T t ) {
 					{ t.activate() };
-				}, "You must implement 'void activate() noexcept' class method."
-			);
+				}, "You must implement 'void activate() noexcept' class method." );
 			static_assert(
 				requires( T t ) {
 					{ t.deactivate() };
-				}, "You must implement 'void deactivate() noexcept' class method."
-			);
+				}, "You must implement 'void deactivate() noexcept' class method." );
 			static_assert(
 				not std::is_trivially_destructible_v<T>,
 				"You must implement a destructor class method, as the responsability of the MdEngineFieldPlacer is "
-				"also to cleanup his widget(s) on destruction."
-			);
+				"also to cleanup his widget(s) on destruction." );
 		}
 
 	  private:

@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_FILESYSTEM__
-#define __VTX_UTIL_FILESYSTEM__
+#ifndef VTX_UTIL_FILESYSTEM_HPP
+#define VTX_UTIL_FILESYSTEM_HPP
 
 #include "types.hpp"
 #include <filesystem>

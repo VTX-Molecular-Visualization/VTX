@@ -47,11 +47,9 @@ namespace
 		VTX::Tool::Mdprep::backends::Gromacs::GromacsJobData args;
 	};
 
-	bool checkIfExists(
-		const FilePath & p_directory,
-		const char *	 p_startingPattern,
-		const char *	 p_endingPattern
-	) noexcept
+	bool checkIfExists( const FilePath & p_directory,
+						const char *	 p_startingPattern,
+						const char *	 p_endingPattern ) noexcept
 	{
 		for ( auto file : fs::directory_iterator( p_directory ) )
 		{
@@ -105,8 +103,7 @@ namespace
 			"tip3p",
 		} };
 		VTX::Tool::Mdprep::backends::Gromacs::declareFfDirectory(
-			VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath()
-		);
+			VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
 
 		return out;
 	}
@@ -115,8 +112,7 @@ namespace
 	{
 		FilePath full_gmx_exe_path = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxBinaryPath();
 		VTX::Tool::Mdprep::backends::Gromacs::submitGromacsJob(
-			full_gmx_exe_path, p_context.paths.outDir, p_context.args
-		);
+			full_gmx_exe_path, p_context.paths.outDir, p_context.args );
 		// for topol and posre, gromacs do not necessarily output a file with the exact name, but divide chains and ions
 		// into multiple files. So we need to check its pattern for us to be sure everything worked.
 		auto channels = ( p_context.args.channelsLocker.open() );

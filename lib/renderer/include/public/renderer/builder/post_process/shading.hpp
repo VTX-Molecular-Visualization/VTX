@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_SHADING__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_SHADING__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_SHADING_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_SHADING_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/builder/post_process/ssao.hpp"
@@ -174,8 +174,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.uniform( "LightColor", COLOR_LIGHT_DEFAULT.toLinear() )
 				.uniform( "FogColor", COLOR_FOG_DEFAULT.toLinear() )
 				.uniform(
-					"SpecularFactor", SPECULAR_FACTOR_DEFAULT, std::pair { SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX }
-				)
+					"SpecularFactor", SPECULAR_FACTOR_DEFAULT, std::pair { SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX } )
 				.uniform( "Shininess", SHININESS_DEFAULT, std::pair { SHININESS_MIN, SHININESS_MAX } )
 				.uniform( "ToonSteps", TOON_STEPS_DEFAULT, std::pair { TOON_STEPS_MIN, TOON_STEPS_MAX } )
 				.uniform( "FogNear", FOG_NEAR_DEFAULT, std::pair { FOG_NEAR_MIN, FOG_NEAR_MAX } )
@@ -185,53 +184,38 @@ namespace VTX::Renderer::Builder::PostProcess
 				.uniform( "EnvironmentEnabled", static_cast<uint32_t>( 0 ) )
 				.uniform( "SkyboxIntensity", 1.f )
 				.uniform( "IblIntensity", 1.f )
+				.uniform( "EnvironmentRotation",
+						  ENVIRONMENT_ROTATION_DEFAULT,
+						  std::pair { ENVIRONMENT_ROTATION_MIN, ENVIRONMENT_ROTATION_MAX } )
 				.uniform(
-					"EnvironmentRotation",
-					ENVIRONMENT_ROTATION_DEFAULT,
-					std::pair { ENVIRONMENT_ROTATION_MIN, ENVIRONMENT_ROTATION_MAX }
-				)
-				.uniform(
-					"LightIntensity", LIGHT_INTENSITY_DEFAULT, std::pair { LIGHT_INTENSITY_MIN, LIGHT_INTENSITY_MAX }
-				)
-				.uniform(
-					"AmbientIntensity",
-					AMBIENT_INTENSITY_DEFAULT,
-					std::pair { AMBIENT_INTENSITY_MIN, AMBIENT_INTENSITY_MAX }
-				)
+					"LightIntensity", LIGHT_INTENSITY_DEFAULT, std::pair { LIGHT_INTENSITY_MIN, LIGHT_INTENSITY_MAX } )
+				.uniform( "AmbientIntensity",
+						  AMBIENT_INTENSITY_DEFAULT,
+						  std::pair { AMBIENT_INTENSITY_MIN, AMBIENT_INTENSITY_MAX } )
 				.uniform( "MaterialTextureMask", static_cast<uint32_t>( 0 ) )
 				.uniform( "MaterialEmissive", Vec4f( 0.f, 0.f, 0.f, MATERIAL_EMISSIVE_INTENSITY_DEFAULT ) )
-				.uniform(
-					"MaterialMetallic",
-					MATERIAL_METALLIC_DEFAULT,
-					std::pair { MATERIAL_METALLIC_MIN, MATERIAL_METALLIC_MAX }
-				)
-				.uniform(
-					"MaterialRoughness",
-					MATERIAL_ROUGHNESS_DEFAULT,
-					std::pair { MATERIAL_ROUGHNESS_MIN, MATERIAL_ROUGHNESS_MAX }
-				)
-				.uniform(
-					"MaterialOpacity",
-					MATERIAL_OPACITY_DEFAULT,
-					std::pair { MATERIAL_OPACITY_MIN, MATERIAL_OPACITY_MAX }
-				)
-				.uniform(
-					"MaterialTextureScale",
-					MATERIAL_TEXTURE_SCALE_DEFAULT,
-					std::pair { MATERIAL_TEXTURE_SCALE_MIN, MATERIAL_TEXTURE_SCALE_MAX }
-				)
+				.uniform( "MaterialMetallic",
+						  MATERIAL_METALLIC_DEFAULT,
+						  std::pair { MATERIAL_METALLIC_MIN, MATERIAL_METALLIC_MAX } )
+				.uniform( "MaterialRoughness",
+						  MATERIAL_ROUGHNESS_DEFAULT,
+						  std::pair { MATERIAL_ROUGHNESS_MIN, MATERIAL_ROUGHNESS_MAX } )
+				.uniform( "MaterialOpacity",
+						  MATERIAL_OPACITY_DEFAULT,
+						  std::pair { MATERIAL_OPACITY_MIN, MATERIAL_OPACITY_MAX } )
+				.uniform( "MaterialTextureScale",
+						  MATERIAL_TEXTURE_SCALE_DEFAULT,
+						  std::pair { MATERIAL_TEXTURE_SCALE_MIN, MATERIAL_TEXTURE_SCALE_MAX } )
 				.endProgram()
 				.endPass();
 
 			return Desc::Key { OUTPUT };
 		}
 
-		static void upload(
-			Context::ContextWrapper &		  p_context,
-			const ShadingConfig &			  p_config,
-			const std::optional<FogConfig> &  p_fog,
-			const std::optional<SSAOConfig> & p_ssao
-		)
+		static void upload( Context::ContextWrapper &		  p_context,
+							const ShadingConfig &			  p_config,
+							const std::optional<FogConfig> &  p_fog,
+							const std::optional<SSAOConfig> & p_ssao )
 		{
 			BinaryBuffer140	  buffer;
 			const FogConfig & fog = p_fog.value_or( GraphicsConfigs::FOG_DEFAULT );
@@ -246,24 +230,20 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( fog.far );
 			buffer.write( p_fog ? fog.density : 0.f );
 			buffer.write( p_ssao ? p_ssao->scale : 1.f );
-			buffer.write(
-				static_cast<uint32_t>(
-					p_config.backgroundMode == E_BACKGROUND_MODE::ENVIRONMENT && p_config.environmentPath.has_value()
-				)
-			);
+			buffer.write( static_cast<uint32_t>( p_config.backgroundMode == E_BACKGROUND_MODE::ENVIRONMENT
+												 && p_config.environmentPath.has_value() ) );
 			buffer.write( p_config.skyboxIntensity );
 			buffer.write( p_config.iblIntensity );
 			buffer.write( p_config.environmentRotation );
 			buffer.write( p_config.lightIntensity );
 			buffer.write( p_config.ambientIntensity );
 			buffer.write( p_config.material.textureMask() );
-			const Util::Color::Rgba emissiveColor(
-				p_config.material.emissiveColor.x, p_config.material.emissiveColor.y, p_config.material.emissiveColor.z
-			);
+			const Util::Color::Rgba emissiveColor( p_config.material.emissiveColor.x,
+												   p_config.material.emissiveColor.y,
+												   p_config.material.emissiveColor.z );
 			const Util::Color::Rgba emissiveLinear = emissiveColor.toLinear();
-			buffer.write(
-				Vec4f( emissiveLinear.r(), emissiveLinear.g(), emissiveLinear.b(), p_config.material.emissiveIntensity )
-			);
+			buffer.write( Vec4f(
+				emissiveLinear.r(), emissiveLinear.g(), emissiveLinear.b(), p_config.material.emissiveIntensity ) );
 			buffer.write( p_config.material.metallic );
 			buffer.write( p_config.material.roughness );
 			buffer.write( p_config.material.opacity );

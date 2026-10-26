@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_REPORT__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_REPORT__
+#ifndef VTX_TOOL_MDPREP_UI_REPORT_HPP
+#define VTX_TOOL_MDPREP_UI_REPORT_HPP
 
 #include <QPointer>
 #include <memory>
@@ -63,9 +63,9 @@ namespace VTX::Tool::Mdprep::ui
 		void relocate( ReportManager & );
 
 	  private:
-		struct _Impl;
+		struct Impl;
 
-		std::shared_ptr<_Impl> _impl { nullptr };
+		std::shared_ptr<Impl> _impl { nullptr };
 
 		void _receiveReport( Gateway::CheckReport );
 	};

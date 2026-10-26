@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_MENU_TOOL__
-#define __VTX_UI_QT_MENU_TOOL__
+#ifndef VTX_UI_QT_MENU_TOOL_HPP
+#define VTX_UI_QT_MENU_TOOL_HPP
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/widget/base_widget.hpp"

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHON_BINDING_MODULE__
-#define __VTX_APP_PYTHON_BINDING_MODULE__
+#ifndef VTX_APP_PYTHON_BINDING_MODULE_HPP
+#define VTX_APP_PYTHON_BINDING_MODULE_HPP
 
 #include "app/action/action_manager.hpp"
 #include <python_binding/wrapper/module.hpp>
@@ -20,8 +20,7 @@ namespace VTX::App::PythonBinding
 		void bindAction( const std::string & p_name, const std::string & p_desc = "", Extras &&... p_extras )
 		{
 			_module.bindAction<App::Action::QueueAction<Action>, ActionArgs...>(
-				p_name, p_desc, std::forward<Extras>( p_extras )...
-			);
+				p_name, p_desc, std::forward<Extras>( p_extras )... );
 		}
 
 		template<typename Func>

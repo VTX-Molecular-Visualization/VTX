@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_INTERNAL_FILESYSTEM__
-#define __VTX_IO_INTERNAL_FILESYSTEM__
+#ifndef VTX_IO_INTERNAL_FILESYSTEM_HPP
+#define VTX_IO_INTERNAL_FILESYSTEM_HPP
 
 #include <cstdint>
 #include <string_view>
@@ -38,12 +38,10 @@ namespace VTX::IO::Internal::Filesystem
 		{
 			return FILE_TYPE_ENUM::CONFIGURATION;
 		}
-		else if (
-			extension == ".cif" || extension == ".cml" || extension == ".cssr" || extension == ".gro"
-			|| extension == ".mmcif" || extension == ".mmtf" || extension == ".mol2" || extension == ".molden"
-			|| extension == ".pdb" || extension == ".sdf" || extension == ".smi" || extension == ".mmtf"
-			|| extension == ".xyz"
-		)
+		else if ( extension == ".cif" || extension == ".cml" || extension == ".cssr" || extension == ".gro"
+				  || extension == ".mmcif" || extension == ".mmtf" || extension == ".mol2" || extension == ".molden"
+				  || extension == ".pdb" || extension == ".sdf" || extension == ".smi" || extension == ".mmtf"
+				  || extension == ".xyz" )
 		{
 			return FILE_TYPE_ENUM::MOLECULE;
 		}
@@ -51,10 +49,8 @@ namespace VTX::IO::Internal::Filesystem
 		{
 			return FILE_TYPE_ENUM::MESH;
 		}
-		else if (
-			extension == ".nc" || extension == ".dcd" || extension == ".lammpstrj" || extension == ".arc"
-			|| extension == ".trr" || extension == ".xtc" || extension == ".tng" || extension == ".trj"
-		)
+		else if ( extension == ".nc" || extension == ".dcd" || extension == ".lammpstrj" || extension == ".arc"
+				  || extension == ".trr" || extension == ".xtc" || extension == ".tng" || extension == ".trj" )
 		{
 			return FILE_TYPE_ENUM::TRAJECTORY;
 		}
@@ -68,10 +64,8 @@ namespace VTX::IO::Internal::Filesystem
 		}
 	}
 
-	inline void fillFilepathPerMode(
-		std::vector<FilePath> &				 p_filepaths,
-		std::vector<std::vector<FilePath>> & p_filepathPerMode
-	)
+	inline void fillFilepathPerMode( std::vector<FilePath> &			  p_filepaths,
+									 std::vector<std::vector<FilePath>> & p_filepathPerMode )
 	{
 		p_filepathPerMode.resize( static_cast<int>( FILE_TYPE_ENUM::COUNT ) );
 

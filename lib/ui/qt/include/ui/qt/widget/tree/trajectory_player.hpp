@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
-#define __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
+#ifndef VTX_UI_QT_WIDGET_TREE_TRAJECTORY_PLAYER_HPP
+#define VTX_UI_QT_WIDGET_TREE_TRAJECTORY_PLAYER_HPP
 
 #include "ui/qt/widget/tree/trajectory_settings.hpp"
 #include "ui/qt/widget/tree/trajectory_slider.hpp"

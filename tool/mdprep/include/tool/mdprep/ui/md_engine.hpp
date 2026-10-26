@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_MD_ENGINE__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_MD_ENGINE__
+#ifndef VTX_TOOL_MDPREP_UI_MD_ENGINE_HPP
+#define VTX_TOOL_MDPREP_UI_MD_ENGINE_HPP
 
 #include <memory>
 #include <util/concepts.hpp>
@@ -91,29 +91,25 @@ namespace VTX::Tool::Mdprep::ui
 					{ ui::get( t, i ) };
 				},
 				"You need to implement 'void get( const T &, Gateway::EngineSpecificCommonInformation & "
-				")' function."
-			);
+				")' function." );
 			static_assert(
 				requires( T t, MdEngineFieldPlacer & p_out ) {
 					{ t.get( p_out ) };
 				},
 				"You need to implement 'void get( MdEngineFieldPlacer & p_out ) noexcept' "
-				"class method."
-			);
+				"class method." );
 			static_assert(
 				requires( T t, const E_FIELD_SECTION & p_section, MdEngineSpecificFieldPlacer & p_out ) {
 					{ t.get( p_section, p_out ) };
 				},
 				"You need to implement 'void get( const E_FIELD_SECTION &, MdEngineSpecificFieldPlacer & ) noexcept' "
-				"class method."
-			);
+				"class method." );
 			static_assert(
 				requires( T t, Gateway::EngineJobManager & p_out ) {
 					{ t.get( p_out ) };
 				},
 				"You need to implement 'void get( Gateway::EngineJobManager & p_out ) noexcept' "
-				"class method. Resulting object should need access to engine specific data implicitly."
-			);
+				"class method. Resulting object should need access to engine specific data implicitly." );
 		}
 	};
 

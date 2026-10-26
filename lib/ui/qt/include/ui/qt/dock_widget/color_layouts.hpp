@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_COLOR_LAYOUTS__
-#define __VTX_UI_QT_DOCK_WIDGET_COLOR_LAYOUTS__
+#ifndef VTX_UI_QT_DOCK_WIDGET_COLOR_LAYOUTS_HPP
+#define VTX_UI_QT_DOCK_WIDGET_COLOR_LAYOUTS_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 

@@ -47,12 +47,10 @@ namespace VTX::UI::QT::Menu
 		_actionGroup->addAction( action );
 		_themeActions[ static_cast<std::size_t>( toUnderlying( p_theme ) ) ] = action;
 
-		connect(
-			action,
-			&QAction::triggered,
-			this,
-			[ p_theme ]() { UI_ACTIONS().trigger( Action::Theme::SET, themeParams( p_theme ) ); }
-		);
+		connect( action,
+				 &QAction::triggered,
+				 this,
+				 [ p_theme ]() { UI_ACTIONS().trigger( Action::Theme::SET, themeParams( p_theme ) ); } );
 	}
 
 	void Theme::_syncTheme()

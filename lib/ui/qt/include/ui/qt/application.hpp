@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_APPLICATION__
-#define __VTX_UI_QT_APPLICATION__
+#ifndef VTX_UI_QT_APPLICATION_HPP
+#define VTX_UI_QT_APPLICATION_HPP
 
 #include "QSplashScreen"
 #include "settings.hpp"

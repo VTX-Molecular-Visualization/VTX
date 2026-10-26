@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS_SOLVATE__
-#define __VTX_TOOL_TOOLS_MDPREP_GROMACS_SOLVATE__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_SOLVATE_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_SOLVATE_HPP
 
 #include <filesystem>
 #include <util/filesystem.hpp>
@@ -20,12 +20,10 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	};
 
 	// Setup job folder and place input files as the job need them
-	void prepareJob(
-		const CumulativeOuputFiles &,
-		const FilePath &		 p_root,
-		const std::string_view & p_folderName,
-		SolvateInstructions &
-	);
+	void prepareJob( const CumulativeOuputFiles &,
+					 const FilePath &		  p_root,
+					 const std::string_view & p_folderName,
+					 SolvateInstructions & );
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.

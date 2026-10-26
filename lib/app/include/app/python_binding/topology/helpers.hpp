@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHON_BINDING_TOPOLOGY_HELPERS__
-#define __VTX_APP_PYTHON_BINDING_TOPOLOGY_HELPERS__
+#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_HELPERS_HPP
+#define VTX_APP_PYTHON_BINDING_TOPOLOGY_HELPERS_HPP
 
 #include "app/python_binding/topology/types.hpp"
 #include <app/system/selection.hpp>
@@ -29,13 +29,11 @@ namespace VTX::App::PythonBinding::Topology
 	/**
 	 * @brief Get the selection state.
 	 */
-	App::System::E_SELECTION_STATE getSelectionState(
-		Entity				 p_entity,
-		SystemItem			 p_item,
-		std::optional<Index> p_index
-	);
-	bool isSelected( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
-	bool isFullySelected( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
+	App::System::E_SELECTION_STATE getSelectionState( Entity			   p_entity,
+													  SystemItem		   p_item,
+													  std::optional<Index> p_index );
+	bool						   isSelected( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
+	bool						   isFullySelected( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
 
 } // namespace VTX::App::PythonBinding::Topology
 

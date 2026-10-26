@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHONBINDING_INTERPRETOR__
-#define __VTX_APP_PYTHONBINDING_INTERPRETOR__
+#ifndef VTX_APP_PYTHON_BINDING_INTERPRETOR_HPP
+#define VTX_APP_PYTHON_BINDING_INTERPRETOR_HPP
 
 #include <functional>
 #include <future>
@@ -79,14 +79,14 @@ namespace VTX::App::PythonBinding
 		void subscribe( InterpretorInstructionsOneShot );
 
 	  private:
-		class _Impl;
+		class Impl;
 
 		struct Del
 		{
-			void operator()( _Impl * ) noexcept;
+			void operator()( Impl * ) noexcept;
 		};
 
-		std::unique_ptr<_Impl, Del> _impl = nullptr;
+		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
 } // namespace VTX::App::PythonBinding
 

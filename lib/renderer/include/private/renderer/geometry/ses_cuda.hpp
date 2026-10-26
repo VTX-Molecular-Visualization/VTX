@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GEOMETRY_SES_CUDA__
-#define __VTX_RENDERER_GEOMETRY_SES_CUDA__
+#ifndef VTX_RENDERER_GEOMETRY_SES_CUDA_HPP
+#define VTX_RENDERER_GEOMETRY_SES_CUDA_HPP
 
 #include <array>
 #include <core/chemdb/atom.hpp>
@@ -70,11 +70,11 @@ namespace VTX::Renderer::Geometry::SESDetail
 		CudaBufferView probeAtomIndices;
 		CudaBufferView probeNeighbors;
 
-		uint32_t atomIndexOffset		   = 0;
+		uint32_t atomIndexOffset		 = 0;
 		uint32_t rendererAtomIndexOffset = 0;
-		uint32_t probeIndexOffset	   = 0;
-		uint32_t sectorIndexOffset	   = 0;
-		uint32_t maxProbeNeighborNb	   = 0;
+		uint32_t probeIndexOffset		 = 0;
+		uint32_t sectorIndexOffset		 = 0;
+		uint32_t maxProbeNeighborNb		 = 0;
 	};
 
 	struct SesdfInputBuffers
@@ -84,39 +84,33 @@ namespace VTX::Renderer::Geometry::SESDetail
 		CudaBufferView outputAtoms;
 		CudaBufferView outputAtomIds;
 
-		uint32_t atomOffset		  = 0;
+		uint32_t atomOffset			= 0;
 		uint32_t rendererAtomOffset = 0;
-		uint32_t atomNb			  = 0;
+		uint32_t atomNb				= 0;
 	};
 
 	struct SesdfVisibilityData
 	{
 		std::vector<uint32_t> atomIds;
-		std::vector<UVec2>	circleAtoms;
-		std::vector<UVec2>	segmentAtoms;
-		std::vector<IVec4>	concaveAtoms;
+		std::vector<UVec2>	  circleAtoms;
+		std::vector<UVec2>	  segmentAtoms;
+		std::vector<IVec4>	  concaveAtoms;
 	};
 
-	CudaBuildResult buildCudaConstruction(
-		std::span<const Vec3f>						p_positions,
-		std::span<const Core::ChemDB::Atom::SYMBOL> p_symbols,
-		float										p_probeRadius
-	);
+	CudaBuildResult buildCudaConstruction( std::span<const Vec3f>					   p_positions,
+										   std::span<const Core::ChemDB::Atom::SYMBOL> p_symbols,
+										   float									   p_probeRadius );
 
-	CudaBuildResult buildCudaConstructionFromRendererBuffers(
-		const SesdfInputBuffers & p_inputs,
-		std::span<const Vec3f>	p_aabbPositions,
-		float					p_probeRadius
-	);
+	CudaBuildResult buildCudaConstructionFromRendererBuffers( const SesdfInputBuffers & p_inputs,
+															  std::span<const Vec3f>	p_aabbPositions,
+															  float						p_probeRadius );
 
-	CudaBuildResult buildCudaConstructionFromRendererBuffers(
-		const SesdfInputBuffers & p_inputs,
-		std::span<const Vec3f>	p_aabbPositions,
-		std::span<const Index>	p_atomIndices,
-		float					p_probeRadius
-	);
+	CudaBuildResult buildCudaConstructionFromRendererBuffers( const SesdfInputBuffers & p_inputs,
+															  std::span<const Vec3f>	p_aabbPositions,
+															  std::span<const Index>	p_atomIndices,
+															  float						p_probeRadius );
 
-	void writeCudaConstruction( CudaConstruction &, const SesdfOutputBuffers & );
+	void				  writeCudaConstruction( CudaConstruction &, const SesdfOutputBuffers & );
 	std::vector<uint32_t> readAtomIds( const CudaBufferView &, uint32_t );
 	void				  readConstructionVisibilityData( CudaConstruction &, SesdfVisibilityData & );
 	void				  releaseCachedCudaMemory();

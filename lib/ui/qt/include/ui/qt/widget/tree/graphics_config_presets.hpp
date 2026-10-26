@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TREE_GRAPHICS_CONFIG_PRESETS__
-#define __VTX_UI_QT_WIDGET_TREE_GRAPHICS_CONFIG_PRESETS__
+#ifndef VTX_UI_QT_WIDGET_TREE_GRAPHICS_CONFIG_PRESETS_HPP
+#define VTX_UI_QT_WIDGET_TREE_GRAPHICS_CONFIG_PRESETS_HPP
 
 #include "ui/qt/widget/tree/base_tree_presets.hpp"
 #include <app/scene/graphics_config.hpp>
@@ -27,8 +27,7 @@ namespace VTX::UI::QT::Widget::Tree
 													  .connect<&GraphicsConfigPresets::_onSceneGraphicsConfig>( this );
 			_appliedPresetUpdatedConnection
 				= p_reg.on_update<App::Scene::GraphicsConfig>().connect<&GraphicsConfigPresets::_onSceneGraphicsConfig>(
-					this
-				);
+					this );
 			_restoreCurrentSceneGraphicsConfig( p_reg );
 		}
 

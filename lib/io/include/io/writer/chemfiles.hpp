@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_WRITER_CHEMFILES__
-#define __VTX_IO_WRITER_CHEMFILES__
+#ifndef VTX_IO_WRITER_CHEMFILES_HPP
+#define VTX_IO_WRITER_CHEMFILES_HPP
 
 #include <io/writer/shared.hpp>
 #include <string>
@@ -42,8 +42,8 @@ namespace VTX::IO::Writer
 		double z = 0.;
 	};
 
-	struct _Atom;
-	struct _AtomInfo;
+	struct AtomImpl;
+	struct AtomInfo;
 
 	/**
 	 * @brief Atoms are provided by the System.
@@ -52,22 +52,22 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Atom() = default;
-		Atom( _Atom & );
+		Atom( AtomImpl & );
 
 		/**
 		 * @brief You need to be the chosen one to wield this method to its full power.
 		 * @param
 		 */
-		void get( _AtomInfo & ) const noexcept;
+		void get( AtomInfo & ) const noexcept;
 
 		void setName( std::string ) noexcept;
 		void setSymbol( std::string ) noexcept;
 
 	  private:
-		_Atom * _data;
+		AtomImpl * _data;
 	};
 
-	struct _Residue;
+	struct ResidueImpl;
 
 	/**
 	 * @brief Allows to configure a residue to be written. Residues can be added atoms and properties.
@@ -76,7 +76,7 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Residue() = default;
-		Residue( _Residue & );
+		Residue( ResidueImpl & );
 		/**
 		 * @brief Inform the chain that the input atom is a part of it.
 		 */
@@ -90,10 +90,10 @@ namespace VTX::IO::Writer
 		void setSymbol( std::string ) noexcept;
 
 	  private:
-		_Residue * _data = nullptr;
+		ResidueImpl * _data = nullptr;
 	};
 
-	struct _Chain;
+	struct ChainImpl;
 
 	/**
 	 * @brief Allows to configure a chain to be written.
@@ -102,7 +102,7 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Chain() = default;
-		Chain( _Chain & );
+		Chain( ChainImpl & );
 
 		void setName( std::string ) noexcept;
 		void setId( std::string ) noexcept;
@@ -114,10 +114,10 @@ namespace VTX::IO::Writer
 		void add( Residue & );
 
 	  private:
-		_Chain * _data = nullptr;
+		ChainImpl * _data = nullptr;
 	};
 
-	struct _Frame;
+	struct FrameImpl;
 
 	/**
 	 * @brief Allow to configure one frame of the system. A frame is defined by a set of coordinates for all atoms. If a
@@ -127,7 +127,7 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Frame() = default;
-		Frame( _Frame & );
+		Frame( FrameImpl & );
 
 		/**
 		 * @brief Give the coordinate of the atom for this frame.
@@ -135,10 +135,10 @@ namespace VTX::IO::Writer
 		void set( const Atom &, AtomCoordinates );
 
 	  private:
-		_Frame * _data;
+		FrameImpl * _data;
 	};
 
-	struct _System;
+	struct SystemImpl;
 
 	/**
 	 * @brief Responsible for creating objects to configure the chemfiles system.
@@ -147,7 +147,7 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		System() = default;
-		System( _System & );
+		System( SystemImpl & );
 
 		/**
 		 * @brief Set or replace a property for the frame.
@@ -197,7 +197,7 @@ namespace VTX::IO::Writer
 		 */
 		bool fetch( Frame &, const size_t & ) const noexcept;
 
-		_System * _data = nullptr;
+		SystemImpl * _data = nullptr;
 	};
 
 	/**
@@ -230,14 +230,14 @@ namespace VTX::IO::Writer
 		System system() noexcept;
 
 	  private:
-		class _Impl;
+		class Impl;
 
 		struct Del
 		{
-			void operator()( _Impl * ) noexcept;
+			void operator()( Impl * ) noexcept;
 		};
 
-		std::unique_ptr<_Impl, Del> _ = nullptr;
+		std::unique_ptr<Impl, Del> _ = nullptr;
 	};
 } // namespace VTX::IO::Writer
 #endif

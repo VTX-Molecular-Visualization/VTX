@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_EXAMPLE_WIDGET_MY_DOCK_WIDGET__
-#define __VTX_TOOL_EXAMPLE_WIDGET_MY_DOCK_WIDGET__
+#ifndef VTX_TOOL_EXAMPLE_WIDGET_MY_DOCK_WIDGET_HPP
+#define VTX_TOOL_EXAMPLE_WIDGET_MY_DOCK_WIDGET_HPP
 
 #include <QDockWidget>
 #include <ui/qt/dock_widget/base_dock_widget.hpp>
@@ -11,9 +11,7 @@ namespace VTX::Tool::Example::Widget
 	{
 	  public:
 		MyDockWidget( QWidget * const p_parent ) : BaseDockWidget( p_parent, "My Dock Panel" )
-		{
-			setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
-		}
+		{ setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea ); }
 
 		virtual ~MyDockWidget() {}
 	};

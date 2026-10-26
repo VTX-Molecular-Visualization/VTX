@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_PLAYERS__
-#define __VTX_UTIL_PLAYERS__
+#ifndef VTX_UTIL_PLAYERS_HPP
+#define VTX_UTIL_PLAYERS_HPP
 
 #include "util/types.hpp"
 #include <concepts>

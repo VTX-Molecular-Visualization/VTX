@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_HELPER_TRAJECTORY__
-#define __VTX_APP_HELPER_TRAJECTORY__
+#ifndef VTX_APP_HELPER_TRAJECTORY_HPP
+#define VTX_APP_HELPER_TRAJECTORY_HPP
 
 #include "app/ecs.hpp"
 #include "app/trajectory/player.hpp"
@@ -20,23 +20,19 @@ namespace VTX::App::Helper::Trajectory
 	/**
 	 * @brief Compute the frame window to load around a target frame.
 	 */
-	App::Trajectory::FrameRange getFrameWindow(
-		uint,
-		uint,
-		size_t,
-		App::Trajectory::TRAJECTORY_READ_DIRECTION
-	) noexcept;
+	App::Trajectory::FrameRange getFrameWindow( uint,
+												uint,
+												size_t,
+												App::Trajectory::TRAJECTORY_READ_DIRECTION ) noexcept;
 
 	/**
 	 * @brief Compute the frame storage index.
 	 */
-	std::optional<size_t> resolveStorageFrameIndex(
-		uint,
-		size_t,
-		App::Trajectory::TRAJECTORY_BUFFER_MODE,
-		uint,
-		uint
-	) noexcept;
+	std::optional<size_t> resolveStorageFrameIndex( uint,
+													size_t,
+													App::Trajectory::TRAJECTORY_BUFFER_MODE,
+													uint,
+													uint ) noexcept;
 
 	/**
 	 * @brief Check whether a trajectory frame is currently available.

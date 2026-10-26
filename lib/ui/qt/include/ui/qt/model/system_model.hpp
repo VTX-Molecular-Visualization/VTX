@@ -1,5 +1,5 @@
-﻿#ifndef __VTX_UI_QT_MODEL__
-#define __VTX_UI_QT_MODEL__
+﻿#ifndef VTX_UI_QT_MODEL_SYSTEM_MODEL_HPP
+#define VTX_UI_QT_MODEL_SYSTEM_MODEL_HPP
 
 #include <QAbstractItemModel>
 #include <QString>

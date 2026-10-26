@@ -59,6 +59,7 @@ namespace VTX::Util::Math
 			return 2;
 		}
 	}
+
 	float AABB::area() const
 	{
 		const Vec3f d = diagonal();
@@ -142,7 +143,5 @@ namespace VTX::Util::Math
 	*/
 
 	AABB AABB::join( const AABB & p_aabb1, const AABB & p_aabb2 )
-	{
-		return AABB( Util::Math::min( p_aabb1._min, p_aabb2._min ), Util::Math::max( p_aabb1._max, p_aabb2._max ) );
-	}
+	{ return AABB( Util::Math::min( p_aabb1._min, p_aabb2._min ), Util::Math::max( p_aabb1._max, p_aabb2._max ) ); }
 } // namespace VTX::Util::Math

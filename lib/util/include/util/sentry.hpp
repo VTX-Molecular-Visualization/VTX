@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_SENTRY__
-#define __VTX_UTIL_SENTRY__
+#ifndef VTX_UTIL_SENTRY_HPP
+#define VTX_UTIL_SENTRY_HPP
 
 #include <memory>
 #include <thread>

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TREE_CAMERA__
-#define __VTX_UI_QT_WIDGET_TREE_CAMERA__
+#ifndef VTX_UI_QT_WIDGET_TREE_CAMERA_HPP
+#define VTX_UI_QT_WIDGET_TREE_CAMERA_HPP
 
 #include "ui/qt/widget/tree/base_tree.hpp"
 #include <unordered_map>

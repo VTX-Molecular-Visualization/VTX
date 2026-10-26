@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_FORM__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_FORM__
+#ifndef VTX_TOOL_MDPREP_UI_FORM_HPP
+#define VTX_TOOL_MDPREP_UI_FORM_HPP
 
 #include <memory>
 #include <util/concepts.hpp>
@@ -27,18 +27,15 @@ namespace VTX::Tool::Mdprep::ui
 					{ t.update( e ) };
 				},
 				"You need to implement 'void update( const Gateway::EngineSpecificCommonInformation & p_data ) "
-				"' class method"
-			);
+				"' class method" );
 			static_assert(
 				requires( T t, Gateway::MdParameters & e ) {
 					{ t.get( e ) };
-				}, "You need to implement 'void get( Gateway::MdParameters & p_ ) const' class method"
-			);
+				}, "You need to implement 'void get( Gateway::MdParameters & p_ ) const' class method" );
 			static_assert(
 				requires( T t, FormLayouts & e ) {
 					{ t.get( e ) };
-				}, "You need to implement 'void get( FormLayouts & p_ ) const' class method"
-			);
+				}, "You need to implement 'void get( FormLayouts & p_ ) const' class method" );
 		}
 
 		Form() = default;

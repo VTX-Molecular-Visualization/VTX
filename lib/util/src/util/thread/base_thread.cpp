@@ -44,8 +44,7 @@ namespace VTX::Util::Thread
 					VTX_ERROR( "Unhandled unknown exception in thread" );
 				}
 				_finished.store( true, std::memory_order_release );
-			}
-		);
+			} );
 		_id = _thread.get_id();
 	}
 

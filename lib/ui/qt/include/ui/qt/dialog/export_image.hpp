@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DIALOG_EXPORT_IMAGE__
-#define __VTX_UI_QT_DIALOG_EXPORT_IMAGE__
+#ifndef VTX_UI_QT_DIALOG_EXPORT_IMAGE_HPP
+#define VTX_UI_QT_DIALOG_EXPORT_IMAGE_HPP
 
 #include "ui/qt/dialog/base_dialog.hpp"
 #include "ui/qt/settings.hpp"

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_UI_CONCEPTS__
-#define __VTX_APP_UI_CONCEPTS__
+#ifndef VTX_APP_UI_CONCEPTS_HPP
+#define VTX_APP_UI_CONCEPTS_HPP
 
 #include <optional>
 #include <string>

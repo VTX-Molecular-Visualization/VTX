@@ -10,9 +10,8 @@ namespace VTX::Bench
 	LoadedSystem loadSystem( const FilePath & p_filename )
 	{
 		const Util::Thread::StopToken t;
-		IO::SystemReader		reader(
-			   VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename, IO::READER_OPTION::ALL, t
-		   );
+		IO::SystemReader			  reader(
+			VTX::Util::Filesystem::getExecutableDir() / "data" / p_filename, IO::READER_OPTION::ALL, t );
 		LoadedSystem system;
 		auto		 d = Core::ChemDB::Category::createDefaultDictionary();
 		reader.get( d, system.topology, system.metadata );
@@ -27,9 +26,9 @@ namespace VTX::Bench
 		VTX::Util::Network::httpRequestGet( "https://files.rcsb.org/download/" + p_pdb + ".pdb", text );
 
 		const Util::Thread::StopToken t;
-		IO::SystemReader		reader( std::move( text ), p_pdb + ".pdb", IO::READER_OPTION::ALL, t );
-		LoadedSystem			system;
-		auto					d = Core::ChemDB::Category::createDefaultDictionary();
+		IO::SystemReader			  reader( std::move( text ), p_pdb + ".pdb", IO::READER_OPTION::ALL, t );
+		LoadedSystem				  system;
+		auto						  d = Core::ChemDB::Category::createDefaultDictionary();
 		reader.get( d, system.topology, system.metadata );
 		reader.get( system.positions );
 		return system;

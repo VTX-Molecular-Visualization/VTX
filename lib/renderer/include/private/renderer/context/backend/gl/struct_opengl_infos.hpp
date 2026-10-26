@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_BACKEND_GL_STRUCT_OPENGL_INFOS__
-#define __VTX_RENDERER_CONTEXT_BACKEND_GL_STRUCT_OPENGL_INFOS__
+#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_STRUCT_OPENGL_INFOS_HPP
+#define VTX_RENDERER_CONTEXT_BACKEND_GL_STRUCT_OPENGL_INFOS_HPP
 
 #include <array>
 #include <util/logger.hpp>
@@ -47,18 +47,14 @@ namespace VTX::Renderer::Context::Backend::GL
 			VTX_TRACE( "Max texture size: {}", glMaxTextureSize );
 			VTX_TRACE( "Max patch vertices: {}", glMaxPatchVertices );
 			VTX_TRACE( "Max tess gen level: {}", glMaxTessGenLevel );
-			VTX_TRACE(
-				"Max compute work group count: {} {} {}",
-				glMaxComputeWorkGroupCount[ 0 ],
-				glMaxComputeWorkGroupCount[ 1 ],
-				glMaxComputeWorkGroupCount[ 2 ]
-			);
-			VTX_TRACE(
-				"Max compute work group size: {} {} {}",
-				glMaxComputeWorkGroupSize[ 0 ],
-				glMaxComputeWorkGroupSize[ 1 ],
-				glMaxComputeWorkGroupSize[ 2 ]
-			);
+			VTX_TRACE( "Max compute work group count: {} {} {}",
+					   glMaxComputeWorkGroupCount[ 0 ],
+					   glMaxComputeWorkGroupCount[ 1 ],
+					   glMaxComputeWorkGroupCount[ 2 ] );
+			VTX_TRACE( "Max compute work group size: {} {} {}",
+					   glMaxComputeWorkGroupSize[ 0 ],
+					   glMaxComputeWorkGroupSize[ 1 ],
+					   glMaxComputeWorkGroupSize[ 2 ] );
 			VTX_TRACE( "Max compute work group invocations: {}", glMaxComputeWorkGroupInvocations );
 		}
 	};

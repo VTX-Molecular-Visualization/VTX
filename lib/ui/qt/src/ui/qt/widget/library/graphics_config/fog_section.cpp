@@ -26,28 +26,24 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderDensity->setMinimum( FOG_DENSITY_MIN );
 		_sliderDensity->setMaximum( FOG_DENSITY_MAX );
 
-		connect(
-			this,
-			&HideableGroupBox::toggled,
-			[ this ]( const bool p_state ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_FOG, bool>( p_state ); }
-		);
+		connect( this,
+				 &HideableGroupBox::toggled,
+				 [ this ]( const bool p_state )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_FOG, bool>( p_state ); } );
 		_colorPicker->onColorChanged += [ this ]( const QColor & p_color )
 		{ _changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_FOG, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
-		connect(
-			_sliderNear,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::FOG_NEAR, float>( p_value ); }
-		);
-		connect(
-			_sliderFar,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::FOG_FAR, float>( p_value ); }
-		);
-		connect(
-			_sliderDensity,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::FOG_DENSITY, float>( p_value ); }
-		);
+		connect( _sliderNear,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::FOG_NEAR, float>( p_value ); } );
+		connect( _sliderFar,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::FOG_FAR, float>( p_value ); } );
+		connect( _sliderDensity,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::FOG_DENSITY, float>( p_value ); } );
 	}
 
 	void FogSection::setConfig( const Entity p_preset, const VTX::Renderer::GraphicsConfig & p_config )

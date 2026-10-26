@@ -31,18 +31,16 @@ namespace VTX::UI::QT
 		}
 		_views[ p_group ].push_back( p_view );
 
-		connect(
-			p_view,
-			&QItemSelectionModel::selectionChanged,
-			this,
-			[ this, p_group, p_view ]( const QItemSelection &, const QItemSelection & )
-			{
-				clearBut( p_group );
-				App::ACTION().execute<App::Action::Selection::Clear>();
+		connect( p_view,
+				 &QItemSelectionModel::selectionChanged,
+				 this,
+				 [ this, p_group, p_view ]( const QItemSelection &, const QItemSelection & )
+				 {
+					 clearBut( p_group );
+					 App::ACTION().execute<App::Action::Selection::Clear>();
 
-				emit selectionChanged( p_group, p_view->selection() );
-			}
-		);
+					 emit selectionChanged( p_group, p_view->selection() );
+				 } );
 	}
 
 	void SelectionManager::clear()
@@ -100,10 +98,8 @@ namespace VTX::UI::QT
 			App::ACTION().execute<App::Action::Selection::Pick>(
 				p_pos,
 				static_cast<App::Action::Selection::E_GRANULARITY>(
-					SETTINGS().value( SETTING_KEY_GRANULARITY, 0 ).toInt()
-				),
-				p_append
-			);
+					SETTINGS().value( SETTING_KEY_GRANULARITY, 0 ).toInt() ),
+				p_append );
 		}
 	}
 } // namespace VTX::UI::QT

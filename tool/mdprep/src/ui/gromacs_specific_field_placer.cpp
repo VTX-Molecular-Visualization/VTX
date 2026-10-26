@@ -31,16 +31,15 @@ namespace VTX::Tool::Mdprep::ui
 		_field_nstvout = VTX::UI::QT::Util::addUInt64Field(
 			p_layout,
 			"Velocity Save Interval",
-			"Number of steps between each velocity save. 0 means velocities aren't saved."
-		);
+			"Number of steps between each velocity save. 0 means velocities aren't saved." );
 		_field_nstvout->setText( QString::number( _data->nstvout ) );
 		_field_nstenergy = VTX::UI::QT::Util::addUInt64Field(
-			p_layout, "Energy Save Interval", "Number of steps between each energy save. 0 means energies aren't saved."
-		);
+			p_layout,
+			"Energy Save Interval",
+			"Number of steps between each energy save. 0 means energies aren't saved." );
 		_field_nstenergy->setText( QString::number( _data->nstenergy ) );
 		_field_nstlog = VTX::UI::QT::Util::addUInt64Field(
-			p_layout, "Log Save Interval", "Number of steps between each log write. 0 means logs aren't written."
-		);
+			p_layout, "Log Save Interval", "Number of steps between each log write. 0 means logs aren't written." );
 		_field_nstlog->setText( QString::number( _data->nstlog ) );
 		if ( _data->nstxout_compressed.has_value() )
 		{
@@ -48,8 +47,7 @@ namespace VTX::Tool::Mdprep::ui
 				p_layout,
 				"Compressed Coordinates Save Interval",
 				"Number of steps between each coordinate save in a compressed format. 0 means no compressed "
-				"coordinates are written."
-			);
+				"coordinates are written." );
 			_field_nstxout_compressed->setText( QString::number( _data->nstxout_compressed.value() ) );
 		}
 	}
@@ -98,8 +96,7 @@ namespace VTX::Tool::Mdprep::ui
 			}
 		}
 		QObject::connect(
-			_boxFields.fieldBoxSizeMode, &QComboBox::currentIndexChanged, [ & ] { this->_updateBoxSizeMode(); }
-		);
+			_boxFields.fieldBoxSizeMode, &QComboBox::currentIndexChanged, [ & ] { this->_updateBoxSizeMode(); } );
 
 		_boxFields.fieldDistance = VTX::UI::QT::Helper::makeQObject<QDoubleSpinBox>( _targetLayout->parentWidget() );
 		_boxFields.fieldDistance->setMinimum( 0. );
@@ -156,10 +153,8 @@ namespace VTX::Tool::Mdprep::ui
 			{
 				_addDistanceField();
 			}
-			else if (
-				static_cast<Gateway::Gromacs::E_BOX_DIMENSION_MODE>( _boxFields.fieldBoxSizeMode->currentIndex() )
-				== Gateway::Gromacs::E_BOX_DIMENSION_MODE::size
-			)
+			else if ( static_cast<Gateway::Gromacs::E_BOX_DIMENSION_MODE>( _boxFields.fieldBoxSizeMode->currentIndex() )
+					  == Gateway::Gromacs::E_BOX_DIMENSION_MODE::size )
 			{
 				_addSizeOnlyX();
 			}
@@ -169,11 +164,9 @@ namespace VTX::Tool::Mdprep::ui
 
 	void GromacsSystemFieldPlacer::_updateBoxSizeMode()
 	{
-		update(
-			EngineSpecificCommonInformationFieldUpdate {
-				.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxDimensionMode,
-				.newValue = static_cast<size_t>( _boxFields.fieldBoxSizeMode->currentIndex() ) }
-		);
+		update( EngineSpecificCommonInformationFieldUpdate {
+			.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxDimensionMode,
+			.newValue = static_cast<size_t>( _boxFields.fieldBoxSizeMode->currentIndex() ) } );
 	}
 
 	namespace
@@ -218,36 +211,28 @@ namespace VTX::Tool::Mdprep::ui
 				"and use it as a reference. The distance value will be the length in nanometers between this reference "
 				"and the system edge.<br><b>size</b> means you choose the size of the solid shape. Only one value is "
 				"required for symetrical shapes.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
-			_boxFields.fieldBoxSizeMode
-		);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
+			_boxFields.fieldBoxSizeMode );
 	}
 
 	void GromacsSystemFieldPlacer::_addDistanceField()
 	{
 		_boxFields.fieldDistance->show();
 		_targetLayout->addRow(
-			VTX::UI::QT::Util::LabelWithHelper(
-				"Distance (nm)",
-				"Distance between the edge of the box and its closest atom.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
-			_boxFields.fieldDistance
-		);
+			VTX::UI::QT::Util::LabelWithHelper( "Distance (nm)",
+												"Distance between the edge of the box and its closest atom.",
+												VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
+			_boxFields.fieldDistance );
 	}
 
 	void GromacsSystemFieldPlacer::_addSizeOnlyX()
 	{
 		_boxFields.fieldSizeX->show();
 		_targetLayout->addRow(
-			VTX::UI::QT::Util::LabelWithHelper(
-				"Box Size (nm)",
-				"Face-to-face distance of the box in nanometers.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
-			_boxFields.fieldSizeX
-		);
+			VTX::UI::QT::Util::LabelWithHelper( "Box Size (nm)",
+												"Face-to-face distance of the box in nanometers.",
+												VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
+			_boxFields.fieldSizeX );
 	}
 
 	void GromacsSystemFieldPlacer::_addSizeXYZ()
@@ -262,13 +247,10 @@ namespace VTX::Tool::Mdprep::ui
 		_boxFields.fieldSizeY->show();
 		_boxFields.fieldSizeZ->show();
 		_targetLayout->addRow(
-			VTX::UI::QT::Util::LabelWithHelper(
-				"Box's x, y and z dimensions",
-				"Defines the size of each edge of the system's box in nanometers.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
-			_boxFields.containerSizeXYZ
-		);
+			VTX::UI::QT::Util::LabelWithHelper( "Box's x, y and z dimensions",
+												"Defines the size of each edge of the system's box in nanometers.",
+												VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
+			_boxFields.containerSizeXYZ );
 	}
 
 	void GromacsSystemFieldPlacer::_addAnglesXYZ()
@@ -283,12 +265,9 @@ namespace VTX::Tool::Mdprep::ui
 		_boxFields.fieldAngleY->show();
 		_boxFields.fieldAngleZ->show();
 		_targetLayout->addRow(
-			VTX::UI::QT::Util::LabelWithHelper(
-				"Box's angles",
-				"Defines the angles of the system's periodic box in degrees.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
-			_boxFields.containerAngleXYZ
-		);
+			VTX::UI::QT::Util::LabelWithHelper( "Box's angles",
+												"Defines the angles of the system's periodic box in degrees.",
+												VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
+			_boxFields.containerAngleXYZ );
 	}
 } // namespace VTX::Tool::Mdprep::ui

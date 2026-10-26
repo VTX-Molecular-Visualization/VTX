@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_INPUT_CHECKER__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_INPUT_CHECKER__
+#ifndef VTX_TOOL_MDPREP_UI_INPUT_CHECKER_HPP
+#define VTX_TOOL_MDPREP_UI_INPUT_CHECKER_HPP
 
 #include "tool/mdprep/gateway/shared.hpp"
 #include <memory>
@@ -82,18 +82,15 @@ namespace VTX::Tool::Mdprep::ui
 					{ t.checkInputs( p_1 ) };
 				},
 				"You must implement 'void checkInputs( const Gateway::MdParameters & p_1, Gateway::CheckReportCallback "
-				"p_2 ) const noexcept' class method."
-			);
+				"p_2 ) const noexcept' class method." );
 			static_assert(
 				requires( T t ) {
 					{ t.isResultAvailable() } -> std::same_as<bool>;
-				}, "You must implement 'bool isResultAvailable() const noexcept' class method."
-			);
+				}, "You must implement 'bool isResultAvailable() const noexcept' class method." );
 			static_assert(
 				requires( T t ) {
 					{ t.lastResult() } -> std::same_as<Gateway::CheckReport>;
-				}, "You must implement 'Gateway::CheckReport lastResult() const' class method."
-			);
+				}, "You must implement 'Gateway::CheckReport lastResult() const' class method." );
 		}
 	};
 } // namespace VTX::Tool::Mdprep::ui

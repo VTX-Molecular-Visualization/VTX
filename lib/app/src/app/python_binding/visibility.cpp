@@ -19,11 +19,9 @@ namespace VTX::App::PythonBinding
 		using SystemItem = Core::Struct::E_SYSTEM_ITEM;
 		using IndexList	 = std::vector<Index>;
 
-		App::System::E_VISIBLE_STATE _getVisibleState(
-			const Entity			   p_ent,
-			const SystemItem		   p_item,
-			const std::optional<Index> p_index = std::nullopt
-		)
+		App::System::E_VISIBLE_STATE _getVisibleState( const Entity				  p_ent,
+													   const SystemItem			  p_item,
+													   const std::optional<Index> p_index = std::nullopt )
 		{
 			if ( not REG().all_of<Core::Struct::Topology, App::System::Visibility>( p_ent ) )
 			{
@@ -43,18 +41,15 @@ namespace VTX::App::PythonBinding
 		p_vtxModule.def(
 			"showAll",
 			[]() { executeAction<App::Action::Visibility::SetVisibleAll>( true ); },
-			"Show all loaded systems."
-		);
+			"Show all loaded systems." );
 		p_vtxModule.def(
 			"hideAll",
 			[]() { executeAction<App::Action::Visibility::SetVisibleAll>( false ); },
-			"Hide all loaded systems."
-		);
+			"Hide all loaded systems." );
 		p_vtxModule.bindAction<App::Action::Visibility::SetVisibleSelected, const bool>(
 			"setVisibleSelected",
 			"Set visibility of the current selection.",
-			VTX::PythonBinding::Wrapper::VArg<bool>( "visible", true )
-		);
+			VTX::PythonBinding::Wrapper::VArg<bool>( "visible", true ) );
 		p_vtxModule.def(
 			"setVisible",
 			[]( const Entity p_ent, const SystemItem p_item, const IndexList & p_indices, const bool p_visible )
@@ -70,15 +65,12 @@ namespace VTX::App::PythonBinding
 			VTX::PythonBinding::Wrapper::Arg( "systemId" ),
 			VTX::PythonBinding::Wrapper::VArg<SystemItem>( "item", SystemItem::SYSTEM ),
 			VTX::PythonBinding::Wrapper::VArg<IndexList>( "indices", IndexList() ),
-			VTX::PythonBinding::Wrapper::VArg<bool>( "visible", true )
-		);
-		p_vtxModule.def(
-			"getVisibleState",
-			&_getVisibleState,
-			"Return the visibility state of an item.",
-			VTX::PythonBinding::Wrapper::Arg( "systemId" ),
-			VTX::PythonBinding::Wrapper::VArg<SystemItem>( "item", SystemItem::SYSTEM ),
-			VTX::PythonBinding::Wrapper::VArg<std::optional<Index>>( "index", std::optional<Index>() )
-		);
+			VTX::PythonBinding::Wrapper::VArg<bool>( "visible", true ) );
+		p_vtxModule.def( "getVisibleState",
+						 &_getVisibleState,
+						 "Return the visibility state of an item.",
+						 VTX::PythonBinding::Wrapper::Arg( "systemId" ),
+						 VTX::PythonBinding::Wrapper::VArg<SystemItem>( "item", SystemItem::SYSTEM ),
+						 VTX::PythonBinding::Wrapper::VArg<std::optional<Index>>( "index", std::optional<Index>() ) );
 	}
 } // namespace VTX::App::PythonBinding

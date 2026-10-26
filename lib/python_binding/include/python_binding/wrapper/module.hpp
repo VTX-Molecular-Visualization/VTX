@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_BINDING_WRAPPER_MODULE__
-#define __VTX_PYTHON_BINDING_WRAPPER_MODULE__
+#ifndef VTX_PYTHON_BINDING_WRAPPER_MODULE_HPP
+#define VTX_PYTHON_BINDING_WRAPPER_MODULE_HPP
 
 #include "python_binding/wrapper/function.hpp"
 #include "python_binding/wrapper/object.hpp"
@@ -50,12 +50,10 @@ namespace VTX::PythonBinding
 			template<typename Func, typename... Extra>
 			void def( const std::string & p_name, Func && p_function, const std::string & p_desc, Extra &&... p_extra )
 			{
-				_pyModule.def(
-					p_name.c_str(),
-					std::forward<Func>( p_function ),
-					p_desc.c_str(),
-					convertToPybind11Extra( std::forward<Extra>( p_extra ) )...
-				);
+				_pyModule.def( p_name.c_str(),
+							   std::forward<Func>( p_function ),
+							   p_desc.c_str(),
+							   convertToPybind11Extra( std::forward<Extra>( p_extra ) )... );
 			}
 
 			void runFunction( const std::string & p_funcName ) const

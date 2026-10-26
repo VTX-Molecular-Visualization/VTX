@@ -5,11 +5,10 @@
 
 namespace VTX::App::Thread
 {
-	TrajectoryLoader::TrajectoryLoader(
-		Util::Thread::ThreadManager &			 p_manager,
-		IO::SystemReader &&						 p_reader,
-		const Trajectory::TRAJECTORY_BUFFER_MODE p_mode
-	) : BaseThread( p_manager ), _reader( std::move( p_reader ) ), _mode( p_mode )
+	TrajectoryLoader::TrajectoryLoader( Util::Thread::ThreadManager &			 p_manager,
+										IO::SystemReader &&						 p_reader,
+										const Trajectory::TRAJECTORY_BUFFER_MODE p_mode ) :
+		BaseThread( p_manager ), _reader( std::move( p_reader ) ), _mode( p_mode )
 	{
 	}
 
@@ -25,11 +24,9 @@ namespace VTX::App::Thread
 		_frameRequestCondition.notify_all();
 	}
 
-	void TrajectoryLoader::requestFrameWindow(
-		const Trajectory::FrameRange				p_frames,
-		const Trajectory::TRAJECTORY_READ_DIRECTION p_direction,
-		const Trajectory::FrameRange				p_availableFrames
-	)
+	void TrajectoryLoader::requestFrameWindow( const Trajectory::FrameRange				   p_frames,
+											   const Trajectory::TRAJECTORY_READ_DIRECTION p_direction,
+											   const Trajectory::FrameRange				   p_availableFrames )
 	{
 		if ( p_frames.isEmpty() )
 		{
@@ -110,10 +107,8 @@ namespace VTX::App::Thread
 																	 : _loadFullBuffer( p_stopToken, p_thread );
 	}
 
-	uint TrajectoryLoader::_loadFullBuffer(
-		const Util::Thread::StopToken & p_stopToken,
-		Util::Thread::BaseThread &		p_thread
-	)
+	uint TrajectoryLoader::_loadFullBuffer( const Util::Thread::StopToken & p_stopToken,
+											Util::Thread::BaseThread &		p_thread )
 	{
 		p_thread.setProgressText( "Reading trajectory ..." );
 		const size_t frameCount = _reader.frameCount();
@@ -147,10 +142,8 @@ namespace VTX::App::Thread
 		return 0;
 	}
 
-	uint TrajectoryLoader::_loadCircularBuffer(
-		const Util::Thread::StopToken & p_stopToken,
-		Util::Thread::BaseThread &		p_thread
-	)
+	uint TrajectoryLoader::_loadCircularBuffer( const Util::Thread::StopToken & p_stopToken,
+												Util::Thread::BaseThread &		p_thread )
 	{
 		p_thread.setProgressText( "Reading trajectory ..." );
 
@@ -178,13 +171,9 @@ namespace VTX::App::Thread
 				availableFrames		  = _requestedAvailableFrames;
 			}
 
-			p_thread.setProgressText(
-				fmt::format(
-					"Reading trajectory frames [{}-{}] ...",
-					requestedFrameWindow.getFirst(),
-					requestedFrameWindow.getLast() - 1
-				)
-			);
+			p_thread.setProgressText( fmt::format( "Reading trajectory frames [{}-{}] ...",
+												   requestedFrameWindow.getFirst(),
+												   requestedFrameWindow.getLast() - 1 ) );
 			p_thread.setProgress( 0.f );
 
 			Trajectory::LoadedFrameBatch loadedBatch;
@@ -200,10 +189,8 @@ namespace VTX::App::Thread
 				if ( availableFrames.contains( frameIndex ) )
 				{
 					processedFrameCount++;
-					p_thread.setProgress(
-						static_cast<float>( processedFrameCount )
-						/ static_cast<float>( requestedFrameWindow.getCount() )
-					);
+					p_thread.setProgress( static_cast<float>( processedFrameCount )
+										  / static_cast<float>( requestedFrameWindow.getCount() ) );
 					continue;
 				}
 
@@ -226,9 +213,8 @@ namespace VTX::App::Thread
 				}
 				loadedBatch.frames.emplace_back( frameIndex, std::move( frame ) );
 				processedFrameCount++;
-				p_thread.setProgress(
-					static_cast<float>( processedFrameCount ) / static_cast<float>( requestedFrameWindow.getCount() )
-				);
+				p_thread.setProgress( static_cast<float>( processedFrameCount )
+									  / static_cast<float>( requestedFrameWindow.getCount() ) );
 			}
 
 			{

@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG__
+#ifndef VTX_TOOL_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG_HPP
+#define VTX_TOOL_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG_HPP
 
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
@@ -42,8 +42,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			static_assert(
 				requires( T t ) {
 					{ t.applied() };
-				}, "You need to implement 'void applied()' class method"
-			);
+				}, "You need to implement 'void applied()' class method" );
 		}
 
 		void applied()
@@ -82,14 +81,12 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	  public:
 		using SupportedData = std::variant<MdParametersStepData *, MinimizationData *, SystemData *>;
 		SettingsDialog()	= default;
-		SettingsDialog(
-			QWidget *												p_parent,
-			const char *											p_title,
-			SupportedData											p_dataFields,
-			MdEngineSpecificFieldPlacer								p_engineFieldPlacer,
-			std::optional<Gateway::EngineSpecificCommonInformation> p_engineInfo   = std::nullopt,
-			ApplyVisitor											p_applyVisitor = ApplyVisitor()
-		);
+		SettingsDialog( QWidget *												p_parent,
+						const char *											p_title,
+						SupportedData											p_dataFields,
+						MdEngineSpecificFieldPlacer								p_engineFieldPlacer,
+						std::optional<Gateway::EngineSpecificCommonInformation> p_engineInfo   = std::nullopt,
+						ApplyVisitor											p_applyVisitor = ApplyVisitor() );
 
 		SettingsDialog( const SettingsDialog & )			 = delete;
 		SettingsDialog & operator=( const SettingsDialog & ) = delete;
@@ -122,11 +119,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		ApplyVisitor				_applyVisitor;
 
 		void		_setupUi( QWidget * p_parent, const char * p_title );
-		static void _setupDataUi(
-			QVBoxLayout *				 p_qMainLayout,
-			UiData &					 p_uiObjects,
-			const MdParametersStepData * p_data
-		);
+		static void _setupDataUi( QVBoxLayout *				   p_qMainLayout,
+								  UiData &					   p_uiObjects,
+								  const MdParametersStepData * p_data );
 		static void _setupDataUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MinimizationData * p_data );
 		static void _setupDataUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const SystemData * p_data );
 		static void _applyDataChange( const UiData & p_uiObjects, MinimizationData * p_data );

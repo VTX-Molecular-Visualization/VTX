@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GEOMETRY_SES__
-#define __VTX_RENDERER_GEOMETRY_SES__
+#ifndef VTX_RENDERER_GEOMETRY_SES_HPP
+#define VTX_RENDERER_GEOMETRY_SES_HPP
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
@@ -70,13 +70,11 @@ namespace VTX::Renderer::Geometry
 		class PatchGeometry : public BaseGeometry
 		{
 		  public:
-			void construct(
-				const SurfaceID			  p_surface,
-				const Desc::Handle		  p_system,
-				const Index				  p_count,
-				const RepresentationIndex p_representation,
-				const uint32_t			  p_dataOffset = 0
-			)
+			void construct( const SurfaceID			  p_surface,
+							const Desc::Handle		  p_system,
+							const Index				  p_count,
+							const RepresentationIndex p_representation,
+							const uint32_t			  p_dataOffset = 0 )
 			{
 				if ( contains( p_surface ) )
 				{
@@ -183,8 +181,7 @@ namespace VTX::Renderer::Geometry
 			}
 
 			[[nodiscard]] std::vector<Desc::DrawIndexedIndirectRecord> toDrawIndexedIndirectCommands(
-				const SurfaceID p_surface
-			) const
+				const SurfaceID p_surface ) const
 			{
 				const auto it = _data().find( p_surface );
 				assert( it != _data().end() );
@@ -270,15 +267,13 @@ namespace VTX::Renderer::Geometry
 
 		struct SurfaceConstruction;
 
-		void construct(
-			Context::ContextWrapper & p_context,
-			Desc::Handle			  p_handle,
-			const Cache::System &	  p_data,
-			uint32_t				  p_inputAtomOffset,
-			float					  p_probeRadius,
-			E_SES_COMPUTE_MODE		  p_computeMode,
-			RepresentationIndex		  p_representation
-		);
+		void construct( Context::ContextWrapper & p_context,
+						Desc::Handle			  p_handle,
+						const Cache::System &	  p_data,
+						uint32_t				  p_inputAtomOffset,
+						float					  p_probeRadius,
+						E_SES_COMPUTE_MODE		  p_computeMode,
+						RepresentationIndex		  p_representation );
 
 		void resize( Context::ContextWrapper & p_context );
 
@@ -304,18 +299,16 @@ namespace VTX::Renderer::Geometry
 		std::map<SurfaceID, std::unique_ptr<SurfaceConstruction>> _constructions;
 
 	  private:
-		Surface _createSurface( const SurfaceKey & );
-		Surface _getOrCreateSurface( const SurfaceKey & );
-		void	_constructSurface(
-			Context::ContextWrapper & p_context,
-			const Cache::System &	  p_data,
-			uint32_t				  p_inputAtomOffset,
-			float					  p_probeRadius,
-			E_SES_COMPUTE_MODE		  p_computeMode,
-			RepresentationIndex		  p_representation,
-			const Surface &			  p_surface,
-			std::span<const Index>	  p_atomIndices
-		);
+		Surface		_createSurface( const SurfaceKey & );
+		Surface		_getOrCreateSurface( const SurfaceKey & );
+		void		_constructSurface( Context::ContextWrapper & p_context,
+									   const Cache::System &	 p_data,
+									   uint32_t					 p_inputAtomOffset,
+									   float					 p_probeRadius,
+									   E_SES_COMPUTE_MODE		 p_computeMode,
+									   RepresentationIndex		 p_representation,
+									   const Surface &			 p_surface,
+									   std::span<const Index>	 p_atomIndices );
 		static void _releaseChunks( Context::ContextWrapper &, SurfaceID );
 		static void _unregisterCudaInputSourceBuffers( Context::ContextWrapper & );
 		static void _unregisterCudaConstructionBuffers( Context::ContextWrapper &, SurfaceID );

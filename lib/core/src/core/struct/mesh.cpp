@@ -23,10 +23,8 @@ namespace VTX::Core::Struct
 			assert( indices[ i + 1 ] < vertices.size() );
 			assert( indices[ i + 2 ] < vertices.size() );
 
-			Vec3f normal = Util::Math::cross(
-				vertices[ indices[ i + 1 ] ] - vertices[ indices[ i ] ],
-				vertices[ indices[ i + 2 ] ] - vertices[ indices[ i ] ]
-			);
+			Vec3f normal = Util::Math::cross( vertices[ indices[ i + 1 ] ] - vertices[ indices[ i ] ],
+											  vertices[ indices[ i + 2 ] ] - vertices[ indices[ i ] ] );
 
 			if ( Util::Math::length2( normal ) == 0.f )
 			{

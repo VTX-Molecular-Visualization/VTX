@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GRAPHICS_CONFIG__
-#define __VTX_RENDERER_GRAPHICS_CONFIG__
+#ifndef VTX_RENDERER_GRAPHICS_CONFIG_HPP
+#define VTX_RENDERER_GRAPHICS_CONFIG_HPP
 
 #include "renderer/builder/post_process/chromatic_aberration.hpp"
 #include "renderer/builder/post_process/crt.hpp"

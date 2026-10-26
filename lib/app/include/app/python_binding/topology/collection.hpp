@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION__
-#define __VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION__
+#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION_HPP
+#define VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION_HPP
 
 #include "app/helper/aabb.hpp"
 #include "app/python_binding/topology/actions.hpp"
@@ -69,9 +69,8 @@ namespace VTX::App::PythonBinding::Topology
 		// Fast path for simple slices.
 		if ( step == 1 && p_ranges.rangeCount() == 1 )
 		{
-			return RangeList( p_ranges.rangeBegin()->subRange(
-				static_cast<Range::Count>( start ), static_cast<Range::Count>( count )
-			) );
+			return RangeList( p_ranges.rangeBegin()->subRange( static_cast<Range::Count>( start ),
+															   static_cast<Range::Count>( count ) ) );
 		}
 
 		// Rebuild RangeList from the slice.
@@ -91,11 +90,9 @@ namespace VTX::App::PythonBinding::Topology
 	 * @brief Bind a collection of handles.
 	 */
 	template<typename T>
-	void bindCollection(
-		pybind11::module_ &				p_module,
-		const char * const				p_name,
-		const std::optional<SystemItem> p_item = std::nullopt
-	)
+	void bindCollection( pybind11::module_ &			 p_module,
+						 const char * const				 p_name,
+						 const std::optional<SystemItem> p_item = std::nullopt )
 	{
 		namespace py		 = pybind11;
 		using CollectionType = Collection<T>;
@@ -109,35 +106,28 @@ namespace VTX::App::PythonBinding::Topology
 				{
 					return p_item ? Helper::AABB::get( p_collection.entity, *p_item, p_collection.ranges )
 								  : Helper::AABB::getBonds( p_collection.entity, p_collection.ranges );
-				}
-			)
-			.def(
-				"__iter__",
-				[]( const CollectionType & p_collection )
-				{
-					py::list handles;
+				} )
+			.def( "__iter__",
+				  []( const CollectionType & p_collection )
+				  {
+					  py::list handles;
 
-					for ( const Index index : p_collection.ranges )
-					{
-						handles.append( makeHandle<T>( p_collection.entity, index ) );
-					}
+					  for ( const Index index : p_collection.ranges )
+					  {
+						  handles.append( makeHandle<T>( p_collection.entity, index ) );
+					  }
 
-					return py::iter( handles );
-				}
-			)
-			.def(
-				"__getitem__",
-				[]( const CollectionType & p_collection, const py::ssize_t p_index )
-				{
-					const size_t index = resolveIndex( p_index, p_collection.ranges.size() );
-					return makeHandle<T>( p_collection.entity, getValueAt( p_collection.ranges, index ) );
-				}
-			)
-			.def(
-				"__getitem__",
-				[]( const CollectionType & p_collection, const py::slice & p_slice )
-				{ return CollectionType { p_collection.entity, sliceRanges( p_collection.ranges, p_slice ) }; }
-			);
+					  return py::iter( handles );
+				  } )
+			.def( "__getitem__",
+				  []( const CollectionType & p_collection, const py::ssize_t p_index )
+				  {
+					  const size_t index = resolveIndex( p_index, p_collection.ranges.size() );
+					  return makeHandle<T>( p_collection.entity, getValueAt( p_collection.ranges, index ) );
+				  } )
+			.def( "__getitem__",
+				  []( const CollectionType & p_collection, const py::slice & p_slice )
+				  { return CollectionType { p_collection.entity, sliceRanges( p_collection.ranges, p_slice ) }; } );
 
 		if ( p_item )
 		{
@@ -145,15 +135,13 @@ namespace VTX::App::PythonBinding::Topology
 				   "setVisible",
 				   [ p_item ]( const CollectionType & p_collection, const bool p_visible )
 				   { setVisible( p_collection.entity, *p_item, p_collection.ranges, p_visible ); },
-				   py::arg( "visible" ) = true
-			)
+				   py::arg( "visible" ) = true )
 				.def(
 					"setSelected",
 					[ p_item ]( const CollectionType & p_collection, const bool p_selected, const bool p_append )
 					{ setSelected( p_collection.entity, *p_item, p_collection.ranges, p_selected, p_append ); },
 					py::arg( "selected" ) = true,
-					py::arg( "append" )	  = false
-				);
+					py::arg( "append" )	  = false );
 		}
 	}
 } // namespace VTX::App::PythonBinding::Topology

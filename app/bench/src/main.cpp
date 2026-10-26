@@ -173,9 +173,10 @@ int main( int, char ** )
 			// Update scene.
 			scene.update( deltaTime );
 
-			renderer.setCamera(
-				camera.getCamera(), camera.getPosition(), camera.computeViewMatrix(), camera.computeProjectionMatrix()
-			);
+			renderer.setCamera( camera.getCamera(),
+								camera.getPosition(),
+								camera.computeViewMatrix(),
+								camera.computeProjectionMatrix() );
 
 			// Renderer.
 			renderer.render( deltaTime, time );

@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GEOMETRY_GRID__
-#define __VTX_RENDERER_GEOMETRY_GRID__
+#ifndef VTX_RENDERER_GEOMETRY_GRID_HPP
+#define VTX_RENDERER_GEOMETRY_GRID_HPP
 
 #include "renderer/descriptors.hpp"
 #include <limits>

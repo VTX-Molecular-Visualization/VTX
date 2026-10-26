@@ -81,10 +81,10 @@ namespace bcs::sesdf
 		int4 *	 concavePatchesId		 = nullptr;
 		float4 * concavePatchesNeighbors = nullptr;
 
-		uint32_t atomIndexOffset		= 0;
-		uint32_t atomIdOffset		= 0;
-		uint32_t probeIndexOffset	= 0;
-		uint32_t sectorIndexOffset	= 0;
+		uint32_t atomIndexOffset	 = 0;
+		uint32_t atomIdOffset		 = 0;
+		uint32_t probeIndexOffset	 = 0;
+		uint32_t sectorIndexOffset	 = 0;
 		uint32_t maxConcaveNeighbors = 0;
 	};
 } // namespace bcs::sesdf

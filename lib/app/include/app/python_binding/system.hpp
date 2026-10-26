@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHONBINDING_SYSTEM__
-#define __VTX_APP_PYTHONBINDING_SYSTEM__
+#ifndef VTX_APP_PYTHON_BINDING_SYSTEM_HPP
+#define VTX_APP_PYTHON_BINDING_SYSTEM_HPP
 
 #include "app/python_binding/module.hpp"
 

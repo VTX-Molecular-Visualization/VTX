@@ -49,34 +49,30 @@ namespace VTX::UI::QT
 		setOrganizationDomain( QString::fromUtf8( ORGANIZATION_DOMAIN ) );
 
 		// Connect quit.
-		connect(
-			this,
-			&QCoreApplication::aboutToQuit,
-			[ this ]
-			{
-				VTX_TRACE( "QCoreApplication::aboutToQuit" );
-				try
-				{
-					// Properly destroy graphics resources before Qt kill native surfaces.
-					App::RENDERER().clear();
-				}
-				catch ( const std::exception & p_e )
-				{
-					VTX_ERROR( "Exception during renderer cleanup: {}", p_e.what() );
-				}
-				catch ( ... )
-				{
-					VTX_ERROR( "Unknown exception during renderer cleanup" );
-				}
-			}
-		);
+		connect( this,
+				 &QCoreApplication::aboutToQuit,
+				 [ this ]
+				 {
+					 VTX_TRACE( "QCoreApplication::aboutToQuit" );
+					 try
+					 {
+						 // Properly destroy graphics resources before Qt kill native surfaces.
+						 App::RENDERER().clear();
+					 }
+					 catch ( const std::exception & p_e )
+					 {
+						 VTX_ERROR( "Exception during renderer cleanup: {}", p_e.what() );
+					 }
+					 catch ( ... )
+					 {
+						 VTX_ERROR( "Unknown exception during renderer cleanup" );
+					 }
+				 } );
 
 		// Connect the main loop.
-		connect(
-			&_timer,
-			&QTimer::timeout,
-			[ this ] { _app.update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
-		);
+		connect( &_timer,
+				 &QTimer::timeout,
+				 [ this ] { _app.update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); } );
 		LOGGER::setCallback( [ &hub = App::HUB() ]( const Util::LogInfo & p_logInfo )
 							 { hub.enqueue<Util::LogInfo>( p_logInfo ); } );
 	}
@@ -206,8 +202,7 @@ namespace VTX::UI::QT
 				App::RENDERER().setDefault();
 				App::HUB().trigger<App::Events::ApplicationError>(
 					"Unable to create OpenGL context. Update your drivers and check your hardware "
-					"compatibility."
-				);
+					"compatibility." );
 			}
 			_app.finishStartup();
 			_app.handleArgs();

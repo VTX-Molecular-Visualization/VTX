@@ -77,11 +77,9 @@ namespace VTX::Renderer::Context
 		}
 
 		template<E_COMMAND C, typename Executor>
-		void _executePayload(
-			const Executor &	  p_executor,
-			const CommandBuffer & p_commands,
-			const Command &		  p_command
-		) noexcept
+		void _executePayload( const Executor &		p_executor,
+							  const CommandBuffer & p_commands,
+							  const Command &		p_command ) noexcept
 		{
 			using Payload = PayloadT<C>;
 
@@ -96,11 +94,9 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename Executor>
-		void _executeCommand(
-			const Executor &	  p_executor,
-			const CommandBuffer & p_commands,
-			const Command &		  p_command
-		) noexcept
+		void _executeCommand( const Executor &		p_executor,
+							  const CommandBuffer & p_commands,
+							  const Command &		p_command ) noexcept
 		{
 			switch ( p_command.type )
 			{
@@ -138,11 +134,9 @@ namespace VTX::Renderer::Context
 		}
 
 		template<typename Executor>
-		void _executeRange(
-			const Executor &	  p_executor,
-			const CommandBuffer & p_commands,
-			const CommandRange &  p_range
-		) noexcept
+		void _executeRange( const Executor &	  p_executor,
+							const CommandBuffer & p_commands,
+							const CommandRange &  p_range ) noexcept
 		{
 			const CommandID end = p_range.first + p_range.count;
 			assert( end <= p_commands.commands.size() );
@@ -153,10 +147,8 @@ namespace VTX::Renderer::Context
 			}
 		}
 
-		void _logInteropAvailability(
-			const Desc::E_INTEROP_API		  p_api,
-			const Desc::InteropAvailability & p_availability
-		)
+		void _logInteropAvailability( const Desc::E_INTEROP_API			p_api,
+									  const Desc::InteropAvailability & p_availability )
 		{
 			const std::string_view apiName = Util::Enum::enumName( p_api );
 
@@ -179,12 +171,10 @@ namespace VTX::Renderer::Context
 
 	ContextWrapper::~ContextWrapper() = default;
 
-	void ContextWrapper::setOpenGL(
-		const size_t					p_width,
-		const size_t					p_height,
-		const Desc::NativeContextInfo & p_contextInfo,
-		const FilePath &				p_shaderDir
-	)
+	void ContextWrapper::setOpenGL( const size_t					p_width,
+									const size_t					p_height,
+									const Desc::NativeContextInfo & p_contextInfo,
+									const FilePath &				p_shaderDir )
 	{
 		_setBackend<Backend::OpenGL>( _impl->backend, _impl->executor, p_width, p_height, p_contextInfo, p_shaderDir );
 		_setExecutor<Executor::OpenGL>( _impl->backend, _impl->executor );
@@ -202,21 +192,17 @@ namespace VTX::Renderer::Context
 	{
 		if ( not _impl->commands.onDirtyPassIDs.empty() )
 		{
-			execute(
-				std::span<const PassID> {
-					_impl->commands.onDirtyPassIDs.data(),
-					_impl->commands.onDirtyPassIDs.size(),
-				}
-			);
+			execute( std::span<const PassID> {
+				_impl->commands.onDirtyPassIDs.data(),
+				_impl->commands.onDirtyPassIDs.size(),
+			} );
 			_impl->commands.clearDirtyPasses();
 		}
 
-		execute(
-			std::span<const PassID> {
-				_impl->commands.everyFramePassIDs.data(),
-				_impl->commands.everyFramePassIDs.size(),
-			}
-		);
+		execute( std::span<const PassID> {
+			_impl->commands.everyFramePassIDs.data(),
+			_impl->commands.everyFramePassIDs.size(),
+		} );
 	}
 
 	void ContextWrapper::execute( const std::span<const PassID> p_passIDs ) const noexcept
@@ -259,15 +245,12 @@ namespace VTX::Renderer::Context
 					p_backend.build( p_renderQueue, p_resources, _impl->commands );
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
-	void ContextWrapper::setExternalPass(
-		const Desc::Key & p_pass,
-		const uintptr_t	  p_function,
-		const uintptr_t	  p_context
-	)
+	void ContextWrapper::setExternalPass( const Desc::Key & p_pass,
+										  const uintptr_t	p_function,
+										  const uintptr_t	p_context )
 	{
 		const PassCommandRange & pass	  = _impl->commands.passRange( p_pass );
 		const CommandRange &	 commands = pass.commands;
@@ -287,12 +270,10 @@ namespace VTX::Renderer::Context
 
 	void ContextWrapper::markPassDirty( const Desc::Key & p_pass ) { _impl->commands.markPassDirty( p_pass ); }
 
-	void ContextWrapper::resize(
-		const uint32_t										 p_width,
-		const uint32_t										 p_height,
-		const Desc::PassList &								 p_passes,
-		const std::unordered_map<Desc::Key, Desc::Texture> & p_textures
-	)
+	void ContextWrapper::resize( const uint32_t										  p_width,
+								 const uint32_t										  p_height,
+								 const Desc::PassList &								  p_passes,
+								 const std::unordered_map<Desc::Key, Desc::Texture> & p_textures )
 	{
 		std::visit(
 			[ & ]( auto & p_backend )
@@ -303,8 +284,7 @@ namespace VTX::Renderer::Context
 					p_backend.resize( p_width, p_height, p_passes, p_textures );
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
 	void ContextWrapper::setBuffer( const Desc::BufferRef & p_ref, SpanBytes p_bytes, const size_t p_offset )
@@ -323,8 +303,7 @@ namespace VTX::Renderer::Context
 					p_backend.setBufferData( p_ref, p_bytes, p_offset );
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
 	bool ContextWrapper::ensureBufferChunk( const Desc::BufferRef & p_ref )
@@ -342,8 +321,7 @@ namespace VTX::Renderer::Context
 					return false;
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
 	bool ContextWrapper::releaseBufferChunk( const Desc::BufferRef & p_ref )
@@ -361,14 +339,11 @@ namespace VTX::Renderer::Context
 					return false;
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
-	Desc::InteropBufferMapping ContextWrapper::mapInteropBuffer(
-		const Desc::E_INTEROP_API p_api,
-		const Desc::BufferRef &	  p_ref
-	)
+	Desc::InteropBufferMapping ContextWrapper::mapInteropBuffer( const Desc::E_INTEROP_API p_api,
+																 const Desc::BufferRef &   p_ref )
 	{
 		auto refs	  = std::to_array<Desc::BufferRef>( { p_ref } );
 		auto mappings = mapInteropBuffers( p_api, refs );
@@ -376,10 +351,8 @@ namespace VTX::Renderer::Context
 		return std::move( mappings.front() );
 	}
 
-	std::vector<Desc::InteropBufferMapping> ContextWrapper::mapInteropBuffers(
-		const Desc::E_INTEROP_API		 p_api,
-		std::span<const Desc::BufferRef> p_refs
-	)
+	std::vector<Desc::InteropBufferMapping> ContextWrapper::mapInteropBuffers( const Desc::E_INTEROP_API		p_api,
+																			   std::span<const Desc::BufferRef> p_refs )
 	{
 		return std::visit(
 			[ & ]( auto & p_backend ) -> std::vector<Desc::InteropBufferMapping>
@@ -394,23 +367,18 @@ namespace VTX::Renderer::Context
 					return {};
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
-	void ContextWrapper::unmapInteropBuffer(
-		const Desc::E_INTEROP_API		   p_api,
-		const Desc::InteropBufferMapping & p_mapping
-	)
+	void ContextWrapper::unmapInteropBuffer( const Desc::E_INTEROP_API			p_api,
+											 const Desc::InteropBufferMapping & p_mapping )
 	{
 		auto mappings = std::to_array<Desc::InteropBufferMapping>( { p_mapping } );
 		unmapInteropBuffers( p_api, mappings );
 	}
 
-	void ContextWrapper::unmapInteropBuffers(
-		const Desc::E_INTEROP_API					p_api,
-		std::span<const Desc::InteropBufferMapping> p_mappings
-	)
+	void ContextWrapper::unmapInteropBuffers( const Desc::E_INTEROP_API					  p_api,
+											  std::span<const Desc::InteropBufferMapping> p_mappings )
 	{
 		std::visit(
 			[ & ]( auto & p_backend )
@@ -421,8 +389,7 @@ namespace VTX::Renderer::Context
 					p_backend.unmapInteropBuffers( p_api, p_mappings );
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
 	void ContextWrapper::unregisterInteropBuffer( const Desc::E_INTEROP_API p_api, const Desc::BufferRef & p_ref )
@@ -436,8 +403,7 @@ namespace VTX::Renderer::Context
 					p_backend.unregisterInteropBuffer( p_api, p_ref );
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
 	Desc::InteropAvailability ContextWrapper::interopAvailability( const Desc::E_INTEROP_API p_api ) const
@@ -455,19 +421,16 @@ namespace VTX::Renderer::Context
 					return {};
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
 	bool ContextWrapper::isInteropAvailable( const Desc::E_INTEROP_API p_api ) const
 	{ return interopAvailability( p_api ).available(); }
 
-	std::vector<std::byte> ContextWrapper::getTextureData(
-		const Desc::Key &			  p_key,
-		std::optional<Desc::E_FORMAT> p_format,
-		std::optional<size_t>		  p_x,
-		std::optional<size_t>		  p_y
-	) const
+	std::vector<std::byte> ContextWrapper::getTextureData( const Desc::Key &			 p_key,
+														   std::optional<Desc::E_FORMAT> p_format,
+														   std::optional<size_t>		 p_x,
+														   std::optional<size_t>		 p_y ) const
 	{
 		return std::visit(
 			[ & ]( auto & p_backend )
@@ -479,16 +442,13 @@ namespace VTX::Renderer::Context
 				}
 				return std::vector<std::byte> {};
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
-	void ContextWrapper::setTextureData(
-		const Desc::Key &	  p_key,
-		SpanBytes			  p_data,
-		std::optional<size_t> p_width,
-		std::optional<size_t> p_height
-	)
+	void ContextWrapper::setTextureData( const Desc::Key &	   p_key,
+										 SpanBytes			   p_data,
+										 std::optional<size_t> p_width,
+										 std::optional<size_t> p_height )
 	{
 		std::visit(
 			[ & ]( auto & p_backend )
@@ -499,8 +459,7 @@ namespace VTX::Renderer::Context
 					p_backend.setTextureData( p_key, p_data, p_width, p_height );
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
 	void ContextWrapper::setRenderTarget( const Desc::E_RENDER_TARGET p_target )
@@ -514,8 +473,7 @@ namespace VTX::Renderer::Context
 					p_backend.setRenderTarget( p_target );
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
 	void ContextWrapper::setOption( const Desc::E_OPTION p_option, const bool p_value )
@@ -529,8 +487,7 @@ namespace VTX::Renderer::Context
 					p_backend.setOption( p_option, p_value );
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
 	void ContextWrapper::fillInfos( StructInfos & p_infos ) const
@@ -544,8 +501,7 @@ namespace VTX::Renderer::Context
 					p_backend.fillInfos( p_infos );
 				}
 			},
-			_impl->backend
-		);
+			_impl->backend );
 	}
 
 	const CommandBuffer & ContextWrapper::commands() const { return _impl->commands; }

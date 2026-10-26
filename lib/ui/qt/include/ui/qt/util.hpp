@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_UTIL__
-#define __VTX_UI_QT_UTIL__
+#ifndef VTX_UI_QT_UTIL_HPP
+#define VTX_UI_QT_UTIL_HPP
 
 #include "ui/qt/helper.hpp"
 #include <QBitmap>
@@ -64,12 +64,10 @@ namespace VTX::UI::QT::Util
 
 	void fillComboBox( QComboBox * p_comboBox, const std::vector<std::string> & p_values );
 	void fillComboBox( QComboBox * p_comboBox, const std::vector<QString> & p_values );
-	void fillMenu(
-		QMenu &							 p_menu,
-		int								 p_enumSize,
-		const std::vector<std::string> & p_names,
-		bool							 p_actionCheckable = false
-	);
+	void fillMenu( QMenu &							p_menu,
+				   int								p_enumSize,
+				   const std::vector<std::string> & p_names,
+				   bool								p_actionCheckable = false );
 
 	static void appendColorHtmlTag( QString & p_txt, const VTX::Util::Color::Rgba & p_color )
 	{

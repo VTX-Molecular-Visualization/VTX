@@ -1,5 +1,5 @@
-#ifndef __VTX_BENCH_USER_INTERFACE__
-#define __VTX_BENCH_USER_INTERFACE__
+#ifndef VTX_BENCH_USER_INTERFACE_HPP
+#define VTX_BENCH_USER_INTERFACE_HPP
 
 #include "camera_controller.hpp"
 #include <SDL3/SDL.h>

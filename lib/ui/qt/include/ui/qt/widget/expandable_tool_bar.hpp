@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_EXPANDABLE_TOOL_BAR__
-#define __VTX_UI_QT_WIDGET_EXPANDABLE_TOOL_BAR__
+#ifndef VTX_UI_QT_WIDGET_EXPANDABLE_TOOL_BAR_HPP
+#define VTX_UI_QT_WIDGET_EXPANDABLE_TOOL_BAR_HPP
 
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/helper.hpp"

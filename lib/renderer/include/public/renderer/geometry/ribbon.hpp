@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GEOMETRY_RIBBON__
-#define __VTX_RENDERER_GEOMETRY_RIBBON__
+#ifndef VTX_RENDERER_GEOMETRY_RIBBON_HPP
+#define VTX_RENDERER_GEOMETRY_RIBBON_HPP
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
@@ -79,21 +79,18 @@ namespace VTX::Renderer::Geometry
 
 		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			assert(
-				p_data.data.residueUids->getCount() == p_data.data.topology->residueSecondaryStructureTypes.size()
-			);
+			assert( p_data.data.residueUids->getCount()
+					== p_data.data.topology->residueSecondaryStructureTypes.size() );
 			assert( p_data.data.residueUids->getCount() == p_data.data.topology->residueFirstAtomIndexes.size() );
 			assert( p_data.data.residueUids->getCount() == p_data.data.topology->residueAtomCounts.size() );
-			assert(
-				p_data.data.topology->chainFirstResidues.size() == p_data.data.topology->chainResidueCounts.size()
-			);
+			assert( p_data.data.topology->chainFirstResidues.size()
+					== p_data.data.topology->chainResidueCounts.size() );
 
 			if ( const auto it = _construction.find( p_handle ); it != _construction.end() )
 			{
 				const Construction & cache = it->second;
 				_addRange(
-					p_handle, static_cast<Index>( cache.indices.size() ), static_cast<Index>( cache.residues.size() )
-				);
+					p_handle, static_cast<Index>( cache.indices.size() ), static_cast<Index>( cache.residues.size() ) );
 
 				if ( not cache.isEmpty )
 				{

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_INPUT_INPUT_MANAGER__
-#define __VTX_APP_INPUT_INPUT_MANAGER__
+#ifndef VTX_APP_INPUT_INPUT_MANAGER_HPP
+#define VTX_APP_INPUT_INPUT_MANAGER_HPP
 
 #include <array>
 #include <util/types.hpp>
@@ -46,8 +46,8 @@ namespace VTX::App::Input
 			return Vec3i(
 				static_cast<int>( hasAction( Action::MoveRight ) ) - static_cast<int>( hasAction( Action::MoveLeft ) ),
 				static_cast<int>( hasAction( Action::MoveUp ) ) - static_cast<int>( hasAction( Action::MoveDown ) ),
-				static_cast<int>( hasAction( Action::MoveBack ) ) - static_cast<int>( hasAction( Action::MoveFront ) )
-			);
+				static_cast<int>( hasAction( Action::MoveBack ) )
+					- static_cast<int>( hasAction( Action::MoveFront ) ) );
 		}
 
 		int rotationAxis() const

@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_BLUR__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_BLUR__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_BLUR_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_BLUR_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/builder/post_process/ssao.hpp"

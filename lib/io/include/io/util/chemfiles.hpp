@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_UTIL_CHEMFILES__
-#define __VTX_IO_UTIL_CHEMFILES__
+#ifndef VTX_IO_UTIL_CHEMFILES_HPP
+#define VTX_IO_UTIL_CHEMFILES_HPP
 
 #include "io/internal/filesystem.hpp"
 #include <core/chemdb/bond.hpp>

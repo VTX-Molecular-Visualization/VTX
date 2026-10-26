@@ -25,9 +25,8 @@ namespace VTX::UI::QT::Widget::Tree
 		_playerModeCombo->addItem( tr( "Forward" ), static_cast<int>( App::Trajectory::PLAY_MODE::FORWARD ) );
 		_playerModeCombo->addItem( tr( "Forward Loop" ), static_cast<int>( App::Trajectory::PLAY_MODE::FORWARD_LOOP ) );
 		_playerModeCombo->addItem( tr( "Backward" ), static_cast<int>( App::Trajectory::PLAY_MODE::BACKWARD ) );
-		_playerModeCombo->addItem(
-			tr( "Backward Loop" ), static_cast<int>( App::Trajectory::PLAY_MODE::BACKWARD_LOOP )
-		);
+		_playerModeCombo->addItem( tr( "Backward Loop" ),
+								   static_cast<int>( App::Trajectory::PLAY_MODE::BACKWARD_LOOP ) );
 		_playerModeCombo->addItem( tr( "Ping Pong" ), static_cast<int>( App::Trajectory::PLAY_MODE::PING_PONG ) );
 		formLayout->addRow( tr( "Mode" ), _playerModeCombo );
 
@@ -70,8 +69,7 @@ namespace VTX::UI::QT::Widget::Tree
 		// Connect to trajectory updates
 		_trajectoryUpdatedConnection
 			= App::REG().on_update<App::Trajectory::Player>().connect<&TrajectorySettings::_onTrajectoryUpdated>(
-				this
-			);
+				this );
 
 		_refresh();
 	}

@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_COLOR__
-#define __VTX_RENDERER_COLOR__
+#ifndef VTX_RENDERER_COLOR_HPP
+#define VTX_RENDERER_COLOR_HPP
 
 #include <array>
 #include <core/chemdb/atom.hpp>
@@ -369,10 +369,8 @@ namespace VTX::Renderer::Color
 
 	inline ColorIndex getColorIndex( const std::string & p_chainId, bool p_isHetAtm = false );
 
-	inline ColorIndex getCarbonChainColorIndex(
-		const Core::ChemDB::Atom::SYMBOL p_symbol,
-		const std::string &				 p_chainId
-	)
+	inline ColorIndex getCarbonChainColorIndex( const Core::ChemDB::Atom::SYMBOL p_symbol,
+												const std::string &				 p_chainId )
 	{
 		using Core::ChemDB::Atom::SYMBOL;
 
@@ -384,10 +382,8 @@ namespace VTX::Renderer::Color
 		return getColorIndex( p_symbol );
 	}
 
-	inline ColorIndex getCarbonCustomColorIndex(
-		const Core::ChemDB::Atom::SYMBOL p_symbol,
-		const ColorIndex				 p_colorIndex
-	)
+	inline ColorIndex getCarbonCustomColorIndex( const Core::ChemDB::Atom::SYMBOL p_symbol,
+												 const ColorIndex				  p_colorIndex )
 	{
 		using Core::ChemDB::Atom::SYMBOL;
 
@@ -400,8 +396,7 @@ namespace VTX::Renderer::Color
 	inline ColorIndex getColorIndex(
 
 		const std::string & p_chainId,
-		const bool			p_isHetAtm
-	)
+		const bool			p_isHetAtm )
 	{
 		if ( p_chainId.empty() )
 		{

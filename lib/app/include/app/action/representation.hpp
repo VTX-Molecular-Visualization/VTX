@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_REPRESENTATION__
-#define __VTX_APP_ACTION_REPRESENTATION__
+#ifndef VTX_APP_ACTION_REPRESENTATION_HPP
+#define VTX_APP_ACTION_REPRESENTATION_HPP
 
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
@@ -50,8 +50,7 @@ namespace VTX::App::Action::Representation
 					}
 
 					assert( count == topology.getAtomCount() );
-				}
-			);
+				} );
 		}
 
 		void execute( const Entity p_ent, const Entity p_preset, const Core::Struct::IndexRange & p_range )
@@ -66,12 +65,10 @@ namespace VTX::App::Action::Representation
 
 	struct AddItem
 	{
-		void execute(
-			const Entity						 p_ent,
-			const Core::Struct::E_SYSTEM_ITEM	 p_item,
-			const Entity						 p_preset,
-			const Core::Struct::IndexRangeList & p_ranges = {}
-		)
+		void execute( const Entity						   p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM	   p_item,
+					  const Entity						   p_preset,
+					  const Core::Struct::IndexRangeList & p_ranges = {} )
 		{
 			switch ( p_item )
 			{
@@ -94,28 +91,22 @@ namespace VTX::App::Action::Representation
 			}
 		}
 
-		void execute(
-			const Entity					  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const Entity					  p_preset,
-			const Core::Struct::IndexRange &  p_range
-		)
+		void execute( const Entity						p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM p_item,
+					  const Entity						p_preset,
+					  const Core::Struct::IndexRange &	p_range )
 		{ execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_range ) ); }
 
-		void execute(
-			const Entity					  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const Entity					  p_preset,
-			const std::vector<Index> &		  p_values
-		)
+		void execute( const Entity						p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM p_item,
+					  const Entity						p_preset,
+					  const std::vector<Index> &		p_values )
 		{ execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_values ) ); }
 
-		void execute(
-			const Entity					  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const Entity					  p_preset,
-			const Index						  p_value
-		)
+		void execute( const Entity						p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM p_item,
+					  const Entity						p_preset,
+					  const Index						p_value )
 		{ execute( p_ent, p_item, p_preset, Core::Struct::IndexRangeList( p_value ) ); }
 	};
 
@@ -183,8 +174,7 @@ namespace VTX::App::Action::Representation
 					{
 						static_assert( always_false_v<S>, "Representation::Change: invalid representation value." );
 					}
-				}
-			);
+				} );
 		}
 	};
 
@@ -202,8 +192,7 @@ namespace VTX::App::Action::Representation
 					}
 
 					Add<Core::Struct::E_SYSTEM_ITEM::ATOM>().execute( p_ent, p_e, ranges );
-				}
-			);
+				} );
 		}
 	};
 } // namespace VTX::App::Action::Representation

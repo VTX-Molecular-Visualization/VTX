@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_GL_FRAMEBUFFER__
-#define __VTX_RENDERER_CONTEXT_GL_FRAMEBUFFER__
+#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_FRAMEBUFFER_HPP
+#define VTX_RENDERER_CONTEXT_BACKEND_GL_FRAMEBUFFER_HPP
 
 #include "include_opengl.hpp"
 #include "texture.hpp"
@@ -68,11 +68,9 @@ namespace VTX::Renderer::Context::Backend::GL
 			glBindFramebuffer( p_target, _id );
 		}
 
-		void attachTexture(
-			const Texture & p_texture,
-			const GLenum	p_attachment,
-			const GLint		p_level = 0
-		) const noexcept
+		void attachTexture( const Texture & p_texture,
+							const GLenum	p_attachment,
+							const GLint		p_level = 0 ) const noexcept
 		{
 			assert( glIsFramebuffer( _id ) );
 			assert( glIsTexture( static_cast<GLuint>( p_texture.getId() ) ) );
@@ -104,4 +102,4 @@ namespace VTX::Renderer::Context::Backend::GL
 	};
 } // namespace VTX::Renderer::Context::Backend::GL
 
-#endif // __VTX_GL_FRAMEBUFFER__
+#endif // VTX_RENDERER_CONTEXT_BACKEND_GL_FRAMEBUFFER_HPP

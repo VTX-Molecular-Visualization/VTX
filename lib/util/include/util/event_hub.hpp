@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_EVENT_HUB__
-#define __VTX_UTIL_EVENT_HUB__
+#ifndef VTX_UTIL_EVENT_HUB_HPP
+#define VTX_UTIL_EVENT_HUB_HPP
 
 #include <entt/entt.hpp>
 #include <mutex>

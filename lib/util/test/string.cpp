@@ -59,8 +59,7 @@ TEST_CASE( "Util::String", "[unit]" )
 	CHECK_THROWS_AS( VTX::Util::String::strToNumber<VTX::uint>( "-1" ), std::invalid_argument );
 	CHECK_THROWS_AS(
 		VTX::Util::String::strToNumber<VTX::uint>( std::to_string( std::numeric_limits<VTX::uint>::max() ) + "0" ),
-		std::invalid_argument
-	);
+		std::invalid_argument );
 
 	str = "123 abcDefghijklmnopqrstuvwxyZ.()+";
 	str = VTX::Util::String::toUpper( str );

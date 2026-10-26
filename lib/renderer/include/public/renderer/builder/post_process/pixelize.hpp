@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_PIXELIZE__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_PIXELIZE__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_PIXELIZE_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_PIXELIZE_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
@@ -45,8 +45,7 @@ namespace VTX::Renderer::Builder::PostProcess
 				.uniform(
 					"Size",
 					PIXELIZE_SIZE_DEFAULT,
-					std::pair { static_cast<double>( PIXELIZE_SIZE_MIN ), static_cast<double>( PIXELIZE_SIZE_MAX ) }
-				)
+					std::pair { static_cast<double>( PIXELIZE_SIZE_MIN ), static_cast<double>( PIXELIZE_SIZE_MAX ) } )
 				.uniform( "Background", static_cast<unsigned int>( PIXELIZE_BACKGROUND_DEFAULT ) )
 				.endProgram()
 				.endPass();

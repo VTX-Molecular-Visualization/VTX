@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_IO__
-#define __VTX_APP_ACTION_IO__
+#ifndef VTX_APP_ACTION_IO_HPP
+#define VTX_APP_ACTION_IO_HPP
 
 #include "app/ecs.hpp"
 #include <app/action/action_manager.hpp>
@@ -20,14 +20,14 @@ namespace VTX::App::Action::IO
 		void execute( const std::string & p_path );
 	};
 
-	struct _SystemIo;
+	struct SystemIo;
 
-	struct _SystemIoDel
+	struct SystemIoDel
 	{
-		void operator()( _SystemIo * ) noexcept;
+		void operator()( SystemIo * ) noexcept;
 	};
 
-	using _SystemIoPtr = std::unique_ptr<_SystemIo, _SystemIoDel>;
+	using SystemIoPtr = std::unique_ptr<SystemIo, SystemIoDel>;
 
 	/**
 	 * @brief Load a molecular system from disk or buffer.
@@ -42,7 +42,7 @@ namespace VTX::App::Action::IO
 		void wait();
 
 	  private:
-		_SystemIoPtr _data;
+		SystemIoPtr _data;
 	};
 
 	/**
@@ -89,7 +89,7 @@ namespace VTX::App::Action::IO
 		void wait();
 
 	  private:
-		_SystemIoPtr _data;
+		SystemIoPtr _data;
 	};
 
 	struct RunPythonScript
@@ -114,14 +114,12 @@ namespace VTX::App::Action::IO
 	{
 	  public:
 		void execute();
-		void execute(
-			const std::optional<FilePath> & p_path,
-			const std::optional<FilePath> & p_filename,
-			Util::Image::E_FORMAT			p_format,
-			std::optional<size_t>			p_width,
-			std::optional<size_t>			p_height,
-			std::optional<float>			p_backgroundOpacity
-		);
+		void execute( const std::optional<FilePath> & p_path,
+					  const std::optional<FilePath> & p_filename,
+					  Util::Image::E_FORMAT			  p_format,
+					  std::optional<size_t>			  p_width,
+					  std::optional<size_t>			  p_height,
+					  std::optional<float>			  p_backgroundOpacity );
 		void execute( const FilePath &, Util::Image::E_FORMAT, size_t, size_t, std::optional<float> = std::nullopt );
 	};
 

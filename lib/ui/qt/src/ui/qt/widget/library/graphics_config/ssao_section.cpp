@@ -51,34 +51,26 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderBlurSize->setMinimum( BLUR_SIZE_MIN );
 		_sliderBlurSize->setMaximum( BLUR_SIZE_MAX );
 
-		connect(
-			this,
-			&HideableGroupBox::toggled,
-			[ this ]( const bool p_state ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_SSAO, bool>( p_state ); }
-		);
-		connect(
-			_comboBoxMethod,
-			QOverload<int>::of( &QComboBox::currentIndexChanged ),
-			[ this ]( const int p_index )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::SSAO_METHOD, E_SSAO_METHOD>( E_SSAO_METHOD( p_index ) ); }
-		);
-		connect(
-			_comboBoxScale,
-			QOverload<int>::of( &QComboBox::currentIndexChanged ),
-			[ this ]( const int p_index )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::SSAO_SCALE, float>( _scaleFromUi( p_index ) ); }
-		);
-		connect(
-			_sliderIntensity,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value )
-			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::SSAO_INTENSITY, float>( p_value ); }
-		);
-		connect(
-			_sliderBlurSize,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { _changeValue<E_GRAPHICS_CONFIG_VALUES::BLUR_SIZE, float>( p_value ); }
-		);
+		connect( this,
+				 &HideableGroupBox::toggled,
+				 [ this ]( const bool p_state )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_SSAO, bool>( p_state ); } );
+		connect( _comboBoxMethod,
+				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
+				 [ this ]( const int p_index )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::SSAO_METHOD, E_SSAO_METHOD>( E_SSAO_METHOD( p_index ) ); } );
+		connect( _comboBoxScale,
+				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
+				 [ this ]( const int p_index )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::SSAO_SCALE, float>( _scaleFromUi( p_index ) ); } );
+		connect( _sliderIntensity,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::SSAO_INTENSITY, float>( p_value ); } );
+		connect( _sliderBlurSize,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::BLUR_SIZE, float>( p_value ); } );
 	}
 
 	void SSAOSection::setConfig( const Entity p_preset, const VTX::Renderer::GraphicsConfig & p_config )

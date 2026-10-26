@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SYSTEM_UID__
-#define __VTX_APP_SYSTEM_UID__
+#ifndef VTX_APP_SYSTEM_UID_HPP
+#define VTX_APP_SYSTEM_UID_HPP
 
 #include <util/math/range_list.hpp>
 #include <util/uid.hpp>

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_CAMERA__
-#define __VTX_APP_ACTION_CAMERA__
+#ifndef VTX_APP_ACTION_CAMERA_HPP
+#define VTX_APP_ACTION_CAMERA_HPP
 
 #include "app/controller/animation.hpp"
 #include "app/controller/freefly.hpp"
@@ -128,17 +128,13 @@ namespace VTX::App::Action::Camera
 	template<E_CAMERA_INTERPOLATOR I = E_CAMERA_INTERPOLATOR::EASE_IN_OUT>
 	struct Animate
 	{
-		void execute(
-			const Vec3f & p_position,
-			const Quatf & p_rotation,
-			const float	  p_duration = ANIMATION_DURATION_DEFAULT_MS
-		)
+		void execute( const Vec3f & p_position,
+					  const Quatf & p_rotation,
+					  const float	p_duration = ANIMATION_DURATION_DEFAULT_MS )
 		{ execute( App::Controller::AnimationData { p_position, p_rotation }, p_duration ); }
 
-		void execute(
-			const App::Controller::AnimationData & p_end,
-			const float							   p_duration = ANIMATION_DURATION_DEFAULT_MS
-		)
+		void execute( const App::Controller::AnimationData & p_end,
+					  const float							 p_duration = ANIMATION_DURATION_DEFAULT_MS )
 		{
 			using namespace Util;
 			using namespace App::Controller;
@@ -176,8 +172,7 @@ namespace VTX::App::Action::Camera
 
 			// Run animation.
 			HUB().trigger<Events::CameraAnimationStart>(
-				start, p_end, p_duration, interpPositionFunc, interpRotationFunc
-			);
+				start, p_end, p_duration, interpPositionFunc, interpRotationFunc );
 		}
 	};
 

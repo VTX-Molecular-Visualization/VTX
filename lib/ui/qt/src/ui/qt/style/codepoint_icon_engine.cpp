@@ -8,12 +8,10 @@
 namespace VTX::UI::QT::Style
 {
 
-	void CodepointIconEngine::paint(
-		QPainter *	  p_painter,
-		const QRect & p_rect,
-		QIcon::Mode	  p_mode,
-		QIcon::State  p_state
-	)
+	void CodepointIconEngine::paint( QPainter *	   p_painter,
+									 const QRect & p_rect,
+									 QIcon::Mode   p_mode,
+									 QIcon::State  p_state )
 	{
 		if ( p_painter == nullptr || p_rect.isEmpty() )
 		{
@@ -87,10 +85,8 @@ namespace VTX::UI::QT::Style
 			dpr = s->devicePixelRatio();
 		}
 
-		QPixmap pm( QSize(
-			static_cast<int>( std::ceil( p_size.width() * dpr ) ),
-			static_cast<int>( std::ceil( p_size.height() * dpr ) )
-		) );
+		QPixmap pm( QSize( static_cast<int>( std::ceil( p_size.width() * dpr ) ),
+						   static_cast<int>( std::ceil( p_size.height() * dpr ) ) ) );
 		pm.setDevicePixelRatio( dpr );
 		pm.fill( Qt::transparent );
 

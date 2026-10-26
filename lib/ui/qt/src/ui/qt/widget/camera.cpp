@@ -57,38 +57,29 @@ namespace VTX::UI::QT::Widget
 
 		// Save viewpoint button.
 		auto * buttonSaveViewpoint = Helper::makeQObject<ActionablePushButton>(
-			UI_ACTIONS().getAction( Action::Camera::SAVE_VIEWPOINT ), this
-		);
+			UI_ACTIONS().getAction( Action::Camera::SAVE_VIEWPOINT ), this );
 		layout->addWidget( buttonSaveViewpoint );
 
 		// Connect.
-		connect(
-			_transform,
-			&Transform::positionChanged,
-			[ this ]( const Vec3f & p_position )
-			{ App::ACTION().execute<App::Action::Camera::SetPosition>( p_position ); }
-		);
-		connect(
-			_transform,
-			&Transform::rotationChanged,
-			[ this ]( const Quatf & p_rotation )
-			{ App::ACTION().execute<App::Action::Camera::SetRotation>( p_rotation ); }
-		);
-		connect(
-			_sliderFov,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { App::ACTION().execute<App::Action::Camera::SetFov>( p_value ); }
-		);
-		connect(
-			_sliderNear,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { App::ACTION().execute<App::Action::Camera::SetNearClip>( p_value ); }
-		);
-		connect(
-			_sliderFar,
-			&EditableSlider::valueChanged,
-			[ this ]( const float p_value ) { App::ACTION().execute<App::Action::Camera::SetFarClip>( p_value ); }
-		);
+		connect( _transform,
+				 &Transform::positionChanged,
+				 [ this ]( const Vec3f & p_position )
+				 { App::ACTION().execute<App::Action::Camera::SetPosition>( p_position ); } );
+		connect( _transform,
+				 &Transform::rotationChanged,
+				 [ this ]( const Quatf & p_rotation )
+				 { App::ACTION().execute<App::Action::Camera::SetRotation>( p_rotation ); } );
+		connect( _sliderFov,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value ) { App::ACTION().execute<App::Action::Camera::SetFov>( p_value ); } );
+		connect( _sliderNear,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { App::ACTION().execute<App::Action::Camera::SetNearClip>( p_value ); } );
+		connect( _sliderFar,
+				 &EditableSlider::valueChanged,
+				 [ this ]( const float p_value )
+				 { App::ACTION().execute<App::Action::Camera::SetFarClip>( p_value ); } );
 
 		// Connect app.
 		_transformChangedConnection

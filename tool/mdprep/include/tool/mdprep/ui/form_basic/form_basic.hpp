@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_FORM_BASIC__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_FORM_BASIC__
+#ifndef VTX_TOOL_MDPREP_UI_FORM_BASIC_FORM_BASIC_HPP
+#define VTX_TOOL_MDPREP_UI_FORM_BASIC_FORM_BASIC_HPP
 
 #include <array>
 #include <functional>
@@ -41,12 +41,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	{
 	  public:
 		FormBasic() = delete;
-		FormBasic(
-			QWidget * p_container,
-			SpecificFieldsPlacerCallback,
-			const MdParameters & p_defaults,
-			ReportManager &		 p_reportManager
-		);
+		FormBasic( QWidget * p_container,
+				   SpecificFieldsPlacerCallback,
+				   const MdParameters & p_defaults,
+				   ReportManager &		p_reportManager );
 
 		/**
 		 * @brief Change information related to the current engine.

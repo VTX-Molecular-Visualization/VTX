@@ -13,12 +13,10 @@ namespace
 	using namespace VTX::Util::Math;
 
 	// Add a bond to the topology.
-	void _addBond(
-		Topology &	p_topology,
-		const Index p_firstAtomIndex,
-		const Index p_secondAtomIndex,
-		size_t &	p_recomputedBondCount
-	)
+	void _addBond( Topology &  p_topology,
+				   const Index p_firstAtomIndex,
+				   const Index p_secondAtomIndex,
+				   size_t &	   p_recomputedBondCount )
 	{
 		p_topology.bondPairAtomIndexes.emplace_back( p_firstAtomIndex );
 		p_topology.bondPairAtomIndexes.emplace_back( p_secondAtomIndex );
@@ -27,13 +25,11 @@ namespace
 	}
 
 	// Test if two atoms can form a disulfide bond (CYS-SG).
-	void _testDisulfideBond(
-		Topology &			   p_topology,
-		std::span<const Vec3f> p_frame,
-		const Index			   p_firstAtomIndex,
-		const Index			   p_secondAtomIndex,
-		size_t &			   p_recomputedBondCount
-	)
+	void _testDisulfideBond( Topology &				p_topology,
+							 std::span<const Vec3f> p_frame,
+							 const Index			p_firstAtomIndex,
+							 const Index			p_secondAtomIndex,
+							 size_t &				p_recomputedBondCount )
 	{
 		constexpr double MAX_DISTANCE_FOR_DISULFIDE_BOND_SQR = 9.0;
 
@@ -45,12 +41,10 @@ namespace
 	}
 
 	// Recompute disulfide bonds by checking all pairs of atoms in the disulfide grid.
-	void _recomputeDisulfides(
-		Topology &			   p_topology,
-		std::span<const Vec3f> p_frame,
-		const Grid<Index> &	   p_disulfideGrid,
-		size_t &			   p_recomputedBondCount
-	)
+	void _recomputeDisulfides( Topology &			  p_topology,
+							   std::span<const Vec3f> p_frame,
+							   const Grid<Index> &	  p_disulfideGrid,
+							   size_t &				  p_recomputedBondCount )
 	{
 		for ( const auto & [ cellPosition, cell ] : p_disulfideGrid )
 		{
@@ -58,9 +52,8 @@ namespace
 
 			p_disulfideGrid.forEachNeighbourCell(
 				cellPosition,
-				[ & ](
-					const Grid<Index>::CellPosition & p_neighbourPosition, const Grid<Index>::Cell & p_neighbourCell
-				)
+				[ & ]( const Grid<Index>::CellPosition & p_neighbourPosition,
+					   const Grid<Index>::Cell &		 p_neighbourCell )
 				{
 					// Current cell.
 					if ( cellPosition == p_neighbourPosition )
@@ -69,9 +62,11 @@ namespace
 						{
 							for ( size_t secondIndex = 0; secondIndex < firstIndex; ++secondIndex )
 							{
-								_testDisulfideBond(
-									p_topology, p_frame, cell[ firstIndex ], cell[ secondIndex ], p_recomputedBondCount
-								);
+								_testDisulfideBond( p_topology,
+													p_frame,
+													cell[ firstIndex ],
+													cell[ secondIndex ],
+													p_recomputedBondCount );
 							}
 						}
 
@@ -92,24 +87,20 @@ namespace
 						for ( const Index secondAtomIndex : p_neighbourCell )
 						{
 							_testDisulfideBond(
-								p_topology, p_frame, firstAtomIndex, secondAtomIndex, p_recomputedBondCount
-							);
+								p_topology, p_frame, firstAtomIndex, secondAtomIndex, p_recomputedBondCount );
 						}
 					}
-				}
-			);
+				} );
 		}
 	}
 
 	// Recompute bonds by checking all pairs of atoms in the candidate atom indexes.
-	void _recomputeCandidates(
-		Topology &					 p_topology,
-		std::span<const Vec3f>		 p_frame,
-		const Grid<Index> &			 p_atomGrid,
-		const std::vector<Index> &	 p_candidateAtomIndexes,
-		const std::vector<uint8_t> & p_isCandidateAtom,
-		size_t &					 p_recomputedBondCount
-	)
+	void _recomputeCandidates( Topology &					p_topology,
+							   std::span<const Vec3f>		p_frame,
+							   const Grid<Index> &			p_atomGrid,
+							   const std::vector<Index> &	p_candidateAtomIndexes,
+							   const std::vector<uint8_t> & p_isCandidateAtom,
+							   size_t &						p_recomputedBondCount )
 	{
 		constexpr float CANDIDATE_BOND_CUTOFF_SQR = 3.48f * 2.f * 3.48f * 2.f;
 		constexpr float MIN_BOND_DISTANCE_SQR	  = 0.03f;
@@ -162,8 +153,7 @@ namespace
 							_addBond( p_topology, firstAtomIndex, secondAtomIndex, p_recomputedBondCount );
 						}
 					}
-				}
-			);
+				} );
 		}
 	}
 
@@ -172,12 +162,10 @@ namespace
 namespace VTX::IO::Util::BondRecomputation
 {
 
-	void recomputeBonds(
-		VTX::Core::Struct::Topology &		 p_topology,
-		std::span<const Vec3f>				 p_frame,
-		const VTX::Util::Math::Grid<Index> & p_atomGrid,
-		const BondRecomputeFilter &			 p_filter
-	)
+	void recomputeBonds( VTX::Core::Struct::Topology &		  p_topology,
+						 std::span<const Vec3f>				  p_frame,
+						 const VTX::Util::Math::Grid<Index> & p_atomGrid,
+						 const BondRecomputeFilter &		  p_filter )
 	{
 		const VTX::Util::ScopedChrono chrono( "BondRecomputation::recomputeBonds" );
 		VTX_INFO( "Recomputing bonds..." );
@@ -235,16 +223,14 @@ namespace VTX::IO::Util::BondRecomputation
 			return;
 		}
 
-		p_topology.bondPairAtomIndexes.reserve(
-			p_topology.bondPairAtomIndexes.size() + candidateAtomIndexes.size() * 2
-		);
+		p_topology.bondPairAtomIndexes.reserve( p_topology.bondPairAtomIndexes.size()
+												+ candidateAtomIndexes.size() * 2 );
 		p_topology.bondOrders.reserve( p_topology.bondOrders.size() + candidateAtomIndexes.size() );
 
 		size_t recomputedBondCount = 0;
 		_recomputeDisulfides( p_topology, p_frame, disulfideGrid, recomputedBondCount );
 		_recomputeCandidates(
-			p_topology, p_frame, p_atomGrid, candidateAtomIndexes, isCandidateAtom, recomputedBondCount
-		);
+			p_topology, p_frame, p_atomGrid, candidateAtomIndexes, isCandidateAtom, recomputedBondCount );
 
 		VTX_INFO( "Recomputed {} bonds", recomputedBondCount );
 	}

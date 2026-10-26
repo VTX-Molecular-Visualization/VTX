@@ -21,31 +21,27 @@ namespace VTX::Tool::Mdprep::ui
 			p_label = VTX::UI::QT::Util::LabelWithHelper(
 				"Force Field for biological systems",
 				"Sets of values used by the engine to compute biological systems motion.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 			break;
 		case E_COMMON_FIELDS_COMBOBOX::chemForcefield:
 			p_label = VTX::UI::QT::Util::LabelWithHelper(
 				"Force Field for Small Organic systems",
 				"Sets of values used by the engine to compute small organic systems motion.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 			break;
 		case E_COMMON_FIELDS_COMBOBOX::boxShape:
 			p_label = VTX::UI::QT::Util::LabelWithHelper(
 				"System Periodic Box shape",
 				"Defines the shape of the box used to set up periodic boundary conditions. The rule of thumbs it "
 				"to choose a shape that is the closest match to the shape of the elements of interest.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 			break;
 		case E_COMMON_FIELDS_COMBOBOX::waterModel:
 			p_label = VTX::UI::QT::Util::LabelWithHelper(
 				"Water model",
 				"States how the water should be modelised. More complex water model allow more realistic water "
 				"behavior, but with a huge computational cost.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 			break;
 		default: break;
 		}
@@ -61,8 +57,7 @@ namespace VTX::Tool::Mdprep::ui
 				"Minimization step size",
 				"Defines how big the delta between each steps should be.<br>A bigger step size means quicker "
 				"minimization but with reduced result stability.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 			field = std::make_unique<QDoubleSpinBox>().release();
 			field->setMinimum( 1e-4 );
 			field->setMaximum( 1e1 );
@@ -73,8 +68,7 @@ namespace VTX::Tool::Mdprep::ui
 			p_label = VTX::UI::QT::Util::LabelWithHelper(
 				"Early termination threshold",
 				"Energy delta between steps from which the minimization is considered <i>converged</i>.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 			field = std::make_unique<QDoubleSpinBox>().release();
 			field->setMinimum( 1e-1 );
 			field->setMaximum( 1e6 );
@@ -87,8 +81,7 @@ namespace VTX::Tool::Mdprep::ui
 				"Time step interval (ns)",
 				"Quantity of time passed between each steps. <br><br>2fs (0.002 ns) is a good default as it allows "
 				"C-H bonds length to remain constant throughout the simulation.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 			field = std::make_unique<QDoubleSpinBox>().release();
 			field->setMinimum( 1e-3 );
 			field->setMaximum( 1. );
@@ -111,24 +104,21 @@ namespace VTX::Tool::Mdprep::ui
 				"Number of Minimization Steps",
 				"Dictates how long the minimization can be. Bigger systems need higher number of "
 				"steps.<br>Minimization shall still end earlier if the energy plateau is reached.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 			break;
 		case E_COMMON_FIELDS_UINT64::stepNumber:
 
 			p_label = VTX::UI::QT::Util::LabelWithHelper(
 				"Number of computed steps",
 				"Defines how long this part of the simulation will be.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 			break;
 		case E_COMMON_FIELDS_UINT64::coordinateSaveInterval:
 			p_label = VTX::UI::QT::Util::LabelWithHelper(
 				"Coordinate Save Interval",
 				"Number of steps between each snapshot of system coordinate. The smaller the number, the smoother the "
 				"output will look but with larger file. A value of 0 will instruct the engine not to save is at all.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 
 		default: break;
 		}
@@ -199,41 +189,32 @@ namespace VTX::Tool::Mdprep::ui
 			UI::QT::Util::LabelWithHelper(
 				"Anion Symbol",
 				"Chemical symbol of the anion used to balance system charges and/or to buffer the system.",
-				UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
+				UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
 			0,
-			0
-		);
+			0 );
 		_uiObjects.anionName = VTX::UI::QT::Helper::makeQObject<QLineEdit>( _uiObjects.container );
 		_uiObjects.anionName->setValidator(
-			VTX::UI::QT::Helper::makeQObject<QChemicalSymbolValidator>( _uiObjects.anionName )
-		);
+			VTX::UI::QT::Helper::makeQObject<QChemicalSymbolValidator>( _uiObjects.anionName ) );
 		qLayoutIons->addWidget( _uiObjects.anionName, 0, 1 );
 
 		qLayoutIons->addWidget(
 			UI::QT::Util::LabelWithHelper(
 				"Cation Symbol",
 				"Chemical symbol of the cation used to balance system charges and/or to buffer the system.",
-				UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
+				UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
 			1,
-			0
-		);
+			0 );
 		_uiObjects.cationName = VTX::UI::QT::Helper::makeQObject<QLineEdit>( _uiObjects.container );
 		_uiObjects.cationName->setValidator(
-			VTX::UI::QT::Helper::makeQObject<QChemicalSymbolValidator>( _uiObjects.cationName )
-		);
+			VTX::UI::QT::Helper::makeQObject<QChemicalSymbolValidator>( _uiObjects.cationName ) );
 		qLayoutIons->addWidget( _uiObjects.cationName, 1, 1 );
 
 		qLayoutIons->addWidget(
-			UI::QT::Util::LabelWithHelper(
-				"Anion Charge",
-				"Formal Charge of the forementionned Anion.",
-				UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
+			UI::QT::Util::LabelWithHelper( "Anion Charge",
+										   "Formal Charge of the forementionned Anion.",
+										   UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
 			0,
-			2
-		);
+			2 );
 
 		_uiObjects.anionCharge	= VTX::UI::QT::Helper::makeQObject<QComboBox>( _uiObjects.container );
 		_uiObjects.cationCharge = VTX::UI::QT::Helper::makeQObject<QComboBox>( _uiObjects.container );
@@ -255,14 +236,11 @@ namespace VTX::Tool::Mdprep::ui
 		qLayoutIons->addWidget( _uiObjects.anionCharge, 0, 3 );
 
 		qLayoutIons->addWidget(
-			UI::QT::Util::LabelWithHelper(
-				"Cation Charge",
-				"Formal Charge of the forementionned Cation.",
-				UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
+			UI::QT::Util::LabelWithHelper( "Cation Charge",
+										   "Formal Charge of the forementionned Cation.",
+										   UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
 			1,
-			2
-		);
+			2 );
 		qLayoutIons->addWidget( _uiObjects.cationCharge, 1, 3 );
 	}
 

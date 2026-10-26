@@ -11,10 +11,8 @@
 
 namespace
 {
-	VTX::App::System::E_VISIBLE_STATE _getVisibleState(
-		const VTX::Util::Math::BitSet &		p_visibility,
-		const VTX::Core::Struct::IndexRange p_range
-	)
+	VTX::App::System::E_VISIBLE_STATE _getVisibleState( const VTX::Util::Math::BitSet &		p_visibility,
+														const VTX::Core::Struct::IndexRange p_range )
 	{
 		using namespace VTX::App::System;
 
@@ -23,10 +21,8 @@ namespace
 											 : E_VISIBLE_STATE::HIDDEN;
 	}
 
-	VTX::App::System::E_SELECTION_STATE _getSelectionState(
-		const VTX::Util::Math::BitSet &		p_selection,
-		const VTX::Core::Struct::IndexRange p_range
-	)
+	VTX::App::System::E_SELECTION_STATE _getSelectionState( const VTX::Util::Math::BitSet &		p_selection,
+															const VTX::Core::Struct::IndexRange p_range )
 	{
 		using namespace VTX::App::System;
 
@@ -51,8 +47,7 @@ namespace VTX::App::Helper::System
 					throw std::out_of_range( "Atom position is unavailable." );
 				}
 				position = p_positions[ p_atom ];
-			}
-		);
+			} );
 		if ( not available )
 		{
 			throw std::out_of_range( "Atom position is unavailable." );
@@ -199,8 +194,7 @@ namespace VTX::App::Helper::System
 	}
 
 	std::optional<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE> getSecondaryStructureColorScheme(
-		const SystemItemView & p_system
-	)
+		const SystemItemView & p_system )
 	{
 		using namespace Core::Struct;
 
@@ -460,10 +454,9 @@ namespace VTX::App::Helper::System
 				return true;
 			}
 		}
-		return std::ranges::any_of(
-			color.customSecondaryStructureColorResidues,
-			[ &isRootForResidueRanges ]( const auto & entry ) { return isRootForResidueRanges( entry.second ); }
-		);
+		return std::ranges::any_of( color.customSecondaryStructureColorResidues,
+									[ &isRootForResidueRanges ]( const auto & entry )
+									{ return isRootForResidueRanges( entry.second ); } );
 	}
 
 	std::optional<Entity> getRepresentation( const SystemItemView & p_system )

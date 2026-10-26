@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_COLOR_RGBA__
-#define __VTX_UTIL_COLOR_RGBA__
+#ifndef VTX_UTIL_COLOR_RGBA_HPP
+#define VTX_UTIL_COLOR_RGBA_HPP
 
 #include "util/types.hpp"
 #include <cassert>

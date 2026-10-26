@@ -15,7 +15,9 @@ namespace Test
 		std::string fruit;
 		friend bool operator==( const PommeDapis &, const PommeDapis & ) = default;
 	};
+
 	PommeDapis convert( const std::string & s ) { return PommeDapis { s }; }
+
 	struct TestStruct
 	{
 		size_t					 size = 0;
@@ -51,8 +53,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 			kwargs.get( "bigNumbers", test.uint64s );
 			kwargs.get( "weird", &Test::convert, test.items );
 		},
-		"Test for keyword arguments"
-	);
+		"Test for keyword arguments" );
 
 	pybind11::exec( fmt::format( "from {} import *", VTX::PythonBinding::vtx_module_name() ) );
 
@@ -78,8 +79,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 
 	pybind11::exec(
 		"test_kwargs(name='poney', names=('poney','horse'), numbers=(5,54), bigNumbers=(18446744073709551613, "
-		"18446744073709551610), weird=('pinegrape', 'dragonfruit'), notOverlooked='meh', Shit='none')"
-	);
+		"18446744073709551610), weird=('pinegrape', 'dragonfruit'), notOverlooked='meh', Shit='none')" );
 	CHECK( test.size == 7 );
 	CHECK( test.containShit == true );
 	CHECK( test.string == "poney" );
@@ -89,12 +89,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 	CHECK( std::find( test.uint64s.begin(), test.uint64s.end(), 18446744073709551613 ) != std::end( test.uint64s ) );
 	CHECK( std::find( test.uint64s.begin(), test.uint64s.end(), 18446744073709551610 ) != std::end( test.uint64s ) );
 	CHECK( test.items.size() == 2 );
-	CHECK(
-		std::find( test.items.begin(), test.items.end(), Test::PommeDapis { "pinegrape" } ) != std::end( test.items )
-	);
-	CHECK(
-		std::find( test.items.begin(), test.items.end(), Test::PommeDapis { "dragonfruit" } ) != std::end( test.items )
-	);
+	CHECK( std::find( test.items.begin(), test.items.end(), Test::PommeDapis { "pinegrape" } )
+		   != std::end( test.items ) );
+	CHECK( std::find( test.items.begin(), test.items.end(), Test::PommeDapis { "dragonfruit" } )
+		   != std::end( test.items ) );
 
 	pybind11::exec( "test_kwargs()" );
 	CHECK( test.size == 0 );

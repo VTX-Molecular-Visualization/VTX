@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_STRING__
-#define __VTX_UTIL_STRING__
+#ifndef VTX_UTIL_STRING_HPP
+#define VTX_UTIL_STRING_HPP
 
 #include "types.hpp"
 #include <algorithm>
@@ -32,11 +32,9 @@ namespace VTX::Util::String
 	/**
 	 * @brief Replace first occurrence.
 	 */
-	[[nodiscard]] inline std::string replaceFirst(
-		const std::string & p_str,
-		const std::string & p_toReplace,
-		const std::string & p_replacement
-	)
+	[[nodiscard]] inline std::string replaceFirst( const std::string & p_str,
+												   const std::string & p_toReplace,
+												   const std::string & p_replacement )
 	{
 		std::string result = p_str;
 		result.replace( result.find( p_toReplace ), p_toReplace.size(), p_replacement );
@@ -89,11 +87,9 @@ namespace VTX::Util::String
 	/**
 	 * Replace all occurrences of a string and return the result.
 	 */
-	[[nodiscard]] inline std::string replaceAll(
-		const std::string & p_str,
-		const std::string & p_toReplace,
-		const std::string & p_replacement
-	)
+	[[nodiscard]] inline std::string replaceAll( const std::string & p_str,
+												 const std::string & p_toReplace,
+												 const std::string & p_replacement )
 	{
 		std::string result = p_str;
 		if ( p_toReplace.empty() )

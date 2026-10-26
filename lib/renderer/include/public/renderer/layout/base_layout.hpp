@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_LAYOUT_BASE_LAYOUT__
-#define __VTX_RENDERER_LAYOUT_BASE_LAYOUT__
+#ifndef VTX_RENDERER_LAYOUT_BASE_LAYOUT_HPP
+#define VTX_RENDERER_LAYOUT_BASE_LAYOUT_HPP
 
 #include "renderer/context/context_wrapper.hpp"
 

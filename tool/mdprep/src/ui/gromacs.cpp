@@ -19,7 +19,7 @@
 
 namespace VTX::Tool::Mdprep::ui
 {
-	class Gromacs::_Impl
+	class Gromacs::Impl
 	{
 	  public:
 		void get( Gateway::EngineJobManager & p_out ) noexcept { p_out = _jobManager; }
@@ -52,7 +52,7 @@ namespace VTX::Tool::Mdprep::ui
 		Gateway::Gromacs::JobManager _jobManager { _data };
 	};
 
-	Gromacs::Gromacs() : _impl( new _Impl() ) {}
+	Gromacs::Gromacs() : _impl( new Impl() ) {}
 
 	void Gromacs::get( MdEngineFieldPlacer & p_out ) noexcept { _impl->get( p_out ); }
 
@@ -64,5 +64,5 @@ namespace VTX::Tool::Mdprep::ui
 	void get( const Gromacs &, Gateway::EngineSpecificCommonInformation & p_out ) noexcept
 	{ Gateway::Gromacs::get( p_out ); }
 
-	void Gromacs::Del::operator()( Gromacs::_Impl * p_ ) noexcept { std::default_delete<Gromacs::_Impl>()( p_ ); }
+	void Gromacs::Del::operator()( Gromacs::Impl * p_ ) noexcept { std::default_delete<Gromacs::Impl>()( p_ ); }
 } // namespace VTX::Tool::Mdprep::ui

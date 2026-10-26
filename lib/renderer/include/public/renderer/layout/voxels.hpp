@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_LAYOUT_VOXELS__
-#define __VTX_RENDERER_LAYOUT_VOXELS__
+#ifndef VTX_RENDERER_LAYOUT_VOXELS_HPP
+#define VTX_RENDERER_LAYOUT_VOXELS_HPP
 
 #include "base_layout.hpp"
 #include <string_view>

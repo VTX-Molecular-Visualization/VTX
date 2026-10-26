@@ -162,14 +162,11 @@ namespace VTX::App
 			[]( const Util::Thread::BaseThread & p_thread )
 			{
 				HUB().trigger<Events::ThreadProgress>(
-					p_thread.getId(), p_thread.getProgress(), p_thread.getProgressText()
-				);
-			}
-		);
+					p_thread.getId(), p_thread.getProgress(), p_thread.getProgressText() );
+			} );
 		THREAD().setDefaultTerminatedCallback(
 			[]( const Util::Thread::BaseThread & p_thread )
-			{ HUB().trigger<Events::ThreadTerminated>( p_thread.getId(), p_thread.isManuallyStopped() ); }
-		);
+			{ HUB().trigger<Events::ThreadTerminated>( p_thread.getId(), p_thread.isManuallyStopped() ); } );
 		ECS::setCtx<Uid::UIDManager>();
 		ECS::setCtx<Pass::PassManager>();
 		ECS::setCtx<Core::ChemDB::Category::Dictionary>( Core::ChemDB::Category::createDefaultDictionary() );
@@ -188,8 +185,7 @@ namespace VTX::App
 					{
 						p_interpretor.add( VTX::App::PythonBinding::AppBinder() );
 						p_interpretor.add( VTX::App::PythonBinding::RunScript() );
-					}
-				);
+					} );
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -253,8 +249,7 @@ namespace VTX::App
 		ACTION().execute<Action::Scene::SetGraphicsConfig>( defaultGraphicsConfig );
 
 		const Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" ).value_or(
-			ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Color::Layout>()
-		);
+			ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Color::Layout>() );
 		ACTION().execute<Action::Scene::SetColorLayout>( defaultColorLayout );
 
 		HUB().trigger<Events::ApplicationStart>();

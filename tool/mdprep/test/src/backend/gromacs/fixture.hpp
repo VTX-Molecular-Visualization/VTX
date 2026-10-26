@@ -1,3 +1,6 @@
+#ifndef VTX_TOOL_MDPREP_TEST_BACKEND_GROMACS_FIXTURE_HPP
+#define VTX_TOOL_MDPREP_TEST_BACKEND_GROMACS_FIXTURE_HPP
+
 #include <memory>
 #include <qapplication.h>
 //
@@ -46,10 +49,8 @@ namespace VTX::test
 	};
 
 	// Put a pointer to each of the input string into the pointer vector
-	void fill(
-		const std::vector<std::string> &,
-		VTX::Tool::Mdprep::backends::Gromacs::CumulativeOuputFiles &
-	) noexcept;
+	void fill( const std::vector<std::string> &,
+			   VTX::Tool::Mdprep::backends::Gromacs::CumulativeOuputFiles & ) noexcept;
 
 	struct Editconf
 	{
@@ -160,3 +161,5 @@ namespace VTX::test
 	std::string getFileContent( const FilePath & p_file ) noexcept;
 
 } // namespace VTX::test
+
+#endif

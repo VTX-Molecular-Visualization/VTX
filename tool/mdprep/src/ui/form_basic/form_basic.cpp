@@ -69,12 +69,11 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 	} // namespace
 
-	FormBasic::FormBasic(
-		QWidget *					 p_container,
-		SpecificFieldsPlacerCallback p_callback,
-		const MdParameters &		 p_defaults,
-		ReportManager &				 p_reportManager
-	) : _data( std::make_unique<Data>( p_defaults, p_reportManager, std::move( p_callback ) ) ), _eventManager( *_data )
+	FormBasic::FormBasic( QWidget *					   p_container,
+						  SpecificFieldsPlacerCallback p_callback,
+						  const MdParameters &		   p_defaults,
+						  ReportManager &			   p_reportManager ) :
+		_data( std::make_unique<Data>( p_defaults, p_reportManager, std::move( p_callback ) ) ), _eventManager( *_data )
 	{
 		_createAndPlaceUiItems( p_container );
 		_loadValues( p_defaults );
@@ -99,14 +98,12 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			( *p_out_buttonSettings )->setIcon( UI::QT::STYLE().iconFromCodepoint( UI::QT::Style::Icons::OPTIONS ) );
 		}
 
-		void addDurationRow(
-			QFormLayout *  p_dest,
-			const char *   p_label,
-			const char *   p_tooltip,
-			QLineEdit **   p_out_durationNumber,
-			QComboBox **   p_out_durationUnit,
-			QPushButton ** p_out_buttonSettings
-		)
+		void addDurationRow( QFormLayout *	p_dest,
+							 const char *	p_label,
+							 const char *	p_tooltip,
+							 QLineEdit **	p_out_durationNumber,
+							 QComboBox **	p_out_durationUnit,
+							 QPushButton ** p_out_buttonSettings )
 		{
 			*p_out_durationNumber	   = addUInt64Field( p_dest, p_label, p_tooltip );
 			QWidget * qWidgetRightCell = VTX::UI::QT::Helper::makeQObject<QWidget>( p_dest->parentWidget() );
@@ -124,12 +121,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			qLayoutRightCell->addWidget( *p_out_buttonSettings );
 		}
 
-		inline void figureUnitValueRelationWithoutLoss(
-			uint64_t &	   p_duration,
-			uint8_t &	   p_timeUnitIdx,
-			const double & p_durationPs,
-			const uint8_t  p_targetIdx
-		)
+		inline void figureUnitValueRelationWithoutLoss( uint64_t &	   p_duration,
+														uint8_t &	   p_timeUnitIdx,
+														const double & p_durationPs,
+														const uint8_t  p_targetIdx )
 		{
 			double	multiplier	 = pow( 10, ( p_targetIdx - 1 ) * ( -3. ) );
 			uint8_t resultingIdx = p_targetIdx;
@@ -149,12 +144,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		}
 
 		// Given dt an stepnumber, will set the value and duration field to appropriate values
-		void figureBestValueUnitRelation(
-			const double &	 p_dt,
-			const uint64_t & p_stepNumber,
-			QLineEdit *		 p_fieldValue,
-			QComboBox *		 p_fieldUnit
-		)
+		void figureBestValueUnitRelation( const double &   p_dt,
+										  const uint64_t & p_stepNumber,
+										  QLineEdit *	   p_fieldValue,
+										  QComboBox *	   p_fieldUnit )
 		{
 			const double durationPicoSeconds = p_dt * p_stepNumber;
 			uint8_t		 timeUnitIdx		 = 0;
@@ -185,14 +178,14 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	void FormBasic::_createAndPlaceUiItems( QWidget * p_container )
 	{
 		_uiObjects._parent				  = p_container;
-		QVBoxLayout * _IntermediateLayout = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( p_container );
-		_toDeleteObjects[ 0 ]			  = _IntermediateLayout;
+		QVBoxLayout * IntermediateLayout = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( p_container );
+		_toDeleteObjects[ 0 ]			  = IntermediateLayout;
 		_uiObjects._container			  = VTX::UI::QT::Helper::makeQObject<QWidget>( p_container );
 		_toDeleteObjects[ 1 ]			  = _uiObjects._container;
 		QWidget * label					  = nullptr;
 
-		_IntermediateLayout->setContentsMargins( { 0, 0, 0, 0 } );
-		_IntermediateLayout->addWidget( _uiObjects._container );
+		IntermediateLayout->setContentsMargins( { 0, 0, 0, 0 } );
+		IntermediateLayout->addWidget( _uiObjects._container );
 		QVBoxLayout * qMainLayout = VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _uiObjects._container );
 
 		VTX::UI::QT::Util::addLabeledHLineSeparator( qMainLayout, "System Parameters" );
@@ -218,8 +211,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		QFormLayout * qFormSteps = VTX::UI::QT::Helper::makeChildLayout<QFormLayout>( *qMainLayout );
 
 		VTX::Tool::Mdprep::ui::get(
-			E_COMMON_FIELDS_UINT64::stepNumberMinimization, label, _uiObjects._fieldStepNumberMinimization
-		);
+			E_COMMON_FIELDS_UINT64::stepNumberMinimization, label, _uiObjects._fieldStepNumberMinimization );
 		qFormSteps->addRow( label, _uiObjects._fieldStepNumberMinimization );
 
 		QWidget * qMinizationWidget = VTX::UI::QT::Helper::makeQObject<QWidget>( _uiObjects._container );
@@ -240,8 +232,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			"shall be the equilibration.",
 			&_uiObjects._fieldDurationValueEquilibrationNvt,
 			&_uiObjects._fieldDurationUnitEquilibrationNvt,
-			&_uiObjects._buttonEquilibrationNvtSettings
-		);
+			&_uiObjects._buttonEquilibrationNvtSettings );
 		addDurationRow(
 			qFormSteps,
 			"Equilibration NPT duration",
@@ -250,16 +241,13 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			"longer shall be the equilibration.",
 			&_uiObjects._fieldDurationValueEquilibrationNpt,
 			&_uiObjects._fieldDurationUnitEquilibrationNpt,
-			&_uiObjects._buttonEquilibrationNptSettings
-		);
-		addDurationRow(
-			qFormSteps,
-			"Production duration",
-			"Production run refers to the actual unrestrained molecular dynamic simulation.",
-			&_uiObjects._fieldDurationValueProduction,
-			&_uiObjects._fieldDurationUnitProduction,
-			&_uiObjects._buttonProductionSettings
-		);
+			&_uiObjects._buttonEquilibrationNptSettings );
+		addDurationRow( qFormSteps,
+						"Production duration",
+						"Production run refers to the actual unrestrained molecular dynamic simulation.",
+						&_uiObjects._fieldDurationValueProduction,
+						&_uiObjects._fieldDurationUnitProduction,
+						&_uiObjects._buttonProductionSettings );
 
 		qMainLayout->addSpacerItem( std::make_unique<QSpacerItem>( 0, 10 ).release() );
 		VTX::UI::QT::Util::addLabeledHLineSeparator( qMainLayout, "Ions" );
@@ -276,24 +264,18 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	void FormBasic::_loadValues( const MdParameters & p_defaults ) const
 	{
 		_uiObjects._fieldStepNumberMinimization->setText( QString::number( p_defaults.minimization.stepNumber ) );
-		figureBestValueUnitRelation(
-			p_defaults.nvt.dt,
-			p_defaults.nvt.nsteps,
-			_uiObjects._fieldDurationValueEquilibrationNvt,
-			_uiObjects._fieldDurationUnitEquilibrationNvt
-		);
-		figureBestValueUnitRelation(
-			p_defaults.npt.dt,
-			p_defaults.npt.nsteps,
-			_uiObjects._fieldDurationValueEquilibrationNpt,
-			_uiObjects._fieldDurationUnitEquilibrationNpt
-		);
-		figureBestValueUnitRelation(
-			p_defaults.prod.dt,
-			p_defaults.prod.nsteps,
-			_uiObjects._fieldDurationValueProduction,
-			_uiObjects._fieldDurationUnitProduction
-		);
+		figureBestValueUnitRelation( p_defaults.nvt.dt,
+									 p_defaults.nvt.nsteps,
+									 _uiObjects._fieldDurationValueEquilibrationNvt,
+									 _uiObjects._fieldDurationUnitEquilibrationNvt );
+		figureBestValueUnitRelation( p_defaults.npt.dt,
+									 p_defaults.npt.nsteps,
+									 _uiObjects._fieldDurationValueEquilibrationNpt,
+									 _uiObjects._fieldDurationUnitEquilibrationNpt );
+		figureBestValueUnitRelation( p_defaults.prod.dt,
+									 p_defaults.prod.nsteps,
+									 _uiObjects._fieldDurationValueProduction,
+									 _uiObjects._fieldDurationUnitProduction );
 	}
 
 	void FormBasic::_setupSlots()
@@ -328,15 +310,12 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			return 0.;
 		}
 
-		inline void figureNumStep(
-			Gateway::MdParametersStepData & p_data,
-			QComboBox *						p_unitField,
-			QLineEdit *						p_valueField
-		)
+		inline void figureNumStep( Gateway::MdParametersStepData & p_data,
+								   QComboBox *					   p_unitField,
+								   QLineEdit *					   p_valueField )
 		{
-			p_data.nsteps = static_cast<uint64_t>(
-				multiplierPs( p_unitField->currentText().toStdString() ) * p_valueField->text().toDouble() / p_data.dt
-			);
+			p_data.nsteps = static_cast<uint64_t>( multiplierPs( p_unitField->currentText().toStdString() )
+												   * p_valueField->text().toDouble() / p_data.dt );
 		}
 
 	} // namespace
@@ -351,11 +330,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_fieldsIons.get( p_in.system );
 
 		figureNumStep(
-			p_in.nvt, _uiObjects._fieldDurationUnitEquilibrationNvt, _uiObjects._fieldDurationValueEquilibrationNvt
-		);
+			p_in.nvt, _uiObjects._fieldDurationUnitEquilibrationNvt, _uiObjects._fieldDurationValueEquilibrationNvt );
 		figureNumStep(
-			p_in.npt, _uiObjects._fieldDurationUnitEquilibrationNpt, _uiObjects._fieldDurationValueEquilibrationNpt
-		);
+			p_in.npt, _uiObjects._fieldDurationUnitEquilibrationNpt, _uiObjects._fieldDurationValueEquilibrationNpt );
 		figureNumStep( p_in.prod, _uiObjects._fieldDurationUnitProduction, _uiObjects._fieldDurationValueProduction );
 	}
 

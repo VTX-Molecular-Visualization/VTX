@@ -6,12 +6,10 @@
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 
-	void prepareJob(
-		const CumulativeOuputFiles & p_previousJobsOutputs,
-		const FilePath &			 p_root,
-		const std::string_view &	 p_folderName,
-		GromppInstructions &		 p_instructions
-	)
+	void prepareJob( const CumulativeOuputFiles & p_previousJobsOutputs,
+					 const FilePath &			  p_root,
+					 const std::string_view &	  p_folderName,
+					 GromppInstructions &		  p_instructions )
 	{
 		if ( fs::exists( p_root ) && not fs::is_directory( p_root ) )
 		{

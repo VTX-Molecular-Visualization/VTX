@@ -260,10 +260,8 @@ namespace
 
 		inline VTX::uint frameCount() const { return static_cast<VTX::uint>( frames.size() ); }
 
-		inline bool visitAtomPositions(
-			const VTX::uint												 p_index,
-			const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor
-		) const
+		inline bool visitAtomPositions( const VTX::uint												 p_index,
+										const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor ) const
 		{
 			if ( p_index >= frames.size() )
 			{
@@ -322,13 +320,11 @@ namespace
 		{
 			std::vector<WriteArgs::System> systems;
 			systems.emplace_back( WriteArgs::System { &topology, std::move( traj ) } );
-			writeFile(
-				WriteArgs {
-					.destination = destination,
-					.format		 = E_FILE_FORMATS::none,
-					.topologies	 = std::move( systems ),
-				}
-			);
+			writeFile( WriteArgs {
+				.destination = destination,
+				.format		 = E_FILE_FORMATS::none,
+				.topologies	 = std::move( systems ),
+			} );
 		}
 
 		VTX::Core::Struct::Topology system_reread;
@@ -354,9 +350,8 @@ TEST_CASE( "VTX_IO - Test writeFile", "[writer][chemfiles][trajectory][specific_
 {
 	{
 		TestResults results;
-		testSystem(
-			TestSystemArgs { .systemName = "1AGA", .extension = ".mmtf", .writtenExtension = ".bcif" }, results
-		);
+		testSystem( TestSystemArgs { .systemName = "1AGA", .extension = ".mmtf", .writtenExtension = ".bcif" },
+					results );
 		CHECK( results.matchAtoms );
 		CHECK( results.matchResidues );
 		CHECK( results.matchChains );
@@ -380,10 +375,8 @@ namespace
 
 		VTX::uint frameCount() const { return frame.empty() ? 0u : 1u; }
 
-		bool visitAtomPositions(
-			const VTX::uint,
-			const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor
-		) const
+		bool visitAtomPositions( const VTX::uint,
+								 const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor ) const
 		{
 			p_visitor( frame );
 			return true;
@@ -439,11 +432,9 @@ namespace
 		return path;
 	}
 
-	VTX::Core::Struct::Topology readBack(
-		const VTX::FilePath &	   dest,
-		VTX::Core::Struct::Frame * positions  = nullptr,
-		size_t *				   frameCount = nullptr
-	)
+	VTX::Core::Struct::Topology readBack( const VTX::FilePath &		 dest,
+										  VTX::Core::Struct::Frame * positions	= nullptr,
+										  size_t *					 frameCount = nullptr )
 	{
 		VTX::Core::Struct::Topology					  top;
 		const StopToken								  stop;
@@ -463,10 +454,8 @@ namespace
 	}
 } // namespace
 
-TEST_CASE(
-	"VTX_IO - writeFile multi-system: all atoms from every system are present in output",
-	"[writer][writeFile][multi-system]"
-)
+TEST_CASE( "VTX_IO - writeFile multi-system: all atoms from every system are present in output",
+		   "[writer][writeFile][multi-system]" )
 {
 	using namespace VTX::IO::Writer;
 	using namespace VTX::Core::ChemDB;
@@ -498,13 +487,11 @@ TEST_CASE(
 	std::vector<WriteArgs::System> topologies;
 	topologies.emplace_back( WriteArgs::System { &water, std::move( trajW ) } );
 	topologies.emplace_back( WriteArgs::System { &methane, std::move( trajM ) } );
-	writeFile(
-		WriteArgs {
-			.destination = dest,
-			.format		 = E_FILE_FORMATS::pdb,
-			.topologies	 = std::move( topologies ),
-		}
-	);
+	writeFile( WriteArgs {
+		.destination = dest,
+		.format		 = E_FILE_FORMATS::pdb,
+		.topologies	 = std::move( topologies ),
+	} );
 
 	size_t							  fc;
 	const VTX::Core::Struct::Topology reread = readBack( dest, nullptr, &fc );
@@ -515,10 +502,8 @@ TEST_CASE(
 	CHECK( fc == 1 );
 }
 
-TEST_CASE(
-	"VTX_IO - writeFile multi-system: atoms with identical names across systems remain distinct",
-	"[writer][writeFile][multi-system]"
-)
+TEST_CASE( "VTX_IO - writeFile multi-system: atoms with identical names across systems remain distinct",
+		   "[writer][writeFile][multi-system]" )
 {
 	using namespace VTX::IO::Writer;
 	using namespace VTX::Core::ChemDB;
@@ -548,13 +533,11 @@ TEST_CASE(
 	std::vector<WriteArgs::System> topologies;
 	topologies.emplace_back( WriteArgs::System { &water1, std::move( traj1 ) } );
 	topologies.emplace_back( WriteArgs::System { &water2, std::move( traj2 ) } );
-	writeFile(
-		WriteArgs {
-			.destination = dest,
-			.format		 = E_FILE_FORMATS::pdb,
-			.topologies	 = std::move( topologies ),
-		}
-	);
+	writeFile( WriteArgs {
+		.destination = dest,
+		.format		 = E_FILE_FORMATS::pdb,
+		.topologies	 = std::move( topologies ),
+	} );
 
 	const VTX::Core::Struct::Topology reread = readBack( dest );
 
@@ -562,10 +545,8 @@ TEST_CASE(
 	CHECK( reread.getAtomCount() == 6 );
 }
 
-TEST_CASE(
-	"VTX_IO - writeFile multi-system: each atom receives coordinates from its own system",
-	"[writer][writeFile][multi-system]"
-)
+TEST_CASE( "VTX_IO - writeFile multi-system: each atom receives coordinates from its own system",
+		   "[writer][writeFile][multi-system]" )
 {
 	using namespace VTX::IO::Writer;
 	using namespace VTX::Core::ChemDB;
@@ -594,13 +575,11 @@ TEST_CASE(
 	std::vector<WriteArgs::System> topologies;
 	topologies.emplace_back( WriteArgs::System { &sys1, std::move( traj1 ) } );
 	topologies.emplace_back( WriteArgs::System { &sys2, std::move( traj2 ) } );
-	writeFile(
-		WriteArgs {
-			.destination = dest,
-			.format		 = E_FILE_FORMATS::pdb,
-			.topologies	 = std::move( topologies ),
-		}
-	);
+	writeFile( WriteArgs {
+		.destination = dest,
+		.format		 = E_FILE_FORMATS::pdb,
+		.topologies	 = std::move( topologies ),
+	} );
 
 	VTX::Core::Struct::Frame		  positions;
 	const VTX::Core::Struct::Topology reread = readBack( dest, &positions );
@@ -621,10 +600,8 @@ TEST_CASE(
 	CHECK( xs[ 3 ] == Catch::Approx( 4.f ).margin( 0.01f ) );
 }
 
-TEST_CASE(
-	"VTX_IO - writeFile atom filter: excluded atoms absent, kept atoms retain correct coordinates",
-	"[writer][writeFile][filter]"
-)
+TEST_CASE( "VTX_IO - writeFile atom filter: excluded atoms absent, kept atoms retain correct coordinates",
+		   "[writer][writeFile][filter]" )
 {
 	using namespace VTX::IO::Writer;
 	using namespace VTX::Core::ChemDB;
@@ -646,13 +623,11 @@ TEST_CASE(
 	const VTX::FilePath			   dest = multiOutDir() / "filter_single.pdb";
 	std::vector<WriteArgs::System> topologies;
 	topologies.emplace_back( WriteArgs::System { &top, std::move( traj ), keepNonN } );
-	writeFile(
-		WriteArgs {
-			.destination = dest,
-			.format		 = E_FILE_FORMATS::pdb,
-			.topologies	 = std::move( topologies ),
-		}
-	);
+	writeFile( WriteArgs {
+		.destination = dest,
+		.format		 = E_FILE_FORMATS::pdb,
+		.topologies	 = std::move( topologies ),
+	} );
 
 	VTX::Core::Struct::Frame		  positions;
 	const VTX::Core::Struct::Topology reread = readBack( dest, &positions );
@@ -673,10 +648,8 @@ TEST_CASE(
 	CHECK( xs[ 1 ] == Catch::Approx( 3.f ).margin( 0.01f ) );
 }
 
-TEST_CASE(
-	"VTX_IO - writeFile multi-system with filter: combined atom count correct, filtered atoms absent",
-	"[writer][writeFile][multi-system][filter]"
-)
+TEST_CASE( "VTX_IO - writeFile multi-system with filter: combined atom count correct, filtered atoms absent",
+		   "[writer][writeFile][multi-system][filter]" )
 {
 	using namespace VTX::IO::Writer;
 	using namespace VTX::Core::ChemDB;
@@ -716,13 +689,11 @@ TEST_CASE(
 	std::vector<WriteArgs::System> topologies;
 	topologies.emplace_back( WriteArgs::System { &sys1, std::move( traj1 ) } );
 	topologies.emplace_back( WriteArgs::System { &sys2, std::move( traj2 ), keepNonN } );
-	writeFile(
-		WriteArgs {
-			.destination = dest,
-			.format		 = E_FILE_FORMATS::pdb,
-			.topologies	 = std::move( topologies ),
-		}
-	);
+	writeFile( WriteArgs {
+		.destination = dest,
+		.format		 = E_FILE_FORMATS::pdb,
+		.topologies	 = std::move( topologies ),
+	} );
 
 	VTX::Core::Struct::Frame	positions;
 	VTX::Core::Struct::Topology reread = readBack( dest, &positions );

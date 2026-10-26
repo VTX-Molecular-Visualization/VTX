@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BUILDER_MESH_BUILD__
-#define __VTX_RENDERER_BUILDER_MESH_BUILD__
+#ifndef VTX_RENDERER_BUILDER_MESH_BUILD_HPP
+#define VTX_RENDERER_BUILDER_MESH_BUILD_HPP
 
 #include "renderer/caches.hpp"
 #include "renderer/geometry/geometries.hpp"
@@ -16,24 +16,20 @@ namespace VTX::Renderer::Builder
 			p_geometries.triangles.clear();
 		}
 
-		static void registerMesh(
-			ResourcePool<Cache::Mesh> & p_meshes,
-			Geometries &				p_geometries,
-			Layouts &					p_layouts,
-			const Desc::Handle			p_handle
-		)
+		static void registerMesh( ResourcePool<Cache::Mesh> & p_meshes,
+								  Geometries &				  p_geometries,
+								  Layouts &					  p_layouts,
+								  const Desc::Handle		  p_handle )
 		{
 			const Core::Struct::Mesh & mesh = *p_meshes.get( p_handle ).data;
 			p_layouts.meshes.registerMesh( p_handle, mesh );
 			p_geometries.triangles.registerMesh( p_handle, mesh );
 		}
 
-		static void upload(
-			Context::ContextWrapper &	p_context,
-			ResourcePool<Cache::Mesh> & p_meshes,
-			Geometries &				p_geometries,
-			Layouts &					p_layouts
-		)
+		static void upload( Context::ContextWrapper &	p_context,
+							ResourcePool<Cache::Mesh> & p_meshes,
+							Geometries &				p_geometries,
+							Layouts &					p_layouts )
 		{
 			p_layouts.meshes.resize( p_context );
 			p_geometries.triangles.resize( p_context );
@@ -48,4 +44,4 @@ namespace VTX::Renderer::Builder
 	};
 } // namespace VTX::Renderer::Builder
 
-#endif // !__VTX_RENDERER_BUILDER_MESH_BUILD__
+#endif // !VTX_RENDERER_BUILDER_MESH_BUILD_HPP

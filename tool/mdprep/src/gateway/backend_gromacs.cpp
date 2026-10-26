@@ -113,11 +113,9 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 			}
 		}
 
-		void convert(
-			const MdParameters &				p_param,
-			const Gromacs::MdSettings &			p_gmxParam,
-			backends::Gromacs::MdInstructions & p_out
-		)
+		void convert( const MdParameters &				  p_param,
+					  const Gromacs::MdSettings &		  p_gmxParam,
+					  backends::Gromacs::MdInstructions & p_out )
 		{
 			p_out.nvt.nsteps	= p_param.nvt.nsteps;
 			p_out.nvt.dt		= p_param.nvt.dt;
@@ -146,11 +144,9 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 			p_out.fileStem = "your_system"; // TODO bad design
 		}
 
-		void convert(
-			const MdParameters &										p_inGeneric,
-			const Gromacs::MdSettings &									p_inGromacs,
-			VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions & p_out
-		)
+		void convert( const MdParameters &										  p_inGeneric,
+					  const Gromacs::MdSettings &								  p_inGromacs,
+					  VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions & p_out )
 		{
 			convert( p_inGeneric.system.waterModel, p_out.pdb2gmx.water );
 			p_out.pdb2gmx.forcefields

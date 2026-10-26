@@ -108,8 +108,7 @@ namespace VTX::Tool::Mdprep
 				win->resize( win->PREFERRED_SIZE );
 				win->show();
 				QTimer::singleShot(
-					0, [ win = win ] { win->raise(); }
-				); // The widget is not raised consistently on the same loop
+					0, [ win = win ] { win->raise(); } ); // The widget is not raised consistently on the same loop
 			}
 			else
 			{
@@ -122,9 +121,8 @@ namespace VTX::Tool::Mdprep
 
 	void MdPrep::registerActions()
 	{
-		UI::QT::UI_ACTIONS().registerAction(
-			openMdPrepAction(), []( const UI::QT::ActionRegistry::ActionContext & ) { openMdPrep(); }
-		);
+		UI::QT::UI_ACTIONS().registerAction( openMdPrepAction(),
+											 []( const UI::QT::ActionRegistry::ActionContext & ) { openMdPrep(); } );
 	}
 
 	void MdPrep::buildUI()

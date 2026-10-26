@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_APPLICATION__
-#define __VTX_APP_ACTION_APPLICATION__
+#ifndef VTX_APP_ACTION_APPLICATION_HPP
+#define VTX_APP_ACTION_APPLICATION_HPP
 
 #include <util/thread/base_thread.hpp>
 #include <util/types.hpp>

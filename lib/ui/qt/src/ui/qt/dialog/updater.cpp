@@ -59,8 +59,7 @@ namespace VTX::UI::QT::Dialog
 		layout->addWidget( _progressBar );
 
 		_buttonBox = Helper::makeQObject<QDialogButtonBox>(
-			QDialogButtonBox::StandardButton::Close | QDialogButtonBox::StandardButton::Apply, this
-		);
+			QDialogButtonBox::StandardButton::Close | QDialogButtonBox::StandardButton::Apply, this );
 		layout->addWidget( _buttonBox );
 		QPushButton * const applyButton = _buttonBox->button( QDialogButtonBox::Apply );
 
@@ -69,26 +68,22 @@ namespace VTX::UI::QT::Dialog
 
 		connect( _buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
 		applyButton->setDefault( true );
-		connect(
-			applyButton,
-			&QPushButton::clicked,
-			this,
-			[ this ]()
-			{
-				_setDownloadingState();
-				App::ACTION().execute<App::Action::Application::Update>();
-			}
-		);
-		connect(
-			_restartButton,
-			&QPushButton::clicked,
-			this,
-			[ this ]()
-			{
-				accept();
-				App::ACTION().execute<App::Action::Application::RestartAfterUpdate>();
-			}
-		);
+		connect( applyButton,
+				 &QPushButton::clicked,
+				 this,
+				 [ this ]()
+				 {
+					 _setDownloadingState();
+					 App::ACTION().execute<App::Action::Application::Update>();
+				 } );
+		connect( _restartButton,
+				 &QPushButton::clicked,
+				 this,
+				 [ this ]()
+				 {
+					 accept();
+					 App::ACTION().execute<App::Action::Application::RestartAfterUpdate>();
+				 } );
 
 		_downloadProgressConnection
 			= App::HUB().connect<App::Events::UpdateDownloadProgress, &Updater::_onUpdateDownloadProgress>( this );

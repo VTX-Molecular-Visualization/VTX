@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_MD_ENGINE_SPECIFIC_FIELD_PLACER__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_MD_ENGINE_SPECIFIC_FIELD_PLACER__
+#ifndef VTX_TOOL_MDPREP_UI_MD_ENGINE_SPECIFIC_FIELD_PLACER_HPP
+#define VTX_TOOL_MDPREP_UI_MD_ENGINE_SPECIFIC_FIELD_PLACER_HPP
 
 #include <memory>
 #include <util/concepts.hpp>
@@ -33,13 +33,11 @@ namespace VTX::Tool::Mdprep::ui
 			static_assert(
 				requires( T t, QFormLayout * f ) {
 					{ t.placeFields( f ) };
-				}, "You must implement 'void placeFields( QFormLayout * p_ )' class method."
-			);
+				}, "You must implement 'void placeFields( QFormLayout * p_ )' class method." );
 			static_assert(
 				requires( T t ) {
 					{ t.apply() };
-				}, "You must implement 'void apply()' class method."
-			);
+				}, "You must implement 'void apply()' class method." );
 		}
 
 		MdEngineSpecificFieldPlacer() = default;

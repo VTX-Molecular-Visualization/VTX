@@ -22,8 +22,7 @@ namespace VTX::UI::QT::Model
 		_system( p_system ), QAbstractItemModel( p_parent )
 	{
 		_viewMode = static_cast<ViewMode>(
-			SETTINGS().value( SETTING_KEY_TREE_VIEW_MODE, VTX::toUnderlying( ViewMode::ByChain ) ).toInt()
-		);
+			SETTINGS().value( SETTING_KEY_TREE_VIEW_MODE, VTX::toUnderlying( ViewMode::ByChain ) ).toInt() );
 	}
 
 	int SystemModel::columnCount( const QModelIndex & p_parent ) const { return 1; }
@@ -269,8 +268,7 @@ namespace VTX::UI::QT::Model
 			}
 
 			return createIndex(
-				p_row, p_column, pack( E_SYSTEM_ITEM::RESIDUE, data.categoryResidues[ index ][ p_row ] )
-			);
+				p_row, p_column, pack( E_SYSTEM_ITEM::RESIDUE, data.categoryResidues[ index ][ p_row ] ) );
 		}
 		// Residue.
 		case E_SYSTEM_ITEM::CHAIN:
@@ -281,8 +279,7 @@ namespace VTX::UI::QT::Model
 			}
 
 			return createIndex(
-				p_row, p_column, pack( E_SYSTEM_ITEM::RESIDUE, data.chainFirstResidues[ index ] + p_row )
-			);
+				p_row, p_column, pack( E_SYSTEM_ITEM::RESIDUE, data.chainFirstResidues[ index ] + p_row ) );
 		}
 		// Atom.
 		case E_SYSTEM_ITEM::RESIDUE:
@@ -293,8 +290,7 @@ namespace VTX::UI::QT::Model
 			}
 
 			return createIndex(
-				p_row, p_column, pack( E_SYSTEM_ITEM::ATOM, data.residueFirstAtomIndexes[ index ] + p_row )
-			);
+				p_row, p_column, pack( E_SYSTEM_ITEM::ATOM, data.residueFirstAtomIndexes[ index ] + p_row ) );
 		}
 		default: return {};
 		}
@@ -387,11 +383,9 @@ namespace VTX::UI::QT::Model
 					return {};
 				}
 
-				return createIndex(
-					static_cast<int>( std::distance( residues.begin(), it ) ),
-					0,
-					pack( E_SYSTEM_ITEM::RESIDUE, residue )
-				);
+				return createIndex( static_cast<int>( std::distance( residues.begin(), it ) ),
+									0,
+									pack( E_SYSTEM_ITEM::RESIDUE, residue ) );
 			}
 
 			const Index chain	   = data.residueChainIndexes[ residue ];
@@ -457,11 +451,9 @@ namespace VTX::UI::QT::Model
 		return row;
 	}
 
-	QModelIndex SystemModel::makeIndex(
-		const int						  p_row,
-		const Core::Struct::E_SYSTEM_ITEM p_type,
-		const Index						  p_index
-	) const
+	QModelIndex SystemModel::makeIndex( const int						  p_row,
+										const Core::Struct::E_SYSTEM_ITEM p_type,
+										const Index						  p_index ) const
 	{
 		const quintptr id = pack( p_type, p_index );
 		return createIndex( p_row, 0, id );

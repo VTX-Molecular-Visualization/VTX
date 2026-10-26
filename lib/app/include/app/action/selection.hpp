@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_SELECTION__
-#define __VTX_APP_ACTION_SELECTION__
+#ifndef VTX_APP_ACTION_SELECTION_HPP
+#define VTX_APP_ACTION_SELECTION_HPP
 
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
@@ -26,8 +26,7 @@ namespace VTX::App::Action::Selection
 		}
 
 		reg.patch<System::Selection>(
-			p_ent, [ &p_atoms ]( System::Selection & p_selection ) { p_selection.atoms = std::move( p_atoms ); }
-		);
+			p_ent, [ &p_atoms ]( System::Selection & p_selection ) { p_selection.atoms = std::move( p_atoms ); } );
 	}
 
 	/**
@@ -36,12 +35,10 @@ namespace VTX::App::Action::Selection
 	template<Core::Struct::E_SYSTEM_ITEM ITEM>
 	struct SetSelected
 	{
-		void execute(
-			const Entity						 p_ent,
-			const Core::Struct::IndexRangeList & p_ranges	= {},
-			const bool							 p_selected = true,
-			const bool							 p_append	= false
-		)
+		void execute( const Entity						   p_ent,
+					  const Core::Struct::IndexRangeList & p_ranges	  = {},
+					  const bool						   p_selected = true,
+					  const bool						   p_append	  = false )
 		{
 			const Util::ScopedChrono timer( "App::Action::SetSelected" );
 
@@ -65,66 +62,52 @@ namespace VTX::App::Action::Selection
 			patchSelection( p_ent, std::move( current ) );
 		}
 
-		void execute(
-			const Entity					 p_ent,
-			const Core::Struct::IndexRange & p_range,
-			const bool						 p_selected = true,
-			const bool						 p_append	= false
-		)
+		void execute( const Entity					   p_ent,
+					  const Core::Struct::IndexRange & p_range,
+					  const bool					   p_selected = true,
+					  const bool					   p_append	  = false )
 		{ execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected, p_append ); }
 
-		void execute(
-			const Entity			   p_ent,
-			const std::vector<Index> & p_values,
-			const bool				   p_selected = true,
-			const bool				   p_append	  = false
-		)
+		void execute( const Entity				 p_ent,
+					  const std::vector<Index> & p_values,
+					  const bool				 p_selected = true,
+					  const bool				 p_append	= false )
 		{ execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_selected, p_append ); }
 
-		void execute(
-			const Entity p_ent,
-			const Index	 p_value,
-			const bool	 p_selected = true,
-			const bool	 p_append	= false
-		)
+		void execute( const Entity p_ent,
+					  const Index  p_value,
+					  const bool   p_selected = true,
+					  const bool   p_append	  = false )
 		{ execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_selected, p_append ); }
 	};
 
 	struct SetSelectedItem
 	{
-		void execute(
-			Entity,
-			Core::Struct::E_SYSTEM_ITEM,
-			const Core::Struct::IndexRangeList & = {},
-			bool								 = true,
-			bool								 = false
-		);
+		void execute( Entity,
+					  Core::Struct::E_SYSTEM_ITEM,
+					  const Core::Struct::IndexRangeList & = {},
+					  bool								   = true,
+					  bool								   = false );
 
-		void execute(
-			const Entity					  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const std::vector<Index> &		  p_values,
-			const bool						  p_selected = true,
-			const bool						  p_append	 = false
-		)
+		void execute( const Entity						p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM p_item,
+					  const std::vector<Index> &		p_values,
+					  const bool						p_selected = true,
+					  const bool						p_append   = false )
 		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_selected, p_append ); }
 
-		void execute(
-			const Entity					  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const Core::Struct::IndexRange &  p_range,
-			const bool						  p_selected = true,
-			const bool						  p_append	 = false
-		)
+		void execute( const Entity						p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM p_item,
+					  const Core::Struct::IndexRange &	p_range,
+					  const bool						p_selected = true,
+					  const bool						p_append   = false )
 		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_selected, p_append ); }
 
-		void execute(
-			const Entity					  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const Index						  p_value,
-			const bool						  p_selected = true,
-			const bool						  p_append	 = false
-		)
+		void execute( const Entity						p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM p_item,
+					  const Index						p_value,
+					  const bool						p_selected = true,
+					  const bool						p_append   = false )
 		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_selected, p_append ); }
 	};
 

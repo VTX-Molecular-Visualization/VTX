@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_BINDING_WRAPPER_OBJECT__
-#define __VTX_PYTHON_BINDING_WRAPPER_OBJECT__
+#ifndef VTX_PYTHON_BINDING_WRAPPER_OBJECT_HPP
+#define VTX_PYTHON_BINDING_WRAPPER_OBJECT_HPP
 
 #include "python_binding/wrapper/function.hpp"
 #include "python_binding/wrapper/pybind11_extra_convertor.hpp"
@@ -56,10 +56,9 @@ namespace VTX::PythonBinding
 				}
 				catch ( const pybind11::error_already_set & e )
 				{
-					throw PythonWrapperException(
-						"Error when setting member " + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
-						+ " - " + e.what()
-					);
+					throw PythonWrapperException( "Error when setting member "
+												  + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
+												  + " - " + e.what() );
 				}
 			}
 
@@ -72,10 +71,9 @@ namespace VTX::PythonBinding
 				}
 				catch ( const pybind11::error_already_set & e )
 				{
-					throw PythonWrapperException(
-						"Error when setting member " + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
-						+ " - " + e.what()
-					);
+					throw PythonWrapperException( "Error when setting member "
+												  + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
+												  + " - " + e.what() );
 				}
 			}
 

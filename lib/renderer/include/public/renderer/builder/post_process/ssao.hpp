@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_SSAO__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_SSAO__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_SSAO_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_SSAO_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
@@ -101,8 +101,7 @@ namespace VTX::Renderer::Builder::PostProcess
 					  .program( programName )
 					  .shaders( { "default.vert", shader } )
 					  .uniform(
-						  "Intensity", SSAO_INTENSITY_DEFAULT, std::pair { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX }
-					  )
+						  "Intensity", SSAO_INTENSITY_DEFAULT, std::pair { SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX } )
 					  .uniform( "Radius", SSAO_RADIUS_DEFAULT, std::pair { SSAO_RADIUS_MIN, SSAO_RADIUS_MAX } )
 					  .uniform( "Scale", SSAO_SCALE_DEFAULT, std::pair { SSAO_SCALE_MIN, SSAO_SCALE_MAX } );
 

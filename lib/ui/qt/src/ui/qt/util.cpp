@@ -35,12 +35,10 @@ namespace VTX::UI::QT::Util
 		}
 	}
 
-	void fillMenu(
-		QMenu &							 p_menu,
-		const int						 p_enumSize,
-		const std::vector<std::string> & p_names,
-		const bool						 p_actionCheckable
-	)
+	void fillMenu( QMenu &							p_menu,
+				   const int						p_enumSize,
+				   const std::vector<std::string> & p_names,
+				   const bool						p_actionCheckable )
 	{
 		for ( int i = 0; i < p_enumSize; i++ )
 		{
@@ -130,13 +128,11 @@ namespace VTX::UI::QT::Util
 			{
 				const QColor background = palette().color( QPalette::Window );
 				const QColor foreground = palette().color( QPalette::WindowText );
-				_frame->setStyleSheet( QString(
-										   "#questionMarkPopupFrame{"
-										   "background:%1;"
-										   "border:1px solid %2;"
-										   "border-radius:8px;"
-										   "}"
-				)
+				_frame->setStyleSheet( QString( "#questionMarkPopupFrame{"
+												"background:%1;"
+												"border:1px solid %2;"
+												"border-radius:8px;"
+												"}" )
 										   .arg( background.name(), foreground.name() ) );
 			}
 
@@ -233,9 +229,8 @@ namespace VTX::UI::QT::Util
 				const QScreen * scr	  = screen();
 				const QRect		avail = scr ? scr->availableGeometry() : QRect( 0, 0, 800, 600 );
 
-				const QSize maxSize(
-					std::min( 480, avail.width() - 2 * BUTTON_SIDE ), std::min( 360, avail.height() - 2 * BUTTON_SIDE )
-				);
+				const QSize maxSize( std::min( 480, avail.width() - 2 * BUTTON_SIDE ),
+									 std::min( 360, avail.height() - 2 * BUTTON_SIDE ) );
 				// Constrain the label width so the text wraps (rather than forcing a horizontal scrollbar) and
 				// let adjustSize() resolve the height; the popup max size then bounds the whole tooltip.
 				_label->setMaximumWidth( maxSize.width() );
@@ -261,11 +256,9 @@ namespace VTX::UI::QT::Util
 		};
 	} // namespace
 
-	LabelWithHelper::LabelWithHelper(
-		const char * const				p_label,
-		const char * const				p_helper,
-		const E_QUESTIONMARK_POSITION & p_postion
-	)
+	LabelWithHelper::LabelWithHelper( const char * const			  p_label,
+									  const char * const			  p_helper,
+									  const E_QUESTIONMARK_POSITION & p_postion )
 	{
 		auto containerOwner				= std::make_unique<QWidget>();
 		container						= containerOwner.get();
@@ -311,8 +304,7 @@ namespace VTX::UI::QT::Util
 		out->setValidator( Helper::makeQObject<VTX::UI::QT::QUInt64Validator>( out ) );
 
 		auto labelOwner = std::unique_ptr<QWidget>( VTX::UI::QT::Util::LabelWithHelper(
-			p_label, p_tooltip, VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-		) );
+			p_label, p_tooltip, VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ) );
 		p_dest->addRow( labelOwner.release(), outOwner.release() );
 		return out;
 	}

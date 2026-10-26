@@ -194,9 +194,8 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		_residuesFilter->setClearButtonEnabled( true );
 		_residuesFilter->setPlaceholderText( "Filter residues" );
 		_residuesTable = VTX::UI::QT::Helper::makeQObject<QTableWidget>( residuesPage );
-		_configureTable(
-			*_residuesTable, { "Index", "Chain", "Name", "Symbol", "Original ID", "Secondary Structure", "Atoms" }
-		);
+		_configureTable( *_residuesTable,
+						 { "Index", "Chain", "Name", "Symbol", "Original ID", "Secondary Structure", "Atoms" } );
 		residuesLayout->addWidget( _residuesFilter );
 		residuesLayout->addWidget( _residuesTable, 1 );
 
@@ -208,9 +207,8 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		_atomsFilter->setClearButtonEnabled( true );
 		_atomsFilter->setPlaceholderText( "Filter atoms" );
 		_atomsTable = VTX::UI::QT::Helper::makeQObject<QTableWidget>( atomsPage );
-		_configureTable(
-			*_atomsTable, { "Index", "Residue", "In Residue", "Name", "Original Index", "Element", "X", "Y", "Z" }
-		);
+		_configureTable( *_atomsTable,
+						 { "Index", "Residue", "In Residue", "Name", "Original Index", "Element", "X", "Y", "Z" } );
 		atomsLayout->addWidget( _atomsFilter );
 		atomsLayout->addWidget( _atomsTable, 1 );
 
@@ -285,105 +283,85 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		rootLayout->addWidget( buttons );
 
 		connect( closeButton, &QPushButton::clicked, this, &QDialog::reject );
-		connect(
-			_chainsTable,
-			&QTableWidget::currentCellChanged,
-			this,
-			[ this ]( const int p_row, const int, const int, const int )
-			{
-				if ( p_row < 0 )
-				{
-					_clearSelectionInspector();
-					return;
-				}
-				_updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::CHAIN, static_cast<Index>( p_row ) );
-			}
-		);
-		connect(
-			_residuesTable,
-			&QTableWidget::currentCellChanged,
-			this,
-			[ this ]( const int p_row, const int, const int, const int )
-			{
-				if ( p_row < 0 )
-				{
-					_clearSelectionInspector();
-					return;
-				}
-				_updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::RESIDUE, static_cast<Index>( p_row ) );
-			}
-		);
-		connect(
-			_atomsTable,
-			&QTableWidget::currentCellChanged,
-			this,
-			[ this ]( const int p_row, const int, const int, const int )
-			{
-				if ( p_row < 0 )
-				{
-					_clearSelectionInspector();
-					return;
-				}
-				_updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::ATOM, static_cast<Index>( p_row ) );
-			}
-		);
-		connect(
-			_bondsTable,
-			&QTableWidget::currentCellChanged,
-			this,
-			[ this ]( const int p_row, const int, const int, const int )
-			{
-				if ( p_row < 0 )
-				{
-					_clearSelectionInspector();
-					return;
-				}
-				_updateBondInspector( static_cast<Index>( p_row ) );
-			}
-		);
-		connect(
-			_validationTable,
-			&QTableWidget::currentCellChanged,
-			this,
-			[ this ]( const int p_row, const int, const int, const int )
-			{
-				if ( p_row < 0 )
-				{
-					return;
-				}
-				_clearSelectionInspector();
-			}
-		);
-		connect(
-			_chainsFilter,
-			&QLineEdit::textChanged,
-			this,
-			[ this ]( const QString & p_text ) { _applyTableFilter( *_chainsTable, p_text ); }
-		);
-		connect(
-			_residuesFilter,
-			&QLineEdit::textChanged,
-			this,
-			[ this ]( const QString & p_text ) { _applyTableFilter( *_residuesTable, p_text ); }
-		);
-		connect(
-			_atomsFilter,
-			&QLineEdit::textChanged,
-			this,
-			[ this ]( const QString & p_text ) { _applyTableFilter( *_atomsTable, p_text ); }
-		);
-		connect(
-			_bondsFilter,
-			&QLineEdit::textChanged,
-			this,
-			[ this ]( const QString & p_text ) { _applyTableFilter( *_bondsTable, p_text ); }
-		);
-		connect(
-			_validationFilter,
-			&QLineEdit::textChanged,
-			this,
-			[ this ]( const QString & p_text ) { _applyTableFilter( *_validationTable, p_text ); }
-		);
+		connect( _chainsTable,
+				 &QTableWidget::currentCellChanged,
+				 this,
+				 [ this ]( const int p_row, const int, const int, const int )
+				 {
+					 if ( p_row < 0 )
+					 {
+						 _clearSelectionInspector();
+						 return;
+					 }
+					 _updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::CHAIN, static_cast<Index>( p_row ) );
+				 } );
+		connect( _residuesTable,
+				 &QTableWidget::currentCellChanged,
+				 this,
+				 [ this ]( const int p_row, const int, const int, const int )
+				 {
+					 if ( p_row < 0 )
+					 {
+						 _clearSelectionInspector();
+						 return;
+					 }
+					 _updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::RESIDUE, static_cast<Index>( p_row ) );
+				 } );
+		connect( _atomsTable,
+				 &QTableWidget::currentCellChanged,
+				 this,
+				 [ this ]( const int p_row, const int, const int, const int )
+				 {
+					 if ( p_row < 0 )
+					 {
+						 _clearSelectionInspector();
+						 return;
+					 }
+					 _updateSelectionInspector( Core::Struct::E_SYSTEM_ITEM::ATOM, static_cast<Index>( p_row ) );
+				 } );
+		connect( _bondsTable,
+				 &QTableWidget::currentCellChanged,
+				 this,
+				 [ this ]( const int p_row, const int, const int, const int )
+				 {
+					 if ( p_row < 0 )
+					 {
+						 _clearSelectionInspector();
+						 return;
+					 }
+					 _updateBondInspector( static_cast<Index>( p_row ) );
+				 } );
+		connect( _validationTable,
+				 &QTableWidget::currentCellChanged,
+				 this,
+				 [ this ]( const int p_row, const int, const int, const int )
+				 {
+					 if ( p_row < 0 )
+					 {
+						 return;
+					 }
+					 _clearSelectionInspector();
+				 } );
+		connect( _chainsFilter,
+				 &QLineEdit::textChanged,
+				 this,
+				 [ this ]( const QString & p_text ) { _applyTableFilter( *_chainsTable, p_text ); } );
+		connect( _residuesFilter,
+				 &QLineEdit::textChanged,
+				 this,
+				 [ this ]( const QString & p_text ) { _applyTableFilter( *_residuesTable, p_text ); } );
+		connect( _atomsFilter,
+				 &QLineEdit::textChanged,
+				 this,
+				 [ this ]( const QString & p_text ) { _applyTableFilter( *_atomsTable, p_text ); } );
+		connect( _bondsFilter,
+				 &QLineEdit::textChanged,
+				 this,
+				 [ this ]( const QString & p_text ) { _applyTableFilter( *_bondsTable, p_text ); } );
+		connect( _validationFilter,
+				 &QLineEdit::textChanged,
+				 this,
+				 [ this ]( const QString & p_text ) { _applyTableFilter( *_validationTable, p_text ); } );
 
 		_clearSystemViews();
 	}
@@ -450,11 +428,9 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		}
 	}
 
-	void TopologyEditorDialog::_setInspectorProperty(
-		const int		p_index,
-		const QString & p_label,
-		const QString & p_value
-	)
+	void TopologyEditorDialog::_setInspectorProperty( const int		  p_index,
+													  const QString & p_label,
+													  const QString & p_value )
 	{
 		if ( p_index < 0 || std::cmp_greater_equal( p_index, _propertyLabels.size() ) )
 		{
@@ -495,18 +471,15 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		for ( Index chain = 0; chain < topology.getChainCount(); ++chain )
 		{
 			_chainsTable->setItem(
-				static_cast<int>( chain ), 0, _item( _textOrDash( topology.getChainName( chain ) ) ).release()
-			);
+				static_cast<int>( chain ), 0, _item( _textOrDash( topology.getChainName( chain ) ) ).release() );
 			_chainsTable->setItem(
 				static_cast<int>( chain ),
 				1,
-				_readonlyItem( UI::QT::Helper::formatNumber( topology.getChainResidueCount( chain ) ) ).release()
-			);
+				_readonlyItem( UI::QT::Helper::formatNumber( topology.getChainResidueCount( chain ) ) ).release() );
 			_chainsTable->setItem(
 				static_cast<int>( chain ),
 				2,
-				_readonlyItem( UI::QT::Helper::formatNumber( topology.getChainAtomCount( chain ) ) ).release()
-			);
+				_readonlyItem( UI::QT::Helper::formatNumber( topology.getChainAtomCount( chain ) ) ).release() );
 		}
 		_resizeTableColumns( *_chainsTable );
 		_applyTableFilter( *_chainsTable, _chainsFilter ? _chainsFilter->text() : QString() );
@@ -520,40 +493,29 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		{
 			const Index chain = topology.getResidueChainIndex( residue );
 			_residuesTable->setItem(
-				static_cast<int>( residue ), 0, _readonlyItem( UI::QT::Helper::formatNumber( residue ) ).release()
-			);
+				static_cast<int>( residue ), 0, _readonlyItem( UI::QT::Helper::formatNumber( residue ) ).release() );
+			_residuesTable->setItem( static_cast<int>( residue ),
+									 1,
+									 _readonlyItem( _textOrDash( topology.getChainName( chain ) ) ).release() );
 			_residuesTable->setItem(
-				static_cast<int>( residue ), 1, _readonlyItem( _textOrDash( topology.getChainName( chain ) ) ).release()
-			);
-			_residuesTable->setItem(
-				static_cast<int>( residue ), 2, _item( _textOrDash( topology.getResidueName( residue ) ) ).release()
-			);
+				static_cast<int>( residue ), 2, _item( _textOrDash( topology.getResidueName( residue ) ) ).release() );
 			_residuesTable->setItem(
 				static_cast<int>( residue ),
 				3,
 				_item( QString::fromStdString( std::string( _residueSymbol( topology.getResidueSymbol( residue ) ) ) ) )
-					.release()
-			);
-			_residuesTable->setItem(
-				static_cast<int>( residue ),
-				4,
-				_item( QString::number( topology.getResidueOriginalId( residue ) ) ).release()
-			);
-			_residuesTable->setItem(
-				static_cast<int>( residue ),
-				5,
-				_readonlyItem(
-					QString::fromStdString(
-						std::string( Util::Enum::enumName( topology.getResidueSecondaryStructureType( residue ) ) )
-					)
-				)
-					.release()
-			);
+					.release() );
+			_residuesTable->setItem( static_cast<int>( residue ),
+									 4,
+									 _item( QString::number( topology.getResidueOriginalId( residue ) ) ).release() );
+			_residuesTable->setItem( static_cast<int>( residue ),
+									 5,
+									 _readonlyItem( QString::fromStdString( std::string( Util::Enum::enumName(
+														topology.getResidueSecondaryStructureType( residue ) ) ) ) )
+										 .release() );
 			_residuesTable->setItem(
 				static_cast<int>( residue ),
 				6,
-				_readonlyItem( UI::QT::Helper::formatNumber( topology.getResidueAtomCount( residue ) ) ).release()
-			);
+				_readonlyItem( UI::QT::Helper::formatNumber( topology.getResidueAtomCount( residue ) ) ).release() );
 		}
 		_resizeTableColumns( *_residuesTable );
 		_applyTableFilter( *_residuesTable, _residuesFilter ? _residuesFilter->text() : QString() );
@@ -570,45 +532,34 @@ namespace VTX::Tool::TopologyEditor::Dialog
 				const Index residue		  = topology.getAtomResidueIndex( atom );
 				const Index atomInResidue = atom - topology.getResidueFirstAtom( residue ) + 1;
 				_atomsTable->setItem(
-					static_cast<int>( atom ), 0, _readonlyItem( UI::QT::Helper::formatNumber( atom ) ).release()
-				);
+					static_cast<int>( atom ), 0, _readonlyItem( UI::QT::Helper::formatNumber( atom ) ).release() );
+				_atomsTable->setItem( static_cast<int>( atom ),
+									  1,
+									  _readonlyItem( _textOrDash( topology.getResidueName( residue ) ) ).release() );
+				_atomsTable->setItem( static_cast<int>( atom ),
+									  2,
+									  _readonlyItem( UI::QT::Helper::formatNumber( atomInResidue ) ).release() );
 				_atomsTable->setItem(
-					static_cast<int>( atom ),
-					1,
-					_readonlyItem( _textOrDash( topology.getResidueName( residue ) ) ).release()
-				);
-				_atomsTable->setItem(
-					static_cast<int>( atom ),
-					2,
-					_readonlyItem( UI::QT::Helper::formatNumber( atomInResidue ) ).release()
-				);
-				_atomsTable->setItem(
-					static_cast<int>( atom ), 3, _item( _textOrDash( topology.getAtomName( atom ) ) ).release()
-				);
+					static_cast<int>( atom ), 3, _item( _textOrDash( topology.getAtomName( atom ) ) ).release() );
 				const auto originalAtomIndex = topology.getAtomOriginalIndex( atom );
 				_atomsTable->setItem(
 					static_cast<int>( atom ),
 					4,
-					_item( originalAtomIndex ? QString::number( *originalAtomIndex ) : "-" ).release()
-				);
+					_item( originalAtomIndex ? QString::number( *originalAtomIndex ) : "-" ).release() );
 				_atomsTable->setItem(
 					static_cast<int>( atom ),
 					5,
 					_item( QString::fromStdString( std::string( _atomSymbol( topology.getAtomSymbol( atom ) ) ) ) )
-						.release()
-				);
+						.release() );
 
 				const bool	hasPosition = atom < p_positions.size();
 				const Vec3f position	= hasPosition ? p_positions[ atom ] : Vec3f {};
 				_atomsTable->setItem(
-					static_cast<int>( atom ), 6, _item( hasPosition ? QString::number( position.x ) : "-" ).release()
-				);
+					static_cast<int>( atom ), 6, _item( hasPosition ? QString::number( position.x ) : "-" ).release() );
 				_atomsTable->setItem(
-					static_cast<int>( atom ), 7, _item( hasPosition ? QString::number( position.y ) : "-" ).release()
-				);
+					static_cast<int>( atom ), 7, _item( hasPosition ? QString::number( position.y ) : "-" ).release() );
 				_atomsTable->setItem(
-					static_cast<int>( atom ), 8, _item( hasPosition ? QString::number( position.z ) : "-" ).release()
-				);
+					static_cast<int>( atom ), 8, _item( hasPosition ? QString::number( position.z ) : "-" ).release() );
 			}
 		};
 		if ( not App::Helper::Trajectory::visitCurrentFrame( _system, populate ) )
@@ -628,16 +579,14 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			const Index firstAtom  = topology.getBondFirstAtom( bond );
 			const Index secondAtom = topology.getBondSecondAtom( bond );
 			_bondsTable->setItem(
-				static_cast<int>( bond ), 0, _readonlyItem( QString::number( firstAtom ) ).release()
-			);
+				static_cast<int>( bond ), 0, _readonlyItem( QString::number( firstAtom ) ).release() );
 			_bondsTable->setItem(
-				static_cast<int>( bond ), 1, _readonlyItem( QString::number( secondAtom ) ).release()
-			);
+				static_cast<int>( bond ), 1, _readonlyItem( QString::number( secondAtom ) ).release() );
 			_bondsTable->setItem(
 				static_cast<int>( bond ),
 				2,
-				_item( QString::fromStdString( std::string( _bondOrder( topology.getBondOrder( bond ) ) ) ) ).release()
-			);
+				_item( QString::fromStdString( std::string( _bondOrder( topology.getBondOrder( bond ) ) ) ) )
+					.release() );
 		}
 		_resizeTableColumns( *_bondsTable );
 		_applyTableFilter( *_bondsTable, _bondsFilter ? _bondsFilter->text() : QString() );
@@ -647,10 +596,9 @@ namespace VTX::Tool::TopologyEditor::Dialog
 	{
 		const auto & topology	   = App::REG().get<Core::Struct::Topology>( _system );
 		size_t		 positionCount = 0;
-		App::Helper::Trajectory::visitCurrentFrame(
-			_system,
-			[ &positionCount ]( const Core::Struct::FrameView p_positions ) { positionCount = p_positions.size(); }
-		);
+		App::Helper::Trajectory::visitCurrentFrame( _system,
+													[ &positionCount ]( const Core::Struct::FrameView p_positions )
+													{ positionCount = p_positions.size(); } );
 
 		_validationTable->setRowCount( 0 );
 		auto addIssue = [ this ]( const QString & p_severity, const QString & p_item, const QString & p_message )
@@ -712,10 +660,8 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		}
 	}
 
-	void TopologyEditorDialog::_updateSelectionInspector(
-		const Core::Struct::E_SYSTEM_ITEM p_item,
-		const Index						  p_index
-	)
+	void TopologyEditorDialog::_updateSelectionInspector( const Core::Struct::E_SYSTEM_ITEM p_item,
+														  const Index						p_index )
 	{
 		const auto & topology = App::REG().get<Core::Struct::Topology>( _system );
 
@@ -736,8 +682,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			_selectedName->setText( _textOrDash( topology.getChainName( p_index ) ) );
 			_setInspectorProperty( 0, "System", _entityLabel( _system ) );
 			_setInspectorProperty(
-				1, "Residues", UI::QT::Helper::formatNumber( topology.getChainResidueCount( p_index ) )
-			);
+				1, "Residues", UI::QT::Helper::formatNumber( topology.getChainResidueCount( p_index ) ) );
 			_setInspectorProperty( 2, "Atoms", UI::QT::Helper::formatNumber( topology.getChainAtomCount( p_index ) ) );
 			break;
 		case Core::Struct::E_SYSTEM_ITEM::RESIDUE:
@@ -749,14 +694,11 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			_setInspectorProperty(
 				1,
 				"Symbol",
-				QString::fromStdString( std::string( _residueSymbol( topology.getResidueSymbol( p_index ) ) ) )
-			);
+				QString::fromStdString( std::string( _residueSymbol( topology.getResidueSymbol( p_index ) ) ) ) );
 			_setInspectorProperty(
-				2, "Original ID", UI::QT::Helper::formatNumber( topology.getResidueOriginalId( p_index ) )
-			);
+				2, "Original ID", UI::QT::Helper::formatNumber( topology.getResidueOriginalId( p_index ) ) );
 			_setInspectorProperty(
-				3, "Atoms", UI::QT::Helper::formatNumber( topology.getResidueAtomCount( p_index ) )
-			);
+				3, "Atoms", UI::QT::Helper::formatNumber( topology.getResidueAtomCount( p_index ) ) );
 			break;
 		}
 		case Core::Struct::E_SYSTEM_ITEM::ATOM:
@@ -768,8 +710,9 @@ namespace VTX::Tool::TopologyEditor::Dialog
 			_setInspectorProperty( 0, "Chain", _textOrDash( topology.getChainName( chain ) ) );
 			_setInspectorProperty( 1, "Residue", _textOrDash( topology.getResidueName( residue ) ) );
 			_setInspectorProperty(
-				2, "Element", QString::fromStdString( std::string( _atomSymbol( topology.getAtomSymbol( p_index ) ) ) )
-			);
+				2,
+				"Element",
+				QString::fromStdString( std::string( _atomSymbol( topology.getAtomSymbol( p_index ) ) ) ) );
 			App::Helper::Trajectory::visitCurrentFrame(
 				_system,
 				[ & ]( const Core::Struct::FrameView p_positions )
@@ -781,8 +724,7 @@ namespace VTX::Tool::TopologyEditor::Dialog
 						_setInspectorProperty( 4, "Y", UI::QT::Helper::formatNumber( position.y, 'f', 3 ) );
 						_setInspectorProperty( 5, "Z", UI::QT::Helper::formatNumber( position.z, 'f', 3 ) );
 					}
-				}
-			);
+				} );
 			break;
 		}
 
@@ -806,31 +748,25 @@ namespace VTX::Tool::TopologyEditor::Dialog
 									.arg( _textOrDash( topology.getAtomName( firstAtom ) ) )
 									.arg( _textOrDash( topology.getAtomName( secondAtom ) ) ) );
 		_setInspectorProperty(
-			0, "Order", QString::fromStdString( std::string( _bondOrder( topology.getBondOrder( p_index ) ) ) )
-		);
-		_setInspectorProperty(
-			1,
-			"First Atom",
-			QString( "%1 (%2)" )
-				.arg( _textOrDash( topology.getAtomName( firstAtom ) ) )
-				.arg( UI::QT::Helper::formatNumber( firstAtom ) )
-		);
-		_setInspectorProperty(
-			2,
-			"Second Atom",
-			QString( "%1 (%2)" )
-				.arg( _textOrDash( topology.getAtomName( secondAtom ) ) )
-				.arg( UI::QT::Helper::formatNumber( secondAtom ) )
-		);
+			0, "Order", QString::fromStdString( std::string( _bondOrder( topology.getBondOrder( p_index ) ) ) ) );
+		_setInspectorProperty( 1,
+							   "First Atom",
+							   QString( "%1 (%2)" )
+								   .arg( _textOrDash( topology.getAtomName( firstAtom ) ) )
+								   .arg( UI::QT::Helper::formatNumber( firstAtom ) ) );
+		_setInspectorProperty( 2,
+							   "Second Atom",
+							   QString( "%1 (%2)" )
+								   .arg( _textOrDash( topology.getAtomName( secondAtom ) ) )
+								   .arg( UI::QT::Helper::formatNumber( secondAtom ) ) );
 		_setInspectorProperty( 3, "Residue A", _textOrDash( topology.getResidueName( firstResidue ) ) );
 		_setInspectorProperty( 4, "Residue B", _textOrDash( topology.getResidueName( secondResidue ) ) );
-		_setInspectorProperty(
-			5,
-			firstChain == secondChain ? "Chain" : "Chains",
-			firstChain == secondChain ? _textOrDash( topology.getChainName( firstChain ) )
-									  : QString( "%1 / %2" )
-											.arg( _textOrDash( topology.getChainName( firstChain ) ) )
-											.arg( _textOrDash( topology.getChainName( secondChain ) ) )
-		);
+		_setInspectorProperty( 5,
+							   firstChain == secondChain ? "Chain" : "Chains",
+							   firstChain == secondChain
+								   ? _textOrDash( topology.getChainName( firstChain ) )
+								   : QString( "%1 / %2" )
+										 .arg( _textOrDash( topology.getChainName( firstChain ) ) )
+										 .arg( _textOrDash( topology.getChainName( secondChain ) ) ) );
 	}
 } // namespace VTX::Tool::TopologyEditor::Dialog

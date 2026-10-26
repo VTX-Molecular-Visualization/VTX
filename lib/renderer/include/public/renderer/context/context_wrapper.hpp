@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_CONTEXT_WRAPPER__
-#define __VTX_RENDERER_CONTEXT_CONTEXT_WRAPPER__
+#ifndef VTX_RENDERER_CONTEXT_CONTEXT_WRAPPER_HPP
+#define VTX_RENDERER_CONTEXT_CONTEXT_WRAPPER_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/command_buffer.hpp"
@@ -27,12 +27,10 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Set OpenGL 4.5 graphic context backkend and executor.
 		 */
-		void setOpenGL(
-			size_t p_width,
-			size_t p_height,
-			const Desc::NativeContextInfo &,
-			const FilePath & p_shaderDir
-		);
+		void setOpenGL( size_t p_width,
+						size_t p_height,
+						const Desc::NativeContextInfo &,
+						const FilePath & p_shaderDir );
 
 		/**
 		 * @brief Set null executor.
@@ -121,12 +119,10 @@ namespace VTX::Renderer::Context
 
 		 * * Coordinates = single pixel, default = whole texture.
 		 */
-		std::vector<std::byte> getTextureData(
-			const Desc::Key & p_key,
-			std::optional<Desc::E_FORMAT> = {},
-			std::optional<size_t> p_x	  = {},
-			std::optional<size_t> p_y	  = {}
-		) const;
+		std::vector<std::byte> getTextureData( const Desc::Key & p_key,
+											   std::optional<Desc::E_FORMAT> = {},
+											   std::optional<size_t> p_x	 = {},
+											   std::optional<size_t> p_y	 = {} ) const;
 
 		/**
 		 * @brief Set texture data.
@@ -136,24 +132,19 @@ namespace VTX::Renderer::Context
 		{ setTextureData( p_key, asBytes( p_data ) ); }
 
 		template<typename T>
-		void setTextureData(
-			const Desc::Key &  p_key,
-			std::span<const T> p_data,
-			const size_t	   p_width,
-			const size_t	   p_height
-		)
+		void setTextureData( const Desc::Key &	p_key,
+							 std::span<const T> p_data,
+							 const size_t		p_width,
+							 const size_t		p_height )
 		{
 			setTextureData(
-				p_key, asBytes( p_data ), std::optional<size_t> { p_width }, std::optional<size_t> { p_height }
-			);
+				p_key, asBytes( p_data ), std::optional<size_t> { p_width }, std::optional<size_t> { p_height } );
 		}
 
-		void setTextureData(
-			const Desc::Key &	  p_key,
-			SpanBytes			  p_data,
-			std::optional<size_t> p_width  = {},
-			std::optional<size_t> p_height = {}
-		);
+		void setTextureData( const Desc::Key &	   p_key,
+							 SpanBytes			   p_data,
+							 std::optional<size_t> p_width	= {},
+							 std::optional<size_t> p_height = {} );
 
 		/**
 		 * @brief Set the render target.
@@ -174,10 +165,8 @@ namespace VTX::Renderer::Context
 		 * @brief Map graphics buffers to an external compute backend pointer.
 		 */
 		[[nodiscard]] Desc::InteropBufferMapping mapInteropBuffer( Desc::E_INTEROP_API, const Desc::BufferRef & );
-		[[nodiscard]] std::vector<Desc::InteropBufferMapping> mapInteropBuffers(
-			Desc::E_INTEROP_API,
-			std::span<const Desc::BufferRef>
-		);
+		[[nodiscard]] std::vector<Desc::InteropBufferMapping> mapInteropBuffers( Desc::E_INTEROP_API,
+																				 std::span<const Desc::BufferRef> );
 		void unmapInteropBuffer( Desc::E_INTEROP_API, const Desc::InteropBufferMapping & );
 		void unmapInteropBuffers( Desc::E_INTEROP_API, std::span<const Desc::InteropBufferMapping> );
 		void unregisterInteropBuffer( Desc::E_INTEROP_API, const Desc::BufferRef & );

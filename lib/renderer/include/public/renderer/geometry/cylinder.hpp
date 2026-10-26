@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GEOMETRY_CYLINDER__
-#define __VTX_RENDERER_GEOMETRY_CYLINDER__
+#ifndef VTX_RENDERER_GEOMETRY_CYLINDER_HPP
+#define VTX_RENDERER_GEOMETRY_CYLINDER_HPP
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
@@ -34,7 +34,7 @@ namespace VTX::Renderer::Geometry
 
 		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			_construction[ p_handle ] = _Construction { &p_data.data.topology->bondPairAtomIndexes };
+			_construction[ p_handle ] = Construction { &p_data.data.topology->bondPairAtomIndexes };
 
 			const std::vector<Index> & bonds = *_construction[ p_handle ].bonds;
 			const Index				   count = static_cast<Index>( bonds.size() );
@@ -73,12 +73,12 @@ namespace VTX::Renderer::Geometry
 		}
 
 	  private:
-		struct _Construction
+		struct Construction
 		{
 			const std::vector<Index> * bonds;
 		};
 
-		std::unordered_map<Desc::Handle, _Construction> _construction;
+		std::unordered_map<Desc::Handle, Construction> _construction;
 	};
 } // namespace VTX::Renderer::Geometry
 

@@ -50,19 +50,19 @@ namespace VTX::Util::Thread
 			}
 		};
 
-		std::list<_SynchronizedCall> calls;
-		std::list<_DispatchedCall>	 dispatchedCalls;
+		std::list<SynchronizedCall> calls;
+		std::list<DispatchedCall>	 dispatchedCalls;
 		{
 			const std::scoped_lock lock( _synchronizedCallsMutex );
 			calls.splice( calls.end(), _synchronizedCalls );
 			dispatchedCalls.splice( dispatchedCalls.end(), _dispatchedCalls );
 		}
 
-		for ( _SynchronizedCall & call : calls )
+		for ( SynchronizedCall & call : calls )
 		{
 			call.task();
 		}
-		for ( _DispatchedCall & call : dispatchedCalls )
+		for ( DispatchedCall & call : dispatchedCalls )
 		{
 			try
 			{
@@ -107,10 +107,8 @@ namespace VTX::Util::Thread
 		}
 	}
 
-	BaseThread & ThreadManager::createThread(
-		const BaseThread::AsyncOp &		p_asyncOp,
-		const BaseThread::EndCallback & p_callback
-	)
+	BaseThread & ThreadManager::createThread( const BaseThread::AsyncOp &	  p_asyncOp,
+											  const BaseThread::EndCallback & p_callback )
 	{
 		const std::shared_ptr<BaseThread> thread( new BaseThread( *this ) );
 		_threads.emplace_back( thread );
@@ -155,7 +153,7 @@ namespace VTX::Util::Thread
 			return;
 		}
 		_cancelledCallers.emplace( p_caller );
-		_synchronizedCalls.remove_if( [ p_caller ]( const _SynchronizedCall & p_call )
+		_synchronizedCalls.remove_if( [ p_caller ]( const SynchronizedCall & p_call )
 									  { return p_call.caller == p_caller; } );
 	}
 

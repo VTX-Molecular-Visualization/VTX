@@ -13,7 +13,7 @@ namespace
 	using Action	   = VTX::App::Input::InputManager::Action;
 	using BindingTable = std::array<std::optional<Action>, 256>;
 
-	constexpr BindingTable _QWERTY_BINDINGS = []()
+	constexpr BindingTable QWERTY_BINDINGS = []()
 	{
 		BindingTable bindings;
 		bindings[ Qt::Key_W ] = Action::MoveFront;
@@ -27,7 +27,7 @@ namespace
 		return bindings;
 	}();
 
-	constexpr BindingTable _AZERTY_BINDINGS = []()
+	constexpr BindingTable AZERTY_BINDINGS = []()
 	{
 		BindingTable bindings;
 		bindings[ Qt::Key_Z ] = Action::MoveFront;
@@ -158,12 +158,12 @@ namespace VTX::UI::QT::Window
 
 	std::optional<App::Input::InputManager::Action> Renderer::_getKeyboardAction( const int p_key ) const
 	{
-		if ( p_key < 0 || std::cmp_greater_equal( p_key, _QWERTY_BINDINGS.size() ) )
+		if ( p_key < 0 || std::cmp_greater_equal( p_key, QWERTY_BINDINGS.size() ) )
 		{
 			return std::nullopt;
 		}
 
-		const BindingTable & bindings = _layout == KB_LAYOUT::AZERTY ? _AZERTY_BINDINGS : _QWERTY_BINDINGS;
+		const BindingTable & bindings = _layout == KB_LAYOUT::AZERTY ? AZERTY_BINDINGS : QWERTY_BINDINGS;
 		return bindings[ p_key ];
 	}
 

@@ -44,29 +44,26 @@ namespace VTX::UI::QT::Dialog
 		_cbSystem->setCurrentIndex( 0 );
 		layoutCacheRadio->addWidget( _cbSystem.data() );
 		QDialogButtonBox * buttonBox = Helper::makeQObject<QDialogButtonBox>(
-			QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open, this
-		);
+			QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open, this );
 		layoutCacheRadio->addWidget( buttonBox );
 
 		connect( buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept );
 		connect( buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
 
-		connect(
-			this,
-			&QDialog::accepted,
-			[ this ]()
-			{
-				Entity entity = _cbSystem->currentData().value<Entity>();
-				if ( entity == entt::null )
-				{
-					App::ACTION().execute<App::Action::IO::LoadSystem>( _path );
-				}
-				else
-				{
-					App::ACTION().execute<App::Action::IO::AssociateTrajectory>( _path, entity );
-				}
-			}
-		);
+		connect( this,
+				 &QDialog::accepted,
+				 [ this ]()
+				 {
+					 Entity entity = _cbSystem->currentData().value<Entity>();
+					 if ( entity == entt::null )
+					 {
+						 App::ACTION().execute<App::Action::IO::LoadSystem>( _path );
+					 }
+					 else
+					 {
+						 App::ACTION().execute<App::Action::IO::AssociateTrajectory>( _path, entity );
+					 }
+				 } );
 	}
 
 } // namespace VTX::UI::QT::Dialog

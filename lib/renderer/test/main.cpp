@@ -186,23 +186,16 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	CHECK(
 		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::BUFFER_CONVEX_PATCH_ELEMENTS } )
 			.allocation
-		== E_BUFFER_ALLOCATION::CHUNKED
-	);
-	CHECK(
-		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::INDEX_CONVEX_PATCHES } )
-			.allocation
-		== E_BUFFER_ALLOCATION::CHUNKED
-	);
-	CHECK(
-		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::INDIRECT_CONVEX_PATCHES } )
-			.allocation
-		== E_BUFFER_ALLOCATION::CHUNKED
-	);
-	CHECK(
-		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::Sphere::INDIRECT_SPHERES } )
-			.allocation
-		== E_BUFFER_ALLOCATION::SINGLE
-	);
+		== E_BUFFER_ALLOCATION::CHUNKED );
+	CHECK( resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::INDEX_CONVEX_PATCHES } )
+			   .allocation
+		   == E_BUFFER_ALLOCATION::CHUNKED );
+	CHECK( resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::INDIRECT_CONVEX_PATCHES } )
+			   .allocation
+		   == E_BUFFER_ALLOCATION::CHUNKED );
+	CHECK( resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::Sphere::INDIRECT_SPHERES } )
+			   .allocation
+		   == E_BUFFER_ALLOCATION::SINGLE );
 
 	RenderQueue queue;
 	REQUIRE_NOTHROW( queue = graph.build() );
@@ -285,9 +278,8 @@ TEST_CASE( "GraphBuilder: compute dispatch pass builds", "[renderer][graph]" )
 	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->groupX == 4 );
 	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->groupY == 2 );
 	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->groupZ == 1 );
-	CHECK(
-		queue[ 0 ]->programs[ 0 ].dispatch->barriers == ( E_MEMORY_BARRIER::SHADER_STORAGE | E_MEMORY_BARRIER::COMMAND )
-	);
+	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->barriers
+		   == ( E_MEMORY_BARRIER::SHADER_STORAGE | E_MEMORY_BARRIER::COMMAND ) );
 }
 
 TEST_CASE( "GraphBuilder: compute dispatch indirect creates its buffer", "[renderer][graph]" )

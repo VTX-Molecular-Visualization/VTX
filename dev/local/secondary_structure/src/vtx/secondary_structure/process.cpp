@@ -23,7 +23,9 @@ namespace pdb100
 		struct shm_remove
 		{
 			shm_remove() { remove_all_shit(); }
+
 			~shm_remove() { remove_all_shit(); }
+
 			void remove_all_shit()
 			{
 				boost::interprocess::shared_memory_object::remove( pdb100::shm::filestrDeque::SEGNAME );
@@ -47,8 +49,7 @@ namespace pdb100
 										  + sizeof( StringDeque ) + 1000;
 
 			boost::interprocess::managed_shared_memory sharedSegment(
-				boost::interprocess::create_only, pdb100::shm::filestrDeque::SEGNAME, size_shm_deque
-			);
+				boost::interprocess::create_only, pdb100::shm::filestrDeque::SEGNAME, size_shm_deque );
 			StringDequeAllocator dequeAlloc( sharedSegment.get_segment_manager() );
 			StringAllocator		 strAlloc( sharedSegment.get_segment_manager() );
 			StringDeque *		 fileStrDeque
@@ -67,7 +68,9 @@ namespace pdb100
 			p_context.initialFileCollectionSize = fileStrDeque->size();
 			std::cout << "Created file collection of size <" << p_context.initialFileCollectionSize << ">.";
 			if ( STRUCTURE_STRIDE > 1 )
+			{
 				std::cout << "(stride downsampling was activated)";
+			}
 			std::cout << "\n";
 		}
 
@@ -82,8 +85,7 @@ namespace pdb100
 				= ( NUM_PROCESSES * 2 ) * ( sizeof( std::pair<uint64_t, uint64_t> ) ) + sizeof( LivingProofMap ) + 1000;
 
 			boost::interprocess::managed_shared_memory sharedSegment(
-				boost::interprocess::create_only, pdb100::shm::livingProof::SEGNAME, shm_size
-			);
+				boost::interprocess::create_only, pdb100::shm::livingProof::SEGNAME, shm_size );
 			LivingProofMapAllocator mapAllocator( sharedSegment.get_segment_manager() );
 			LivingProofMap *		map
 				= sharedSegment.construct<LivingProofMap>( pdb100::shm::livingProof::OBJNAME )( mapAllocator );
@@ -102,14 +104,14 @@ namespace pdb100
 				= contextData->size() * ( contextData->back().size() + sizeof( ReportItem<String> ) + 50 )
 				  + sizeof( ReportItemCollection ) + 1000;
 			boost::interprocess::managed_shared_memory sharedSegment(
-				boost::interprocess::create_only, pdb100::shm::rsltMap::SEGNAME, shm_size
-			);
+				boost::interprocess::create_only, pdb100::shm::rsltMap::SEGNAME, shm_size );
 			ReportItemAllocator	   mapAllocator( sharedSegment.get_segment_manager() );
 			ReportItemCollection * map
 				= sharedSegment.construct<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME )( mapAllocator );
 			map->reserve( contextData->size() );
 		}
 	} // namespace shm
+
 	namespace
 	{
 
@@ -214,13 +216,17 @@ namespace pdb100
 			while ( not ml.lock.value() )
 			{
 				if ( numAttempts % 100 == 0 )
+				{
 					std::cout << "Watching Mutex <" << p_name << ">.\n";
+				}
 				std::this_thread::sleep_for( std::chrono::milliseconds( SLEEPING_TIME_MS ) );
 				ml.lock.emplace( ml.mutex.value(), try_to_lock );
 
 				numAttempts++;
 				if ( numAttempts > MAX_ATTEMPTS )
+				{
 					break;
+				}
 			}
 			if ( not ml.lock.value() )
 			{
@@ -250,23 +256,23 @@ namespace pdb100
 
 			std::stack<uint64_t> removeKeys; // Used to cleanup the Proof of life map
 
-			boost::interprocess::managed_shared_memory sharedSegment(
-				boost::interprocess::open_only, pdb100::shm::livingProof::SEGNAME
-			);
+			boost::interprocess::managed_shared_memory sharedSegment( boost::interprocess::open_only,
+																	  pdb100::shm::livingProof::SEGNAME );
 			auto livingProofMapPair = sharedSegment.find<LivingProofMap>( pdb100::shm::livingProof::OBJNAME );
 
 			for ( auto & it_pair : *livingProofMapPair.first )
 			{
 				uint64_t timeSinceLastProofOfLife = getTimeStamp() - it_pair.second;
 				if ( timeSinceLastProofOfLife < shm::livingProof::tolerenceTime )
+				{
 					continue;
+				}
 
 				removeKeys.push( it_pair.first );
-				auto findRslt = std::find_if(
-					p_processes.begin(),
-					p_processes.end(),
-					[ id = it_pair.first ]( RestartingProcess & p ) { return p.getId() == id; }
-				);
+				auto findRslt
+					= std::find_if( p_processes.begin(),
+									p_processes.end(),
+									[ id = it_pair.first ]( RestartingProcess & p ) { return p.getId() == id; } );
 				if ( findRslt != std::end( p_processes ) )
 				{
 					RestartingProcess & child = *findRslt;
@@ -300,6 +306,7 @@ namespace pdb100
 				removeKeys.pop();
 			}
 		}
+
 		/**
 		 * @brief Returns the number of structure to be used left. Does lock (and maybe reset) the file queue mutex
 		 * @return Number of struct left
@@ -308,12 +315,12 @@ namespace pdb100
 		{
 			MutexAndLock ml;
 			maybeResetMutex( ml, shm::filestrDeque::MUTEX );
-			boost::interprocess::managed_shared_memory sharedSegment(
-				boost::interprocess::open_only, pdb100::shm::filestrDeque::SEGNAME
-			);
+			boost::interprocess::managed_shared_memory sharedSegment( boost::interprocess::open_only,
+																	  pdb100::shm::filestrDeque::SEGNAME );
 			auto fileStrDeque = sharedSegment.find<StringDeque>( pdb100::shm::filestrDeque::OBJNAME );
 			return fileStrDeque.first->size();
 		}
+
 		/**
 		 * @brief Print computation progress on the stdout
 		 * @param p_initialStructureNumber Number of
@@ -321,12 +328,10 @@ namespace pdb100
 		void showProgress( const size_t & p_initialStructureNumber )
 		{
 			size_t currentSize = getNumberOfStructureLeftInQueue();
-			std::cout << fmt::format(
-				"Progression : {:0.2f}% ({}/{})\n",
-				100. * ( p_initialStructureNumber - currentSize ) / p_initialStructureNumber,
-				( p_initialStructureNumber - currentSize ),
-				p_initialStructureNumber
-			);
+			std::cout << fmt::format( "Progression : {:0.2f}% ({}/{})\n",
+									  100. * ( p_initialStructureNumber - currentSize ) / p_initialStructureNumber,
+									  ( p_initialStructureNumber - currentSize ),
+									  p_initialStructureNumber );
 		}
 
 		/**
@@ -363,7 +368,9 @@ namespace pdb100
 						running |= it_proc.running();
 					}
 					if ( not running )
+					{
 						break;
+					}
 				}
 				if ( lastProgressPrint + showProgressInterval < getTimeStamp() )
 				{
@@ -383,31 +390,24 @@ namespace pdb100
 		 */
 		template<typename T>
 		RestartingProcess _generate( boost::asio::io_context & p_arg, T )
-		{
-			return { p_arg };
-		}
+		{ return { p_arg }; }
+
 		/**
 		 * @brief Call statically the ctor of a process NUM_PROCESSES times
 		 * @tparam ...array_pack Collection of int with static size
 		 * @param p_arg Used to instantiate a process
 		 */
 		template<std::size_t... array_pack>
-		std::array<RestartingProcess, NUM_PROCESSES> _generate(
-			boost::asio::io_context & p_arg,
-			std::index_sequence<array_pack...>
-		)
-		{
-			return { _generate( p_arg, array_pack )... };
-		}
+		std::array<RestartingProcess, NUM_PROCESSES> _generate( boost::asio::io_context & p_arg,
+																std::index_sequence<array_pack...> )
+		{ return { _generate( p_arg, array_pack )... }; }
 
 		/**
 		 * @brief Initialize the array of processes and return it.
 		 * @param p_arg Used to instantiate a process
 		 */
 		std::array<RestartingProcess, NUM_PROCESSES> generate( boost::asio::io_context & p_arg )
-		{
-			return _generate( p_arg, std::make_index_sequence<NUM_PROCESSES> {} );
-		}
+		{ return _generate( p_arg, std::make_index_sequence<NUM_PROCESSES> {} ); }
 
 	} // namespace
 

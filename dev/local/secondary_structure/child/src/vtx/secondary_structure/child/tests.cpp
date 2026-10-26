@@ -43,9 +43,13 @@ namespace pdb100
 
 		r = archive_read_open_file( a, src.string().c_str(), 10240 );
 		if ( r != ARCHIVE_OK )
+		{
 			throw VTX::VTXException( "Issue with archive <{}>. Opening error.", src.string() );
+		}
 		if ( archive_read_next_header( a, &entry ) != ARCHIVE_OK )
+		{
 			throw VTX::VTXException( "Issue with archive <{}>. Header readin error.", src.string() );
+		}
 
 		size_t		  redBytes = 0;
 		std::ofstream outStrm( dest );
@@ -57,51 +61,65 @@ namespace pdb100
 
 		r = archive_read_free( a );
 		if ( r != ARCHIVE_OK )
+		{
 			throw VTX::VTXException( "Issue with archive <{}>. Freeing error.", src.string() );
+		}
 	}
+
 	const std::string & chainName( const VTX::Core::Struct::Topology & p_sys, const uint64_t & p_vtxResId )
 	{
 		if ( p_sys.chainNames.size() == 1 )
+		{
 			return p_sys.chainNames[ 0 ];
+		}
 
 		const std::string * ret		 = &p_sys.chainNames[ 0 ];
 		uint64_t			chainIdx = 1;
 		for ( ; chainIdx < p_sys.chainNames.size(); chainIdx++ )
 		{
 			if ( p_sys.chainFirstResidues[ chainIdx ] > p_vtxResId )
+			{
 				return *ret;
+			}
 			ret = &p_sys.chainNames[ chainIdx - 1 ];
 		}
 		return *ret;
 	}
+
 	const char * string( const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_ );
-	std::string	 writeSsReportString(
-		 const VTX::Core::Struct::Topology &					 p_chemSystem,
-		 const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
-		 const bool &										 p_isBeginCorrect,
-		 const bool &										 p_isEndCorrect,
-		 const uint64_t &									 p_startIdx,
-		 const uint64_t &									 p_endIdx
-	 );
-	std::string writeSs( const SecondaryStruct & p_ss );
+	std::string	 writeSsReportString( const VTX::Core::Struct::Topology &				  p_chemSystem,
+									  const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
+									  const bool &										  p_isBeginCorrect,
+									  const bool &										  p_isEndCorrect,
+									  const uint64_t &									  p_startIdx,
+									  const uint64_t &									  p_endIdx );
+	std::string	 writeSs( const SecondaryStruct & p_ss );
 
 	std::string writeRcsbSs( const Topology & p_system )
 	{
 		std::string ret;
 		ret += "RCSB PDB Secondary Structure : \n";
 		if ( p_system.strands.empty() )
+		{
 			ret += "\tNo Beta-sheet\n";
+		}
 		if ( p_system.helixes.empty() )
+		{
 			ret += "\tNo right Alpha-helix\n";
+		}
 
 		if ( p_system.helixes.empty() or p_system.strands.empty() )
+		{
 			ret += "\n";
+		}
 
 		if ( not p_system.helixes.empty() )
 		{
 			ret += "\tHelixes : \n";
 			for ( auto & ss : p_system.helixes )
+			{
 				ret += writeSs( ss.ss );
+			}
 			ret += "\n";
 		}
 
@@ -109,20 +127,21 @@ namespace pdb100
 		{
 			ret += "\tBeta-sheets : \n";
 			for ( auto & ss : p_system.strands )
+			{
 				ret += writeSs( ss.ss );
+			}
 			ret += "\n";
 		}
 		return ret;
 	}
+
 	std::string writeSs( const SecondaryStruct & p_ss )
 	{
-		std::string ret = fmt::format(
-			"\t\tBegin : {}-{}\n\t\tEnd : {}-{}\n",
-			p_ss.begin.chain_name,
-			p_ss.begin.num,
-			p_ss.end.chain_name,
-			p_ss.end.num
-		);
+		std::string ret = fmt::format( "\t\tBegin : {}-{}\n\t\tEnd : {}-{}\n",
+									   p_ss.begin.chain_name,
+									   p_ss.begin.num,
+									   p_ss.end.chain_name,
+									   p_ss.end.num );
 		return ret;
 	}
 
@@ -137,6 +156,7 @@ namespace pdb100
 		default: return "other";
 		}
 	}
+
 	/**
 	 * @brief Return a detailed report on the comparison between PDB assignement and VTX assignement
 	 * @param p_chemSystem
@@ -147,49 +167,49 @@ namespace pdb100
 	 * @param p_endIdx
 	 * @return
 	 */
-	std::string writeSsReportString(
-		const VTX::Core::Struct::Topology &					p_chemSystem,
-		const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
-		const bool &										p_isBeginCorrect,
-		const bool &										p_isEndCorrect,
-		const uint64_t &									p_startIdx,
-		const uint64_t &									p_endIdx
-	)
+	std::string writeSsReportString( const VTX::Core::Struct::Topology &				 p_chemSystem,
+									 const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type,
+									 const bool &										 p_isBeginCorrect,
+									 const bool &										 p_isEndCorrect,
+									 const uint64_t &									 p_startIdx,
+									 const uint64_t &									 p_endIdx )
 	{
 		static const auto correctnessStr = []( bool _ ) -> const char *
 		{
 			if ( _ )
+			{
 				return "correct";
+			}
 			return "incorrect";
 		};
-		return fmt::format(
-			"Predicted SS : {}\n\tFrom {}-{} to {}-{}\n\tBegin is {}\n\tEnd is {}\n",
-			pdb100::string( p_type ),
-			chainName( p_chemSystem, p_startIdx ),
-			p_chemSystem.residueOriginalIds[ p_startIdx ],
-			chainName( p_chemSystem, p_endIdx ),
-			p_chemSystem.residueOriginalIds[ p_endIdx ],
-			correctnessStr( p_isBeginCorrect ),
-			correctnessStr( p_isEndCorrect )
-		);
+		return fmt::format( "Predicted SS : {}\n\tFrom {}-{} to {}-{}\n\tBegin is {}\n\tEnd is {}\n",
+							pdb100::string( p_type ),
+							chainName( p_chemSystem, p_startIdx ),
+							p_chemSystem.residueOriginalIds[ p_startIdx ],
+							chainName( p_chemSystem, p_endIdx ),
+							p_chemSystem.residueOriginalIds[ p_endIdx ],
+							correctnessStr( p_isBeginCorrect ),
+							correctnessStr( p_isEndCorrect ) );
 	}
+
 	namespace
 	{
 
 		const uint32_t & endNum( const SecondaryStruct & p_ss ) { return p_ss.end.num; }
+
 		const uint32_t & beginNum( const SecondaryStruct & p_ss ) { return p_ss.begin.num; }
 
 		template<typename SS>
-		bool isSsBorder(
-			const std::vector<SS> & p_ssCollection,
-			const uint64_t			idx,
-			const uint32_t & ( *p_fn )(const SecondaryStruct &)
-		)
+		bool isSsBorder( const std::vector<SS> & p_ssCollection,
+						 const uint64_t			 idx,
+						 const uint32_t & ( *p_fn )(const SecondaryStruct &))
 		{
 			for ( auto & ss : p_ssCollection )
 			{
 				if ( ( *p_fn )( ss.ss ) == idx )
+				{
 					return true;
+				}
 			}
 			return false;
 		}
@@ -206,6 +226,7 @@ namespace pdb100
 				bool beginCorrect = false;
 				bool endCorrect	  = false;
 			};
+
 			std::vector<SsSummary> ssSumaries;
 			std::string			   report;
 			bool				   isEverythingCorrect = true;
@@ -222,75 +243,65 @@ namespace pdb100
 
 		template<typename SS>
 		inline VTX::Core::ChemDB::SecondaryStructure::TYPE ssType()
-		{
-			static_assert( false );
-		}
+		{ static_assert( false ); }
+
 		template<>
 		inline VTX::Core::ChemDB::SecondaryStructure::TYPE ssType<Strand>()
-		{
-			return VTX::Core::ChemDB::SecondaryStructure::TYPE::STRAND;
-		}
+		{ return VTX::Core::ChemDB::SecondaryStructure::TYPE::STRAND; }
+
 		template<>
 		inline VTX::Core::ChemDB::SecondaryStructure::TYPE ssType<Helix>()
-		{
-			return VTX::Core::ChemDB::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT;
-		}
+		{ return VTX::Core::ChemDB::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT; }
 
 		template<typename SS>
 		inline bool & ssTypeBegin( TestContext & p_ )
-		{
-			static_assert( false );
-		}
+		{ static_assert( false ); }
+
 		template<>
 		inline bool & ssTypeBegin<Strand>( TestContext & p_ )
-		{
-			return p_.inStrand;
-		}
+		{ return p_.inStrand; }
+
 		template<>
 		inline bool & ssTypeBegin<Helix>( TestContext & p_ )
-		{
-			return p_.inHelix;
-		}
+		{ return p_.inHelix; }
+
 		inline bool & ssTypeBegin( TestContext & p_, const VTX::Core::ChemDB::SecondaryStructure::TYPE & p_type )
 		{
 			if ( p_type == VTX::Core::ChemDB::SecondaryStructure::TYPE::STRAND )
+			{
 				return p_.inStrand;
+			}
 			if ( p_type == VTX::Core::ChemDB::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT )
+			{
 				return p_.inHelix;
+			}
 			return p_.inHelix;
 		}
 
 		template<typename SS>
 		inline bool & otherSsTypeBegin( TestContext & p_ )
-		{
-			static_assert( false );
-		}
+		{ static_assert( false ); }
+
 		template<>
 		inline bool & otherSsTypeBegin<Strand>( TestContext & p_ )
-		{
-			return p_.inHelix;
-		}
+		{ return p_.inHelix; }
+
 		template<>
 		inline bool & otherSsTypeBegin<Helix>( TestContext & p_ )
-		{
-			return p_.inStrand;
-		}
+		{ return p_.inStrand; }
 
 		template<typename SS>
 		inline const std::vector<SS> & ssCollection( const Topology & p_system )
-		{
-			static_assert( false );
-		}
+		{ static_assert( false ); }
+
 		template<>
 		inline const std::vector<Strand> & ssCollection<Strand>( const Topology & p_system )
-		{
-			return p_system.strands;
-		}
+		{ return p_system.strands; }
+
 		template<>
 		inline const std::vector<Helix> & ssCollection<Helix>( const Topology & p_system )
-		{
-			return p_system.helixes;
-		}
+		{ return p_system.helixes; }
+
 		/**
 		 * @brief Called when we reach the end of the SS currently being iterated over.
 		 * @tparam SS
@@ -299,30 +310,25 @@ namespace pdb100
 		 * @param p_context
 		 */
 		template<typename SS>
-		void terminateSs(
-			const VTX::Core::ChemDB::SecondaryStructure::TYPE & type,
-			const Topology &										p_system,
-			TestContext &										p_context
-		)
+		void terminateSs( const VTX::Core::ChemDB::SecondaryStructure::TYPE & type,
+						  const Topology &									  p_system,
+						  TestContext &										  p_context )
 		{
 			ssTypeBegin( p_context, type ) = false;
 			bool endSsCorrect			   = isSsBorder(
-				 ssCollection<SS>( p_system ), p_system.system.residueOriginalIds[ p_context.currentIdx ], &endNum
-			 );
+				ssCollection<SS>( p_system ), p_system.system.residueOriginalIds[ p_context.currentIdx ], &endNum );
 			if ( not endSsCorrect )
+			{
 				p_context.isEverythingCorrect = false;
-			p_context.report += writeSsReportString(
-				p_system.system,
-				type,
-				p_context.beginSsCorrect,
-				endSsCorrect,
-				p_context.beginSsIdx,
-				p_context.currentIdx
-			);
-			p_context.ssSumaries.push_back(
-				TestContext::SsSummary {
-					.type = type, .beginCorrect = p_context.beginSsCorrect, .endCorrect = endSsCorrect }
-			);
+			}
+			p_context.report += writeSsReportString( p_system.system,
+													 type,
+													 p_context.beginSsCorrect,
+													 endSsCorrect,
+													 p_context.beginSsIdx,
+													 p_context.currentIdx );
+			p_context.ssSumaries.push_back( TestContext::SsSummary {
+				.type = type, .beginCorrect = p_context.beginSsCorrect, .endCorrect = endSsCorrect } );
 		}
 
 		/**
@@ -331,12 +337,10 @@ namespace pdb100
 		 * @return wether or not the loop shall continue
 		 */
 		template<typename SS, typename OtherSS>
-		inline bool specificSsComparison(
-			const Topology &								  p_system,
-			VTX::Core::ChemDB::SecondaryStructure::TYPE & p_currentType,
-			const std::vector<SS> &						  p_ssCollection,
-			TestContext &								  p_context
-		)
+		inline bool specificSsComparison( const Topology &								p_system,
+										  VTX::Core::ChemDB::SecondaryStructure::TYPE & p_currentType,
+										  const std::vector<SS> &						p_ssCollection,
+										  TestContext &									p_context )
 		{
 			using Type = VTX::Core::ChemDB::SecondaryStructure::TYPE;
 			if ( ssTypeBegin<SS>( p_context ) and ssType<SS>() == p_currentType ) // Still in the SS
@@ -353,23 +357,27 @@ namespace pdb100
 			if ( not ssTypeBegin<SS>( p_context ) and ssType<SS>() == p_currentType ) // Begining the SS
 			{
 				if ( otherSsTypeBegin<SS>( p_context ) )
+				{
 					terminateSs<OtherSS>( ssType<OtherSS>(), p_system, p_context );
+				}
 
 				p_context.beginSsIdx			  = p_context.currentIdx;
 				otherSsTypeBegin<SS>( p_context ) = false;
 				ssTypeBegin<SS>( p_context )	  = true;
 				p_context.beginSsCorrect		  = isSsBorder(
-					 p_ssCollection, p_system.system.residueOriginalIds[ p_context.currentIdx ], &beginNum
-				 );
+					p_ssCollection, p_system.system.residueOriginalIds[ p_context.currentIdx ], &beginNum );
 				p_context.matchingResidues++;
 				if ( not p_context.beginSsCorrect )
+				{
 					p_context.isEverythingCorrect = false;
+				}
 
 				return true;
 			}
 
 			return false;
 		}
+
 		/**
 		 * @brief Fill report with result rates from the comparison
 		 * @param p_context
@@ -405,6 +413,7 @@ namespace pdb100
 			p_rates.matchingResidues = p_context.matchingResidues;
 			p_rates.residuesInSs	 = p_context.residuesInSs;
 		}
+
 		void convert( const ReportItem<std::string> & p_in, ReportItem<String> & p_out )
 		{
 			p_out.correctnessRates = p_in.correctnessRates;
@@ -421,13 +430,14 @@ namespace pdb100
 		void postReportItem( const size_t & p_index, ReportItem<std::string> p_item )
 		{
 			LazyLock<shm::rsltMap::MUTEX>			   lock;
-			boost::interprocess::managed_shared_memory sharedSegment(
-				boost::interprocess::open_only, pdb100::shm::rsltMap::SEGNAME
-			);
+			boost::interprocess::managed_shared_memory sharedSegment( boost::interprocess::open_only,
+																	  pdb100::shm::rsltMap::SEGNAME );
 
 			auto rsltMapAndInt = sharedSegment.find<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME );
 			if ( rsltMapAndInt.first->size() <= p_index )
+			{
 				return;
+			}
 			ReportItem<String> & item = rsltMapAndInt.first->at( p_index );
 			convert( p_item, item );
 		}
@@ -439,14 +449,14 @@ namespace pdb100
 		size_t postCrashItem( std::string p_pdbCode )
 		{
 			LazyLock<shm::rsltMap::MUTEX>			   lock;
-			boost::interprocess::managed_shared_memory sharedSegment(
-				boost::interprocess::open_only, pdb100::shm::rsltMap::SEGNAME
-			);
-			const size_t itemSizeApproximation = sizeof( ReportItem<String> ) + 400;
+			boost::interprocess::managed_shared_memory sharedSegment( boost::interprocess::open_only,
+																	  pdb100::shm::rsltMap::SEGNAME );
+			const size_t							   itemSizeApproximation = sizeof( ReportItem<String> ) + 400;
 			if ( sharedSegment.get_free_memory() < itemSizeApproximation )
-				boost::interprocess::managed_shared_memory::grow(
-					pdb100::shm::rsltMap::SEGNAME, itemSizeApproximation
-				);
+			{
+				boost::interprocess::managed_shared_memory::grow( pdb100::shm::rsltMap::SEGNAME,
+																  itemSizeApproximation );
+			}
 
 			void_allocator alloc( sharedSegment.get_segment_manager() );
 			auto		   rsltMapAndInt = sharedSegment.find<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME );
@@ -474,21 +484,33 @@ namespace pdb100
 				Type & type = p_system.system.residueSecondaryStructureTypes[ context.currentIdx ];
 
 				if ( specificSsComparison<Helix, Strand>( p_system, type, p_system.helixes, context ) )
+				{
 					continue;
+				}
 
 				if ( specificSsComparison<Strand, Helix>( p_system, type, p_system.strands, context ) )
+				{
 					continue;
+				}
 			}
 			if ( context.inHelix )
+			{
 				terminateSs<Helix>( Type::HELIX_ALPHA_RIGHT, p_system, context );
+			}
 			if ( context.inStrand )
+			{
 				terminateSs<Strand>( Type::STRAND, p_system, context );
+			}
 
 			for ( auto & it_strand : p_system.strands )
+			{
 				context.residuesInSs += it_strand.ss.end.num - it_strand.ss.begin.num;
+			}
 
 			for ( auto & it_helix : p_system.helixes )
+			{
 				context.residuesInSs += it_helix.ss.end.num - it_helix.ss.begin.num;
+			}
 
 			ReportItem<std::string>::ResultSummary summary = ReportItem<std::string>::ResultSummary::success;
 			if ( not context.isEverythingCorrect )
@@ -500,13 +522,11 @@ namespace pdb100
 			computeCorrectnessRates( context, rates );
 			rates.computeStridesElapsedMs = p_system.computeStridesElapsedMs;
 			rates.numResidues			  = p_system.system.getResidueCount();
-			postReportItem(
-				p_system.resultIndex,
-				ReportItem<std::string> { .resultSummary	= std::move( summary ),
-										  .correctnessRates = std::move( rates ),
-										  .pdb				= std::string( p_system.code, sizeof( p_system.code ) ),
-										  .details			= std::move( context.report ) }
-			);
+			postReportItem( p_system.resultIndex,
+							ReportItem<std::string> { .resultSummary	= std::move( summary ),
+													  .correctnessRates = std::move( rates ),
+													  .pdb	   = std::string( p_system.code, sizeof( p_system.code ) ),
+													  .details = std::move( context.report ) } );
 		}
 	} // namespace
 
@@ -522,7 +542,9 @@ namespace pdb100
 		strm << "vtx_file_" << std::this_thread::get_id() << ".cif";
 		fs::path decompressedFile = fs::temp_directory_path() / strm.str();
 		if ( fs::exists( decompressedFile ) )
+		{
 			fs::remove( decompressedFile );
+		}
 		decompressFile( p_systemPath, decompressedFile );
 
 		parse( decompressedFile, p_system.strands );
@@ -530,11 +552,9 @@ namespace pdb100
 
 		if ( p_system.strands.empty() and p_system.helixes.empty() )
 		{
-			postReportItem(
-				p_system.resultIndex,
-				ReportItem<std::string> { .resultSummary = ReportItem<std::string>::ResultSummary::no_ss,
-										  .pdb			 = std::string( p_system.code, sizeof( p_system.code ) ) }
-			);
+			postReportItem( p_system.resultIndex,
+							ReportItem<std::string> { .resultSummary = ReportItem<std::string>::ResultSummary::no_ss,
+													  .pdb = std::string( p_system.code, sizeof( p_system.code ) ) } );
 			return;
 		}
 
@@ -545,21 +565,20 @@ namespace pdb100
 		for ( auto & resSsType : p_system.system.residueSecondaryStructureTypes )
 		{
 			if ( resSsType != VTX::Core::ChemDB::SecondaryStructure::TYPE::UNKNOWN )
+			{
 				throw std::runtime_error(
-					fmt::format(
-						"Chemfile System <{}> has already secondary structure informations for residue <{}>",
-						p_system.code,
-						resIdx
-					)
-				);
+					fmt::format( "Chemfile System <{}> has already secondary structure informations for residue <{}>",
+								 p_system.code,
+								 resIdx ) );
+			}
 			resIdx++;
 		}
 
-		p_system.computeStridesElapsedMs
-			= VTX::Util::CHRONO_CPU( [ system = &p_system.system ]
-									 { VTX::IO::Util::SecondaryStructure::computeStride( *system ); } );
+		p_system.computeStridesElapsedMs = VTX::Util::CHRONO_CPU(
+			[ system = &p_system.system ] { VTX::IO::Util::SecondaryStructure::computeStride( *system ); } );
 		compare( p_system );
 	}
+
 	/**
 	 * @brief Test input system and send a report entry
 	 * @param p_systemPath
@@ -579,6 +598,7 @@ namespace pdb100
 			std::cout << "Structure <" << systemName << "> throws because <" << e.what() << ">\n";
 		}
 	}
+
 	/**
 	 * @brief Return A path pointing toward a system archive, or empty string if there is none left.Then, remove the
 	 * file path from the collection
@@ -587,16 +607,18 @@ namespace pdb100
 	std::string fetchSystemArchivePath()
 	{
 		LazyLock<shm::filestrDeque::MUTEX>		   lock;
-		boost::interprocess::managed_shared_memory sharedSegment(
-			boost::interprocess::open_only, pdb100::shm::filestrDeque::SEGNAME
-		);
+		boost::interprocess::managed_shared_memory sharedSegment( boost::interprocess::open_only,
+																  pdb100::shm::filestrDeque::SEGNAME );
 		auto fileStrDeque = sharedSegment.find<StringDeque>( pdb100::shm::filestrDeque::OBJNAME );
 		if ( fileStrDeque.first->empty() )
+		{
 			return {};
+		}
 		std::string ret( fileStrDeque.first->back().begin(), fileStrDeque.first->back().end() );
 		fileStrDeque.first->pop_back();
 		return ret;
 	}
+
 	/**
 	 * @brief Test each structure consecutively until there is no more left
 	 */
@@ -607,7 +629,9 @@ namespace pdb100
 		{
 			std::string systemToTest = fetchSystemArchivePath();
 			if ( systemToTest.empty() )
+			{
 				break;
+			}
 			testSystem( systemToTest );
 			testedSystemNumber++;
 		}

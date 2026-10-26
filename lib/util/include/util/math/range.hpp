@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_MATH_RANGE__
-#define __VTX_UTIL_MATH_RANGE__
+#ifndef VTX_UTIL_MATH_RANGE_HPP
+#define VTX_UTIL_MATH_RANGE_HPP
 
 #include "util/constants.hpp"
 #include <cassert>

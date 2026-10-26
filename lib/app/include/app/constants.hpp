@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CONSTANTS__
-#define __VTX_APP_CONSTANTS__
+#ifndef VTX_APP_CONSTANTS_HPP
+#define VTX_APP_CONSTANTS_HPP
 
 #include <string>
 #include <string_view>

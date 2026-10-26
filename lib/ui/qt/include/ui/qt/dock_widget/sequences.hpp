@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_SEQUENCES__
-#define __VTX_UI_QT_DOCK_WIDGET_SEQUENCES__
+#ifndef VTX_UI_QT_DOCK_WIDGET_SEQUENCES_HPP
+#define VTX_UI_QT_DOCK_WIDGET_SEQUENCES_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/widget/sequence.hpp"

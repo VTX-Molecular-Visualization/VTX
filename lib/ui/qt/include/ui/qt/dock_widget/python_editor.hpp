@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_PYTHON_EDITOR__
-#define __VTX_UI_QT_DOCK_WIDGET_PYTHON_EDITOR__
+#ifndef VTX_UI_QT_DOCK_WIDGET_PYTHON_EDITOR_HPP
+#define VTX_UI_QT_DOCK_WIDGET_PYTHON_EDITOR_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/events.hpp"

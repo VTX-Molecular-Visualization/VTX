@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_UID_UID_MANAGER__
-#define __VTX_APP_CORE_UID_UID_MANAGER__
+#ifndef VTX_APP_UID_UID_MANAGER_HPP
+#define VTX_APP_UID_UID_MANAGER_HPP
 
 #include <util/uid.hpp>
 

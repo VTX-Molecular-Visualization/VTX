@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE__
-#define __VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE__
+#ifndef VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE_HPP
+#define VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE_HPP
 
 #include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>

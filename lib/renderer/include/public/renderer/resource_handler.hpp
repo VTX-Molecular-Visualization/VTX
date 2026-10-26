@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_HANDLE_MANAGER__
-#define __VTX_RENDERER_CONTEXT_HANDLE_MANAGER__
+#ifndef VTX_RENDERER_RESOURCE_HANDLER_HPP
+#define VTX_RENDERER_RESOURCE_HANDLER_HPP
 
 #include "renderer/descriptors.hpp"
 #include <algorithm>
@@ -23,14 +23,14 @@ namespace VTX::Renderer
 		/**
 		 * @brief Slot to store destructible and aligned resource.
 		 */
-		struct _Slot
+		struct Slot
 		{
-			_Slot() = default;
+			Slot() = default;
 
-			_Slot( const _Slot & )			   = delete;
-			_Slot & operator=( const _Slot & ) = delete;
+			Slot( const Slot & )			   = delete;
+			Slot & operator=( const Slot & ) = delete;
 
-			_Slot( _Slot && p_other ) noexcept( std::is_nothrow_move_constructible_v<T> )
+			Slot( Slot && p_other ) noexcept( std::is_nothrow_move_constructible_v<T> )
 			{
 				if ( p_other.alive )
 				{
@@ -38,7 +38,7 @@ namespace VTX::Renderer
 				}
 			}
 
-			~_Slot() { destroy(); }
+			~Slot() { destroy(); }
 
 			template<typename... Args>
 			T & construct( Args &&... p_args )
@@ -215,7 +215,7 @@ namespace VTX::Renderer
 		class iterator
 		{
 		  public:
-			using VecIter = std::vector<_Slot>::iterator;
+			using VecIter = std::vector<Slot>::iterator;
 
 			iterator( ResourcePool * p_pool, VecIter p_it ) : _pool( p_pool ), _it( p_it ) { skipInvalid(); }
 
@@ -246,7 +246,7 @@ namespace VTX::Renderer
 		class const_iterator
 		{
 		  public:
-			using VecIter = std::vector<_Slot>::const_iterator;
+			using VecIter = std::vector<Slot>::const_iterator;
 
 			const_iterator( const ResourcePool * p_pool, VecIter p_it ) : _pool( p_pool ), _it( p_it )
 			{ skipInvalid(); }
@@ -391,7 +391,7 @@ namespace VTX::Renderer
 		void _validateStorage( const Desc::Handle p_handle ) { std::erase( _invalids, p_handle ); }
 
 	  private:
-		std::vector<_Slot>		  _resources;
+		std::vector<Slot>		  _resources;
 		std::vector<Desc::Handle> _availables;
 		std::vector<Desc::Handle> _invalids;
 	};
@@ -459,9 +459,9 @@ namespace VTX::Renderer
 		 * @brief Emplace a new resource.
 		 * Reuse available handles if any.
 		 */
-		template<typename _D = D, typename... Args>
-		Desc::Handle emplace( const K & p_key, const _D & p_desc, Args &&... p_args )
-			requires( not std::is_same_v<_D, void> )
+		template<typename DescT = D, typename... Args>
+		Desc::Handle emplace( const K & p_key, const DescT & p_desc, Args &&... p_args )
+			requires( not std::is_same_v<DescT, void> )
 		{
 			Desc::Handle handle = Desc::NO_HANDLE;
 			if ( _cache.contains( p_key ) )
@@ -504,8 +504,7 @@ namespace VTX::Renderer
 			}
 
 			auto it = std::find_if(
-				_cache.begin(), _cache.end(), [ & ]( const auto & pair ) { return pair.second.handle == p_handle; }
-			);
+				_cache.begin(), _cache.end(), [ & ]( const auto & pair ) { return pair.second.handle == p_handle; } );
 			if ( it != _cache.end() )
 			{
 				_cache.erase( it );
@@ -541,9 +540,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Check if a resource exists from key and remove from invalids if present.
 		 */
-		template<typename _D = D>
-		bool validate( const K & p_key, const _D & p_desc )
-			requires( not std::is_same_v<_D, void> )
+		template<typename DescT = D>
+		bool validate( const K & p_key, const DescT & p_desc )
+			requires( not std::is_same_v<DescT, void> )
 		{
 			if ( not _cache.contains( p_key ) )
 			{
@@ -584,9 +583,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Access descriptor by key.
 		 */
-		template<typename _D = D>
-		const _D & descriptor( const K & p_key ) const
-			requires( not std::is_same_v<_D, void> )
+		template<typename DescT = D>
+		const DescT & descriptor( const K & p_key ) const
+			requires( not std::is_same_v<DescT, void> )
 		{
 			const auto it = _cache.find( p_key );
 			assert( it != _cache.end() );

@@ -158,18 +158,14 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 	{
 		if ( _fieldSystemBoxShape )
 		{
-			QComboBox::connect(
-				_fieldSystemBoxShape,
-				&QComboBox::currentTextChanged,
-				[ & ]
-				{
-					this->fieldPlacers[ 0 ].update(
-						EngineSpecificCommonInformationFieldUpdate {
-							.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
-							.newValue = static_cast<size_t>( _fieldSystemBoxShape->currentIndex() ) }
-					);
-				}
-			);
+			QComboBox::connect( _fieldSystemBoxShape,
+								&QComboBox::currentTextChanged,
+								[ & ]
+								{
+									this->fieldPlacers[ 0 ].update( EngineSpecificCommonInformationFieldUpdate {
+										.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape,
+										.newValue = static_cast<size_t>( _fieldSystemBoxShape->currentIndex() ) } );
+								} );
 		}
 	}
 

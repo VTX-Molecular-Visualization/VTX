@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_THREAD__
-#define __VTX_UI_QT_WIDGET_THREAD__
+#ifndef VTX_UI_QT_WIDGET_THREAD_HPP
+#define VTX_UI_QT_WIDGET_THREAD_HPP
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
@@ -28,7 +28,7 @@ namespace VTX::UI::QT::Widget
 			auto * layout = Helper::makeQObject<QHBoxLayout>( this );
 			layout->setContentsMargins( 0, 0, 0, 0 );
 
-			_progressBar = Helper::makeQObject<_ProgressBar>( this );
+			_progressBar = Helper::makeQObject<ProgressBar>( this );
 			_progressBar->setTextVisible( true );
 
 			_cancelButton = Helper::makeQObject<QPushButton>( this );
@@ -62,7 +62,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Override progress bar to display text when indeterminate.
 		 */
-		class _ProgressBar : public QProgressBar
+		class ProgressBar : public QProgressBar
 		{
 		  public:
 			using QProgressBar::QProgressBar;
@@ -80,7 +80,7 @@ namespace VTX::UI::QT::Widget
 			}
 		};
 
-		QPointer<_ProgressBar> _progressBar;
+		QPointer<ProgressBar> _progressBar;
 		QPointer<QPushButton>  _cancelButton;
 	};
 } // namespace VTX::UI::QT::Widget

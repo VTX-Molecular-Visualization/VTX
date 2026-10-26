@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_CHEMDB_CATEGORY__
-#define __VTX_CORE_CHEMDB_CATEGORY__
+#ifndef VTX_CORE_CHEMDB_CATEGORY_HPP
+#define VTX_CORE_CHEMDB_CATEGORY_HPP
 
 #include <array>
 #include <string>
@@ -22,8 +22,7 @@ namespace VTX::Core::ChemDB::Category
 	};
 
 	constexpr auto TYPE_STR = std::to_array<std::string_view>(
-		{ "Polymer", "Carbohydrate", "Ligand", "Ion", "Solvent", "Water", "Unknown" }
-	);
+		{ "Polymer", "Carbohydrate", "Ligand", "Ion", "Solvent", "Water", "Unknown" } );
 	static_assert( TYPE_STR.size() == static_cast<size_t>( TYPE::COUNT ) );
 
 	/**

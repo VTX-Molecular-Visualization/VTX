@@ -128,11 +128,9 @@ namespace VTX::IO::Writer
 
 		using WrittenAtomMap = std::unordered_map<uint, uint>;
 
-		inline bool isResidueOfChain(
-			const size_t &						p_residueIdx,
-			const size_t &						p_chainIdx,
-			const VTX::Core::Struct::Topology & p_mol
-		) noexcept
+		inline bool isResidueOfChain( const size_t &					  p_residueIdx,
+									  const size_t &					  p_chainIdx,
+									  const VTX::Core::Struct::Topology & p_mol ) noexcept
 		{
 			if ( p_chainIdx < p_mol.getChainCount() - 1 )
 			{
@@ -141,11 +139,9 @@ namespace VTX::IO::Writer
 			return p_residueIdx < p_mol.getResidueCount();
 		}
 
-		inline bool isAtomOfResidue(
-			const size_t &						p_atomIdx,
-			const size_t &						p_residueIdx,
-			const VTX::Core::Struct::Topology & p_mol
-		)
+		inline bool isAtomOfResidue( const size_t &						 p_atomIdx,
+									 const size_t &						 p_residueIdx,
+									 const VTX::Core::Struct::Topology & p_mol )
 		{
 			if ( p_residueIdx < p_mol.getResidueCount() - 1 )
 			{
@@ -170,13 +166,11 @@ namespace VTX::IO::Writer
 			}
 		}
 
-		inline void addAtom(
-			const VTX::Core::Struct::Topology & p_topology,
-			const size_t &						p_atomIdx,
-			System &							p_system,
-			Residue &							p_residue,
-			SystemIndexManager &				p_indexManager
-		)
+		inline void addAtom( const VTX::Core::Struct::Topology & p_topology,
+							 const size_t &						 p_atomIdx,
+							 System &							 p_system,
+							 Residue &							 p_residue,
+							 SystemIndexManager &				 p_indexManager )
 		{
 			Atom w_atom = p_system.newAtom( AtomId { p_indexManager.newAtomIdx( static_cast<uint>( p_atomIdx ) ) } );
 			p_residue.add( w_atom );
@@ -186,37 +180,30 @@ namespace VTX::IO::Writer
 			w_atom.setSymbol( std::string( constSymbol.begin(), constSymbol.end() ) );
 		}
 
-		inline void addResidue(
-			const VTX::Core::Struct::Topology & p_topology,
-			const size_t &						p_residueIdx,
-			System &							p_system,
-			Chain &								p_chain,
-			AtomFilter &						p_atomFilter,
-			SystemIndexManager &				p_indexManager
+		inline void addResidue( const VTX::Core::Struct::Topology & p_topology,
+								const size_t &						p_residueIdx,
+								System &							p_system,
+								Chain &								p_chain,
+								AtomFilter &						p_atomFilter,
+								SystemIndexManager &				p_indexManager
 
 		)
 		{
 			Residue w_residue = p_system.newResidue();
 			p_chain.add( w_residue );
 			w_residue.setResId( static_cast<int>( p_indexManager.newResIdx( static_cast<uint>( p_residueIdx ) ) ) );
-			const auto & constSymbol
-				= VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_topology
-																				.residueSymbols[ p_residueIdx ] ) ];
+			const auto &	  constSymbol = VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>(
+				p_topology.residueSymbols[ p_residueIdx ] ) ];
 			const std::string residueSymbol
 				= p_topology.residueSymbols[ p_residueIdx ] == VTX::Core::ChemDB::Residue::SYMBOL::UNKNOWN
 					  ? p_topology.residueNames[ p_residueIdx ]
 					  : std::string( constSymbol.begin(), constSymbol.end() );
 			w_residue.setSymbol( residueSymbol );
-			w_residue.set(
-				Property { .key	  = "secondary_structure",
-						   .value = VTX::Core::ChemDB::SecondaryStructure::enumToPdbFormatted(
-							   p_topology.residueSecondaryStructureTypes[ p_residueIdx ]
-						   ) }
-			);
-			w_residue.set(
-				Property { .key	  = "is_standard_pdb",
-						   .value = VTX::Core::ChemDB::Residue::checkIfStandardFromName( residueSymbol ) }
-			);
+			w_residue.set( Property { .key	 = "secondary_structure",
+									  .value = VTX::Core::ChemDB::SecondaryStructure::enumToPdbFormatted(
+										  p_topology.residueSecondaryStructureTypes[ p_residueIdx ] ) } );
+			w_residue.set( Property { .key	 = "is_standard_pdb",
+									  .value = VTX::Core::ChemDB::Residue::checkIfStandardFromName( residueSymbol ) } );
 			for ( size_t it_atomIdx = p_topology.residueFirstAtomIndexes[ p_residueIdx ];
 				  isAtomOfResidue( it_atomIdx, p_residueIdx, p_topology );
 				  it_atomIdx++ )
@@ -229,12 +216,11 @@ namespace VTX::IO::Writer
 			}
 		}
 
-		inline void addChain(
-			const VTX::Core::Struct::Topology & p_topology,
-			const size_t &						p_chainIdx,
-			System &							p_system,
-			AtomFilter &						p_atomFilter,
-			SystemIndexManager &				p_indexManager
+		inline void addChain( const VTX::Core::Struct::Topology & p_topology,
+							  const size_t &					  p_chainIdx,
+							  System &							  p_system,
+							  AtomFilter &						  p_atomFilter,
+							  SystemIndexManager &				  p_indexManager
 
 		)
 		{
@@ -253,12 +239,10 @@ namespace VTX::IO::Writer
 			}
 		}
 
-		inline void setBonds(
-			const VTX::Core::Struct::Topology & p_mol,
-			System &							p_system,
-			AtomFilter &						p_atomFilter,
-			const SystemIndexManager &			p_indexManager
-		)
+		inline void setBonds( const VTX::Core::Struct::Topology & p_mol,
+							  System &							  p_system,
+							  AtomFilter &						  p_atomFilter,
+							  const SystemIndexManager &		  p_indexManager )
 		{
 			for ( Index bondIdx = 0; bondIdx < p_mol.getBondCount() * 2; bondIdx += 2 )
 			{
@@ -269,19 +253,16 @@ namespace VTX::IO::Writer
 				{
 					E_BOND_ORDER w_bondOrder = E_BOND_ORDER::unknown;
 					convert( p_mol.bondOrders[ bondIdx >> 1 ], w_bondOrder );
-					p_system.bind(
-						AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIdx1 ) ) },
-						AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIdx2 ) ) },
-						w_bondOrder
-					);
+					p_system.bind( AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIdx1 ) ) },
+								   AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIdx2 ) ) },
+								   w_bondOrder );
 				}
 			}
 		}
 
-		inline void fillFrames(
-			const TrajectoryFrameGetter & p_traj,
-			System &					  p_system,
-			SystemIndexManager &		  p_indexManager
+		inline void fillFrames( const TrajectoryFrameGetter & p_traj,
+								System &					  p_system,
+								SystemIndexManager &		  p_indexManager
 
 		)
 		{
@@ -303,17 +284,14 @@ namespace VTX::IO::Writer
 
 							// If the atom doesn't exist for some reason, skip to the next one.
 							if ( p_system.fetch(
-									 atom, AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIndex ) ) }
-								 ) )
+									 atom, AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIndex ) ) } ) )
 							{
 								const Vec3f & position = p_positions[ atomIndex ];
-								w_frame.set(
-									atom, AtomCoordinates { .x = position.x, .y = position.y, .z = position.z }
-								);
+								w_frame.set( atom,
+											 AtomCoordinates { .x = position.x, .y = position.y, .z = position.z } );
 							}
 						}
-					}
-				);
+					} );
 				if ( not frameAvailable )
 				{
 					throw IOException( "Trajectory frame {} became unavailable during export.", frameIdx );

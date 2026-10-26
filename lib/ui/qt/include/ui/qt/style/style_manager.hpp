@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_STYLE_STYLE_MANAGER__
-#define __VTX_UI_QT_STYLE_STYLE_MANAGER__
+#ifndef VTX_UI_QT_STYLE_STYLE_MANAGER_HPP
+#define VTX_UI_QT_STYLE_STYLE_MANAGER_HPP
 
 #include "ui/qt/application.hpp"
 #include "ui/qt/resources.hpp"

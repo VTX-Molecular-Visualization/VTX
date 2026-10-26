@@ -99,10 +99,8 @@ namespace VTX::Tool::Mdprep::ui
 				"<b>prepare</b> a Molecular Dynamics Simulation using selected parameters.<br><u>Be wary :</u> <i>VTX "
 				"doesn't support "
 				"yet</i> automatic MD preparation for <b>small organic molecule</b>. Hence, any visible "
-				"non-biological entity is likely cause preparation failure. Please mind the automatic check result."
-			)
-				.arg( buttonLabel )
-		);
+				"non-biological entity is likely cause preparation failure. Please mind the automatic check result." )
+				.arg( buttonLabel ) );
 		qExplainatoryText->setWordWrap( true );
 		qExplainatoryText->setContentsMargins( { 10, 10, 5, 5 } );
 		qLayoutWindow->addWidget( qExplainatoryText );
@@ -121,9 +119,8 @@ namespace VTX::Tool::Mdprep::ui
 		if ( not mdEngine.has_value() )
 		{
 			mdEngine.emplace();
-			VTX::Tool::Mdprep::ui::get(
-				static_cast<VTX::Tool::Mdprep::ui::E_MD_ENGINE>( _mdEngineCurrentIdx ), mdEngine.value()
-			);
+			VTX::Tool::Mdprep::ui::get( static_cast<VTX::Tool::Mdprep::ui::E_MD_ENGINE>( _mdEngineCurrentIdx ),
+										mdEngine.value() );
 		}
 		{
 			_formEngine = VTX::Tool::Mdprep::ui::MdEngineFieldPlacer();
@@ -148,7 +145,7 @@ namespace VTX::Tool::Mdprep::ui
 	}
 
 	std::function<VTX::Tool::Mdprep::ui::MdEngineSpecificFieldPlacer( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & )>
-	ScreenForms::_SpecificFieldPlacerGetter()
+	ScreenForms::SpecificFieldPlacerGetter()
 	{
 		return [ & ]( const VTX::Tool::Mdprep::ui::E_FIELD_SECTION & p_section )
 		{
@@ -176,8 +173,7 @@ namespace VTX::Tool::Mdprep::ui
 		_currentForm.get( param );
 		_currentForm.close();
 		_currentForm = VTX::Tool::Mdprep::ui::form_basic::FormBasic(
-			_formContainer, _SpecificFieldPlacerGetter(), param, *_reportManager
-		);
+			_formContainer, SpecificFieldPlacerGetter(), param, *_reportManager );
 
 		VTX::Tool::Mdprep::ui::FormLayouts layouts;
 		_currentForm.get( layouts );
@@ -193,8 +189,7 @@ namespace VTX::Tool::Mdprep::ui
 		_currentForm.get( param );
 		_currentForm.close();
 		_currentForm = VTX::Tool::Mdprep::ui::form_advanced::FormAdvanced(
-			_formContainer, _SpecificFieldPlacerGetter(), param, *_reportManager
-		);
+			_formContainer, SpecificFieldPlacerGetter(), param, *_reportManager );
 
 		VTX::Tool::Mdprep::ui::FormLayouts layouts;
 		_currentForm.get( layouts );
@@ -229,9 +224,9 @@ namespace VTX::Tool::Mdprep::ui
 
 	void ScreenForms::_setupSlots()
 	{
-		QObject::connect(
-			_w_mdEngine, &QComboBox::currentIndexChanged, [ & ]( int p_newIdx ) { this->_updateMdEngine( p_newIdx ); }
-		);
+		QObject::connect( _w_mdEngine,
+						  &QComboBox::currentIndexChanged,
+						  [ & ]( int p_newIdx ) { this->_updateMdEngine( p_newIdx ); } );
 		QObject::connect( _buttonStart, &QPushButton::clicked, [ & ]() { this->_startPreparation(); } );
 		_preparationEndConnection
 			= App::HUB().connect<Gateway::PreparationFinished, &ScreenForms::_preparationEnd>( this );

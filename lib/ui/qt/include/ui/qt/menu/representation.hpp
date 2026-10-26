@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_MENU_REPRESENTATION__
-#define __VTX_UI_QT_MENU_REPRESENTATION__
+#ifndef VTX_UI_QT_MENU_REPRESENTATION_HPP
+#define VTX_UI_QT_MENU_REPRESENTATION_HPP
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"

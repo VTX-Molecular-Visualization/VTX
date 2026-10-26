@@ -9,7 +9,7 @@
 namespace VTX::App::Action
 {
 
-	struct ActionManager::_Data
+	struct ActionManager::Data
 	{
 		bool					 noThread	  = false;
 		std::atomic_bool		 shuttingDown = false;
@@ -18,13 +18,13 @@ namespace VTX::App::Action
 		std::mutex				 mutex;
 	};
 
-	void ActionManager::Del::operator()( ActionManager::_Data * const p_ ) noexcept
+	void ActionManager::Del::operator()( ActionManager::Data * const p_ ) noexcept
 	{
 		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
 		delete p_;
 	}
 
-	ActionManager::ActionManager() : _attributesPtr( new _Data { ARGS().noGui } ) {}
+	ActionManager::ActionManager() : _attributesPtr( new Data { ARGS().noGui } ) {}
 
 	QueuedAction::QueuedAction() : _ptr( new _wrapper<_dummy>( _state, _dummy() ) ) {}
 

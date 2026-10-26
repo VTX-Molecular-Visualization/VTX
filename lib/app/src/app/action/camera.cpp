@@ -15,14 +15,12 @@ namespace
 {
 	using namespace VTX;
 
-	constexpr float _ORIENT_ZOOM_FACTOR = 0.666f;
+	constexpr float ORIENT_ZOOM_FACTOR = 0.666f;
 
-	Vec3f _computeCameraOrientPosition(
-		const Vec3f				 p_forward,
-		const float				 p_fov,
-		const Util::Math::AABB & p_target,
-		const float				 p_zoomFactor = _ORIENT_ZOOM_FACTOR
-	)
+	Vec3f _computeCameraOrientPosition( const Vec3f				 p_forward,
+										const float				 p_fov,
+										const Util::Math::AABB & p_target,
+										const float				 p_zoomFactor = ORIENT_ZOOM_FACTOR )
 	{
 		const float orientTargetDistance = p_target.radius() / std::tan( Util::Math::radians( p_fov ) * p_zoomFactor );
 		return p_target.centroid() - ( p_forward * orientTargetDistance );
@@ -63,9 +61,8 @@ namespace VTX::App::Action::Camera
 	{
 		const auto	entity		= ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
 		const float clampedNear = std::clamp( p_near, Renderer::NEAR_CLIP_MIN, Renderer::NEAR_CLIP_MAX );
-		REG().patch<Renderer::Camera>(
-			entity, [ clampedNear ]( Renderer::Camera & p_cam ) { p_cam.near = clampedNear; }
-		);
+		REG().patch<Renderer::Camera>( entity,
+									   [ clampedNear ]( Renderer::Camera & p_cam ) { p_cam.near = clampedNear; } );
 	}
 
 	void SetFarClip::execute( const float p_far )
@@ -100,13 +97,11 @@ namespace VTX::App::Action::Camera
 		if ( view.size_hint() )
 		{
 			view.each(
-				[ & ](
-					const Entity & p_e,
-					const Core::Struct::Topology &,
-					const Util::Math::AABB &	  p_aabb,
-					const Util::Math::Transform & p_transform,
-					const System::Selection &	  p_selection
-				)
+				[ & ]( const Entity & p_e,
+					   const Core::Struct::Topology &,
+					   const Util::Math::AABB &		 p_aabb,
+					   const Util::Math::Transform & p_transform,
+					   const System::Selection &	 p_selection )
 				{
 					if ( Helper::System::getSelectionState( { p_e, Core::Struct::E_SYSTEM_ITEM::SYSTEM } )
 						 == System::E_SELECTION_STATE::FULL )
@@ -123,8 +118,7 @@ namespace VTX::App::Action::Camera
 							aabb.extend( localAABB.transformed( p_transform ) );
 						}
 					}
-				}
-			);
+				} );
 		}
 
 		// From scene.
@@ -145,8 +139,7 @@ namespace VTX::App::Action::Camera
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 		camera.target = p_target.centroid();
 		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
-			_computeCameraOrientPosition( transform.getFront(), camera.fov, p_target ), transform.getRotation()
-		);
+			_computeCameraOrientPosition( transform.getFront(), camera.fov, p_target ), transform.getRotation() );
 	}
 
 	void StraightTravel::execute( const Vec3f & p_position, const Quatf & p_rotation, const float p_duration )
@@ -170,18 +163,16 @@ namespace VTX::App::Action::Camera
 
 	void SetViewPointPosition::execute( const Entity p_viewpoint, const Vec3f & p_position )
 	{
-		REG().patch<Util::Math::Transform>(
-			p_viewpoint,
-			[ &p_position ]( Util::Math::Transform & p_transform ) { p_transform.setPosition( p_position ); }
-		);
+		REG().patch<Util::Math::Transform>( p_viewpoint,
+											[ &p_position ]( Util::Math::Transform & p_transform )
+											{ p_transform.setPosition( p_position ); } );
 	}
 
 	void SetViewPointRotation::execute( const Entity p_viewpoint, const Quatf & p_rotation )
 	{
-		REG().patch<Util::Math::Transform>(
-			p_viewpoint,
-			[ &p_rotation ]( Util::Math::Transform & p_transform ) { p_transform.setRotation( p_rotation ); }
-		);
+		REG().patch<Util::Math::Transform>( p_viewpoint,
+											[ &p_rotation ]( Util::Math::Transform & p_transform )
+											{ p_transform.setRotation( p_rotation ); } );
 	}
 
 	void UpdateViewPointFromCamera::execute( const Entity p_viewpoint )
@@ -190,11 +181,10 @@ namespace VTX::App::Action::Camera
 			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
 		REG().patch<Util::Math::Transform>(
-			p_viewpoint, [ &transform ]( Util::Math::Transform & p_transform ) { p_transform = transform; }
-		);
-		REG().patch<Scene::ViewPoint>(
-			p_viewpoint, [ &camera ]( Scene::ViewPoint & p_viewpointData ) { p_viewpointData.target = camera.target; }
-		);
+			p_viewpoint, [ &transform ]( Util::Math::Transform & p_transform ) { p_transform = transform; } );
+		REG().patch<Scene::ViewPoint>( p_viewpoint,
+									   [ &camera ]( Scene::ViewPoint & p_viewpointData )
+									   { p_viewpointData.target = camera.target; } );
 	}
 
 	void RenameViewPoint::execute( const Entity p_viewpoint, const std::string_view p_name )
@@ -221,11 +211,9 @@ namespace VTX::App::Action::Camera
 
 		const auto cameraEntity = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
 		REG().patch<Renderer::Camera>(
-			cameraEntity, [ &viewpoint ]( Renderer::Camera & p_camera ) { p_camera.target = viewpoint.target; }
-		);
+			cameraEntity, [ &viewpoint ]( Renderer::Camera & p_camera ) { p_camera.target = viewpoint.target; } );
 
-		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>(
-			transform.getPosition(), transform.getRotation()
-		);
+		ACTION().execute<Animate<E_CAMERA_INTERPOLATOR::EASE_IN_OUT>>( transform.getPosition(),
+																	   transform.getRotation() );
 	}
 } // namespace VTX::App::Action::Camera

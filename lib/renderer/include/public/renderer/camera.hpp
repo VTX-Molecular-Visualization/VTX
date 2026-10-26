@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CAMERA__
-#define __VTX_RENDERER_CAMERA__
+#ifndef VTX_RENDERER_CAMERA_HPP
+#define VTX_RENDERER_CAMERA_HPP
 
 #include <util/math.hpp>
 
