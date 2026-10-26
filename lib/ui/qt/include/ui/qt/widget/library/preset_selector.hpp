@@ -58,14 +58,15 @@ namespace VTX::UI::QT::Widget::Library
 	class PresetSelector : public BasePresetSelector
 	{
 	  public:
-		PresetSelector( QWidget * const p_parent ) : BasePresetSelector( p_parent )
+		PresetSelector( QWidget * const p_parent ) :
+			BasePresetSelector( p_parent ), _comboBox( Helper::makeQObject<QComboBox>( this ) ),
+			_lineRename( Helper::makeQObject<QLineEdit>( this ) )
 		{
 			auto * layout = Helper::makeQObject<QVBoxLayout>( this );
 			setTitle( "Presets" );
 
 			// layout->setContentsMargins( 0, 0, 0, 0 );
 
-			_comboBox = Helper::makeQObject<QComboBox>( this );
 			layout->addWidget( _comboBox );
 
 			auto * toolbar = Helper::makeQObject<QToolBar>( this );
@@ -79,7 +80,6 @@ namespace VTX::UI::QT::Widget::Library
 
 			layout->addWidget( toolbar );
 
-			_lineRename = Helper::makeQObject<QLineEdit>( this );
 			layout->addWidget( _lineRename );
 
 			auto * bApply = Helper::makeQObject<QPushButton>( "Apply", this );

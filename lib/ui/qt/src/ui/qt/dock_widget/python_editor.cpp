@@ -13,7 +13,8 @@
 
 namespace VTX::UI::QT::DockWidget
 {
-	PythonEditor::PythonEditor( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Python editor" )
+	PythonEditor::PythonEditor( QWidget * const p_parent ) :
+		BaseDockWidget( p_parent, "Python editor" ), _textEdit( Helper::makeQObject<QPlainTextEdit>( _root ) )
 	{
 		setAllowedAreas( Qt::TopDockWidgetArea | Qt::RightDockWidgetArea );
 
@@ -24,7 +25,6 @@ namespace VTX::UI::QT::DockWidget
 		_runAction = toolbar->addAction( STYLE().iconFromCodepoint( Style::Icons::SCRIPT_RUN ), "Run" );
 		_runAction->setEnabled( false );
 
-		_textEdit	 = Helper::makeQObject<QPlainTextEdit>( _root );
 		_highlighter = Helper::makeQObject<PythonHighlighter>( _textEdit->document() );
 		_layout->addWidget( toolbar );
 		_layout->addWidget( _textEdit );

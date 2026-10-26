@@ -11,6 +11,7 @@
 #include <app/generic/name.hpp>
 #include <app/scene/viewpoint.hpp>
 #include <app/services.hpp>
+#include <memory>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
@@ -19,7 +20,7 @@ namespace VTX::UI::QT::Widget::Tree
 	{
 		setExpandsOnDoubleClick( true );
 
-		addTopLevelItem( new QTreeWidgetItem( QStringList() << "Camera" ) );
+		addTopLevelItem( std::make_unique<QTreeWidgetItem>( QStringList() << "Camera" ).release() );
 		topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::CAMERA ) );
 
 		_onConstructConnection
@@ -56,10 +57,11 @@ namespace VTX::UI::QT::Widget::Tree
 
 		const auto & name = p_r.get<App::Generic::Name>( p_viewpoint );
 
-		QTreeWidgetItem * const item = new QTreeWidgetItem( QStringList() << QString::fromStdString( name.name ) );
+		auto ownedItem = std::make_unique<QTreeWidgetItem>( QStringList() << QString::fromStdString( name.name ) );
+		QTreeWidgetItem * const item = ownedItem.get();
 		item->setData( 0, Qt::UserRole, QVariant::fromValue( p_viewpoint ) );
 
-		topLevelItem( 0 )->addChild( item );
+		topLevelItem( 0 )->addChild( ownedItem.release() );
 		topLevelItem( 0 )->sortChildren( 0, Qt::AscendingOrder );
 		topLevelItem( 0 )->setExpanded( true );
 		_entityToItemMap.emplace( p_viewpoint, item );

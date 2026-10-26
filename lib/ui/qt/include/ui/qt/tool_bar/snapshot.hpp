@@ -3,6 +3,7 @@
 
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/base_widget.hpp"
@@ -26,7 +27,7 @@ namespace VTX::UI::QT::ToolBar
 			UI_ACTIONS().addTo( *this, Action::Snapshot::EXPORT );
 
 			return;
-			auto * btn = new QToolButton;
+			auto * btn = Helper::makeQObject<QToolButton>( this );
 			btn->setText( "Snapshot" );
 			btn->setIcon( STYLE().iconFromCodepoint( Style::Icons::SNAPSHOT ) );
 			btn->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
@@ -35,19 +36,19 @@ namespace VTX::UI::QT::ToolBar
 			connect( btn, &QToolButton::clicked, this, [] { qDebug() << "Action principale"; } );
 
 			// Settings menu.
-			auto * menu = new QMenu( btn );
+			auto * menu = Helper::makeQObject<QMenu>( btn );
 
 			// Resolution selection.
-			auto * containerRes = new QWidget;
-			auto * layoutRes	= new QVBoxLayout( containerRes );
-			auto * titleRes		= new QLabel( "Resolution" );
+			auto * containerRes = Helper::makeQObject<QWidget>( menu );
+			auto * layoutRes	= Helper::makeQObject<QVBoxLayout>( containerRes );
+			auto * titleRes		= Helper::makeQObject<QLabel>( "Resolution", containerRes );
 			layoutRes->addWidget( titleRes );
 			layoutRes->setContentsMargins( 8, 4, 8, 4 );
 
-			auto * groupRes = new QButtonGroup( containerRes );
-			auto * resA		= new QRadioButton( "Current" );
-			auto * resB		= new QRadioButton( "800 x 600" );
-			auto * resC		= new QRadioButton( "1920 x 1080" );
+			auto * groupRes = Helper::makeQObject<QButtonGroup>( containerRes );
+			auto * resA		= Helper::makeQObject<QRadioButton>( "Current", containerRes );
+			auto * resB		= Helper::makeQObject<QRadioButton>( "800 x 600", containerRes );
+			auto * resC		= Helper::makeQObject<QRadioButton>( "1920 x 1080", containerRes );
 
 			resA->setChecked( true );
 
@@ -59,7 +60,7 @@ namespace VTX::UI::QT::ToolBar
 			layoutRes->addWidget( resB );
 			layoutRes->addWidget( resC );
 
-			auto * waRes = new QWidgetAction( menu );
+			auto * waRes = Helper::makeQObject<QWidgetAction>( menu );
 			waRes->setDefaultWidget( containerRes );
 			menu->addAction( waRes );
 
@@ -67,13 +68,14 @@ namespace VTX::UI::QT::ToolBar
 			menu->addSeparator();
 
 			// Transparency slider.
-			Widget::EditableSlider * slider = new Widget::EditableSlider( Qt::Orientation::Horizontal, menu );
+			Widget::EditableSlider * slider
+				= Helper::makeQObject<Widget::EditableSlider>( Qt::Orientation::Horizontal, menu );
 			slider->setValue( 0 );
 			slider->setSuffix( "%" );
 			slider->setMinimum( 0 );
 			slider->setMaximum( 100 );
 
-			auto * waTrans = new QWidgetAction( menu );
+			auto * waTrans = Helper::makeQObject<QWidgetAction>( menu );
 			waTrans->setDefaultWidget( slider );
 			menu->addAction( waTrans );
 

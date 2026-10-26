@@ -110,12 +110,12 @@ namespace VTX::UI::QT::DockWidget
 		}
 	} // namespace
 
-	Console::Console( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Console" )
+	Console::Console( QWidget * const p_parent ) :
+		BaseDockWidget( p_parent, "Console" ), _textEdit( Helper::makeQObject<QTextBrowser>( _root ) )
 	{
 		setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
 
 		// Log area.
-		_textEdit = Helper::makeQObject<QTextBrowser>( _root );
 		_textEdit->setReadOnly( true );
 		_textEdit->setWordWrapMode( QTextOption::WrapAnywhere );
 		_textEdit->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAsNeeded );

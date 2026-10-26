@@ -1,34 +1,48 @@
 #include "ui/qt/widget/library/representation.hpp"
+#include "ui/qt/helper.hpp"
 #include <QLabel>
 
 namespace VTX::UI::QT::Widget::Library
 {
 
-	Representation::Representation( QWidget * const p_parent ) : BasePresetWidget( p_parent )
+	Representation::Representation( QWidget * const p_parent ) :
+		BasePresetWidget( p_parent ),
+		_groupboxSphere( Helper::makeQObject<HideableGroupBox>( "Atoms", presetGroupBox() ) ),
+		_comboBoxSphereRadiusType( Helper::makeQObject<QComboBox>( _groupboxSphere ) ),
+		_labelSphereRadiusAdd( Helper::makeQObject<QLabel>( "Radius add", _groupboxSphere ) ),
+		_sliderSphereRadiusAdd( Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, _groupboxSphere ) ),
+		_labelSphereRadiusFixed( Helper::makeQObject<QLabel>( "Radius", _groupboxSphere ) ),
+		_sliderSphereRadiusFixed( Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, _groupboxSphere ) ),
+		_groupboxCylinder( Helper::makeQObject<HideableGroupBox>( "Bonds", presetGroupBox() ) ),
+		_sliderCylinderRadius( Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, _groupboxCylinder ) ),
+		_checkBoxCylinderColorBlending( Helper::makeQObject<QCheckBox>( "Blend colors", _groupboxCylinder ) ),
+		_groupboxRibbon( Helper::makeQObject<HideableGroupBox>( "Ribbons", presetGroupBox() ) ),
+		_checkBoxRibbonColorBlending( Helper::makeQObject<QCheckBox>( "Blend colors", _groupboxRibbon ) ),
+		_groupboxSes( Helper::makeQObject<HideableGroupBox>( "SES", presetGroupBox() ) ),
+		_comboBoxSesComputeMode( Helper::makeQObject<QComboBox>( _groupboxSes ) ),
+		_checkBoxSesPolymer( Helper::makeQObject<QCheckBox>( "Polymer", _groupboxSes ) ),
+		_checkBoxSesCarbohydrate( Helper::makeQObject<QCheckBox>( "Carbohydrate", _groupboxSes ) ),
+		_checkBoxSesLigand( Helper::makeQObject<QCheckBox>( "Ligand", _groupboxSes ) ),
+		_checkBoxSesOthers( Helper::makeQObject<QCheckBox>( "Others", _groupboxSes ) ),
+		_sliderSesProbeRadius( Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, _groupboxSes ) )
 	{
 		using namespace Renderer;
 
 		setTitle( "Edit representation" );
 
 		// Sphere.
-		_groupboxSphere = new HideableGroupBox( "Atoms", presetGroupBox() );
 		addWidget( _groupboxSphere );
 
-		_comboBoxSphereRadiusType = new QComboBox( _groupboxSphere );
 		_groupboxSphere->addWidget( _comboBoxSphereRadiusType );
 		_comboBoxSphereRadiusType->addItem( "Van der Waals radius" );
 		_comboBoxSphereRadiusType->addItem( "Fixed radius" );
 
-		_sliderSphereRadiusAdd = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSphere );
-		_labelSphereRadiusAdd  = new QLabel( "Radius add", _groupboxSphere );
 		_groupboxSphere->addWidget( _labelSphereRadiusAdd );
 		_groupboxSphere->addWidget( _sliderSphereRadiusAdd );
 		_sliderSphereRadiusAdd->setMinimum( RADIUS_SPHERE_ADD_MIN );
 		_sliderSphereRadiusAdd->setMaximum( RADIUS_SPHERE_ADD_MAX );
 		_sliderSphereRadiusAdd->setSuffix( QStringLiteral( u"\u00C5" ) );
 
-		_sliderSphereRadiusFixed = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSphere );
-		_labelSphereRadiusFixed	 = new QLabel( "Radius", _groupboxSphere );
 		_groupboxSphere->addWidget( _labelSphereRadiusFixed );
 		_groupboxSphere->addWidget( _sliderSphereRadiusFixed );
 		_sliderSphereRadiusFixed->setMinimum( RADIUS_SPHERE_FIXED_MIN );
@@ -36,48 +50,36 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderSphereRadiusFixed->setSuffix( QStringLiteral( u"\u00C5" ) );
 
 		// Cylinder.
-		_groupboxCylinder = new HideableGroupBox( "Bonds", presetGroupBox() );
 		addWidget( _groupboxCylinder );
 
-		_sliderCylinderRadius = new EditableSlider( Qt::Orientation::Horizontal, _groupboxCylinder );
-		_groupboxCylinder->addWidget( new QLabel( "Radius", _groupboxCylinder ) );
+		_groupboxCylinder->addWidget( Helper::makeQObject<QLabel>( "Radius", _groupboxCylinder ) );
 		_groupboxCylinder->addWidget( _sliderCylinderRadius );
 		_sliderCylinderRadius->setMinimum( RADIUS_CYLINDER_MIN );
 		_sliderCylinderRadius->setMaximum( RADIUS_CYLINDER_MAX );
 		_sliderCylinderRadius->setSuffix( QStringLiteral( u"\u00C5" ) );
 
-		_checkBoxCylinderColorBlending = new QCheckBox( "Blend colors", _groupboxCylinder );
 		_groupboxCylinder->addWidget( _checkBoxCylinderColorBlending );
 
 		// Ribbon.
-		_groupboxRibbon = new HideableGroupBox( "Ribbons", presetGroupBox() );
 		addWidget( _groupboxRibbon );
 
-		_checkBoxRibbonColorBlending = new QCheckBox( "Blend colors", _groupboxRibbon );
 		_groupboxRibbon->addWidget( _checkBoxRibbonColorBlending );
 
 		// SES.
-		_groupboxSes = new HideableGroupBox( "SES", presetGroupBox() );
 		addWidget( _groupboxSes );
 
-		_comboBoxSesComputeMode = new QComboBox( _groupboxSes );
-		_groupboxSes->addWidget( new QLabel( "Surface mode", _groupboxSes ) );
+		_groupboxSes->addWidget( Helper::makeQObject<QLabel>( "Surface mode", _groupboxSes ) );
 		_groupboxSes->addWidget( _comboBoxSesComputeMode );
 		_comboBoxSesComputeMode->addItem( "Separate surfaces" );
 		_comboBoxSesComputeMode->addItem( "Single surface" );
 
-		_groupboxSes->addWidget( new QLabel( "Categories", _groupboxSes ) );
-		_checkBoxSesPolymer = new QCheckBox( "Polymer", _groupboxSes );
+		_groupboxSes->addWidget( Helper::makeQObject<QLabel>( "Categories", _groupboxSes ) );
 		_groupboxSes->addWidget( _checkBoxSesPolymer );
-		_checkBoxSesCarbohydrate = new QCheckBox( "Carbohydrate", _groupboxSes );
 		_groupboxSes->addWidget( _checkBoxSesCarbohydrate );
-		_checkBoxSesLigand = new QCheckBox( "Ligand", _groupboxSes );
 		_groupboxSes->addWidget( _checkBoxSesLigand );
-		_checkBoxSesOthers = new QCheckBox( "Others", _groupboxSes );
 		_groupboxSes->addWidget( _checkBoxSesOthers );
 
-		_sliderSesProbeRadius = new EditableSlider( Qt::Orientation::Horizontal, _groupboxSes );
-		_groupboxSes->addWidget( new QLabel( "Probe radius", _groupboxSes ) );
+		_groupboxSes->addWidget( Helper::makeQObject<QLabel>( "Probe radius", _groupboxSes ) );
 		_groupboxSes->addWidget( _sliderSesProbeRadius );
 		_sliderSesProbeRadius->setMinimum( SES_PROBE_RADIUS_MIN );
 		_sliderSesProbeRadius->setMaximum( SES_PROBE_RADIUS_MAX );
@@ -94,7 +96,7 @@ namespace VTX::UI::QT::Widget::Library
 			_comboBoxSphereRadiusType,
 			QOverload<int>::of( &QComboBox::currentIndexChanged ),
 			[ this ]( const int p_index )
-			{ _changeValue<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, bool>( bool( p_index ) ); }
+			{ _changeValue<E_REPRESENTATION_VALUES::IS_SPHERE_RADIUS_FIXED, bool>( static_cast<bool>( p_index ) ); }
 		);
 
 		connect(
@@ -159,29 +161,25 @@ namespace VTX::UI::QT::Widget::Library
 		connect(
 			_checkBoxSesPolymer,
 			&QCheckBox::toggled,
-			[ this ]( const bool p_checked )
-			{ _setSesCategoryEnabled( E_SES_COMPUTE_MODE::POLYMER, p_checked ); }
+			[ this ]( const bool p_checked ) { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::POLYMER, p_checked ); }
 		);
 
 		connect(
 			_checkBoxSesCarbohydrate,
 			&QCheckBox::toggled,
-			[ this ]( const bool p_checked )
-			{ _setSesCategoryEnabled( E_SES_COMPUTE_MODE::CARBOHYDRATE, p_checked ); }
+			[ this ]( const bool p_checked ) { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::CARBOHYDRATE, p_checked ); }
 		);
 
 		connect(
 			_checkBoxSesLigand,
 			&QCheckBox::toggled,
-			[ this ]( const bool p_checked )
-			{ _setSesCategoryEnabled( E_SES_COMPUTE_MODE::LIGAND, p_checked ); }
+			[ this ]( const bool p_checked ) { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::LIGAND, p_checked ); }
 		);
 
 		connect(
 			_checkBoxSesOthers,
 			&QCheckBox::toggled,
-			[ this ]( const bool p_checked )
-			{ _setSesCategoryEnabled( E_SES_COMPUTE_MODE::OTHERS, p_checked ); }
+			[ this ]( const bool p_checked ) { _setSesCategoryEnabled( E_SES_COMPUTE_MODE::OTHERS, p_checked ); }
 		);
 
 		connect(
@@ -271,13 +269,9 @@ namespace VTX::UI::QT::Widget::Library
 		_sliderSphereRadiusFixed->setVisible( isFixed );
 	}
 
-	void Representation::_setSesCategoryEnabled(
-		const Renderer::E_SES_COMPUTE_MODE p_category,
-		const bool						   p_enabled
-	)
+	void Representation::_setSesCategoryEnabled( const Renderer::E_SES_COMPUTE_MODE p_category, const bool p_enabled )
 	{
-		Renderer::E_SES_COMPUTE_MODE mode
-			= App::REG().get<Renderer::Representation>( currentPreset() ).sesComputeMode;
+		Renderer::E_SES_COMPUTE_MODE mode = App::REG().get<Renderer::Representation>( currentPreset() ).sesComputeMode;
 
 		if ( p_enabled )
 		{
@@ -293,8 +287,7 @@ namespace VTX::UI::QT::Widget::Library
 
 	void Representation::_setSesMixedMode( const bool p_enabled )
 	{
-		Renderer::E_SES_COMPUTE_MODE mode
-			= App::REG().get<Renderer::Representation>( currentPreset() ).sesComputeMode;
+		Renderer::E_SES_COMPUTE_MODE mode = App::REG().get<Renderer::Representation>( currentPreset() ).sesComputeMode;
 
 		if ( p_enabled )
 		{

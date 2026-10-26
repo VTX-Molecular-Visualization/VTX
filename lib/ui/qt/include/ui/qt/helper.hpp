@@ -62,7 +62,7 @@ namespace VTX::UI::QT::Helper
 	{
 		auto object = std::make_unique<T>( std::forward<Args>( p_args )... );
 
-		if ( object->parent() == nullptr )
+		if ( object->QObject::parent() == nullptr )
 		{
 			throw std::logic_error( "makeQObject: object has no parent" );
 		}

@@ -223,7 +223,7 @@ namespace VTX::UI::QT::Widget
 					}
 					else
 					{
-						const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
+						const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ static_cast<int>( symbol ) ];
 						out.oneLetterSymbol = name.at( 0 );
 					}
 				}
@@ -255,7 +255,7 @@ namespace VTX::UI::QT::Widget
 						}
 						else
 						{
-							const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
+							const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ static_cast<int>( symbol ) ];
 							out.oneLetterSymbol = name.at( 0 );
 						}
 					}
@@ -390,7 +390,9 @@ namespace VTX::UI::QT::Widget
 		int	  labelChainWidth = 0;
 		for ( ; residue != end; ++residue )
 		{
-			painter.setPen( Helper::toQColor( colorlayout.getChainColor( size_t( residue->chainIndex + 1 ) ) ) );
+			painter.setPen(
+				Helper::toQColor( colorlayout.getChainColor( static_cast<size_t>( residue->chainIndex + 1 ) ) )
+			);
 
 			// Chain labels.
 			if ( residue->chainIndex != lastChain )
@@ -595,7 +597,7 @@ namespace VTX::UI::QT::Widget
 	void Sequence::_updateScrollBars()
 	{
 		auto &	   topology		= App::REG().get<Core::Struct::Topology>( _system );
-		const uint contentWidth = uint( _sequencer->ruleSize() ) * SEQ_CHAR_WIDTH;
+		const uint contentWidth = static_cast<uint>( _sequencer->ruleSize() ) * SEQ_CHAR_WIDTH;
 		horizontalScrollBar()->setRange( 0, contentWidth - viewport()->width() );
 		horizontalScrollBar()->setPageStep( viewport()->width() );
 	}

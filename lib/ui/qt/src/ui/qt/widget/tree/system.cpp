@@ -2,6 +2,7 @@
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/delegate/system_delegate.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/menu/color_scheme.hpp"
 #include "ui/qt/menu/representation.hpp"
 #include "ui/qt/menu/selection.hpp"
@@ -45,14 +46,14 @@ namespace VTX::UI::QT::Widget::Tree
 		setIndentation( 12 );
 
 		// Model.
-		setModel( new Model::SystemModel( p_system, this ) );
+		setModel( Helper::makeQObject<Model::SystemModel>( p_system, this ) );
 
 		// Selection is rendered from app state, not from Qt selection.
 		setSelectionMode( QAbstractItemView::NoSelection );
 		setSelectionBehavior( QAbstractItemView::SelectRows );
 
 		// Delegate.
-		auto * const delegate = new Delegate::SystemDelegate( p_system, this );
+		auto * const delegate = Helper::makeQObject<Delegate::SystemDelegate>( p_system, this );
 		setItemDelegate( delegate );
 
 		// One expanded at a time.

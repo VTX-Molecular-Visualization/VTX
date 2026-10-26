@@ -1,4 +1,5 @@
 #include "ui/qt/widget/viewpoint.hpp"
+#include "ui/qt/helper.hpp"
 #include <QGroupBox>
 #include <QPushButton>
 #include <QSignalBlocker>
@@ -13,20 +14,20 @@ namespace VTX::UI::QT::Widget
 {
 	ViewPoint::ViewPoint( const Entity p_entity, QWidget * const p_parent ) : QWidget( p_parent ), _entity( p_entity )
 	{
-		_layout = new QVBoxLayout( this );
+		_layout = Helper::makeQObject<QVBoxLayout>( this );
 		_layout->setContentsMargins( 0, 0, 0, 0 );
 
-		auto * groupBoxTransform = new QGroupBox( "Viewpoint", this );
-		auto * layoutTransform	 = new QVBoxLayout( groupBoxTransform );
+		auto * groupBoxTransform = Helper::makeQObject<QGroupBox>( "Viewpoint", this );
+		auto * layoutTransform	 = Helper::makeQObject<QVBoxLayout>( groupBoxTransform );
 
-		_lineName = new QLineEdit( this );
+		_lineName = Helper::makeQObject<QLineEdit>( this );
 		layoutTransform->addWidget( _lineName );
 
-		_transform = new Transform( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
+		_transform = Helper::makeQObject<Transform>( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
 		layoutTransform->addWidget( _transform );
 		_layout->addWidget( groupBoxTransform );
 
-		auto * buttonUpdateFromCamera = new QPushButton( "Update from current camera", this );
+		auto * buttonUpdateFromCamera = Helper::makeQObject<QPushButton>( "Update from current camera", this );
 		_layout->addWidget( buttonUpdateFromCamera );
 
 		connect(

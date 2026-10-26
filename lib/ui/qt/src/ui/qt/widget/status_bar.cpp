@@ -1,4 +1,5 @@
 #include "ui/qt/widget/status_bar.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
@@ -20,15 +21,15 @@ namespace VTX::UI::QT::Widget
 	StatusBar::StatusBar( QWidget * const p_parent ) : QStatusBar( p_parent )
 	{
 		// Python status.
-		_python = new QLabel( this );
+		_python = Helper::makeQObject<QLabel>( this );
 		_python->setText( "No Python" );
 
 		// FPS status.
-		_fps = new QLabel( this );
+		_fps = Helper::makeQObject<QLabel>( this );
 		//_fps->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 
 		// Resolution widget.
-		_resolution = new ToolButton::ResolutionSelector( this );
+		_resolution = Helper::makeQObject<ToolButton::ResolutionSelector>( this );
 		_resolution->setResolution( App::RENDERER().width(), App::RENDERER().height() );
 		_resolution->setAutoRaise( false );
 		_resolution->setToolTip( "Change resolution" );
@@ -42,20 +43,20 @@ namespace VTX::UI::QT::Widget
 		);
 
 		// Labels.
-		auto * vendorLabel = new QLabel( this );
+		auto * vendorLabel = Helper::makeQObject<QLabel>( this );
 		vendorLabel->setText( "No renderer" );
 		// vendorLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 
-		QWidget * spacer = new QWidget( this );
+		QWidget * spacer = Helper::makeQObject<QWidget>( this );
 		spacer->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
 
-		QLabel * gpuIcon = new QLabel( this );
+		QLabel * gpuIcon = Helper::makeQObject<QLabel>( this );
 		gpuIcon->setPixmap( STYLE().iconFromCodepoint( Style::Icons::GPU ).pixmap( 16, 16 ) );
 
-		QLabel * resolutionIcon = new QLabel( this );
+		QLabel * resolutionIcon = Helper::makeQObject<QLabel>( this );
 		resolutionIcon->setPixmap( STYLE().iconFromCodepoint( Style::Icons::SCREEN_RESOLUTION ).pixmap( 16, 16 ) );
 
-		QLabel * pythonIcon = new QLabel( this );
+		QLabel * pythonIcon = Helper::makeQObject<QLabel>( this );
 		pythonIcon->setPixmap( STYLE().iconFromCodepoint( Style::Icons::PYTHON ).pixmap( 16, 16 ) );
 
 		addPermanentWidget( spacer );
@@ -72,7 +73,7 @@ namespace VTX::UI::QT::Widget
 		{ vendorLabel->setText( QString::fromStdString( p_infos.renderer ) ); };
 
 		// Update FPS each second.
-		auto * timer = new QTimer( this );
+		auto * timer = Helper::makeQObject<QTimer>( this );
 		connect( timer, &QTimer::timeout, this, &StatusBar::_setCurrentFPS );
 		timer->start( 1000 );
 
@@ -110,13 +111,11 @@ namespace VTX::UI::QT::Widget
 		if ( _rendering )
 		{
 			const float tickrate = App::ECS::getCtx<Util::Monitoring::Stats>().average();
-			_fps->setText( QString( "%1 FPS" ).arg( uint( 1000.0 / tickrate ) ) );
+			_fps->setText( QString( "%1 FPS" ).arg( static_cast<uint>( 1000.0 / tickrate ) ) );
 		}
 	}
 
 	void StatusBar::_pythonInitialized( const App::Events::PythonInitialized & p_e )
-	{
-		_python->setText( QString( "Python %1" ).arg( QString::fromStdString( p_e.version ) ) );
-	}
+	{ _python->setText( QString( "Python %1" ).arg( QString::fromStdString( p_e.version ) ) ); }
 
 } // namespace VTX::UI::QT::Widget

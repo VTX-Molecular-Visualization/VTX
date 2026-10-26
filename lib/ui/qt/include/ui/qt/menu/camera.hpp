@@ -19,14 +19,14 @@ namespace VTX::UI::QT::Menu
 	class Camera : public Widget::BaseWidget<Camera, QMenu>
 	{
 	  public:
-		Camera( QWidget * const p_parent ) : BaseWidget( p_parent )
+		Camera( QWidget * const p_parent ) :
+			BaseWidget( p_parent ), _aPerspective( UI_ACTIONS().addTo( *this, Action::Camera::PERSPECTIVE ) ),
+			_aOrtho( UI_ACTIONS().addTo( *this, Action::Camera::ORTHOGRAPHIC ) ),
+			_aTrackball( UI_ACTIONS().addTo( *this, Action::Camera::TRACKBALL ) ),
+			_aFreefly( UI_ACTIONS().addTo( *this, Action::Camera::FREEFLY ) )
 		{
 			setTitle( "Camera" );
-			_aPerspective = UI_ACTIONS().addTo( *this, Action::Camera::PERSPECTIVE );
-			_aOrtho		  = UI_ACTIONS().addTo( *this, Action::Camera::ORTHOGRAPHIC );
-			addSeparator();
-			_aTrackball = UI_ACTIONS().addTo( *this, Action::Camera::TRACKBALL );
-			_aFreefly	= UI_ACTIONS().addTo( *this, Action::Camera::FREEFLY );
+			insertSeparator( _aTrackball );
 			addSeparator();
 			UI_ACTIONS().addTo( *this, Action::Camera::ORIENT );
 			UI_ACTIONS().addTo( *this, Action::Camera::RESET );

@@ -1,5 +1,6 @@
 
 #include "ui/qt/widget/tree/trajectory_player.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
@@ -12,6 +13,7 @@
 #include <app/trajectory/loader.hpp>
 #include <app/trajectory/player.hpp>
 #include <core/struct/trajectory.hpp>
+#include <memory>
 #include <util/event_hub.hpp>
 #include <util/thread/thread_manager.hpp>
 
@@ -22,30 +24,30 @@ namespace VTX::UI::QT::Widget::Tree
 		QWidget( p_parent ), _system( p_system )
 	{
 		// Main vertical layout
-		auto * mainLayout = new QVBoxLayout( this );
+		auto * mainLayout = Helper::makeQObject<QVBoxLayout>( this );
 		mainLayout->setContentsMargins( 0, 0, 0, 0 );
 		mainLayout->setSpacing( 0 );
 
 		// Control bar (horizontal)
-		auto * controlBar = new QHBoxLayout();
+		auto controlBar = std::make_unique<QHBoxLayout>();
 		controlBar->setContentsMargins( 4, 2, 4, 2 );
 		controlBar->setSpacing( 4 );
 
 		// Play/Pause button
-		_btnPlayPause = new QPushButton( this );
+		_btnPlayPause = Helper::makeQObject<QPushButton>( this );
 		_btnPlayPause->setFixedSize( 24, 24 );
 		_btnPlayPause->setToolTip( tr( "Play/Pause" ) );
 		controlBar->addWidget( _btnPlayPause );
 
 		// Stop button
-		_btnStop = new QPushButton( this );
+		_btnStop = Helper::makeQObject<QPushButton>( this );
 		_btnStop->setFixedSize( 24, 24 );
 		_btnStop->setToolTip( tr( "Stop" ) );
 		_btnStop->setIcon( _icons[ 2 ] );
 		controlBar->addWidget( _btnStop );
 
 		// Slider
-		_slider = new TrajectorySlider( Qt::Horizontal, this );
+		_slider = Helper::makeQObject<TrajectorySlider>( Qt::Horizontal, this );
 		_slider->setMinimum( 0 );
 		_slider->setMaximum( 100 );
 		_slider->setValue( 0 );
@@ -53,23 +55,23 @@ namespace VTX::UI::QT::Widget::Tree
 		controlBar->addWidget( _slider, 1 ); // Stretch factor 1
 
 		// Frame label
-		_frameLabel = new QLabel( "0/0", this );
+		_frameLabel = Helper::makeQObject<QLabel>( "0/0", this );
 		_frameLabel->setMinimumWidth( 60 );
 		_frameLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 		controlBar->addWidget( _frameLabel );
 
 		// Settings Button
-		_btnSettings = new QPushButton( this );
+		_btnSettings = Helper::makeQObject<QPushButton>( this );
 		_btnSettings->setIcon( _icons[ 3 ] );
 		_btnSettings->setFixedSize( 24, 24 );
 		_btnSettings->setCheckable( true );
 		_btnSettings->setToolTip( tr( "Settings" ) );
 		controlBar->addWidget( _btnSettings );
 
-		mainLayout->addLayout( controlBar );
+		mainLayout->addLayout( controlBar.release() );
 
 		// Settings panel (initially hidden)
-		_settings = new TrajectorySettings( _system, this );
+		_settings = Helper::makeQObject<TrajectorySettings>( _system, this );
 		_settings->setVisible( false );
 		mainLayout->addWidget( _settings );
 
@@ -121,7 +123,7 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, uint( p_value ) );
+		App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, static_cast<uint>( p_value ) );
 	}
 
 	void TrajectoryPlayer::_onTrajectoryUpdated( Registry &, Entity p_entity )
@@ -144,7 +146,8 @@ namespace VTX::UI::QT::Widget::Tree
 
 		const App::Trajectory::FrameRange availableFrames = loader->availableFrames;
 		_slider->setLoadedRange(
-			int( availableFrames.getFirst() ), availableFrames.isEmpty() ? 0 : int( availableFrames.getLast() - 1 )
+			static_cast<int>( availableFrames.getFirst() ),
+			availableFrames.isEmpty() ? 0 : static_cast<int>( availableFrames.getLast() - 1 )
 		);
 	}
 
@@ -157,14 +160,15 @@ namespace VTX::UI::QT::Widget::Tree
 
 		// Guard to prevent valueChanged from triggering JumpTo during programmatic updates
 		_isRefreshing = true;
-		_slider->setMaximum( int( totalFrames - 1 ) );
-		_slider->setValue( int( currentFrame ) );
+		_slider->setMaximum( static_cast<int>( totalFrames - 1 ) );
+		_slider->setValue( static_cast<int>( currentFrame ) );
 		_isRefreshing = false;
 
 		// Update loaded range overlay
 		const App::Trajectory::FrameRange availableFrames = App::Helper::Trajectory::getAvailableFrames( _system );
 		_slider->setLoadedRange(
-			int( availableFrames.getFirst() ), availableFrames.isEmpty() ? 0 : int( availableFrames.getLast() - 1 )
+			static_cast<int>( availableFrames.getFirst() ),
+			availableFrames.isEmpty() ? 0 : static_cast<int>( availableFrames.getLast() - 1 )
 		);
 
 		// Update frame label

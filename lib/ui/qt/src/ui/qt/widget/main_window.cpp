@@ -87,7 +87,7 @@ namespace VTX::UI::QT::Widget
 		createToolBar<ToolBar::Snapshot>();
 
 		// Main area : opengl widget.
-		auto * renderer = new Renderer( this );
+		auto * renderer = Helper::makeQObject<Renderer>( this );
 		// renderer->createToolBar<ToolBar::Selection>( Renderer::HUD_POSITION::TOP_RIGHT );
 		setCentralWidget( renderer );
 
@@ -118,7 +118,7 @@ namespace VTX::UI::QT::Widget
 		resizeDocks( { dwConsole }, { Style::DEFAULT_CONSOLE_HEIGHT }, Qt::Vertical );
 
 		// Status bar.
-		_statusBar = new StatusBar( this );
+		_statusBar = Helper::makeQObject<StatusBar>( this );
 		setStatusBar( _statusBar );
 
 		// Focus central widgetrend to enable shortcuts.
@@ -195,7 +195,7 @@ namespace VTX::UI::QT::Widget
 			}
 		}
 
-		QToolBar * const toolbar = new QToolBar( p_toolbar.data(), this );
+		QToolBar * const toolbar = Helper::makeQObject<QToolBar>( p_toolbar.data(), this );
 		toolbar->setObjectName( toolbar->windowTitle() );
 		addToolBar( toolbar );
 		UI_ACTIONS().addTo( *toolbar, p_actionId );
@@ -273,7 +273,7 @@ namespace VTX::UI::QT::Widget
 
 	QMenu * MainWindow::createPopupMenu()
 	{
-		QMenu * const menu = new QMenu( this );
+		QMenu * const menu = Helper::makeQObject<QMenu>( this );
 		menu->setTitle( "View" );
 		populateViewMenu( *menu );
 		return menu;
@@ -317,7 +317,7 @@ namespace VTX::UI::QT::Widget
 
 	void MainWindow::_onBlockingOperationStart( const App::Events::BlockingOperationStart & p_e )
 	{
-		_progressDialog = new Dialog::Progress( p_e.message );
+		_progressDialog = Helper::makeQObject<Dialog::Progress>( p_e.message );
 		_progressDialog->show();
 		// Need to process events to display the dialog immediately, because main thread is busy.
 		QCoreApplication::processEvents( QEventLoop::ExcludeUserInputEvents );
@@ -338,7 +338,7 @@ namespace VTX::UI::QT::Widget
 
 	void MainWindow::_onUpdateAvailable( const App::Events::UpdateAvailable & p_e )
 	{
-		Dialog::Updater * const dialog = new Dialog::Updater( p_e );
+		Dialog::Updater * const dialog = Helper::makeQObject<Dialog::Updater>( p_e );
 		dialog->setAttribute( Qt::WA_DeleteOnClose, true );
 		dialog->setModal( true );
 		dialog->open();

@@ -1,4 +1,5 @@
 #include "ui/qt/tool_button/resolution_selector.hpp"
+#include "ui/qt/helper.hpp"
 #include <QLineEdit>
 #include <QMenu>
 #include <QRegularExpression>
@@ -33,7 +34,7 @@ namespace VTX::UI::QT::ToolButton
 		setAutoRaise( true );
 		setToolButtonStyle( Qt::ToolButtonTextOnly );
 
-		auto * const menu = new QMenu( this );
+		auto * const menu = Helper::makeQObject<QMenu>( this );
 
 		for ( const auto & preset : SCREEN_RESOLUTION_PRESETS )
 		{
@@ -54,8 +55,8 @@ namespace VTX::UI::QT::ToolButton
 
 		menu->addSeparator();
 
-		auto * const customResolutionAction = new QWidgetAction( menu );
-		auto * const customResolutionInput	= new QLineEdit( menu );
+		auto * const customResolutionAction = Helper::makeQObject<QWidgetAction>( menu );
+		auto * const customResolutionInput	= Helper::makeQObject<QLineEdit>( menu );
 		customResolutionInput->setPlaceholderText( "1920 1080" );
 		customResolutionInput->setClearButtonEnabled( true );
 		customResolutionAction->setDefaultWidget( customResolutionInput );

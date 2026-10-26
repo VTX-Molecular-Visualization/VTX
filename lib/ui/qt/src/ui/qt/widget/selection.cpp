@@ -43,11 +43,11 @@ namespace VTX::UI::QT::Widget
 		using namespace App;
 		using namespace Core::Struct;
 
-		_layout = new QVBoxLayout( this );
+		_layout = Helper::makeQObject<QVBoxLayout>( this );
 		_layout->setContentsMargins( 0, 0, 0, 0 );
 		setLayout( _layout );
 
-		_list = new QListWidget( this );
+		_list = Helper::makeQObject<QListWidget>( this );
 		_layout->addWidget( _list );
 
 		auto &	   reg					= REG();
@@ -79,7 +79,7 @@ namespace VTX::UI::QT::Widget
 			const auto & transform = reg.get<Util::Math::Transform>( editableSystemEntity );
 
 			// Name.
-			_textName = new QPlainTextEdit( QString::fromStdString( metadata.name ), this );
+			_textName = Helper::makeQObject<QPlainTextEdit>( QString::fromStdString( metadata.name ), this );
 			_textName->setPlaceholderText( "No name" );
 			_textName->setLineWrapMode( QPlainTextEdit::WidgetWidth );
 			_textName->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed );
@@ -100,13 +100,15 @@ namespace VTX::UI::QT::Widget
 
 			// PDB.
 			_layout->addWidget(
-				new QLabel( QString( "PDB: %1" ).arg( QString::fromStdString( metadata.pdbIDCode ) ), this )
+				Helper::makeQObject<QLabel>(
+					QString( "PDB: %1" ).arg( QString::fromStdString( metadata.pdbIDCode ) ), this
+				)
 			);
 
 			// Path.
 			const QUrl parentFolderUrl
 				= QUrl::fromLocalFile( QString::fromStdString( metadata.path.parent_path().string() ) );
-			auto * labelFile = new QLabel(
+			auto * labelFile = Helper::makeQObject<QLabel>(
 				QString( "File: %1" ).arg( QString::fromStdString( metadata.path.filename().string() ) ), this
 			);
 			labelFile->setWordWrap( true );
@@ -132,10 +134,11 @@ namespace VTX::UI::QT::Widget
 			_layout->addWidget( labelFile );
 
 			// Transform.
-			auto * groupBoxTransform = new QGroupBox( "Transform", this );
-			auto * layout			 = new QVBoxLayout( groupBoxTransform );
+			auto * groupBoxTransform = Helper::makeQObject<QGroupBox>( "Transform", this );
+			auto * layout			 = Helper::makeQObject<QVBoxLayout>( groupBoxTransform );
 
-			_transform = new Transform( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
+			_transform
+				= Helper::makeQObject<Transform>( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
 			_transform->setTransform( transform );
 
 			connect(
@@ -268,17 +271,25 @@ namespace VTX::UI::QT::Widget
 		if ( countSystem > 1 )
 		{
 			_layout->addWidget(
-				new QLabel( QString( "Systems: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countSystem ) ), this )
+				Helper::makeQObject<QLabel>(
+					QString( "Systems: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countSystem ) ), this
+				)
 			);
 		}
 		_layout->addWidget(
-			new QLabel( QString( "Chains: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countChain ) ), this )
+			Helper::makeQObject<QLabel>(
+				QString( "Chains: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countChain ) ), this
+			)
 		);
 		_layout->addWidget(
-			new QLabel( QString( "Residues: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countResidue ) ), this )
+			Helper::makeQObject<QLabel>(
+				QString( "Residues: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countResidue ) ), this
+			)
 		);
 		_layout->addWidget(
-			new QLabel( QString( "Atoms: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countAtom ) ), this )
+			Helper::makeQObject<QLabel>(
+				QString( "Atoms: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countAtom ) ), this
+			)
 		);
 
 		// Connect.

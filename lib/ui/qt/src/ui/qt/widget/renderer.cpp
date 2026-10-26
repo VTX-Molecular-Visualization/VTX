@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
+#include <memory>
 #include <qpa/qplatformnativeinterface.h>
 #include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
@@ -27,11 +28,12 @@ namespace VTX::UI::QT::Widget
 		setAcceptDrops( true );
 		_backgroundLogo = QPixmap( Resources::SPRITE_LOGO.toString() );
 
-		_window = new Window::Renderer();
+		auto window = std::make_unique<Window::Renderer>();
+		_window		= window.get();
 		_window->setFlags( Qt::FramelessWindowHint );
 		_window->create();
 
-		_container = createWindowContainer( _window, this );
+		_container = createWindowContainer( window.release(), this );
 		_container->installEventFilter( this );
 		_container->setFocusPolicy( Qt::StrongFocus );
 		setFocusPolicy( Qt::NoFocus );

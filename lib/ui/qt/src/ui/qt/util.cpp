@@ -167,7 +167,7 @@ namespace VTX::UI::QT::Util
 			setCursor( QCursor( Qt::CursorShape::WhatsThisCursor ) );
 			setFixedSize( BUTTON_SIDE, BUTTON_SIDE );
 
-			_label = new QLabel( p_popupText );
+			_label = Helper::makeQObject<QLabel>( p_popupText, popup->contentHost() );
 			_label->setTextFormat( Qt::RichText );
 			_label->setOpenExternalLinks( true );
 			_label->setWordWrap( true );

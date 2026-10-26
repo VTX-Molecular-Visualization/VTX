@@ -20,15 +20,17 @@ namespace VTX::UI::QT::Widget::Tree
 	  public:
 		using W = Widget::Tree::BaseTree<BaseTreePreset<P>>;
 
-		BaseTreePreset( QWidget * const p_parent ) : W( p_parent )
+		BaseTreePreset( QWidget * const p_parent ) :
+			W( p_parent ),
+			_onRenameConnection(
+				App::HUB().connect<App::Events::PresetRename<P>, &BaseTreePreset::_onPresetRename>( this )
+			)
 		{
 			W::setExpandsOnDoubleClick( true );
 
 			auto & reg			   = App::REG();
 			_onConstructConnection = reg.on_construct<P>().template connect<&BaseTreePreset::_addPreset>( this );
 			_onDestroyConnection   = reg.on_destroy<P>().template connect<&BaseTreePreset::_removePreset>( this );
-			_onRenameConnection
-				= App::HUB().connect<App::Events::PresetRename<P>, &BaseTreePreset::_onPresetRename>( this );
 
 			// Connect double click to apply the preset.
 			W::connect(

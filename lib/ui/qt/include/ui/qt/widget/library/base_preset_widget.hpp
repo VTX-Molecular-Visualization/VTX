@@ -13,13 +13,13 @@ namespace VTX::UI::QT::Widget::Library
 	class BasePresetWidget : public QWidget
 	{
 	  public:
-		BasePresetWidget( QWidget * const p_parent ) : QWidget( p_parent )
+		BasePresetWidget( QWidget * const p_parent ) :
+			QWidget( p_parent ), _layout( Helper::makeQObject<QVBoxLayout>( this ) ),
+			_presetSelector( Helper::makeQObject<PresetSelector<P>>( this ) ),
+			_groupboxPreset( Helper::makeQObject<QGroupBox>( this ) )
 		{
-			_presetSelector = Helper::makeQObject<PresetSelector<P>>( this );
-			_groupboxPreset = Helper::makeQObject<QGroupBox>( this );
 			_groupboxPreset->setLayout( Helper::makeQObject<QVBoxLayout>( _groupboxPreset ) );
 
-			_layout = Helper::makeQObject<QVBoxLayout>( this );
 			setLayout( _layout );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 

@@ -113,11 +113,22 @@ namespace VTX::UI::QT::Style
 
 	StyleManager::~StyleManager()
 	{
-		const QString themeName = QString::fromUtf8( Util::Enum::enumName( _currentTheme ) );
-		SETTINGS().setValue( SETTING_KEY_THEME, themeName );
-		if ( not App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont )
+		try
 		{
-			SETTINGS().setValue( SETTING_KEY_FONT, getCurrentFontFamily() );
+			const QString themeName = QString::fromUtf8( Util::Enum::enumName( _currentTheme ) );
+			SETTINGS().setValue( SETTING_KEY_THEME, themeName );
+			if ( not App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont )
+			{
+				SETTINGS().setValue( SETTING_KEY_FONT, getCurrentFontFamily() );
+			}
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Failed to save style to settings: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Failed to save style to settings: unknown exception" );
 		}
 	}
 

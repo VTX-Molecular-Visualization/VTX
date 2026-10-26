@@ -157,7 +157,7 @@ namespace VTX::UI::QT::Window
 
 	std::optional<App::Input::InputManager::Action> Renderer::_getKeyboardAction( const int p_key ) const
 	{
-		if ( p_key < 0 || p_key >= int( _QWERTY_BINDINGS.size() ) )
+		if ( p_key < 0 || p_key >= static_cast<int>( _QWERTY_BINDINGS.size() ) )
 		{
 			return std::nullopt;
 		}
@@ -169,7 +169,7 @@ namespace VTX::UI::QT::Window
 	QPoint Renderer::_toDevicePixels( const QPointF & p_logicalPos ) const
 	{
 		const qreal dpr = devicePixelRatio();
-		return { int( p_logicalPos.x() * dpr ), int( p_logicalPos.y() * dpr ) };
+		return { static_cast<int>( p_logicalPos.x() * dpr ), static_cast<int>( p_logicalPos.y() * dpr ) };
 	}
 
 	void Renderer::_onKBLayoutChange( const Events::KeyboardLayoutChanged & p_e )

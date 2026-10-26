@@ -4,6 +4,7 @@
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/events.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/widget/base_widget.hpp"
@@ -28,14 +29,13 @@ namespace VTX::UI::QT::ToolBar
 			setWindowTitle( "Selection" );
 
 			// Granularity tool buttons.
-			_granularityButton = new QToolButton( this );
+			_granularityButton = Helper::makeQObject<QToolButton>( this );
 			_granularityButton->setToolButtonStyle( Qt::ToolButtonTextUnderIcon );
 			_granularityButton->setPopupMode( QToolButton::InstantPopup );
 			_granularityButton->setText( "Selection" );
 
-			QMenu * const menu = new QMenu( _granularityButton );
-			const auto	  addRegisteredAction
-				= [ menu ]( const std::string_view p_actionId )
+			QMenu * const menu				  = Helper::makeQObject<QMenu>( _granularityButton );
+			const auto	  addRegisteredAction = [ menu ]( const std::string_view p_actionId )
 			{
 				if ( QAction * const action = UI_ACTIONS().getAction( p_actionId ) )
 				{
@@ -67,7 +67,7 @@ namespace VTX::UI::QT::ToolBar
 		{
 			using Granularity = App::Action::Selection::E_GRANULARITY;
 
-			const int granularity = SETTINGS().value( SETTING_KEY_GRANULARITY, 0 ).toInt();
+			const int  granularity = SETTINGS().value( SETTING_KEY_GRANULARITY, 0 ).toInt();
 			const auto syncAction
 				= [ this, granularity ]( const std::string_view p_actionId, const Granularity p_granularity )
 			{
