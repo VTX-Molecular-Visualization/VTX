@@ -5,6 +5,7 @@
 #include <regex>
 #include <set>
 #include <stdexcept>
+#include <string_view>
 //
 #include <app/services.hpp>
 #include <app/session.hpp>
@@ -93,7 +94,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	namespace
 	{
-		constexpr void parse( const std::string & p_user_str, E_INTERACTIVE_KEYWORD & p_out ) noexcept
+		constexpr void parse( const std::string_view p_user_str, E_INTERACTIVE_KEYWORD & p_out ) noexcept
 		{
 			if ( p_user_str == "HIS" )
 			{
