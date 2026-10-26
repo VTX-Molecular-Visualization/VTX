@@ -76,7 +76,9 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		delete it->second;
+		auto * const item	= it->second;
+		auto * const parent = item->parent();
+		std::unique_ptr<QTreeWidgetItem> { parent->takeChild( parent->indexOfChild( item ) ) }.reset();
 		_entityToItemMap.erase( it );
 		updateGeometry();
 	}

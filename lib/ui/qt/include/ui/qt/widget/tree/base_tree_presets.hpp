@@ -10,6 +10,7 @@
 #include <app/action/preset.hpp>
 #include <app/generic/name.hpp>
 #include <app/services.hpp>
+#include <memory>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
@@ -134,8 +135,9 @@ namespace VTX::UI::QT::Widget::Tree
 		{
 			assert( _entityToItemMap.contains( p_e ) );
 
-			const QTreeWidgetItem * const presetItem = _entityToItemMap.at( p_e );
-			delete presetItem;
+			QTreeWidgetItem * const presetItem = _entityToItemMap.at( p_e );
+			auto * const			parent	   = presetItem->parent();
+			std::unique_ptr<QTreeWidgetItem> { parent->takeChild( parent->indexOfChild( presetItem ) ) }.reset();
 			_entityToItemMap.erase( p_e );
 			if ( _appliedPreset == p_e )
 			{

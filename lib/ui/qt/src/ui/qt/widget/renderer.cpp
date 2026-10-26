@@ -149,9 +149,8 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( p_event->type() == QEvent::DragEnter || p_event->type() == QEvent::Drop )
 			{
-				auto * const clonedEvent = p_event->clone();
-				QCoreApplication::sendEvent( &MAIN_WINDOW(), clonedEvent );
-				delete clonedEvent;
+				const std::unique_ptr<QEvent> clonedEvent { p_event->clone() };
+				QCoreApplication::sendEvent( &MAIN_WINDOW(), clonedEvent.get() );
 				return true;
 			}
 		}

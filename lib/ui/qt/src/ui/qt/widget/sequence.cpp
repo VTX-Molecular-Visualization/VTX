@@ -14,6 +14,7 @@
 #include <core/chemdb/residue.hpp>
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
+#include <memory>
 #include <renderer/color.hpp>
 #include <ui/qt/action_registry.hpp>
 #include <ui/qt/actions.hpp>
@@ -445,7 +446,8 @@ namespace VTX::UI::QT::Widget
 		menu.exec( p_e->globalPos() );
 	}
 
-	void Sequence::Del::operator()( ResidueSequencer * p_ ) const noexcept { delete p_; }
+	void Sequence::Del::operator()( ResidueSequencer * const p_ ) const noexcept
+	{ std::default_delete<ResidueSequencer> {}( p_ ); }
 
 	void Sequence::mousePressEvent( QMouseEvent * p_e )
 	{

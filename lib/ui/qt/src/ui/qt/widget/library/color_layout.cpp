@@ -7,6 +7,7 @@
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/chain.hpp>
 #include <core/chemdb/residue.hpp>
+#include <memory>
 #include <renderer/color.hpp>
 
 namespace VTX::UI::QT::Widget::Library
@@ -159,7 +160,7 @@ namespace VTX::UI::QT::Widget::Library
 		using namespace VTX::Core::ChemDB;
 
 		auto * groupBox = static_cast<QGroupBox *>( _buttons[ p_start ]->parentWidget() );
-		delete groupBox->layout();
+		std::unique_ptr<QLayout> { groupBox->layout() }.reset();
 		auto * layout = Helper::makeQObject<Layout::FlowLayout>( groupBox );
 
 		size_t count = 0;
