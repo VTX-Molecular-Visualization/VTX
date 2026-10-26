@@ -41,7 +41,7 @@ namespace VTX::Tool::Mdprep::Gateway
 	const char * string( const E_MD_DURATION_UNIT & ) noexcept;
 
 	// Return the multiplier to convert the number of MD step to a picosecond time
-	const double multiplierPicoSeconds( const E_MD_DURATION_UNIT & ) noexcept;
+	double multiplierPicoSeconds( const E_MD_DURATION_UNIT & ) noexcept;
 
 	// Hold data for one MD step. In this context, a step can be equilibration nvt,npt or production run
 	struct MdParametersStepData

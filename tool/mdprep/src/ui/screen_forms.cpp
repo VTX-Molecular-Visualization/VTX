@@ -142,7 +142,7 @@ namespace VTX::Tool::Mdprep::ui
 
 			VTX::Tool::Mdprep::ui::FormLayouts layouts;
 			_currentForm.get( layouts );
-			_formEngine.assign( std::move( layouts ) );
+			_formEngine.assign( layouts );
 			_formEngine.activate();
 		}
 
@@ -212,9 +212,6 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			return; // No MD engine selected/initialized yet : nothing to prepare.
 		}
-
-		Gateway::EngineJobManager jobManager {};
-		mdEngine->get( jobManager );
 
 		Gateway::MdParameters param;
 		_currentForm.get( param );

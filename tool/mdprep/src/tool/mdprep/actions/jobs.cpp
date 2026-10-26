@@ -93,7 +93,7 @@ namespace VTX::Tool::Mdprep::Actions
 					fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), resultDir.string() )
 				);
 				App::THREAD().dispatch( [ event = Gateway::PreparationFinished { true } ]() mutable
-										{ App::HUB().trigger( std::move( event ) ); } );
+										{ App::HUB().trigger( event ); } );
 			}
 			else
 			{
@@ -103,7 +103,7 @@ namespace VTX::Tool::Mdprep::Actions
 
 	theEnd:
 		/**/ App::THREAD().dispatch( [ event = Gateway::PreparationFinished() ]() mutable
-									 { App::HUB().trigger( std::move( event ) ); } );
+									 { App::HUB().trigger( event ); } );
 		_impl->waiter.count_down();
 	}
 

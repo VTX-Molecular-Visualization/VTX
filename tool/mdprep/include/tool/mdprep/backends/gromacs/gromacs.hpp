@@ -65,7 +65,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		/**
 		 * @brief Return the reason why the system is not viable, or empty if not finished or viable.
 		 */
-		const std::string_view why() const noexcept;
+		std::string_view why() const noexcept;
 
 		/**
 		 * @brief Return weither the system is accepted by gromacs or not. Wait for the test to finish before returning

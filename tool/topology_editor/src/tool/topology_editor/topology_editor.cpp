@@ -17,8 +17,7 @@ namespace VTX::Tool::TopologyEditor
 {
 	namespace
 	{
-		constexpr std::string_view			   ACTION_OPEN_TOPOLOGY_EDITOR = "tool.topology_editor.open";
-		QPointer<Dialog::TopologyEditorDialog> g_dialog;
+		constexpr std::string_view ACTION_OPEN_TOPOLOGY_EDITOR = "tool.topology_editor.open";
 
 		QString entityLabel( const Entity p_entity )
 		{
@@ -40,26 +39,28 @@ namespace VTX::Tool::TopologyEditor
 
 		void openDialogForSystem( const Entity p_system )
 		{
+			static QPointer<Dialog::TopologyEditorDialog> dialog;
+
 			if ( p_system == InvalidEntity )
 			{
 				VTX_WARNING( "Topology Editor: no system available" );
 				return;
 			}
 
-			if ( g_dialog == nullptr || g_dialog->getSystem() != p_system )
+			if ( dialog == nullptr || dialog->getSystem() != p_system )
 			{
-				if ( g_dialog != nullptr )
+				if ( dialog != nullptr )
 				{
-					g_dialog->close();
-					delete g_dialog;
+					dialog->close();
+					delete dialog;
 				}
-				g_dialog = VTX::UI::QT::Helper::makeQObject<Dialog::TopologyEditorDialog>( p_system );
-				g_dialog->setAttribute( Qt::WA_DeleteOnClose, false );
+				dialog = VTX::UI::QT::Helper::makeQObject<Dialog::TopologyEditorDialog>( p_system );
+				dialog->setAttribute( Qt::WA_DeleteOnClose, false );
 			}
 
-			g_dialog->show();
-			g_dialog->raise();
-			g_dialog->activateWindow();
+			dialog->show();
+			dialog->raise();
+			dialog->activateWindow();
 		}
 
 		App::UI::DescAction openTopologyEditorAction()

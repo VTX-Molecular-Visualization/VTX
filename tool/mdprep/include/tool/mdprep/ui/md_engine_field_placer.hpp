@@ -21,7 +21,7 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			if ( _ptr )
 			{
-				_ptr->assign( std::move( p_layouts ) );
+				_ptr->assign( p_layouts );
 			}
 		}
 
@@ -44,6 +44,7 @@ namespace VTX::Tool::Mdprep::ui
 		}
 
 		MdEngineFieldPlacer() = default;
+
 		template<typename T>
 			requires( not SameUnalteredType<T, MdEngineFieldPlacer> )
 		MdEngineFieldPlacer( T && p_in ) : _ptr( new wrapper<T>( std::forward<T>( p_in ) ) )
@@ -66,7 +67,8 @@ namespace VTX::Tool::Mdprep::ui
 			static_assert(
 				not std::is_trivially_destructible_v<T>,
 				"You must implement a destructor class method, as the responsability of the MdEngineFieldPlacer is "
-				"also to cleanup his widget(s) on destruction." );
+				"also to cleanup his widget(s) on destruction."
+			);
 		}
 
 	  private:
@@ -82,6 +84,7 @@ namespace VTX::Tool::Mdprep::ui
 		struct wrapper final : public _interface
 		{
 			T _t;
+
 			wrapper( T && p_in ) : _t( std::forward<T>( p_in ) ) {}
 
 			void assign( FormLayouts p_layouts ) noexcept override { _t.assign( std::move( p_layouts ) ); }

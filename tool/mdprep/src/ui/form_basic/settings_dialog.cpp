@@ -27,7 +27,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		std::optional<Gateway::EngineSpecificCommonInformation> p_engineInfo,
 		ApplyVisitor											p_applyVisitor
 	) :
-		_data( std::move( p_dataFields ) ), _engineFieldPlacer( std::move( p_engineFieldPlacer ) ),
+		_data( p_dataFields ), _engineFieldPlacer( std::move( p_engineFieldPlacer ) ),
 		_uiObjects( UiData { .engineInfo = std::move( p_engineInfo ) } ), _applyVisitor( std::move( p_applyVisitor ) )
 	{
 		_setupUi( p_parent, p_title );

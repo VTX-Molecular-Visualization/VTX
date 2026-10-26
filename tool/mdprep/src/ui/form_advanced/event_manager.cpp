@@ -3,6 +3,7 @@
 #include <qpushbutton.h>
 //
 #include <ui/qt/util.hpp>
+#include <util/logger.hpp>
 #include <util/sentry.hpp>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
@@ -32,10 +33,10 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		}
 	}
 
-	EventManager::EventManager( EventManager && p_other ) :
+	EventManager::EventManager( EventManager && p_other ) noexcept :
 		fieldPlacers( std::move( p_other.fieldPlacers ) ), _fieldSystemBoxShape( p_other._fieldSystemBoxShape ),
 		_fieldBioForceField( p_other._fieldBioForceField ), parameters( std::move( p_other.parameters ) ),
-		reportManager( std::move( p_other.reportManager ) ), _sentry( std::move( p_other._sentry ) )
+		reportManager( p_other.reportManager ), _sentry( std::move( p_other._sentry ) )
 	{
 		if ( _fieldSystemBoxShape )
 		{
@@ -45,10 +46,17 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		{
 			_fieldBioForceField->disconnect();
 		}
-		_connectAll();
+		try
+		{
+			_connectAll();
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "[MDPREP] Failed to reconnect EventManager signals after move." );
+		}
 	}
 
-	EventManager & EventManager::operator=( EventManager && p_other )
+	EventManager & EventManager::operator=( EventManager && p_other ) noexcept
 	{
 		if ( this == &p_other )
 		{
@@ -78,7 +86,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		_fieldBioForceField		   = p_other._fieldBioForceField;
 
 		parameters	  = std::move( p_other.parameters );
-		reportManager = std::move( p_other.reportManager );
+		reportManager = p_other.reportManager;
 		_sentry		  = std::move( p_other._sentry );
 
 		p_other._bioForcefieldResultLayout = nullptr;
@@ -87,7 +95,14 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 
 		fieldPlacers = std::move( p_other.fieldPlacers );
 
-		_connectAll();
+		try
+		{
+			_connectAll();
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "[MDPREP] Failed to reconnect EventManager signals after move." );
+		}
 
 		return *this;
 	}

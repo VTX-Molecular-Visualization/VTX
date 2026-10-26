@@ -61,7 +61,7 @@ namespace VTX::Tool::Mdprep::ui
 		_uiObjects._labelConc->hide();
 	}
 
-	void GromacsFieldPlacer::assign( FormLayouts p_layouts ) noexcept { _layouts.emplace( std::move( p_layouts ) ); }
+	void GromacsFieldPlacer::assign( FormLayouts p_layouts ) noexcept { _layouts.emplace( p_layouts ); }
 
 	void GromacsFieldPlacer::activate()
 	{

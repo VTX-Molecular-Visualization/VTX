@@ -14,7 +14,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	namespace
 	{
-		auto g_jobNames = std::to_array<const char *>( {
+		constexpr auto g_jobNames = std::to_array<const char *>( {
 			"1_pdb2gmx",
 			"2_editconf",
 			"3_solvate",
@@ -327,7 +327,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		bool isSystemOk() const noexcept { return _testData._systemOk; }
 
-		const std::string_view why() const noexcept { return _testData._why; }
+		std::string_view why() const noexcept { return _testData._why; }
 	};
 
 	SystemTester::SystemTester( const FilePath & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
@@ -337,7 +337,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	bool SystemTester::isSystemOk() const noexcept { return _pimpl->isSystemOk(); }
 
-	const std::string_view SystemTester::why() const noexcept { return _pimpl->why(); }
+	std::string_view SystemTester::why() const noexcept { return _pimpl->why(); }
 
 	SystemTester::operator bool() const noexcept { return _pimpl->isSystemOk(); }
 

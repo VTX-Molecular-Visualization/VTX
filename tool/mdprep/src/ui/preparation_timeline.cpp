@@ -441,25 +441,22 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	}
 
-	namespace
-	{
-		PreparationTimeline * g_timeline = nullptr;
-	}
-
 	void showPreparationTimeline()
 	{
-		if ( g_timeline == nullptr )
+		static PreparationTimeline * timeline = nullptr;
+
+		if ( timeline == nullptr )
 		{
-			g_timeline = UI::QT::MAIN_WINDOW().createDockWidget<PreparationTimeline>( Qt::RightDockWidgetArea );
+			timeline = UI::QT::MAIN_WINDOW().createDockWidget<PreparationTimeline>( Qt::RightDockWidgetArea );
 		}
 
-		g_timeline->reset();
-		if ( g_timeline->isHidden() )
+		timeline->reset();
+		if ( timeline->isHidden() )
 		{
-			g_timeline->resize( PreparationTimeline::PREFERRED_SIZE );
-			g_timeline->show();
+			timeline->resize( PreparationTimeline::PREFERRED_SIZE );
+			timeline->show();
 		}
-		g_timeline->raise();
+		timeline->raise();
 	}
 
 } // namespace VTX::Tool::Mdprep::ui

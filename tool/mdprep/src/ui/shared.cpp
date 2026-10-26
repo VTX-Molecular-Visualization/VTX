@@ -271,16 +271,16 @@ namespace VTX::Tool::Mdprep::ui
 		_uiObjects.anionName->setText( QString::fromStdString( p_defaults.anionName ) );
 		_uiObjects.cationName->setText( QString::fromStdString( p_defaults.cationName ) );
 
-		for ( size_t it_idx = 0; it_idx < g_IonicChargeValues.size(); it_idx++ )
+		for ( const auto & it_chrgStr : g_IonicChargeValues )
 		{
-			const auto & it_chrgStr = g_IonicChargeValues[ it_idx ];
-			if ( std::stol( it_chrgStr.data() ) == p_defaults.anionCharge )
+			const long chrg = std::stol( it_chrgStr.data() );
+			if ( chrg == p_defaults.anionCharge )
 			{
-				_uiObjects.anionCharge->setCurrentText( g_IonicChargeValues[ it_idx ].data() );
+				_uiObjects.anionCharge->setCurrentText( it_chrgStr.data() );
 			}
-			if ( std::stol( it_chrgStr.data() ) == p_defaults.cationCharge )
+			if ( chrg == p_defaults.cationCharge )
 			{
-				_uiObjects.cationCharge->setCurrentText( g_IonicChargeValues[ it_idx ].data() );
+				_uiObjects.cationCharge->setCurrentText( it_chrgStr.data() );
 			}
 		}
 	}

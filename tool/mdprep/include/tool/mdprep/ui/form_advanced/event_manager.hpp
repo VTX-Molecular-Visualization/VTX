@@ -50,8 +50,8 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		EventManager() = delete;
 		EventManager( ReportManager &, Gateway::MdParameters );
 		~EventManager();
-		EventManager( EventManager && );
-		EventManager & operator=( EventManager && );
+		EventManager( EventManager && ) noexcept;
+		EventManager & operator=( EventManager && ) noexcept;
 		EventManager( const EventManager & )			 = delete;
 		EventManager & operator=( const EventManager & ) = delete;
 

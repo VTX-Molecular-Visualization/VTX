@@ -217,7 +217,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				return out;
 			}
 
-			p_args.kwValue.insert( { std::move( new_id ), buf } );
+			p_args.kwValue.insert( { new_id, buf } );
 			currentPos	   = nextNewlinePos;
 			nextNewlinePos = std::find( currentPos, p_script.end(), '\n' );
 			if ( nextNewlinePos != p_script.end() )
@@ -334,8 +334,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				RE2			  itpÎncludePattern { fmt::format( R"(#include +("|<)({}.*\.\w\w\w)("|>).*)", fileStem ) };
 				std::ifstream fileStrm { topFile };
 				std::ofstream outStrm { tmpFile };
-				const std::string jobDirString = p_jobDir.string();
-				std::string		  line;
+				std::string	  line;
 				while ( std::getline( fileStrm, line ) )
 				{
 					std::string fileName;
@@ -344,7 +343,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 						auto pos = line.find( fileName );
 						if ( pos != std::string::npos )
 						{
-							line.replace( pos, fileName.size(), jobDirString + "/" + fileName );
+							// Generic string because the path separator in the .top file is always '/'.
+							line.replace( pos, fileName.size(), ( p_jobDir / fileName ).generic_string() );
 						}
 					}
 					outStrm << line << '\n';

@@ -15,7 +15,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		}
 	}
 
-	const double multiplierPicoSeconds( const E_MD_DURATION_UNIT & p_ ) noexcept
+	double multiplierPicoSeconds( const E_MD_DURATION_UNIT & p_ ) noexcept
 	{
 		switch ( p_ )
 		{
