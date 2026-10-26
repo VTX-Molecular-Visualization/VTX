@@ -104,7 +104,7 @@ namespace VTX::UI::QT::Dialog
 	{
 		if ( _progressBar )
 		{
-			_progressBar->setValue( int( p_e.progress ) );
+			_progressBar->setValue( static_cast<int>( p_e.progress ) );
 		}
 	}
 

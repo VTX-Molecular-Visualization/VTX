@@ -112,12 +112,12 @@ namespace VTX::UI::QT::DockWidget
 	void Scene::_onSystemDestroy( Registry &, Entity p_e )
 	{
 		assert( _mapSystemTreeWidgets.contains( p_e ) );
-		delete _mapSystemTreeWidgets[ p_e ];
+		_mapSystemTreeWidgets[ p_e ]->deleteLater();
 		_mapSystemTreeWidgets.erase( p_e );
 
 		if ( _mapTrajTreeWidgets.contains( p_e ) )
 		{
-			delete _mapTrajTreeWidgets[ p_e ];
+			_mapTrajTreeWidgets[ p_e ]->deleteLater();
 			_mapTrajTreeWidgets.erase( p_e );
 		}
 	}
@@ -168,7 +168,7 @@ namespace VTX::UI::QT::DockWidget
 
 		if ( _mapTrajTreeWidgets.contains( p_entity ) )
 		{
-			delete _mapTrajTreeWidgets[ p_entity ];
+			_mapTrajTreeWidgets[ p_entity ]->deleteLater();
 			_mapTrajTreeWidgets.erase( p_entity );
 		}
 		auto * player = Helper::makeQObject<Widget::Tree::TrajectoryPlayer>( p_entity, this );
@@ -183,7 +183,7 @@ namespace VTX::UI::QT::DockWidget
 			return;
 		}
 
-		delete _mapTrajTreeWidgets[ p_entity ];
+		_mapTrajTreeWidgets[ p_entity ]->deleteLater();
 		_mapTrajTreeWidgets.erase( p_entity );
 	}
 

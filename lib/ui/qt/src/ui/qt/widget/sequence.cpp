@@ -120,7 +120,7 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		ResidueSequencer( Entity p_entity ) :
-			_entity( std::move( p_entity ) ),
+			_entity( p_entity ),
 			_mode( static_cast<Sequence::Mode>( SETTINGS().value( SETTING_KEY_SEQUENCE_VTX_RESID ).toInt() ) )
 		{
 			auto & topology = App::REG().get<Core::Struct::Topology>( _entity );
@@ -152,7 +152,7 @@ namespace VTX::UI::QT::Widget
 			}
 		}
 
-		void set( Sequence::Mode p_mode ) { _mode = std::move( p_mode ); }
+		void set( Sequence::Mode p_mode ) { _mode = p_mode; }
 
 		Index residuesCount() const { return App::REG().get<Core::Struct::Topology>( _entity ).getResidueCount(); }
 
@@ -397,7 +397,7 @@ namespace VTX::UI::QT::Widget
 			{
 				if ( x > labelWidth )
 				{
-					QString chainLabel = QString( "/%1" ).arg(
+					const QString chainLabel = QString( "/%1" ).arg(
 						QString::fromStdString( std::string( residue->chainName.data(), residue->chainName.size() ) )
 					);
 					// First we draw a background rectangle so edge cases where previous rule label is to wide it
@@ -478,8 +478,8 @@ namespace VTX::UI::QT::Widget
 		auto & reg		 = REG();
 		auto & selection = reg.get<App::System::Selection>( _system );
 
-		bool shift = p_e->modifiers() & Qt::ShiftModifier;
-		bool ctrl  = p_e->modifiers() & Qt::ControlModifier;
+		const bool shift = p_e->modifiers() & Qt::ShiftModifier;
+		const bool ctrl	 = p_e->modifiers() & Qt::ControlModifier;
 
 		const bool selected = App::Helper::System::getSelectionState( { _system, E_SYSTEM_ITEM::RESIDUE, index } )
 							  != App::System::E_SELECTION_STATE::NONE;
@@ -500,8 +500,8 @@ namespace VTX::UI::QT::Widget
 				_anchor = index;
 			}
 
-			Index a = Util::Math::min( _anchor, index );
-			Index b = Util::Math::max( _anchor, index );
+			const Index a = Util::Math::min( _anchor, index );
+			const Index b = Util::Math::max( _anchor, index );
 
 			SELECTION().select<E_SYSTEM_ITEM::RESIDUE>( _system, Core::Struct::IndexRange { a, b } );
 
@@ -546,13 +546,13 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		Index index = *opt;
+		const Index index = *opt;
 
 		auto & reg		 = App::REG();
 		auto & selection = reg.get<App::System::Selection>( _system );
 
-		Index a = Util::Math::min( _dragStartIndex, index );
-		Index b = Util::Math::max( _dragStartIndex, index );
+		const Index a = Util::Math::min( _dragStartIndex, index );
+		const Index b = Util::Math::max( _dragStartIndex, index );
 
 		// Normal.
 		if ( not( p_e->modifiers() & Qt::ControlModifier ) )
@@ -605,7 +605,7 @@ namespace VTX::UI::QT::Widget
 		const int xOffset = horizontalScrollBar()->value();
 		const int clickX  = p.x() + xOffset;
 
-		Index index = clickX / SEQ_CHAR_WIDTH;
+		const Index index = clickX / SEQ_CHAR_WIDTH;
 		if ( index > _sequencer->ruleSize() )
 		{
 			return std::nullopt;

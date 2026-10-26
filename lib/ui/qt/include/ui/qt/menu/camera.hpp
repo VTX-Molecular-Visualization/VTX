@@ -64,7 +64,7 @@ namespace VTX::UI::QT::Menu
 
 			const auto & setting = App::REG().get<Controller>( p_e );
 
-			E_CONTROLLER type = static_cast<E_CONTROLLER>( setting.current );
+			const E_CONTROLLER type = static_cast<E_CONTROLLER>( setting.current );
 
 			switch ( type )
 			{

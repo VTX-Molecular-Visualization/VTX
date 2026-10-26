@@ -28,7 +28,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		}
 
 	  private:
-		Entity _currentPreset;
+		Entity _currentPreset = InvalidEntity;
 	};
 } // namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 

@@ -19,6 +19,7 @@
 #include <string_view>
 #include <util/image.hpp>
 #include <util/resolution.hpp>
+#include <utility>
 #include <vector>
 
 namespace
@@ -83,11 +84,12 @@ namespace VTX::UI::QT::Dialog
 		currentResolution.width	 = App::RENDERER().width();
 		currentResolution.height = App::RENDERER().height();
 
-		const int maxTextureSize = int( App::RENDERER().getInfos().maxTextureSize );
+		const int maxTextureSize = static_cast<int>( App::RENDERER().getInfos().maxTextureSize );
 
 		for ( const auto & resolution : resolutionPresets )
 		{
-			if ( resolution.width > size_t( maxTextureSize ) || resolution.height > size_t( maxTextureSize ) )
+			if ( std::cmp_greater( resolution.width, maxTextureSize )
+				 || std::cmp_greater( resolution.height, maxTextureSize ) )
 			{
 				continue;
 			}
@@ -96,8 +98,8 @@ namespace VTX::UI::QT::Dialog
 			text += QString( " (%1x%2)" ).arg( resolution.width ).arg( resolution.height );
 			_comboBoxResolution->addItem( text );
 			const int itemIndex = _comboBoxResolution->count() - 1;
-			_comboBoxResolution->setItemData( itemIndex, int( resolution.width ), Qt::UserRole );
-			_comboBoxResolution->setItemData( itemIndex, int( resolution.height ), Qt::UserRole + 1 );
+			_comboBoxResolution->setItemData( itemIndex, static_cast<int>( resolution.width ), Qt::UserRole );
+			_comboBoxResolution->setItemData( itemIndex, static_cast<int>( resolution.height ), Qt::UserRole + 1 );
 		}
 
 		connect( _comboBoxResolution, QOverload<int>::of( &QComboBox::activated ), this, &ExportImage::_onResolution );
@@ -136,8 +138,8 @@ namespace VTX::UI::QT::Dialog
 		_labelRatioValue = Helper::makeQObject<QLabel>( this );
 
 		_sliderRatio = Helper::makeQObject<QSlider>( Qt::Orientation::Horizontal, this );
-		_sliderRatio->setMinimum( int( RATIO_MIN * 10000 ) );
-		_sliderRatio->setMaximum( int( RATIO_MAX * 10000 ) );
+		_sliderRatio->setMinimum( static_cast<int>( RATIO_MIN * 10000 ) );
+		_sliderRatio->setMaximum( static_cast<int>( RATIO_MAX * 10000 ) );
 
 		connect( _sliderRatio, &QSlider::valueChanged, this, &ExportImage::_onRatio );
 
@@ -322,11 +324,11 @@ namespace VTX::UI::QT::Dialog
 		const int height = _spinBoxHeight->value();
 
 		// Update ratio.
-		const double ratio = double( width ) / height;
+		const double ratio = static_cast<double>( width ) / height;
 
 		_labelRatioValue->setText( QString::number( ratio, 'f', 2 ) );
 		const QSignalBlocker blocker( _sliderRatio );
-		_sliderRatio->setValue( int( ratio * 10000 ) );
+		_sliderRatio->setValue( static_cast<int>( ratio * 10000 ) );
 		_schedulePreviewUpdate();
 	}
 
@@ -336,7 +338,7 @@ namespace VTX::UI::QT::Dialog
 
 		// Update Height.
 		const int width	 = _spinBoxWidth->value();
-		const int height = int( double( width ) / ratio );
+		const int height = static_cast<int>( static_cast<double>( width ) / ratio );
 
 		const QSignalBlocker blockerHeight( _spinBoxHeight );
 		_spinBoxHeight->setValue( height );
@@ -346,7 +348,7 @@ namespace VTX::UI::QT::Dialog
 
 	void ExportImage::_onFormat( const int p_formatIndex )
 	{
-		const bool hasAlpha = p_formatIndex == int( Util::Image::E_FORMAT::PNG );
+		const bool hasAlpha = p_formatIndex == static_cast<int>( Util::Image::E_FORMAT::PNG );
 		_labelBackgroundOpacity->setVisible( hasAlpha );
 		_sliderBackgroundOpacity->setVisible( hasAlpha );
 		_labelBackgroundOpacityValue->setVisible( hasAlpha );
@@ -403,8 +405,8 @@ namespace VTX::UI::QT::Dialog
 		}
 
 		const QSize			   previewSize = _preview->size();
-		const size_t		   width	   = size_t( previewSize.width() );
-		const size_t		   height	   = size_t( previewSize.height() );
+		const size_t		   width	   = static_cast<size_t>( previewSize.width() );
+		const size_t		   height	   = static_cast<size_t>( previewSize.height() );
 		const Util::Resolution resolution  = { "Preview", width, height };
 		const float			   backgroundOpacity
 			= _comboBoxFormat->currentIndex() == 0 ? _sliderBackgroundOpacity->value() / 100.f : 1.f;
@@ -417,8 +419,8 @@ namespace VTX::UI::QT::Dialog
 
 		const QImage previewImage(
 			reinterpret_cast<const uchar *>( image.data() ),
-			int( width ),
-			int( height ),
+			static_cast<int>( width ),
+			static_cast<int>( height ),
 			QImage::Format::Format_RGBA8888
 		);
 

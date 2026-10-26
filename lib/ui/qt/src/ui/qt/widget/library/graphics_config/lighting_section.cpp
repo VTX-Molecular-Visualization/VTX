@@ -25,11 +25,15 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 
 		_comboBoxShadingMode = Helper::makeQObject<QComboBox>( this );
 		addWidget( _comboBoxShadingMode );
-		constexpr std::string_view SHADING_STR[ int( E_SHADING::COUNT ) ]
-			= { "Diffuse", "Glossy", "Toon", "Flat", "PBR" };
-		for ( int i = 0; i < int( E_SHADING::COUNT ); ++i )
+		constexpr std::array SHADING_STR { QUtf8StringView { "Diffuse" },
+										   QUtf8StringView { "Glossy" },
+										   QUtf8StringView { "Toon" },
+										   QUtf8StringView { "Flat" },
+										   QUtf8StringView { "PBR" } };
+
+		for ( const QUtf8StringView shading : SHADING_STR )
 		{
-			_comboBoxShadingMode->addItem( SHADING_STR[ i ].data() );
+			_comboBoxShadingMode->addItem( shading.toString() );
 		}
 
 		_colorPickerLight = Helper::makeQObject<ColorPicker>( this );
@@ -54,11 +58,17 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		addWidget( _labelToneMappingMode );
 		_comboBoxToneMappingMode = Helper::makeQObject<QComboBox>( this );
 		addWidget( _comboBoxToneMappingMode );
-		constexpr std::string_view TONE_MAPPING_STR[ int( E_TONE_MAPPING::COUNT ) ]
-			= { "None", "Classic (LDR)", "Soft (Reinhard)", "Filmic (ACES)", "Natural (Uncharted 2)" };
-		for ( int i = 0; i < int( E_TONE_MAPPING::COUNT ); ++i )
+		constexpr std::array TONE_MAPPING_STR { QUtf8StringView { "None" },
+												QUtf8StringView { "Classic (LDR)" },
+												QUtf8StringView { "Soft (Reinhard)" },
+												QUtf8StringView { "Filmic (ACES)" },
+												QUtf8StringView { "Natural (Uncharted 2)" } };
+
+		static_assert( TONE_MAPPING_STR.size() == static_cast<size_t>( E_TONE_MAPPING::COUNT ) );
+
+		for ( const QUtf8StringView toneMapping : TONE_MAPPING_STR )
 		{
-			_comboBoxToneMappingMode->addItem( TONE_MAPPING_STR[ i ].data() );
+			_comboBoxToneMappingMode->addItem( toneMapping.toString() );
 		}
 
 		_labelToneMappingExposure = Helper::makeQObject<QLabel>( "Exposure", this );
@@ -165,11 +175,11 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const QSignalBlocker blockerShininess( _sliderShininess );
 		const QSignalBlocker blockerToon( _sliderToonSteps );
 
-		_comboBoxShadingMode->setCurrentIndex( int( p_config.shading.mode ) );
+		_comboBoxShadingMode->setCurrentIndex( static_cast<int>( p_config.shading.mode ) );
 		_colorPickerLight->setColor( Helper::toQColor( p_config.shading.colorLight ) );
 		_sliderLightIntensity->setValue( p_config.shading.lightIntensity );
 		_sliderAmbientIntensity->setValue( p_config.shading.ambientIntensity );
-		_comboBoxToneMappingMode->setCurrentIndex( int( p_config.toneMapping.mode ) );
+		_comboBoxToneMappingMode->setCurrentIndex( static_cast<int>( p_config.toneMapping.mode ) );
 		_sliderToneMappingExposure->setValue( _exposureEvFromMultiplier( p_config.toneMapping.exposure ) );
 		_sliderSpecularFactor->setValue( p_config.shading.specularFactor );
 		_sliderShininess->setValue( p_config.shading.shininess );

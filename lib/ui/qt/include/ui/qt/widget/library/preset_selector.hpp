@@ -241,7 +241,7 @@ namespace VTX::UI::QT::Widget::Library
 				{ return QString::localeAwareCompare( p_left.first, p_right.first ) < 0; }
 			);
 
-			for ( int i = 0; i < int( presets.size() ); ++i )
+			for ( int i = 0; std::cmp_less( i, presets.size() ); ++i )
 			{
 				const auto & [ presetName, entity ] = presets[ i ];
 				_comboBox->addItem( presetName, QVariant::fromValue<Entity>( entity ) );

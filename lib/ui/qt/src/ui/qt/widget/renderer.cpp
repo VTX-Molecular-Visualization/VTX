@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Widget
 	Renderer::Renderer( QWidget * const p_parent ) : BaseWidget( p_parent )
 	{
 		setAcceptDrops( true );
-		_backgroundLogo = QPixmap( Resources::SPRITE_LOGO.data() );
+		_backgroundLogo = QPixmap( Resources::SPRITE_LOGO.toString() );
 
 		_window = new Window::Renderer();
 		_window->setFlags( Qt::FramelessWindowHint );
@@ -96,7 +96,7 @@ namespace VTX::UI::QT::Widget
 				throw std::runtime_error( "Qt: no platform native interface" );
 			}
 
-			void * const surface = nif->nativeResourceForWindow( "surface", _window );
+			const void * const surface = nif->nativeResourceForWindow( "surface", _window );
 			if ( not surface )
 			{
 				throw std::runtime_error( "Qt: native surface is null" );
@@ -116,7 +116,7 @@ namespace VTX::UI::QT::Widget
 			return 0;
 		}
 
-		if ( void * const display = nif->nativeResourceForIntegration( "display" ) )
+		if ( const void * const display = nif->nativeResourceForIntegration( "display" ) )
 		{
 			return reinterpret_cast<uintptr_t>( display );
 		}
@@ -307,7 +307,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		_resizeTimer.stop();
-		QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
+		const QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
 
 		if ( widgetSizeChanged )
 		{
@@ -335,7 +335,7 @@ namespace VTX::UI::QT::Widget
 				}
 
 				_resizeTimer.stop();
-				QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
+				const QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
 
 				const QSize size = this->size();
 				if ( _window->size() != size )

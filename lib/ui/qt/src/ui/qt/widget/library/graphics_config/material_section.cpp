@@ -171,7 +171,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 											  &VTX::Renderer::Material::emissiveTexture } );
 		static_assert( MEMBERS.size() == static_cast<size_t>( VTX::Renderer::Material::E_TEXTURE::COUNT ) );
 
-		return p_material.*MEMBERS[ size_t( p_texture ) ];
+		return p_material.*MEMBERS[ static_cast<size_t>( p_texture ) ];
 	}
 
 	void MaterialSection::_changeTexture( const VTX::Renderer::Material::E_TEXTURE p_texture, const FilePath & p_path )

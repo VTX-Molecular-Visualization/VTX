@@ -13,6 +13,7 @@
 #include <util/enum.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
+#include <utility>
 #include <variant>
 
 namespace VTX::UI::QT::Model
@@ -140,7 +141,7 @@ namespace VTX::UI::QT::Model
 			{
 				assert( index < Core::ChemDB::Category::TYPE_STR.size() );
 				const std::string_view name = Core::ChemDB::Category::TYPE_STR[ index ];
-				return QString::fromUtf8( name.data(), int( name.size() ) );
+				return QString::fromUtf8( name.data(), static_cast<int>( name.size() ) );
 			}
 			case E_SYSTEM_ITEM::RESIDUE:
 			{
@@ -252,7 +253,7 @@ namespace VTX::UI::QT::Model
 				return createIndex( p_row, p_column, pack( E_SYSTEM_ITEM::CATEGORY, category ) );
 			}
 
-			if ( p_row >= static_cast<int>( data.getChainCount() ) )
+			if ( std::cmp_greater_equal( p_row, data.getChainCount() ) )
 			{
 				return {};
 			}
@@ -262,7 +263,7 @@ namespace VTX::UI::QT::Model
 		case E_SYSTEM_ITEM::CATEGORY:
 		{
 			if ( index >= data.categoryResidues.size()
-				 || p_row >= static_cast<int>( data.categoryResidues[ index ].size() ) )
+				 || std::cmp_greater_equal( p_row, data.categoryResidues[ index ].size() ) )
 			{
 				return {};
 			}
@@ -274,7 +275,7 @@ namespace VTX::UI::QT::Model
 		// Residue.
 		case E_SYSTEM_ITEM::CHAIN:
 		{
-			if ( index >= data.getChainCount() || p_row >= static_cast<int>( data.chainResidueCounts[ index ] ) )
+			if ( index >= data.getChainCount() || std::cmp_greater_equal( p_row, data.chainResidueCounts[ index ] ) )
 			{
 				return {};
 			}
@@ -286,7 +287,7 @@ namespace VTX::UI::QT::Model
 		// Atom.
 		case E_SYSTEM_ITEM::RESIDUE:
 		{
-			if ( index >= data.getResidueCount() || p_row >= static_cast<int>( data.residueAtomCounts[ index ] ) )
+			if ( index >= data.getResidueCount() || std::cmp_greater_equal( p_row, data.residueAtomCounts[ index ] ) )
 			{
 				return {};
 			}
@@ -349,7 +350,7 @@ namespace VTX::UI::QT::Model
 
 			if ( _viewMode == ViewMode::ByCategory )
 			{
-				const Index category = Index( toUnderlying( data.getResidueCategory( index ) ) );
+				const Index category = static_cast<Index>( toUnderlying( data.getResidueCategory( index ) ) );
 				const int	row		 = _categoryRow( category );
 				if ( row < 0 )
 				{
@@ -360,7 +361,7 @@ namespace VTX::UI::QT::Model
 			}
 
 			const Index chain		= data.residueChainIndexes[ index ];
-			const int	rowInSystem = int( chain );
+			const int	rowInSystem = static_cast<int>( chain );
 			return createIndex( rowInSystem, 0, pack( E_SYSTEM_ITEM::CHAIN, chain ) );
 		}
 		case E_SYSTEM_ITEM::ATOM:
@@ -373,7 +374,7 @@ namespace VTX::UI::QT::Model
 			const Index residue = data.atomResidueIndexes[ index ];
 			if ( _viewMode == ViewMode::ByCategory )
 			{
-				const Index category = Index( toUnderlying( data.getResidueCategory( residue ) ) );
+				const Index category = static_cast<Index>( toUnderlying( data.getResidueCategory( residue ) ) );
 				if ( category >= data.categoryResidues.size() )
 				{
 					return {};
@@ -387,12 +388,14 @@ namespace VTX::UI::QT::Model
 				}
 
 				return createIndex(
-					int( std::distance( residues.begin(), it ) ), 0, pack( E_SYSTEM_ITEM::RESIDUE, residue )
+					static_cast<int>( std::distance( residues.begin(), it ) ),
+					0,
+					pack( E_SYSTEM_ITEM::RESIDUE, residue )
 				);
 			}
 
 			const Index chain	   = data.residueChainIndexes[ residue ];
-			const int	rowInChain = int( residue - data.chainFirstResidues[ chain ] );
+			const int	rowInChain = static_cast<int>( residue - data.chainFirstResidues[ chain ] );
 			return createIndex( rowInChain, 0, pack( E_SYSTEM_ITEM::RESIDUE, residue ) );
 		}
 		default: return {};
@@ -431,7 +434,7 @@ namespace VTX::UI::QT::Model
 			++row;
 		}
 
-		return Index( data.categoryResidues.size() );
+		return static_cast<Index>( data.categoryResidues.size() );
 	}
 
 	int SystemModel::_categoryRow( const Index p_category ) const
@@ -469,13 +472,13 @@ namespace VTX::UI::QT::Model
 		static_assert( sizeof( quintptr ) >= 8, "pack/unpack requires 64-bit (quintptr >= 8 bytes)" );
 
 		// [ p_item:8 |  p_index:32 ]  <= 40 bits
-		return ( quintptr( p_item ) << 32 ) | // bits 32..39
-			   ( quintptr( p_index ) );		  // bits  0..31
+		return ( static_cast<quintptr>( p_item ) << 32 ) | // bits 32..39
+			   ( static_cast<quintptr>( p_index ) );	   // bits  0..31
 	}
 
 	void SystemModel::unpack( const quintptr p_v, Core::Struct::E_SYSTEM_ITEM & p_item, Index & p_index )
 	{
 		p_item	= Core::Struct::E_SYSTEM_ITEM( ( p_v >> 32 ) & 0xFFu ); // 8 bits
-		p_index = Index( p_v & 0xFFFFFFFFu );							// 32 bits
+		p_index = static_cast<Index>( p_v & 0xFFFFFFFFu );				// 32 bits
 	}
 } // namespace VTX::UI::QT::Model

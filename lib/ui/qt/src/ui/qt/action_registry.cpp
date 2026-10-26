@@ -49,7 +49,7 @@ namespace VTX::UI::QT
 	}
 
 	QAction * ActionRegistry::getAction( const std::string_view p_key ) const
-	{ return Q_APP()->findChild<QAction *>( QString::fromUtf8( p_key.data(), int( p_key.size() ) ) ); }
+	{ return Q_APP()->findChild<QAction *>( QString::fromUtf8( p_key.data(), static_cast<int>( p_key.size() ) ) ); }
 
 	void ActionRegistry::trigger( const std::string_view p_key, ActionParams p_params ) const
 	{
@@ -145,7 +145,7 @@ namespace VTX::UI::QT
 	QAction * ActionRegistry::_createAction( const App::UI::DescAction & p_action, const std::string_view p_key )
 	{
 		auto * const qAction = Helper::makeQObject<QAction>( Q_APP() );
-		qAction->setObjectName( QString::fromUtf8( p_key.data(), int( p_key.size() ) ) );
+		qAction->setObjectName( QString::fromUtf8( p_key.data(), static_cast<int>( p_key.size() ) ) );
 
 		VTX_TRACE( "UI action created: {}", p_key );
 

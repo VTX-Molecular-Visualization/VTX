@@ -20,11 +20,17 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		using namespace Renderer;
 		_comboBoxMethod = Helper::makeQObject<QComboBox>( this );
 		addWidget( _comboBoxMethod );
-		constexpr std::string_view METHOD_STR[ int( E_SSAO_METHOD::COUNT ) ]
-			= { "SSAO", "SSAO line", "SAO", "BMGTAO", "HBAO" };
-		for ( int i = 0; i < int( E_SSAO_METHOD::COUNT ); ++i )
+		constexpr std::array METHOD_STR { QUtf8StringView { "SSAO" },
+										  QUtf8StringView { "SSAO line" },
+										  QUtf8StringView { "SAO" },
+										  QUtf8StringView { "BMGTAO" },
+										  QUtf8StringView { "HBAO" } };
+
+		static_assert( METHOD_STR.size() == static_cast<size_t>( E_SSAO_METHOD::COUNT ) );
+
+		for ( const QUtf8StringView method : METHOD_STR )
 		{
-			_comboBoxMethod->addItem( METHOD_STR[ i ].data() );
+			_comboBoxMethod->addItem( method.toString() );
 		}
 
 		_comboBoxScale = Helper::makeQObject<QComboBox>( this );
@@ -85,7 +91,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const QSignalBlocker blockerBlur( _sliderBlurSize );
 		const auto			 config = p_config.ssao.value_or( VTX::Renderer::GraphicsConfigs::SSAO_DEFAULT );
 		setChecked( p_config.ssao.has_value() );
-		_comboBoxMethod->setCurrentIndex( int( config.method ) );
+		_comboBoxMethod->setCurrentIndex( static_cast<int>( config.method ) );
 		_comboBoxScale->setCurrentIndex( _scaleToUi( config.scale ) );
 		_sliderIntensity->setValue( config.intensity );
 		_sliderBlurSize->setValue( config.blurSize );

@@ -136,7 +136,7 @@ namespace VTX::UI::QT::Widget::Library
 	void ColorLayout::_changeColor( const size_t p_index, const QColor & p_color )
 	{
 		App::ACTION().execute<App::Action::ColorLayout::Change>(
-			currentPreset(), Index( p_index ), Helper::fromQColor( p_color )
+			currentPreset(), static_cast<Index>( p_index ), Helper::fromQColor( p_color )
 		);
 	}
 

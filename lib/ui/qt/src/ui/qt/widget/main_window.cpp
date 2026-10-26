@@ -45,8 +45,8 @@ namespace VTX::UI::QT::Widget
 	MainWindow::MainWindow() : BaseWidget( nullptr )
 	{
 		// Size.
-		QRect geometry = screen()->availableGeometry();
-		QSize size	   = geometry.size();
+		const QRect geometry = screen()->availableGeometry();
+		QSize		size	 = geometry.size();
 		size *= Style::DEFAULT_SIZE_SCALE;
 		resize( size );
 
@@ -244,7 +244,7 @@ namespace VTX::UI::QT::Widget
 
 		QAction * const panelsLabel = p_menu.addAction( "Panels" );
 		panelsLabel->setEnabled( false );
-		for ( QDockWidget * const dock : findChildren<QDockWidget *>() )
+		for ( const QDockWidget * const dock : findChildren<QDockWidget *>() )
 		{
 			p_menu.addAction( dock->toggleViewAction() );
 		}
@@ -252,7 +252,7 @@ namespace VTX::UI::QT::Widget
 		p_menu.addSeparator();
 		QAction * const toolbarsLabel = p_menu.addAction( "Toolbars" );
 		toolbarsLabel->setEnabled( false );
-		for ( QToolBar * const toolbar : findChildren<QToolBar *>() )
+		for ( const QToolBar * const toolbar : findChildren<QToolBar *>() )
 		{
 			if ( toolBarArea( toolbar ) == Qt::NoToolBarArea )
 			{
@@ -324,9 +324,7 @@ namespace VTX::UI::QT::Widget
 	}
 
 	void MainWindow::_onBlockingOperationProgress( const App::Events::BlockingOperationProgress & p_e )
-	{
-		_progressDialog->setValue( p_e.progress );
-	}
+	{ _progressDialog->setValue( p_e.progress ); }
 
 	void MainWindow::_onBlockingOperationEnd( const App::Events::BlockingOperationEnd & )
 	{

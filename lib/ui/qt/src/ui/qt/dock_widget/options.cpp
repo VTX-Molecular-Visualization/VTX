@@ -31,6 +31,7 @@
 #include <util/string.hpp>
 #include <util/type_traits.hpp>
 #include <util/types.hpp>
+#include <utility>
 
 namespace
 {
@@ -270,7 +271,7 @@ namespace VTX::UI::QT::DockWidget
 			SETTINGS().value( SETTING_KEY_KEYBOARD_LAYOUT, toUnderlying( defaultLayout ) ).toUInt()
 		);
 
-		for ( int l = 0; l < toUnderlying( Widget::KB_LAYOUT::COUNT ); l++ )
+		for ( int l = 0; std::cmp_less( l, toUnderlying( Widget::KB_LAYOUT::COUNT ) ); l++ )
 		{
 			const Widget::KB_LAYOUT kbLayout   = static_cast<Widget::KB_LAYOUT>( l );
 			const QString			layoutName = QString::fromUtf8( Util::Enum::enumName( kbLayout ) );

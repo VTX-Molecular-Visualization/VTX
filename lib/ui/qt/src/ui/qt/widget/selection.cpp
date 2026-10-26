@@ -6,6 +6,7 @@
 #include <QMenu>
 #include <QPoint>
 #include <QUrl>
+#include <algorithm>
 #include <app/action/action_manager.hpp>
 #include <app/action/system.hpp>
 #include <app/helper/system.hpp>
@@ -37,7 +38,7 @@ namespace VTX::UI::QT::Widget
 
 	Selection::Selection( QWidget * const p_parent ) : QWidget( p_parent )
 	{
-		Util::ScopedChrono timer( "QT::Widget::Selection::Selection" );
+		const Util::ScopedChrono timer( "QT::Widget::Selection::Selection" );
 
 		using namespace App;
 		using namespace Core::Struct;
@@ -180,9 +181,9 @@ namespace VTX::UI::QT::Widget
 
 			const auto & metadata = reg.get<IO::Metadata>( entity );
 
-			QString systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
-									 ? QString::fromStdString( metadata.path.stem().string() )
-									 : QString::fromStdString( metadata.pdbIDCode );
+			const QString systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
+										   ? QString::fromStdString( metadata.path.stem().string() )
+										   : QString::fromStdString( metadata.pdbIDCode );
 
 			const auto systemState = App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )
@@ -205,8 +206,8 @@ namespace VTX::UI::QT::Widget
 			// Chains.
 			for ( Index chain = 0; chain < topology.getChainCount(); ++chain )
 			{
-				QString	   chainName = QString::fromStdString( topology.getChainName( chain ) );
-				const auto chainState
+				const QString chainName = QString::fromStdString( topology.getChainName( chain ) );
+				const auto	  chainState
 					= App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::CHAIN, chain } );
 				if ( chainState == App::System::E_SELECTION_STATE::FULL )
 				{
@@ -225,10 +226,10 @@ namespace VTX::UI::QT::Widget
 				// Residues.
 				for ( Index residue : topology.getChainResidueRange( chain ) )
 				{
-					Index	   originalResidueId = topology.getResidueOriginalId( residue );
-					QString	   residueName		 = QString::fromStdString( topology.getResidueName( residue ) )
-												   + QString::asprintf( "%i", originalResidueId );
-					const auto residueState
+					const Index	  originalResidueId = topology.getResidueOriginalId( residue );
+					const QString residueName		= QString::fromStdString( topology.getResidueName( residue ) )
+													  + QString::asprintf( "%i", originalResidueId );
+					const auto	  residueState
 						= App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::RESIDUE, residue } );
 					if ( residueState == App::System::E_SELECTION_STATE::FULL )
 					{
@@ -286,21 +287,21 @@ namespace VTX::UI::QT::Widget
 		_connMetadataChanged = App::REG().on_update<IO::Metadata>().connect<&Selection::_metadataUpdated>( this );
 	}
 
-	void Selection::_transformUpdated( Registry & p_reg, Entity p_entity )
+	void Selection::_transformUpdated( Registry & p_reg, const Entity p_entity )
 	{
-		if ( !_transform || std::find( _entities.begin(), _entities.end(), p_entity ) == _entities.end() )
+		if ( not _transform || std::ranges::find( _entities, p_entity ) == _entities.end() )
 		{
 			return;
 		}
 
-		QSignalBlocker blocker( _transform );
-		const auto &   transform = p_reg.get<Util::Math::Transform>( p_entity );
+		const QSignalBlocker blocker( _transform );
+		const auto &		 transform = p_reg.get<Util::Math::Transform>( p_entity );
 		_transform->setTransform( transform );
 	}
 
-	void Selection::_metadataUpdated( Registry & p_reg, Entity p_entity )
+	void Selection::_metadataUpdated( Registry & p_reg, const Entity p_entity )
 	{
-		if ( !_textName || std::find( _entities.begin(), _entities.end(), p_entity ) == _entities.end() )
+		if ( not _textName || std::ranges::find( _entities, p_entity ) == _entities.end() )
 		{
 			return;
 		}
@@ -312,7 +313,7 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		QSignalBlocker blocker( _textName );
+		const QSignalBlocker blocker( _textName );
 		_textName->setPlainText( name );
 	}
 } // namespace VTX::UI::QT::Widget

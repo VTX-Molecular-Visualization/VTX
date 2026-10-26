@@ -41,7 +41,7 @@ namespace VTX::UI::QT::Widget
 				this,
 				[ this ]( const int p_value )
 				{
-					const float value = float( p_value ) / 100.f;
+					const float value = static_cast<float>( p_value ) / 100.f;
 					_spinbox->setValue( value );
 				}
 			);
