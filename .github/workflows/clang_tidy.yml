@@ -14,14 +14,6 @@ on:
           options:
           - Debug
           - Release
-        level:
-          description: 'clang-tidy level (WARN: report only, ERR: fail on diagnostics)'
-          required: false
-          default: WARN
-          type: choice
-          options:
-            - WARN
-            - ERR
 
 permissions:
   contents: read
@@ -69,7 +61,7 @@ jobs:
           -o vtx/*:tool_example=True \
           -o vtx/*:tool_mdprep=True \
           -o vtx/*:tool_topology_editor=True \
-          -o vtx/*:clang_tidy=${{ inputs.level || 'ERR' }} \
+          -o vtx/*:clang_tidy=WARN \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True
 
@@ -86,12 +78,14 @@ jobs:
         cmake --build ${{env.BUILD_DIR}} --parallel $(nproc) -- -k > clang-tidy.out 2>&1
 
     - name: Report
+      id: report
       if: always()
       working-directory: ${{github.workspace}}
       shell: bash
       run: |
         grep -E ':[0-9]+:[0-9]+: (warning|error): .*\[[a-z][^]]*\]$' clang-tidy.out | sort -u > clang-tidy.diagnostics || true
         COUNT=$(wc -l < clang-tidy.diagnostics)
+        echo "count=$COUNT" >> "$GITHUB_OUTPUT"
         {
           echo "## Clang-Tidy"
           echo ""
@@ -112,3 +106,12 @@ jobs:
         path: |
           clang-tidy.out
           clang-tidy.diagnostics
+
+    - name: Check diagnostics
+      shell: bash
+      run: |
+        COUNT=${{ steps.report.outputs.count }}
+        if [ "$COUNT" -ne 0 ]; then
+          echo "::error::clang-tidy reported $COUNT diagnostic(s)"
+          exit 1
+        fi
