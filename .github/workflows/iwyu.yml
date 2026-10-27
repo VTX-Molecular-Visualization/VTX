@@ -1,0 +1,147 @@
+name: Include What You Use
+
+on:
+  workflow_dispatch:
+      inputs:
+        lib:
+          description: 'Library to analyze'
+          required: true
+          default: 'util'
+          type: choice
+          options:
+          - util
+          - core
+          - io
+          - renderer
+          - app
+          - python_binding
+          - ui/qt
+        iwyu_args:
+          description: 'Extra IWYU arguments (e.g. -Xiwyu --no_fwd_decls)'
+          required: false
+          default: ''
+          type: string
+
+permissions:
+  contents: read
+
+env:
+  LIB_DIR: ${{github.workspace}}/lib
+  TARGET_DIR: ${{github.workspace}}/lib/${{ inputs.lib }}
+  BUILD_DIR: ${{github.workspace}}/lib/${{ inputs.lib }}/build/Release
+  BUILD_TYPE: Release
+
+jobs:
+  iwyu:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6.0.2
+      with:
+        submodules: recursive
+
+    - name: Install IWYU
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y iwyu jq
+        include-what-you-use --version
+
+    - name: Setup Conan
+      uses: conan-io/setup-conan@v1.3.0
+      with:
+        use_venv: true
+        profile_detect: true
+
+    - name: Add custom remote
+      run: |
+        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
+        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
+
+    - name: Export local packages
+      working-directory: ${{env.LIB_DIR}}
+      run: |
+        conan export util
+        conan export core
+        conan export io
+        conan export renderer
+        conan export app
+        conan export python_binding
+
+    - name: Install dependencies
+      working-directory: ${{env.LIB_DIR}}
+      shell: bash
+      run: |
+        conan install ${{ inputs.lib }} -b missing \
+          -c tools.cmake.cmaketoolchain:extra_variables='{"VTX_ENABLE_CLANG_TIDY":False}' \
+          -s build_type=${{ env.BUILD_TYPE }} \
+          -s compiler.cppstd=gnu20 \
+          -c tools.system.package_manager:mode=install \
+          -c tools.system.package_manager:sudo=True
+
+    - name: Configure
+      working-directory: ${{env.TARGET_DIR}}
+      run: |
+        cmake --preset conan-release \
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+          -DCMAKE_GLOBAL_AUTOGEN_TARGET=ON
+
+    - name: Generate Qt sources
+      if: inputs.lib == 'ui/qt'
+      run: cmake --build ${{env.BUILD_DIR}} --target autogen
+
+    - name: Filter compilation database
+      working-directory: ${{env.BUILD_DIR}}
+      run: |
+        jq '[.[] | select(.file | test("/vendor/|/build/|/test/") | not)]' compile_commands.json > compile_commands.filtered.json
+        mv compile_commands.filtered.json compile_commands.json
+        echo "Translation units: $(jq length compile_commands.json)"
+
+    - name: Run IWYU
+      working-directory: ${{github.workspace}}
+      shell: bash
+      run: |
+        IWYU_TOOL=$(command -v iwyu_tool || command -v iwyu_tool.py)
+        MAPPING_ARGS=()
+        if [ -f tool/iwyu/vtx.imp ]; then
+          MAPPING_ARGS=(-Xiwyu --mapping_file=${{github.workspace}}/tool/iwyu/vtx.imp)
+        fi
+        "$IWYU_TOOL" -p "${{env.BUILD_DIR}}" -j "$(nproc)" -- \
+          -Xiwyu --no_comments \
+          -Xiwyu --cxx17ns \
+          "${MAPPING_ARGS[@]}" \
+          ${{ inputs.iwyu_args }} \
+          > iwyu.out 2>&1 || true
+
+    - name: Build patch
+      working-directory: ${{github.workspace}}
+      shell: bash
+      run: |
+        FIX_INCLUDES=$(command -v fix_include || command -v fix_includes.py)
+        "$FIX_INCLUDES" --nocomments --noreorder --nosafe_headers < iwyu.out || true
+        git diff > iwyu.patch
+
+    - name: Summary
+      working-directory: ${{github.workspace}}
+      shell: bash
+      run: |
+        {
+          echo "## IWYU: \`${{ inputs.lib }}\`"
+          echo ""
+          echo "- Files with suggestions: $(grep -c 'should add these lines:' iwyu.out || true)"
+          echo "- Errors: $(grep -c 'error:' iwyu.out || true)"
+          echo "- Patch: $(git diff --shortstat)"
+          echo ""
+          echo "### Forward declarations suggested"
+          echo '```'
+          grep -E '^(namespace .*\{ *)?(class|struct) [A-Za-z_][A-Za-z0-9_:<>, ]*;' iwyu.out | sort | uniq -c | sort -rn | head -200 || true
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Upload results
+      uses: actions/upload-artifact@v4
+      with:
+        name: iwyu-${{ github.run_id }}
+        path: |
+          iwyu.out
+          iwyu.patch
+          ${{env.BUILD_DIR}}/compile_commands.json
