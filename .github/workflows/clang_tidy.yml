@@ -72,7 +72,7 @@ jobs:
       working-directory: ${{github.workspace}}
       shell: bash
       run: |
-        cmake --build ${{env.BUILD_DIR}} -- -k 0 > clang-tidy.out 2>&1
+        cmake --build ${{env.BUILD_DIR}} --parallel $(nproc) -- -k > clang-tidy.out 2>&1
 
     - name: Report
       if: always()
