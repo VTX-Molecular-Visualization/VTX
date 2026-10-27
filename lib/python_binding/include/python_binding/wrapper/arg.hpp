@@ -3,6 +3,7 @@
 
 #include <pybind11/pybind11.h>
 #include <string>
+#include <utility>
 
 namespace VTX::PythonBinding::Wrapper
 {
@@ -12,7 +13,7 @@ namespace VTX::PythonBinding::Wrapper
 	class Arg
 	{
 	  public:
-		Arg( const std::string & p_parameterName ) : _parameterName( p_parameterName ) {};
+		Arg( std::string p_parameterName ) : _parameterName( std::move( p_parameterName ) ) {};
 		virtual ~Arg() = default;
 
 		pybind11::arg toPybind11Extra() const { return pybind11::arg( _parameterName.c_str() ); }

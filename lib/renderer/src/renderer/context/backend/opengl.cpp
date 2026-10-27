@@ -109,8 +109,10 @@ namespace
 		return GL_INVALID_INDEX;
 	}
 
-	constexpr GLbitfield _toGLStorageFlags( const Desc::E_BUFFER_ACCESS	   p_access,
-											const Desc::E_UPDATE_FREQUENCY p_freq )
+	constexpr GLbitfield _toGLStorageFlags(
+		const Desc::E_BUFFER_ACCESS	   p_access,
+		const Desc::E_UPDATE_FREQUENCY p_freq
+	)
 	{
 		using namespace Desc;
 
@@ -202,8 +204,10 @@ namespace
 		return mask;
 	}
 
-	std::vector<Desc::BufferChunk> _drawChunks( const Desc::Geometry &				   p_geometry,
-												const std::optional<Desc::BufferChunk> p_chunk )
+	std::vector<Desc::BufferChunk> _drawChunks(
+		const Desc::Geometry &				   p_geometry,
+		const std::optional<Desc::BufferChunk> p_chunk
+	)
 	{
 		if ( p_chunk )
 		{
@@ -221,12 +225,13 @@ namespace
 
 namespace VTX::Renderer::Context::Backend
 {
-	OpenGL::OpenGL( const size_t					p_width,
-					const size_t					p_height,
-					const Desc::NativeContextInfo & p_contextInfo,
-					const FilePath &				p_shaderDir
+	OpenGL::OpenGL(
+		const size_t					p_width,
+		const size_t					p_height,
+		const Desc::NativeContextInfo & p_contextInfo,
+		FilePath						p_shaderDir
 
-					) : _shaderPath( p_shaderDir )
+	) : _shaderPath( std::move( p_shaderDir ) )
 	{
 		VTX_INFO( "Initializing OpenGL {}.{} context", VTX_OPENGL_MAJOR_VERSION, VTX_OPENGL_MINOR_VERSION );
 
@@ -268,7 +273,8 @@ namespace VTX::Renderer::Context::Backend
 		{
 			static_assert(
 				VTX_OPENGL_MAJOR_VERSION == 4 && ( VTX_OPENGL_MINOR_VERSION == 5 || VTX_OPENGL_MINOR_VERSION == 6 ),
-				"Unsupported OpenGL version" );
+				"Unsupported OpenGL version"
+			);
 		}
 
 		_getOpenglInfos();
@@ -287,7 +293,8 @@ namespace VTX::Renderer::Context::Backend
 		glCreateBuffers( 1, &cudaInteropProbeBuffer );
 		const uint32_t cudaInteropProbeData = 0;
 		glNamedBufferData(
-			cudaInteropProbeBuffer, sizeof( cudaInteropProbeData ), &cudaInteropProbeData, GL_DYNAMIC_DRAW );
+			cudaInteropProbeBuffer, sizeof( cudaInteropProbeData ), &cudaInteropProbeData, GL_DYNAMIC_DRAW
+		);
 		_cudaInterop.refreshAvailability( cudaInteropProbeBuffer );
 		glDeleteBuffers( 1, &cudaInteropProbeBuffer );
 
@@ -315,9 +322,11 @@ namespace VTX::Renderer::Context::Backend
 
 	// Create resources, configure, and push commands.
 	// No OpenGL objects in this function, only Handles.
-	void OpenGL::build( const Desc::RenderQueue & p_renderQueue,
-						const Desc::Resources &	  p_resources,
-						CommandBuffer &			  p_commands )
+	void OpenGL::build(
+		const Desc::RenderQueue & p_renderQueue,
+		const Desc::Resources &	  p_resources,
+		CommandBuffer &			  p_commands
+	)
 	{
 		using namespace Desc;
 
@@ -633,10 +642,12 @@ namespace VTX::Renderer::Context::Backend
 		}
 	}
 
-	void OpenGL::resize( const uint32_t							  p_width,
-						 const uint32_t							  p_height,
-						 const Desc::PassList &					  p_passes,
-						 const Desc::ResourceMap<Desc::Texture> & p_textures )
+	void OpenGL::resize(
+		const uint32_t							 p_width,
+		const uint32_t							 p_height,
+		const Desc::PassList &					 p_passes,
+		const Desc::ResourceMap<Desc::Texture> & p_textures
+	)
 	{
 		using namespace Desc;
 
@@ -689,9 +700,11 @@ namespace VTX::Renderer::Context::Backend
 		}
 	}
 
-	Desc::Handle OpenGL::_getOrCreateFramebuffer( const Desc::Pass & p_pass,
-												  const Desc::Resources &,
-												  const bool p_isLast )
+	Desc::Handle OpenGL::_getOrCreateFramebuffer(
+		const Desc::Pass & p_pass,
+		const Desc::Resources &,
+		const bool p_isLast
+	)
 	{
 		using namespace Desc;
 
@@ -794,13 +807,15 @@ namespace VTX::Renderer::Context::Backend
 
 		const GLPixelFormat glFormat = _toGL( p_text.format );
 
-		const Handle h = _textures.emplace( p_key,
-											p_text,
-											static_cast<GLsizei>( width ),
-											static_cast<GLsizei>( height ),
-											glFormat.internalFormat,
-											_toGL( p_text.target ),
-											p_text.external );
+		const Handle h = _textures.emplace(
+			p_key,
+			p_text,
+			static_cast<GLsizei>( width ),
+			static_cast<GLsizei>( height ),
+			glFormat.internalFormat,
+			_toGL( p_text.target ),
+			p_text.external
+		);
 
 		if ( not p_text.data.empty() )
 		{
@@ -819,12 +834,13 @@ namespace VTX::Renderer::Context::Backend
 			return _samplers.handle( p_key );
 		}
 
-		const Handle h = _samplers.emplace( p_key,
-											p_sampler,
-											_toGL( p_sampler.wrapS ),
-											_toGL( p_sampler.wrapT ),
-											_toGL( p_sampler.minFilter ),
-											_toGL( p_sampler.magFilter )
+		const Handle h = _samplers.emplace(
+			p_key,
+			p_sampler,
+			_toGL( p_sampler.wrapS ),
+			_toGL( p_sampler.wrapT ),
+			_toGL( p_sampler.minFilter ),
+			_toGL( p_sampler.magFilter )
 
 		);
 
@@ -857,7 +873,8 @@ namespace VTX::Renderer::Context::Backend
 
 				vao.enableAttribute( attribIndex );
 				vao.setAttributeFormat(
-					attribIndex, ga.components, ga.baseType, relOffset, ga.normalized ? GL_TRUE : GL_FALSE );
+					attribIndex, ga.components, ga.baseType, relOffset, ga.normalized ? GL_TRUE : GL_FALSE
+				);
 				vao.setAttributeBinding( attribIndex, bindingIndex );
 
 				++location;
@@ -878,9 +895,11 @@ namespace VTX::Renderer::Context::Backend
 		return p_key + ".Chunk." + std::to_string( p_chunk );
 	}
 
-	Desc::Handle OpenGL::_getOrCreateGeometryVertexArray( const Desc::Geometry &  p_geometry,
-														  const Desc::Resources & p_resources,
-														  const Desc::BufferChunk p_chunk )
+	Desc::Handle OpenGL::_getOrCreateGeometryVertexArray(
+		const Desc::Geometry &	p_geometry,
+		const Desc::Resources & p_resources,
+		const Desc::BufferChunk p_chunk
+	)
 	{
 		const Desc::Key vaoKey = _vertexArrayChunkKey( p_geometry.vertexLayout, p_chunk );
 		const auto		it	   = p_resources.vertexStreams.find( p_geometry.vertexLayout );
@@ -946,9 +965,11 @@ namespace VTX::Renderer::Context::Backend
 				}
 				case E_BUFFER_MUTABILITY::IMMUTABLE:
 				{
-					gl.setStorage( p_buf.data(),
-								   static_cast<GLsizei>( bufferSize ),
-								   _toGLStorageFlags( p_buffer.access, p_buffer.frequency ) );
+					gl.setStorage(
+						p_buf.data(),
+						static_cast<GLsizei>( bufferSize ),
+						_toGLStorageFlags( p_buffer.access, p_buffer.frequency )
+					);
 					break;
 				}
 				default: break;
@@ -956,7 +977,8 @@ namespace VTX::Renderer::Context::Backend
 
 				return hBuffer;
 			},
-			cpuBuffer );
+			cpuBuffer
+		);
 	}
 
 	Desc::Key OpenGL::_bufferChunkKey( const Desc::Key & p_key, const Desc::BufferChunk p_chunk )
@@ -969,9 +991,11 @@ namespace VTX::Renderer::Context::Backend
 		return p_key + ".Chunk." + std::to_string( p_chunk );
 	}
 
-	Desc::Handle OpenGL::_bufferHandle( const Desc::Key &		p_key,
-										const Desc::Resources & p_resources,
-										const Desc::BufferChunk p_chunk )
+	Desc::Handle OpenGL::_bufferHandle(
+		const Desc::Key &		p_key,
+		const Desc::Resources & p_resources,
+		const Desc::BufferChunk p_chunk
+	)
 	{
 		const auto it = p_resources.buffers.find( p_key );
 		assert( it != p_resources.buffers.end() );
@@ -1003,9 +1027,11 @@ namespace VTX::Renderer::Context::Backend
 		return p_ref.key;
 	}
 
-	Desc::Handle OpenGL::_getOrCreateBufferChunk( const Desc::Key &		  p_key,
-												  const Desc::Buffer &	  p_buffer,
-												  const Desc::BufferChunk p_chunk )
+	Desc::Handle OpenGL::_getOrCreateBufferChunk(
+		const Desc::Key &		p_key,
+		const Desc::Buffer &	p_buffer,
+		const Desc::BufferChunk p_chunk
+	)
 	{
 		assert( p_buffer.allocation == Desc::E_BUFFER_ALLOCATION::CHUNKED );
 
@@ -1066,8 +1092,10 @@ namespace VTX::Renderer::Context::Backend
 		return gsb;
 	}
 
-	OpenGL::ResourceTable OpenGL::_buildResourceTableForPass( const Desc::Pass &	  p_pass,
-															  const Desc::Resources & p_resources )
+	OpenGL::ResourceTable OpenGL::_buildResourceTableForPass(
+		const Desc::Pass &		p_pass,
+		const Desc::Resources & p_resources
+	)
 	{
 		using namespace Desc;
 
@@ -1138,8 +1166,10 @@ namespace VTX::Renderer::Context::Backend
 		return rt;
 	}
 
-	OpenGL::ResourceTable OpenGL::_buildChunkResourceTable( const Desc::Resources & p_resources,
-															const Desc::BufferChunk p_chunk )
+	OpenGL::ResourceTable OpenGL::_buildChunkResourceTable(
+		const Desc::Resources & p_resources,
+		const Desc::BufferChunk p_chunk
+	)
 	{
 		using namespace Desc;
 
@@ -1165,8 +1195,10 @@ namespace VTX::Renderer::Context::Backend
 		return rt;
 	}
 
-	void OpenGL::_attachTexturesToFramebuffer( const Desc::Pass &						p_pass,
-											   const Desc::ResourceMap<Desc::Texture> & p_textures )
+	void OpenGL::_attachTexturesToFramebuffer(
+		const Desc::Pass &						 p_pass,
+		const Desc::ResourceMap<Desc::Texture> & p_textures
+	)
 	{
 		using namespace Desc;
 
@@ -1216,10 +1248,12 @@ namespace VTX::Renderer::Context::Backend
 		assert( fbo.checkStatus() );
 	}
 
-	void OpenGL::_bindGeometryToVao( const Desc::Key &		 p_vaoKey,
-									 const Desc::Geometry &	 p_geo,
-									 const Desc::Resources & p_resources,
-									 const Desc::BufferChunk p_chunk )
+	void OpenGL::_bindGeometryToVao(
+		const Desc::Key &		p_vaoKey,
+		const Desc::Geometry &	p_geo,
+		const Desc::Resources & p_resources,
+		const Desc::BufferChunk p_chunk
+	)
 	{
 		using namespace Desc;
 
@@ -1272,7 +1306,8 @@ namespace VTX::Renderer::Context::Backend
 		}
 
 		const auto quad = std::to_array<Vec2f>(
-			{ Vec2f { -1.f, 1.f }, Vec2f { -1.f, -1.f }, Vec2f { 1.f, 1.f }, Vec2f { 1.f, -1.f } } );
+			{ Vec2f { -1.f, 1.f }, Vec2f { -1.f, -1.f }, Vec2f { 1.f, 1.f }, Vec2f { 1.f, -1.f } }
+		);
 
 		Geometry quadGeo;
 		quadGeo.vertexLayout = quadLayoutKey;
@@ -1308,7 +1343,8 @@ namespace VTX::Renderer::Context::Backend
 			 && desc.mutability == E_BUFFER_MUTABILITY::IMMUTABLE )
 		{
 			_buffers.get( h ).setSub(
-				p_bytes.data(), static_cast<GLsizeiptr>( p_bytes.size() ), static_cast<GLintptr>( p_offset ) );
+				p_bytes.data(), static_cast<GLsizeiptr>( p_bytes.size() ), static_cast<GLintptr>( p_offset )
+			);
 
 			return;
 		}
@@ -1319,10 +1355,12 @@ namespace VTX::Renderer::Context::Backend
 			_cudaInterop.unregisterBuffer( p_key );
 		}
 
-		buffer.setData( p_bytes.data(),
-						static_cast<GLsizei>( p_bytes.size() ),
-						static_cast<GLintptr>( p_offset ),
-						_toGL( desc.frequency ) );
+		buffer.setData(
+			p_bytes.data(),
+			static_cast<GLsizei>( p_bytes.size() ),
+			static_cast<GLintptr>( p_offset ),
+			_toGL( desc.frequency )
+		);
 	}
 
 	void OpenGL::setBufferData( const Desc::BufferRef & p_ref, SpanBytes p_bytes, const size_t p_offset )
@@ -1380,8 +1418,10 @@ namespace VTX::Renderer::Context::Backend
 		return true;
 	}
 
-	Desc::InteropBufferMapping OpenGL::mapInteropBuffer( const Desc::E_INTEROP_API p_api,
-														 const Desc::BufferRef &   p_ref )
+	Desc::InteropBufferMapping OpenGL::mapInteropBuffer(
+		const Desc::E_INTEROP_API p_api,
+		const Desc::BufferRef &	  p_ref
+	)
 	{
 		auto refs	  = std::to_array<Desc::BufferRef>( { p_ref } );
 		auto mappings = mapInteropBuffers( p_api, refs );
@@ -1390,8 +1430,10 @@ namespace VTX::Renderer::Context::Backend
 		return std::move( mappings.front() );
 	}
 
-	std::vector<Desc::InteropBufferMapping> OpenGL::_mapPhysicalInteropBuffers( const Desc::E_INTEROP_API  p_api,
-																				std::span<const Desc::Key> p_keys )
+	std::vector<Desc::InteropBufferMapping> OpenGL::_mapPhysicalInteropBuffers(
+		const Desc::E_INTEROP_API  p_api,
+		std::span<const Desc::Key> p_keys
+	)
 	{
 		using namespace Desc;
 
@@ -1439,8 +1481,10 @@ namespace VTX::Renderer::Context::Backend
 		return result;
 	}
 
-	std::vector<Desc::InteropBufferMapping> OpenGL::mapInteropBuffers( const Desc::E_INTEROP_API		p_api,
-																	   std::span<const Desc::BufferRef> p_refs )
+	std::vector<Desc::InteropBufferMapping> OpenGL::mapInteropBuffers(
+		const Desc::E_INTEROP_API		 p_api,
+		std::span<const Desc::BufferRef> p_refs
+	)
 	{
 		if ( p_api != Desc::E_INTEROP_API::CUDA )
 		{
@@ -1464,8 +1508,10 @@ namespace VTX::Renderer::Context::Backend
 		unmapInteropBuffers( p_api, mappings );
 	}
 
-	void OpenGL::unmapInteropBuffers( const Desc::E_INTEROP_API					  p_api,
-									  std::span<const Desc::InteropBufferMapping> p_mappings )
+	void OpenGL::unmapInteropBuffers(
+		const Desc::E_INTEROP_API					p_api,
+		std::span<const Desc::InteropBufferMapping> p_mappings
+	)
 	{
 		if ( p_api != Desc::E_INTEROP_API::CUDA )
 		{
@@ -1498,10 +1544,12 @@ namespace VTX::Renderer::Context::Backend
 		}
 	}
 
-	std::vector<std::byte> OpenGL::getTextureData( const Desc::Key &			 p_key,
-												   std::optional<Desc::E_FORMAT> p_format,
-												   std::optional<size_t>		 p_x,
-												   std::optional<size_t>		 p_y ) const
+	std::vector<std::byte> OpenGL::getTextureData(
+		const Desc::Key &			  p_key,
+		std::optional<Desc::E_FORMAT> p_format,
+		std::optional<size_t>		  p_x,
+		std::optional<size_t>		  p_y
+	) const
 	{
 		using namespace Desc;
 
@@ -1516,23 +1564,27 @@ namespace VTX::Renderer::Context::Backend
 
 		std::vector<std::byte> data( w * h * glFormat.bytesPerPixel );
 
-		texture.getSubImage( 0,
-							 single ? static_cast<GLint>( *p_x ) : 0,
-							 single ? static_cast<GLint>( *p_y ) : 0,
-							 static_cast<GLsizei>( w ),
-							 static_cast<GLsizei>( h ),
-							 glFormat.uploadFormat,
-							 glFormat.uploadType,
-							 static_cast<GLsizei>( data.size() ),
-							 data.data() );
+		texture.getSubImage(
+			0,
+			single ? static_cast<GLint>( *p_x ) : 0,
+			single ? static_cast<GLint>( *p_y ) : 0,
+			static_cast<GLsizei>( w ),
+			static_cast<GLsizei>( h ),
+			glFormat.uploadFormat,
+			glFormat.uploadType,
+			static_cast<GLsizei>( data.size() ),
+			data.data()
+		);
 
 		return data;
 	}
 
-	void OpenGL::setTextureData( const Desc::Key &	   p_key,
-								 SpanBytes			   p_bytes,
-								 std::optional<size_t> p_width,
-								 std::optional<size_t> p_height )
+	void OpenGL::setTextureData(
+		const Desc::Key &	  p_key,
+		SpanBytes			  p_bytes,
+		std::optional<size_t> p_width,
+		std::optional<size_t> p_height
+	)
 	{
 		using namespace Desc;
 

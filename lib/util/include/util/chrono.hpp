@@ -6,6 +6,7 @@
 #include <chrono>
 #include <functional>
 #include <string>
+#include <utility>
 
 namespace VTX::Util
 {
@@ -82,8 +83,8 @@ namespace VTX::Util
 	class ScopedChrono : public Chrono
 	{
 	  public:
-		ScopedChrono( const std::string & p_name, const Util::LOG_LEVEL p_level = Util::LOG_LEVEL::LOG_TRACE ) :
-			_name( p_name ), _level( p_level )
+		ScopedChrono( std::string p_name, const Util::LOG_LEVEL p_level = Util::LOG_LEVEL::LOG_TRACE ) :
+			_name( std::move( p_name ) ), _level( p_level )
 		{ start(); }
 
 		ScopedChrono( const ScopedChrono & )			 = delete;

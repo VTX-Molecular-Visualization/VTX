@@ -50,10 +50,12 @@ namespace VTX::PythonBinding
 			template<typename Func, typename... Extra>
 			void def( const std::string & p_name, Func && p_function, const std::string & p_desc, Extra &&... p_extra )
 			{
-				_pyModule.def( p_name.c_str(),
-							   std::forward<Func>( p_function ),
-							   p_desc.c_str(),
-							   convertToPybind11Extra( std::forward<Extra>( p_extra ) )... );
+				_pyModule.def(
+					p_name.c_str(),
+					std::forward<Func>( p_function ),
+					p_desc.c_str(),
+					convertToPybind11Extra( std::forward<Extra>( p_extra ) )...
+				);
 			}
 
 			void runFunction( const std::string & p_funcName ) const
@@ -85,8 +87,8 @@ namespace VTX::PythonBinding
 			void getPythonModule( pybind11::module_ ** p_in ) noexcept { *p_in = &_pyModule; }
 
 		  private:
-			Module( pybind11::module_ & p_module, const std::string & p_modulePath ) :
-				_pyModule( p_module ), _modulePath( p_modulePath )
+			Module( pybind11::module_ & p_module, std::string p_modulePath ) :
+				_pyModule( p_module ), _modulePath( std::move( p_modulePath ) )
 			{
 			}
 

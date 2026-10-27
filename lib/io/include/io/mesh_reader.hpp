@@ -19,7 +19,7 @@ namespace VTX::IO
 	{
 	  public:
 		MeshReader() = delete;
-		MeshReader( const FilePath &, const Util::Thread::StopToken & );
+		MeshReader( FilePath, Util::Thread::StopToken );
 
 		/**
 		 * @brief Read mesh structure.
