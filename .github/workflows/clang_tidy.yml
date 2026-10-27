@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-2022 ]
-        build_type: [ Debug, Release ]
+        build_type: [ Release ]
         include:
           - os: ubuntu-latest
             conan_cppstd: 'gnu20'

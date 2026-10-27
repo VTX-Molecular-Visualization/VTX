@@ -1,6 +1,5 @@
 #include "renderer/geometry/ses.hpp"
 #include "renderer/binary_buffer.hpp"
-#include "renderer/layout/atoms.hpp"
 #include "renderer/representation.hpp"
 #include <algorithm>
 #include <array>
@@ -11,6 +10,7 @@
 #include <vector>
 #ifdef VTX_CUDA_ENABLED
 #include "renderer/geometry/ses_cuda.hpp"
+#include "renderer/layout/atoms.hpp"
 #endif
 
 namespace VTX::Renderer::Geometry

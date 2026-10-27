@@ -169,12 +169,13 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			throw VTXException( "Report manager is not initialized" );
 		}
+		ReportManager & reportManager = *_reportManager;
 		_formEngine.deactivate();
 		VTX::Tool::Mdprep::Gateway::MdParameters param;
 		_currentForm.get( param );
 		_currentForm.close();
 		_currentForm = VTX::Tool::Mdprep::ui::form_basic::FormBasic(
-			_formContainer, SpecificFieldPlacerGetter(), param, *_reportManager );
+			_formContainer, SpecificFieldPlacerGetter(), param, reportManager );
 
 		VTX::Tool::Mdprep::ui::FormLayouts layouts;
 		_currentForm.get( layouts );
@@ -189,12 +190,13 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			throw VTXException( "Report manager is not initialized" );
 		}
+		ReportManager & reportManager = *_reportManager;
 		_formEngine.deactivate();
 		VTX::Tool::Mdprep::Gateway::MdParameters param;
 		_currentForm.get( param );
 		_currentForm.close();
 		_currentForm = VTX::Tool::Mdprep::ui::form_advanced::FormAdvanced(
-			_formContainer, SpecificFieldPlacerGetter(), param, *_reportManager );
+			_formContainer, SpecificFieldPlacerGetter(), param, reportManager );
 
 		VTX::Tool::Mdprep::ui::FormLayouts layouts;
 		_currentForm.get( layouts );
