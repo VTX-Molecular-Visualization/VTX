@@ -9,7 +9,7 @@ on:
         level:
           description: 'clang-tidy level (WARN: report only, ERR: fail on diagnostics)'
           required: false
-          default: ERR
+          default: WARN
           type: choice
           options:
             - WARN

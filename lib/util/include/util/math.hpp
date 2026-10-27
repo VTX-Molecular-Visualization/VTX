@@ -23,8 +23,10 @@ namespace VTX::Util::Math
 	using ::glm::abs;
 	using ::glm::all;
 	using ::glm::any;
+	using ::glm::atan2;
 	using ::glm::clamp;
 	using ::glm::conjugate;
+	using ::glm::cos;
 	using ::glm::cross;
 	using ::glm::degrees;
 	using ::glm::distance;
@@ -52,6 +54,7 @@ namespace VTX::Util::Math
 	using ::glm::radians;
 	using ::glm::rotate;
 	using ::glm::scale;
+	using ::glm::sin;
 	using ::glm::to_string;
 	using ::glm::toMat3;
 	using ::glm::toMat4;

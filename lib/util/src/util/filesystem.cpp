@@ -10,7 +10,7 @@
 #elif defined( __APPLE__ )
 #include <mach-o/dyld.h>
 #elif defined( __linux__ )
-#include <limits.h>
+#include <climits>
 #include <unistd.h>
 #endif
 
@@ -54,8 +54,8 @@ namespace VTX::Util::Filesystem
 		return std::filesystem::current_path();
 #elif defined( __linux__ )
 		// Linux specific
-		char	szPath[ PATH_MAX ];
-		ssize_t len = readlink( "/proc/self/exe", szPath, sizeof( szPath ) - 1 );
+		char		  szPath[ PATH_MAX ];
+		const ssize_t len = readlink( "/proc/self/exe", szPath, sizeof( szPath ) - 1 );
 		if ( len != -1 )
 		{
 			szPath[ len ] = '\0';
