@@ -5,40 +5,71 @@ on:
     branches: [ "master", "dev" ]
     paths: ['app/**', 'lib/**', 'tool/**', 'dev/**', '.clang-tidy', '.github/workflows/clang_tidy.yml']
   workflow_dispatch:
-      inputs:
-        build_type:
-          description: 'Build type'
-          required: true
-          default: 'Release'
-          type: choice
-          options:
-          - Debug
-          - Release
 
 permissions:
   contents: read
 
 env:
   DEV_DIR: ${{github.workspace}}/dev
-  BUILD_DIR: ${{github.workspace}}/dev/build/${{ inputs.build_type || 'Release' }}
-  BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
   LLVM_VERSION: 22
+  LLVM_VERSION_WINDOWS: 22.1.3
 
 jobs:
   clang-tidy:
-    runs-on: ubuntu-latest
+    name: clang-tidy (${{ matrix.os }}, ${{ matrix.build_type }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-2022 ]
+        build_type: [ Debug, Release ]
+        include:
+          - os: ubuntu-latest
+            conan_cppstd: 'gnu20'
+            conan_extra: '-c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True'
+            keep_going: '-k'
+          - os: windows-2022
+            conan_cppstd: '20'
+            conan_extra: '-c tools.cmake.cmaketoolchain:generator=Ninja'
+            keep_going: '-k 0'
+      fail-fast: false
+
+    env:
+      BUILD_TYPE: ${{ matrix.build_type }}
+      BUILD_DIR: ${{github.workspace}}/dev/build/${{ matrix.build_type }}
 
     steps:
+    - name: Set git to use CRLF
+      if: runner.os == 'Windows'
+      run: |
+        git config --global core.autocrlf true
+        git config --global core.eol crlf
+
     - uses: actions/checkout@v6.0.2
       with:
         submodules: recursive
 
-    - name: Install clang-tidy
+    - name: Install clang-tidy (Linux)
+      if: runner.os == 'Linux'
       run: |
         wget -q https://apt.llvm.org/llvm.sh
         sudo bash llvm.sh ${{ env.LLVM_VERSION }}
         sudo apt-get install -y clang-tidy-${{ env.LLVM_VERSION }}
         clang-tidy-${{ env.LLVM_VERSION }} --version
+        echo "CLANG_TIDY_EXE=$(command -v clang-tidy-${{ env.LLVM_VERSION }})" >> "$GITHUB_ENV"
+
+    - name: Install clang-tidy (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $installer = Join-Path $env:RUNNER_TEMP 'llvm.exe'
+        Invoke-WebRequest "https://github.com/llvm/llvm-project/releases/download/llvmorg-${{ env.LLVM_VERSION_WINDOWS }}/LLVM-${{ env.LLVM_VERSION_WINDOWS }}-win64.exe" -OutFile $installer
+        Start-Process -FilePath $installer -ArgumentList '/S', '/D=C:\llvm' -Wait
+        & 'C:\llvm\bin\clang-tidy.exe' --version
+        "CLANG_TIDY_EXE=C:/llvm/bin/clang-tidy.exe" >> $env:GITHUB_ENV
+
+    - name: Setup MSVC environment
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1.13.0
 
     - name: Setup Conan
       uses: conan-io/setup-conan@v1.3.0
@@ -57,25 +88,25 @@ jobs:
       run: |
         conan install . -b missing \
           -s build_type=${{ env.BUILD_TYPE }} \
-          -s compiler.cppstd=gnu20 \
+          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx/*:tool_example=True \
           -o vtx/*:tool_mdprep=True \
           -o vtx/*:tool_topology_editor=True \
           -o vtx/*:clang_tidy=WARN \
-          -c tools.system.package_manager:mode=install \
-          -c tools.system.package_manager:sudo=True
+          ${{ matrix.conan_extra }}
 
     - name: Configure
       working-directory: ${{env.DEV_DIR}}
+      shell: bash
       run: |
         cmake --preset conan-${BUILD_TYPE,,} \
-          -DVTX_CLANG_TIDY_EXECUTABLE=$(command -v clang-tidy-${{ env.LLVM_VERSION }})
+          -DVTX_CLANG_TIDY_EXECUTABLE="$CLANG_TIDY_EXE"
 
     - name: Build with clang-tidy
       working-directory: ${{github.workspace}}
       shell: bash
       run: |
-        cmake --build ${{env.BUILD_DIR}} --parallel $(nproc) -- -k > clang-tidy.out 2>&1
+        cmake --build "${{env.BUILD_DIR}}" --parallel $(nproc) -- ${{ matrix.keep_going }} > clang-tidy.out 2>&1
 
     - name: Report
       id: report
@@ -83,14 +114,14 @@ jobs:
       working-directory: ${{github.workspace}}
       shell: bash
       run: |
-        grep -E ':[0-9]+:[0-9]+: (warning|error): .*\[[a-z][^]]*\]$' clang-tidy.out | sort -u > clang-tidy.diagnostics || true
+        grep -E ':[0-9]+:[0-9]+: (warning|error): .*\[[a-z][^]]*\]$' clang-tidy.out | tr -d '\r' | sort -u > clang-tidy.diagnostics || true
         COUNT=$(wc -l < clang-tidy.diagnostics)
         echo "count=$COUNT" >> "$GITHUB_OUTPUT"
         {
-          echo "## Clang-Tidy"
+          echo "## Clang-Tidy (${{ matrix.os }}, ${{ matrix.build_type }})"
           echo ""
           echo "- Diagnostics (deduplicated): $COUNT"
-          echo "- Files: $(cut -d: -f1 clang-tidy.diagnostics | sort -u | wc -l)"
+          echo "- Files: $(sed -E 's/:[0-9]+:[0-9]+: .*//' clang-tidy.diagnostics | sort -u | wc -l)"
           echo ""
           echo "### Diagnostics per check"
           echo '```'
@@ -102,7 +133,7 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: clang-tidy
+        name: clang-tidy-${{ matrix.os }}-${{ matrix.build_type }}
         path: |
           clang-tidy.out
           clang-tidy.diagnostics
