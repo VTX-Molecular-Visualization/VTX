@@ -1,7 +1,7 @@
 #ifndef VTX_PYTHON_BINDING_BINDING_ENTITY_CASTER_HPP
 #define VTX_PYTHON_BINDING_BINDING_ENTITY_CASTER_HPP
 
-#include <entt/entt.hpp>
+#include <entt/entity/entity.hpp>
 #include <pybind11/pybind11.h>
 
 namespace pybind11::detail

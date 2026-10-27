@@ -1,7 +1,6 @@
 #ifndef VTX_APP_SYSTEM_VISIBILITY_HPP
 #define VTX_APP_SYSTEM_VISIBILITY_HPP
 
-#include <core/struct/topology.hpp>
 #include <util/math/bitset.hpp>
 
 namespace VTX::App::System

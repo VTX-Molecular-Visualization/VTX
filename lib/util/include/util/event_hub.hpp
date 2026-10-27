@@ -1,7 +1,9 @@
 #ifndef VTX_UTIL_EVENT_HUB_HPP
 #define VTX_UTIL_EVENT_HUB_HPP
 
-#include <entt/entt.hpp>
+#include <entt/signal/delegate.hpp>
+#include <entt/signal/dispatcher.hpp>
+#include <entt/signal/sigh.hpp>
 #include <mutex>
 #include <utility>
 

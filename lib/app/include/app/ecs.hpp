@@ -106,21 +106,7 @@ namespace VTX::App::ECS
 	/**
 	 * @brief Debug infos.
 	 */
-	inline void toString()
-	{
-		for ( const entt::entity e : registry().view<entt::entity>() )
-		{
-			std::cout << "entity " << static_cast<int>( e ) << '\n';
-
-			for ( auto && [ id, storage ] : registry().storage() )
-			{
-				if ( storage.contains( e ) )
-				{
-					std::cout << " - component id: " << id << '\n';
-				}
-			}
-		}
-	}
+	void toString();
 
 } // namespace VTX::App::ECS
 

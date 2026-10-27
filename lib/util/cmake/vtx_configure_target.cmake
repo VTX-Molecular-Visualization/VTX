@@ -1,12 +1,15 @@
 option(VTX_ENABLE_NATIVE_OPTIMIZATIONS "Enable CPU-specific release optimizations for local builds." OFF)
 option(VTX_ENABLE_INTERPROCEDURAL_OPTIMIZATION "Enable interprocedural optimization for VTX targets." OFF)
+option(VTX_ENABLE_PCH "Enable precompiled headers for VTX targets." ON)
 set(_vtx_clang_tidy_levels OFF WARN ERR)
 set(VTX_CLANG_TIDY "OFF" CACHE STRING "clang-tidy analysis level for VTX targets (OFF, WARN, ERR).")
-set_property(CACHE VTX_CLANG_TIDY PROPERTY STRINGS ${_vtx_clang_tidy_levels})
 if(NOT VTX_CLANG_TIDY IN_LIST _vtx_clang_tidy_levels)
 	message(FATAL_ERROR "VTX_CLANG_TIDY must be OFF, WARN or ERR (got <${VTX_CLANG_TIDY}>).")
 endif()
 message(STATUS "VTX - clang-tidy: ${VTX_CLANG_TIDY}")
+if(VTX_ENABLE_PCH AND NOT VTX_CLANG_TIDY STREQUAL "OFF")
+	message(STATUS "VTX - precompiled headers disabled because clang-tidy is enabled")
+endif()
 
 # Exclude vendor sources from linting.
 function(_vtx_exclude_vendor_sources_from_linting p_target)
@@ -15,6 +18,17 @@ function(_vtx_exclude_vendor_sources_from_linting p_target)
 		file(TO_CMAKE_PATH "${src}" src_patch)
 		if(src_patch MATCHES "(^|/)vendor/")
 			set_source_files_properties("${src}" TARGET_DIRECTORY ${p_target} PROPERTIES SKIP_LINTING ON)
+		endif()
+	endforeach()
+endfunction()
+
+# Exclude vendor sources from precompiled headers.
+function(_vtx_exclude_vendor_sources_from_pch p_target)
+	get_target_property(srcs ${p_target} SOURCES)
+	foreach(src IN LISTS srcs)
+		file(TO_CMAKE_PATH "${src}" src_patch)
+		if(src_patch MATCHES "(^|/)vendor/")
+			set_source_files_properties("${src}" TARGET_DIRECTORY ${p_target} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 		endif()
 	endforeach()
 endfunction()
@@ -43,6 +57,14 @@ function(vtx_configure_target p_target)
 		# Defer function call to the end of the configuration to ensure that all sources have been added to the target.
 		cmake_language(EVAL CODE "cmake_language(DEFER CALL _vtx_exclude_vendor_sources_from_linting [[${p_target}]])"
 		)
+	endif()
+
+	# Precompiled headers.
+	if(VTX_ENABLE_PCH AND VTX_CLANG_TIDY STREQUAL "OFF")
+		target_precompile_headers(${p_target} PRIVATE
+			"$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_FUNCTION_LIST_DIR}/vtx_pch.hpp>"
+		)
+		cmake_language(EVAL CODE "cmake_language(DEFER CALL _vtx_exclude_vendor_sources_from_pch [[${p_target}]])")
 	endif()
 
 	# Compiler-specific options.

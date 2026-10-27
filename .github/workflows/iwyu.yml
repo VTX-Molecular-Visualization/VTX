@@ -61,6 +61,7 @@ jobs:
       run: |
         cmake --preset conan-release \
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+          -DVTX_ENABLE_PCH=OFF \
           -DCMAKE_GLOBAL_AUTOGEN_TARGET=ON
 
     - name: Generate Qt sources

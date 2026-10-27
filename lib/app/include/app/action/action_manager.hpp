@@ -1,7 +1,6 @@
 #ifndef VTX_APP_ACTION_ACTION_MANAGER_HPP
 #define VTX_APP_ACTION_ACTION_MANAGER_HPP
 
-#include "app/events.hpp"
 #include "app/services.hpp"
 #include <atomic>
 #include <concepts>

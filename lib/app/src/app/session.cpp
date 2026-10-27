@@ -5,6 +5,7 @@
 #include "app/constants.hpp"
 #include "app/services.hpp"
 #include <atomic>
+#include <iostream>
 #include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>

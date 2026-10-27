@@ -1,6 +1,7 @@
 #include <app/arguments.hpp>
 #include <app/session.hpp>
 #include <cstdio>
+#include <iostream>
 #include <string>
 #include <tuple>
 

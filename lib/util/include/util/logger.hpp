@@ -3,7 +3,6 @@
 
 #include "util/enum.hpp"
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <spdlog/spdlog.h>
 #include <string>
