@@ -25,7 +25,8 @@ namespace VTX::App::PythonBinding
 		Impl() :
 			_thread( &THREAD().createThread(
 				[ this ]( const Util::Thread::StopToken & p_stopToken, Util::Thread::BaseThread & p_thread )
-				{ return runPythonThread( p_stopToken, p_thread ); } ) )
+				{ return runPythonThread( p_stopToken, p_thread ); }
+			) )
 		{
 			_thread->setProgressCallback( {} );
 			_thread->setTerminatedCallback( {} );
@@ -185,8 +186,10 @@ namespace VTX::App::PythonBinding
 			}
 		}
 
-		void _actuallyRunScript( const FilePath &									   p_path,
-								 const std::shared_ptr<std::promise<AsyncJobResult>> & p_promise )
+		void _actuallyRunScript(
+			const FilePath &									  p_path,
+			const std::shared_ptr<std::promise<AsyncJobResult>> & p_promise
+		)
 		{
 			AsyncJobResult jobResult;
 			try
@@ -232,8 +235,10 @@ namespace VTX::App::PythonBinding
 
 	void Interpretor::runScript( const FilePath & p_path ) { _impl->runScript( p_path ); }
 
-	void Interpretor::runScript( const FilePath &									   p_path,
-								 const std::shared_ptr<std::promise<AsyncJobResult>> & p_future )
+	void Interpretor::runScript(
+		const FilePath &									  p_path,
+		const std::shared_ptr<std::promise<AsyncJobResult>> & p_future
+	)
 	{ _impl->runScript( p_path, p_future ); }
 
 	std::string Interpretor::getRuntimePythonVersion()
@@ -253,8 +258,5 @@ namespace VTX::App::PythonBinding
 	void Interpretor::subscribe( InterpretorInstructionsOneShot _ ) { _impl->subscribe( std::move( _ ) ); }
 
 	void Interpretor::Del::operator()( Interpretor::Impl * const p_ ) noexcept
-	{
-		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		delete p_;
-	}
+	{ std::default_delete<Interpretor::Impl> {}( p_ ); }
 } // namespace VTX::App::PythonBinding

@@ -31,7 +31,9 @@ namespace VTX::UI::QT::Style
 		 */
 		[[nodiscard]] QIconEngine * clone() const override
 		{
-			return new CodepointIconEngine( _codepoint ); // NOLINT(cppcoreguidelines-owning-memory)
+			// Qt takes ownership of the clone.
+			// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+			return new CodepointIconEngine( _codepoint );
 		}
 
 		/**

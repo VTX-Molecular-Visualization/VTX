@@ -1,6 +1,7 @@
 #include "io/writer/chemfiles.hpp"
 #include <list>
 #include <map>
+#include <memory>
 #include <unordered_map>
 #include <util/exceptions.hpp>
 #include <util/string.hpp>
@@ -621,10 +622,7 @@ namespace VTX::IO::Writer
 	// Pimpl pattern method forwarding vv
 
 	void ChemfilesTrajectory::Del::operator()( ChemfilesTrajectory::Impl * const p_ ) noexcept
-	{
-		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		delete p_;
-	}
+	{ std::default_delete<ChemfilesTrajectory::Impl> {}( p_ ); }
 
 	ChemfilesTrajectory::ChemfilesTrajectory() : _( new Impl ) {}
 

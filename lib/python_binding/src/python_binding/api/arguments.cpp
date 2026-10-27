@@ -41,10 +41,7 @@ namespace VTX::PythonBinding::API
 	} // namespace
 
 	void PythonKwargs::Del::operator()( pybind11::kwargs * const p ) noexcept
-	{
-		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		delete p;
-	}
+	{ std::default_delete<pybind11::kwargs> {}( p ); }
 
 	PythonKwargs::PythonKwargs( const pybind11::kwargs & p_ ) : _ptr( new pybind11::kwargs( p_ ) ) {}
 

@@ -50,7 +50,8 @@ namespace
 #ifdef _WIN32
 		std::cout.flush();
 		// Inject Enter to unblock the cmd.exe prompt that fired before our output.
-		INPUT_RECORD ir						= {};
+		INPUT_RECORD ir = {};
+		// INPUT_RECORD is a Win32 union.
 		// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 		ir.EventType						= KEY_EVENT;
 		ir.Event.KeyEvent.bKeyDown			= TRUE;

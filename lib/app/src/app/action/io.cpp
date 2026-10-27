@@ -13,6 +13,7 @@
 #include "app/system/writer.hpp"
 #include <fmt/format.h>
 #include <io/mesh_reader.hpp>
+#include <memory>
 #include <renderer/renderer.hpp>
 #include <string>
 #include <util/chrono.hpp>
@@ -105,11 +106,7 @@ namespace VTX::App::Action::IO
 		}
 	};
 
-	void SystemIoDel::operator()( SystemIo * const p_ ) noexcept
-	{
-		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		delete p_;
-	}
+	void SystemIoDel::operator()( SystemIo * const p_ ) noexcept { std::default_delete<SystemIo> {}( p_ ); }
 
 	LoadSystem::LoadSystem() : _data( new SystemIo() ) {}
 

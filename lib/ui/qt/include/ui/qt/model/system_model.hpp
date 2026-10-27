@@ -26,6 +26,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Roles for data retrieval.
 		 */
+		// Qt item roles must be a plain int enum.
 		// NOLINTNEXTLINE(performance-enum-size,cppcoreguidelines-use-enum-class)
 		enum Roles
 		{

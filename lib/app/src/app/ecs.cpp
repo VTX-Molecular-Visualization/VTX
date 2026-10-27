@@ -2,6 +2,7 @@
 
 namespace
 {
+	// Global ECS registry instance.
 	// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 	VTX::Registry * _reg = nullptr;
 } // namespace

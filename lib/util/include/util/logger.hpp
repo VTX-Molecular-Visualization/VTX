@@ -65,28 +65,32 @@ namespace VTX
 			 */
 			static void log( const LOG_LEVEL p_lvl, const LOG_HINT p_hint, const std::string_view p_msg ) noexcept
 			{
-				_log(
-					spdlog::source_loc {
-						"", 0, _toSpdlogHint( p_hint ).data() }, // NOLINT(bugprone-suspicious-stringview-data-usage)
-					spdlog::level::level_enum( p_lvl ),
-					p_msg );
+				// magic_enum names are null-terminated.
+				// NOLINTNEXTLINE(bugprone-suspicious-stringview-data-usage)
+				const char * const hint = _toSpdlogHint( p_hint ).data();
+				_log( spdlog::source_loc { "", 0, hint }, spdlog::level::level_enum( p_lvl ), p_msg );
 			}
 
 			/**
 			 * @brief Log a formatted message with a specific log level and hint.
 			 */
 			template<typename... Args>
-			static void log( const LOG_LEVEL				   p_lvl,
-							 const LOG_HINT					   p_hint,
-							 const fmt::format_string<Args...> p_fmt,
-							 Args &&... p_args ) noexcept
+			static void log(
+				const LOG_LEVEL					  p_lvl,
+				const LOG_HINT					  p_hint,
+				const fmt::format_string<Args...> p_fmt,
+				Args &&... p_args
+			) noexcept
 			{
+				// magic_enum names are null-terminated.
+				// NOLINTNEXTLINE(bugprone-suspicious-stringview-data-usage)
+				const char * const hint = _toSpdlogHint( p_hint ).data();
 				_log(
-					spdlog::source_loc {
-						"", 0, _toSpdlogHint( p_hint ).data() }, // NOLINT(bugprone-suspicious-stringview-data-usage)
+					spdlog::source_loc { "", 0, hint },
 					spdlog::level::level_enum( p_lvl ),
 					p_fmt,
-					std::forward<Args>( p_args )... );
+					std::forward<Args>( p_args )...
+				);
 			}
 
 			/**
@@ -106,9 +110,11 @@ namespace VTX
 
 		  private:
 			template<typename... Args>
-			static void _log( const spdlog::source_loc		  p_source,
-							  const spdlog::level::level_enum p_level,
-							  Args &&... p_args ) noexcept
+			static void _log(
+				const spdlog::source_loc		p_source,
+				const spdlog::level::level_enum p_level,
+				Args &&... p_args
+			) noexcept
 			{
 				try
 				{
@@ -139,16 +145,20 @@ namespace VTX
 	 */
 	using LOGGER = Util::Logger;
 
-	inline void VTX_LOG( const Util::LOG_LEVEL	p_level,
-						 const Util::LOG_HINT	p_hint,
-						 const std::string_view p_msg ) noexcept
+	inline void VTX_LOG(
+		const Util::LOG_LEVEL  p_level,
+		const Util::LOG_HINT   p_hint,
+		const std::string_view p_msg
+	) noexcept
 	{ LOGGER::log( p_level, p_hint, p_msg ); }
 
 	template<typename... Args>
-	inline void VTX_LOG( const Util::LOG_LEVEL			   p_level,
-						 const Util::LOG_HINT			   p_hint,
-						 const fmt::format_string<Args...> p_fmt,
-						 Args &&... p_args ) noexcept
+	inline void VTX_LOG(
+		const Util::LOG_LEVEL			  p_level,
+		const Util::LOG_HINT			  p_hint,
+		const fmt::format_string<Args...> p_fmt,
+		Args &&... p_args
+	) noexcept
 	{ LOGGER::log( p_level, p_hint, p_fmt, std::forward<Args>( p_args )... ); }
 
 	inline void VTX_TRACE( const std::string_view p_msg ) noexcept

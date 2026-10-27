@@ -98,7 +98,9 @@ namespace VTX::Util
 					_level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() )
 				);
 			}
-			catch ( ... ) // NOLINT(bugprone-empty-catch)
+			// Destructor must not throw.
+			// NOLINTNEXTLINE(bugprone-empty-catch)
+			catch ( ... )
 			{
 			}
 		}

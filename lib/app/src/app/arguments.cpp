@@ -22,7 +22,8 @@ namespace VTX::App
 		// Positional arg
 		_impl->parser.add_argument( "files" )
 			.help(
-				"List of files to submit to VTX. System will be loaded and python script will be executed at startup." )
+				"List of files to submit to VTX. System will be loaded and python script will be executed at startup."
+			)
 			.metavar( "FILES" )
 			.store_into( _impl->args.positionalFiles )
 			.nargs( argparse::nargs_pattern::any );
@@ -113,10 +114,6 @@ namespace VTX::App
 		return out;
 	}
 
-	void ArgumentParser::_del::operator()( _data * const p_ ) const noexcept
-	{
-		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		delete p_;
-	}
+	void ArgumentParser::_del::operator()( _data * const p_ ) const noexcept { std::default_delete<_data> {}( p_ ); }
 
 } // namespace VTX::App

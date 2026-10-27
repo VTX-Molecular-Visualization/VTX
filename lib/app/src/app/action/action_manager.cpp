@@ -17,10 +17,7 @@ namespace VTX::App::Action
 	};
 
 	void ActionManager::Del::operator()( ActionManager::Data * const p_ ) noexcept
-	{
-		// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
-		delete p_;
-	}
+	{ std::default_delete<ActionManager::Data> {}( p_ ); }
 
 	ActionManager::ActionManager() : _attributesPtr( new Data { ARGS().noGui } ) {}
 

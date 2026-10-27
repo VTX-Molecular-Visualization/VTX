@@ -7,13 +7,15 @@
 
 namespace VTX::Renderer::Context::Backend::GL::Debug
 {
-	inline void _debugMessageCallback( const GLenum p_source,
-									   const GLenum p_type,
-									   const GLuint,
-									   const GLenum p_severity,
-									   const GLsizei,
-									   const GLchar * p_msg,
-									   const void * ) noexcept
+	inline void _debugMessageCallback(
+		const GLenum p_source,
+		const GLenum p_type,
+		const GLuint,
+		const GLenum p_severity,
+		const GLsizei,
+		const GLchar * p_msg,
+		const void *
+	) noexcept
 	try
 	{
 		std::string source;
@@ -66,7 +68,9 @@ namespace VTX::Renderer::Context::Backend::GL::Debug
 		}
 	}
 
-	catch ( ... ) // NOLINT(bugprone-empty-catch)
+	// GL callback: nothing must escape.
+	// NOLINTNEXTLINE(bugprone-empty-catch)
+	catch ( ... )
 	{
 	}
 
@@ -79,7 +83,9 @@ namespace VTX::Renderer::Context::Backend::GL::Debug
 			{
 				std::cerr << "[GL ERROR] 0x" << std::hex << err << std::dec << '\n';
 			}
-			catch ( ... ) // NOLINT(bugprone-empty-catch)
+			// Error reporting must not throw.
+			// NOLINTNEXTLINE(bugprone-empty-catch)
+			catch ( ... )
 			{
 			}
 			assert( false );

@@ -408,6 +408,7 @@ namespace VTX::Util::Math
 		 * @brief Exclusive two RangeLists.
 		 */
 		static constexpr RangeList exclusive( const RangeList & p_lhs, const RangeList & p_rhs )
+		// Arguments swapped on purpose (symmetric difference).
 		// NOLINTNEXTLINE(readability-suspicious-call-argument)
 		{ return merge( substract( p_lhs, p_rhs ), substract( p_rhs, p_lhs ) ); }
 
