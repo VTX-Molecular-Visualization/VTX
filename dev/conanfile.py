@@ -131,21 +131,21 @@ class VTXRecipe(ConanFile):
             configure_runtime_toolchain(tc, python_binding_module.runtime_root(self))
         
         versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
-        tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
-        tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
-        tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
-        tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
-        tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
-        tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = 1 if self.options.tool_topology_editor else 0
-        tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
-        tc.cache_variables["VTX_RENDERER"] = 1 if self.options.renderer else 0
-        tc.cache_variables["VTX_PYTHON_BINDING"] = 1 if self.options.python_binding else 0
+        tc.cache_variables["VTX_VERSION_MAJOR"] = str(versionMajor)
+        tc.cache_variables["VTX_VERSION_MINOR"] = str(versionMinor)
+        tc.cache_variables["VTX_VERSION_PATCH"] = str(versionPatch) 
+        tc.cache_variables["VTX_TOOL_EXAMPLE"] = "1" if self.options.tool_example else "0"
+        tc.cache_variables["VTX_TOOL_MDPREP"] = "1" if self.options.tool_mdprep else "0"
+        tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = "1" if self.options.tool_topology_editor else "0"
+        tc.cache_variables["VTX_UI_QT"] = "1" if self.options.ui_qt else "0"
+        tc.cache_variables["VTX_RENDERER"] = "1" if self.options.renderer else "0"
+        tc.cache_variables["VTX_PYTHON_BINDING"] = "1" if self.options.python_binding else "0"
         tc.cache_variables["VTX_VELOPACK_LIB"] = app_module.velopack_lib_name(
             str(self.settings.os), str(self.settings.arch)
         )
         if self.options.renderer:
             tc.cache_variables["VTX_CUDA_ARCH"] = self.options.cuda_arch
-        tc.cache_variables["LOCAL_PDB100"] = 1 if self.options.local_pdb100 else 0
+        tc.cache_variables["LOCAL_PDB100"] = "1" if self.options.local_pdb100 else "0"
         if self.options.ui_qt:
             tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_module.qt_runtime_root(self)
         if self.options.tool_mdprep:
