@@ -183,7 +183,8 @@ namespace VTX::Util::Math
 		constexpr bool contains( const RangeType & p_r ) const
 		{
 			return std::ranges::any_of(
-				_ranges, [ &p_r ]( const auto & r ) { return r.first <= p_r.first && r.last >= p_r.last; } );
+				_ranges, [ &p_r ]( const auto & r ) { return r.first <= p_r.first && r.last >= p_r.last; }
+			);
 		}
 
 		/**
@@ -407,6 +408,7 @@ namespace VTX::Util::Math
 		 * @brief Exclusive two RangeLists.
 		 */
 		static constexpr RangeList exclusive( const RangeList & p_lhs, const RangeList & p_rhs )
+		// NOLINTNEXTLINE(readability-suspicious-call-argument)
 		{ return merge( substract( p_lhs, p_rhs ), substract( p_rhs, p_lhs ) ); }
 
 		/**

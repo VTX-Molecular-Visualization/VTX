@@ -39,10 +39,10 @@ function(vtx_configure_target p_target)
 		target_compile_options(${p_target} PRIVATE
 			$<$<COMPILE_LANGUAGE:CXX>:-fexperimental-library>
 		)
-	elseif(CMAKE_COMPILER_IS_GNUCC)
-		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall)
+	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall -ffast-math)
 		target_compile_options(${p_target} PRIVATE
-        	$<$<CONFIG:Release>:-O2 -ffast-math>
+        	$<$<CONFIG:Release>:-O2>
     	)
 		if(VTX_ENABLE_NATIVE_OPTIMIZATIONS)
 			target_compile_options(${p_target} PRIVATE

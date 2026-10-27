@@ -70,11 +70,10 @@ Checks:
   - '-readability-math-missing-parentheses'                          # Missing parentheses in math expressions.
   - '-readability-named-parameter'                                   # Unnamed parameters.
   - '-readability-static-accessed-through-instance'                  # Static members accessed through instances.
-  - '-readability-suspicious-call-argument'                          # Suspicious argument order.
   - '-readability-uppercase-literal-suffix'                          # Uppercase literal suffixes.
 
 CheckOptions:
-  bugprone-exception-escape.CheckMoveMemberFunctions: false                                   # Do not analyze move constructors/assignments.
+  bugprone-exception-escape.CheckMoveMemberFunctions: false                                   # Do not analyze move constructors/assignments. (because std containers can throw during move)
   cppcoreguidelines-rvalue-reference-param-not-moved.AllowPartialMove: true                   # Accept moving only part of the parameter.
   cppcoreguidelines-rvalue-reference-param-not-moved.IgnoreNonDeducedTemplateTypes: true      # Ignore T&& where T is not deduced.
   cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor: true                       # Allow a lone '~T() = default' (interfaces).
