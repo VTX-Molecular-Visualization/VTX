@@ -4,6 +4,7 @@
 #include "descriptors.hpp"
 #include <cstring>
 #include <span>
+#include <util/exceptions.hpp>
 #include <util/math.hpp>
 #include <util/types.hpp>
 #include <vector>
@@ -204,7 +205,10 @@ namespace VTX::Renderer
 
 			const size_t elemRaw = rawElementSizeBytes( p_type );
 
-			assert( elemRaw > 0 && "Unsupported E_TYPE for BinaryBuffer::write(E_TYPE, SpanBytes)" );
+			if ( elemRaw == 0 )
+			{
+				throw GraphicException( "Unsupported E_TYPE for BinaryBuffer::write(E_TYPE, SpanBytes)" );
+			}
 			assert( ( p_src.size() % elemRaw ) == 0 && "p_src size must be multiple of element raw size" );
 
 			const uint32_t count = static_cast<uint32_t>( p_src.size() / elemRaw );
