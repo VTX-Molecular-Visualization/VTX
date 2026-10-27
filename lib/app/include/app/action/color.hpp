@@ -22,10 +22,10 @@ namespace VTX::App::Action::Color
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
 		{
-			auto &						 reg	= REG();
-			const auto &				 system = reg.get<Core::Struct::Topology>( p_ent );
-			Core::Struct::IndexRangeList atoms	= Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
-			[[maybe_unused]] const bool	 isCustomScheme
+			auto &						  reg	 = REG();
+			[[maybe_unused]] const auto & system = reg.get<Core::Struct::Topology>( p_ent );
+			Core::Struct::IndexRangeList  atoms	 = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+			const bool					  isCustomScheme
 				= p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM || p_scheme == Renderer::E_COLOR_SCHEME::CARBON_CUSTOM;
 
 			assert(
@@ -34,11 +34,8 @@ namespace VTX::App::Action::Color
 
 			reg.patch<System::Color>(
 				p_ent,
-				[ &atoms, &system, p_scheme, p_colorIndex ]( System::Color & p_color )
+				[ & ]( System::Color & p_color )
 				{
-					const bool isCustomScheme = p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM
-												|| p_scheme == Renderer::E_COLOR_SCHEME::CARBON_CUSTOM;
-
 					if ( isCustomScheme )
 					{
 						assert( p_colorIndex.has_value() );
@@ -241,10 +238,10 @@ namespace VTX::App::Action::Color
 			const std::optional<Renderer::ColorIndex>		   p_colorIndex = std::nullopt
 		)
 		{
-			auto &						 reg	  = REG();
-			const auto &				 system	  = reg.get<Core::Struct::Topology>( p_ent );
-			Core::Struct::IndexRangeList residues = Helper::System::getResidueRangeList<ITEM>( p_ent, p_ranges );
-			const bool isCustomScheme			  = p_scheme == Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::CUSTOM;
+			auto &						  reg	   = REG();
+			[[maybe_unused]] const auto & system   = reg.get<Core::Struct::Topology>( p_ent );
+			Core::Struct::IndexRangeList  residues = Helper::System::getResidueRangeList<ITEM>( p_ent, p_ranges );
+			const bool isCustomScheme			   = p_scheme == Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::CUSTOM;
 
 			assert(
 				( isCustomScheme && p_colorIndex.has_value() ) || ( not isCustomScheme && not p_colorIndex.has_value() )
@@ -252,10 +249,8 @@ namespace VTX::App::Action::Color
 
 			reg.patch<System::Color>(
 				p_ent,
-				[ &residues, &system, p_scheme, p_colorIndex ]( System::Color & p_color )
+				[ & ]( System::Color & p_color )
 				{
-					const bool isCustomScheme = p_scheme == Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::CUSTOM;
-
 					if ( isCustomScheme )
 					{
 						assert( p_colorIndex.has_value() );

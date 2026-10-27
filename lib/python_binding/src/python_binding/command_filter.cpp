@@ -1,5 +1,4 @@
 #include "python_binding/command_filter.hpp"
-#include <algorithm>
 #include <array>
 #include <string_view>
 
@@ -34,12 +33,13 @@ namespace VTX::PythonBinding
 
 	FilterResult filter( const std::string & p_command )
 	{
-		const auto findResult = std::ranges::find_if(
-			g_FILTERED_COMMANDS, [ &p_command ]( const UnwantedCommand & p_ ) { return p_ == p_command; } );
-		if ( findResult == std::end( g_FILTERED_COMMANDS ) )
+		for ( const UnwantedCommand & command : g_FILTERED_COMMANDS )
 		{
-			return FilterResult( false );
+			if ( command == p_command )
+			{
+				return FilterResult( true, std::string( command.reason ) );
+			}
 		}
-		return FilterResult( true, std::string( findResult->reason.data(), findResult->reason.size() ) );
+		return FilterResult( false );
 	}
 } // namespace VTX::PythonBinding

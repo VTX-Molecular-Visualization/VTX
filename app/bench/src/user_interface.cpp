@@ -131,14 +131,14 @@ namespace VTX::Bench
 			SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr )
 		);
 #elif defined( __linux__ )
-		if ( getNativePlatform() == uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
+		if ( getNativePlatform() == static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
 		{
 			return reinterpret_cast<uintptr_t>(
 				SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WAYLAND_SURFACE_POINTER, nullptr )
 			);
 		}
 
-		return uintptr_t( SDL_GetNumberProperty( windowProps, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0 ) );
+		return static_cast<uintptr_t>( SDL_GetNumberProperty( windowProps, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0 ) );
 #else
 		return 0;
 #endif
@@ -160,7 +160,7 @@ namespace VTX::Bench
 #ifdef _WIN32
 		return 0;
 #elif defined( __linux__ )
-		if ( getNativePlatform() == uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
+		if ( getNativePlatform() == static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
 		{
 			return reinterpret_cast<uintptr_t>(
 				SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WAYLAND_DISPLAY_POINTER, nullptr )

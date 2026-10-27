@@ -7,7 +7,6 @@
 #include "app/system/selection.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
-#include <algorithm>
 #include <core/chemdb/atom.hpp>
 #include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>

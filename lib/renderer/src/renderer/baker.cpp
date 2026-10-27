@@ -23,8 +23,10 @@ namespace VTX::Renderer::Baker
 		constexpr size_t	   ENVIRONMENT_FACE_COUNT		 = 6;
 		constexpr size_t	   ENVIRONMENT_CHANNEL_COUNT	 = 4;
 
-		std::array<float, 4> _sampleEquirectangular( const Util::Image::FloatImage & p_image,
-													 const Vec3f &					 p_direction )
+		std::array<float, 4> _sampleEquirectangular(
+			const Util::Image::FloatImage & p_image,
+			const Vec3f &					p_direction
+		)
 		{
 			using namespace Util::Math;
 
@@ -33,8 +35,8 @@ namespace VTX::Renderer::Baker
 
 			const float x  = u * static_cast<float>( p_image.width ) - 0.5f;
 			const float y  = v * static_cast<float>( p_image.height ) - 0.5f;
-			const int	x0 = static_cast<int>( floor( x ) );
-			const int	y0 = static_cast<int>( floor( y ) );
+			const int	x0 = static_cast<int>( Util::Math::floor( x ) );
+			const int	y0 = static_cast<int>( Util::Math::floor( y ) );
 			const float tx = x - static_cast<float>( x0 );
 			const float ty = y - static_cast<float>( y0 );
 
@@ -43,9 +45,9 @@ namespace VTX::Renderer::Baker
 				const int wrappedX = ( p_x % static_cast<int>( p_image.width ) + static_cast<int>( p_image.width ) )
 									 % static_cast<int>( p_image.width );
 				const int clampedY = clamp( p_y, 0, static_cast<int>( p_image.height ) - 1 );
-				return p_image
-					.pixels[ ( static_cast<size_t>( clampedY ) * p_image.width + static_cast<size_t>( wrappedX ) ) * 4
-							 + p_channel ];
+				return p_image.pixels
+					[ ( static_cast<size_t>( clampedY ) * p_image.width + static_cast<size_t>( wrappedX ) ) * 4
+					  + p_channel ];
 			};
 
 			std::array<float, 4> result { 0.f };
@@ -87,8 +89,9 @@ namespace VTX::Renderer::Baker
 			}
 
 			const size_t facePixelCount = static_cast<size_t>( p_faceSize ) * static_cast<size_t>( p_faceSize );
-			std::vector<EnvironmentTexel> cubemap( facePixelCount * ENVIRONMENT_FACE_COUNT
-												   * ENVIRONMENT_CHANNEL_COUNT );
+			std::vector<EnvironmentTexel> cubemap(
+				facePixelCount * ENVIRONMENT_FACE_COUNT * ENVIRONMENT_CHANNEL_COUNT
+			);
 			for ( size_t face = 0; face < ENVIRONMENT_FACE_COUNT; ++face )
 			{
 				for ( uint y = 0; y < p_faceSize; ++y )
@@ -144,11 +147,13 @@ namespace VTX::Renderer::Baker
 
 			try
 			{
-				Util::Image::write( FilePath( p_outputPath ).replace_extension( ".png" ),
-									Util::Image::E_FORMAT::PNG,
-									THUMBNAIL_WIDTH,
-									THUMBNAIL_HEIGHT,
-									pixels.data() );
+				Util::Image::write(
+					FilePath( p_outputPath ).replace_extension( ".png" ),
+					Util::Image::E_FORMAT::PNG,
+					THUMBNAIL_WIDTH,
+					THUMBNAIL_HEIGHT,
+					pixels.data()
+				);
 			}
 			catch ( const std::exception & error )
 			{
@@ -159,9 +164,11 @@ namespace VTX::Renderer::Baker
 			return true;
 		}
 
-		bool _writeCubemapToKtx( const FilePath &					   p_outputPath,
-								 const std::vector<EnvironmentTexel> & p_cubemap,
-								 const uint							   p_faceSize )
+		bool _writeCubemapToKtx(
+			const FilePath &					  p_outputPath,
+			const std::vector<EnvironmentTexel> & p_cubemap,
+			const uint							  p_faceSize
+		)
 		{
 			ktxTextureCreateInfo textureInfo = {};
 			textureInfo.vkFormat			 = VK_FORMAT_R16G16B16A16_SFLOAT;
@@ -195,7 +202,8 @@ namespace VTX::Renderer::Baker
 					const EnvironmentTexel * const faceData
 						= p_cubemap.data() + static_cast<size_t>( face ) * facePixelCount * ENVIRONMENT_CHANNEL_COUNT;
 					result = ktxTexture_SetImageFromMemory(
-						baseTexture, 0, 0, face, reinterpret_cast<const ktx_uint8_t *>( faceData ), faceDataSize );
+						baseTexture, 0, 0, face, reinterpret_cast<const ktx_uint8_t *>( faceData ), faceDataSize
+					);
 				}
 			}
 
@@ -227,11 +235,13 @@ namespace VTX::Renderer::Baker
 		{
 			ktxTexture2 *	 texture = nullptr;
 			ktx_error_code_e result	 = ktxTexture2_CreateFromNamedFile(
-				p_path.string().c_str(), KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &texture );
+				p_path.string().c_str(), KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT, &texture
+			);
 			if ( result != KTX_SUCCESS )
 			{
-				throw std::runtime_error( "Unable to load KTX '" + p_path.string()
-										  + "': " + std::string( ktxErrorString( result ) ) );
+				throw std::runtime_error(
+					"Unable to load KTX '" + p_path.string() + "': " + std::string( ktxErrorString( result ) )
+				);
 			}
 
 			if ( texture->vkFormat != VK_FORMAT_R16G16B16A16_SFLOAT || texture->baseWidth != p_faceSize
@@ -243,8 +253,9 @@ namespace VTX::Renderer::Baker
 
 			const size_t facePixelCount = static_cast<size_t>( p_faceSize ) * p_faceSize;
 			const size_t faceDataSize	= facePixelCount * ENVIRONMENT_CHANNEL_COUNT * sizeof( EnvironmentTexel );
-			std::vector<EnvironmentTexel> cubemap( facePixelCount * ENVIRONMENT_FACE_COUNT
-												   * ENVIRONMENT_CHANNEL_COUNT );
+			std::vector<EnvironmentTexel> cubemap(
+				facePixelCount * ENVIRONMENT_FACE_COUNT * ENVIRONMENT_CHANNEL_COUNT
+			);
 
 			ktxTexture * const		  baseTexture = ktxTexture( texture );
 			const ktx_uint8_t * const data		  = ktxTexture_GetData( baseTexture );
@@ -255,13 +266,17 @@ namespace VTX::Renderer::Baker
 				if ( result != KTX_SUCCESS )
 				{
 					ktxTexture2_Destroy( texture );
-					throw std::runtime_error( "Unable to read KTX face offset '" + p_path.string()
-											  + "': " + std::string( ktxErrorString( result ) ) );
+					throw std::runtime_error(
+						"Unable to read KTX face offset '" + p_path.string()
+						+ "': " + std::string( ktxErrorString( result ) )
+					);
 				}
 
-				std::memcpy( cubemap.data() + static_cast<size_t>( face ) * facePixelCount * ENVIRONMENT_CHANNEL_COUNT,
-							 data + offset,
-							 faceDataSize );
+				std::memcpy(
+					cubemap.data() + static_cast<size_t>( face ) * facePixelCount * ENVIRONMENT_CHANNEL_COUNT,
+					data + offset,
+					faceDataSize
+				);
 			}
 
 			ktxTexture2_Destroy( texture );

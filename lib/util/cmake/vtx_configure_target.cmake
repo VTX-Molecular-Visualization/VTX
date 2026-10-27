@@ -85,7 +85,7 @@ function(vtx_configure_target p_target)
 			$<$<COMPILE_LANGUAGE:CXX>:-fexperimental-library>
 		)
 	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall -ffast-math)
+		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall -ffast-math -fno-finite-math-only)
 		target_compile_options(${p_target} PRIVATE
         	$<$<CONFIG:Release>:-O2>
     	)
