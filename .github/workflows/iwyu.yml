@@ -3,19 +3,6 @@ name: Include What You Use
 on:
   workflow_dispatch:
       inputs:
-        lib:
-          description: 'Library to analyze'
-          required: true
-          default: 'util'
-          type: choice
-          options:
-          - util
-          - core
-          - io
-          - renderer
-          - app
-          - python_binding
-          - ui/qt
         iwyu_args:
           description: 'Extra IWYU arguments (e.g. -Xiwyu --no_fwd_decls)'
           required: false
@@ -26,9 +13,8 @@ permissions:
   contents: read
 
 env:
-  LIB_DIR: ${{github.workspace}}/lib
-  TARGET_DIR: ${{github.workspace}}/lib/${{ inputs.lib }}
-  BUILD_DIR: ${{github.workspace}}/lib/${{ inputs.lib }}/build/Release
+  DEV_DIR: ${{github.workspace}}/dev
+  BUILD_DIR: ${{github.workspace}}/dev/build/Release
   BUILD_TYPE: Release
 
 jobs:
@@ -57,42 +43,34 @@ jobs:
         conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
         conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
 
-    - name: Export local packages
-      working-directory: ${{env.LIB_DIR}}
-      run: |
-        conan export util
-        conan export core
-        conan export io
-        conan export renderer
-        conan export app
-        conan export python_binding
-
     - name: Install dependencies
-      working-directory: ${{env.LIB_DIR}}
+      working-directory: ${{env.DEV_DIR}}
       shell: bash
       run: |
-        conan install ${{ inputs.lib }} -b missing \
-          -c tools.cmake.cmaketoolchain:extra_variables='{"VTX_ENABLE_CLANG_TIDY":False}' \
+        conan install . -b missing \
           -s build_type=${{ env.BUILD_TYPE }} \
           -s compiler.cppstd=gnu20 \
+          -o vtx/*:tool_example=True \
+          -o vtx/*:tool_mdprep=True \
+          -o vtx/*:tool_topology_editor=True \
+          -c tools.cmake.cmaketoolchain:extra_variables='{"VTX_ENABLE_CLANG_TIDY":False}' \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True
 
     - name: Configure
-      working-directory: ${{env.TARGET_DIR}}
+      working-directory: ${{env.DEV_DIR}}
       run: |
         cmake --preset conan-release \
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
           -DCMAKE_GLOBAL_AUTOGEN_TARGET=ON
 
     - name: Generate Qt sources
-      if: inputs.lib == 'ui/qt'
       run: cmake --build ${{env.BUILD_DIR}} --target autogen
 
     - name: Filter compilation database
       working-directory: ${{env.BUILD_DIR}}
       run: |
-        jq '[.[] | select(.file | test("/vendor/|/build/|/test/") | not)]' compile_commands.json > compile_commands.filtered.json
+        jq '[.[] | select((.file | test("/(lib|tool|app)/")) and (.file | test("/vendor/|/build/|/test/") | not))]' compile_commands.json > compile_commands.filtered.json
         mv compile_commands.filtered.json compile_commands.json
         echo "Translation units: $(jq length compile_commands.json)"
 
@@ -118,18 +96,18 @@ jobs:
       run: |
         FIX_INCLUDES=$(command -v fix_include || command -v fix_includes.py)
         "$FIX_INCLUDES" --nocomments --noreorder --nosafe_headers < iwyu.out || true
-        git diff > iwyu.patch
+        git diff -- lib tool app > iwyu.patch
 
     - name: Summary
       working-directory: ${{github.workspace}}
       shell: bash
       run: |
         {
-          echo "## IWYU: \`${{ inputs.lib }}\`"
+          echo "## IWYU"
           echo ""
           echo "- Files with suggestions: $(grep -c 'should add these lines:' iwyu.out || true)"
           echo "- Errors: $(grep -c 'error:' iwyu.out || true)"
-          echo "- Patch: $(git diff --shortstat)"
+          echo "- Patch: $(git diff --shortstat -- lib tool app)"
           echo ""
           echo "### Forward declarations suggested"
           echo '```'
@@ -140,7 +118,7 @@ jobs:
     - name: Upload results
       uses: actions/upload-artifact@v4
       with:
-        name: iwyu-${{ github.run_id }}
+        name: iwyu
         path: |
           iwyu.out
           iwyu.patch
