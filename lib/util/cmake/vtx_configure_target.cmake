@@ -35,7 +35,7 @@ endfunction()
 
 # Configure a target with VTX-specific settings.
 function(vtx_configure_target p_target)
-	cmake_parse_arguments(PARSE_ARGV 1 arg "NO_LINTER" "" "")
+	cmake_parse_arguments(PARSE_ARGV 1 arg "NO_LINTER" "PCH" "")
 
 	# Static analysis.
 	if(NOT VTX_CLANG_TIDY STREQUAL "OFF" AND NOT arg_NO_LINTER)
@@ -64,6 +64,9 @@ function(vtx_configure_target p_target)
 		target_precompile_headers(${p_target} PRIVATE
 			"$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_FUNCTION_LIST_DIR}/vtx_pch.hpp>"
 		)
+		if(arg_PCH)
+			target_precompile_headers(${p_target} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${arg_PCH}>")
+		endif()
 		cmake_language(EVAL CODE "cmake_language(DEFER CALL _vtx_exclude_vendor_sources_from_pch [[${p_target}]])")
 	endif()
 

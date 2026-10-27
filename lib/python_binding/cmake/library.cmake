@@ -2,7 +2,7 @@
 
 add_library(vtx_python_binding)
 add_library(vtx_python_binding::vtx_python_binding ALIAS vtx_python_binding)
-vtx_configure_target(vtx_python_binding)
+vtx_configure_target(vtx_python_binding PCH "${CMAKE_CURRENT_LIST_DIR}/vtx_python_binding_pch.hpp")
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")

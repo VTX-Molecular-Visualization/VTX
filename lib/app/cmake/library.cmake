@@ -1,7 +1,11 @@
 # Lib.
 add_library(vtx_app)
 add_library(vtx_app::vtx_app ALIAS vtx_app)
-vtx_configure_target(vtx_app)
+if (VTX_PYTHON_BINDING)
+	vtx_configure_target(vtx_app PCH "${CMAKE_CURRENT_LIST_DIR}/vtx_app_pch.hpp")
+else()
+	vtx_configure_target(vtx_app)
+endif()
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
