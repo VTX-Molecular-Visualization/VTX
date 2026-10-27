@@ -32,9 +32,11 @@ namespace VTX::Util::String
 	/**
 	 * @brief Replace first occurrence.
 	 */
-	[[nodiscard]] inline std::string replaceFirst( const std::string & p_str,
-												   const std::string & p_toReplace,
-												   const std::string & p_replacement )
+	[[nodiscard]] inline std::string replaceFirst(
+		const std::string & p_str,
+		const std::string & p_toReplace,
+		const std::string & p_replacement
+	)
 	{
 		std::string result = p_str;
 		result.replace( result.find( p_toReplace ), p_toReplace.size(), p_replacement );
@@ -87,9 +89,11 @@ namespace VTX::Util::String
 	/**
 	 * Replace all occurrences of a string and return the result.
 	 */
-	[[nodiscard]] inline std::string replaceAll( const std::string & p_str,
-												 const std::string & p_toReplace,
-												 const std::string & p_replacement )
+	[[nodiscard]] inline std::string replaceAll(
+		const std::string & p_str,
+		const std::string & p_toReplace,
+		const std::string & p_replacement
+	)
 	{
 		std::string result = p_str;
 		if ( p_toReplace.empty() )
@@ -145,9 +149,26 @@ namespace VTX::Util::String
 	[[nodiscard]] std::string toLower( const std::string & p_str );
 
 	/**
+	 * @brief Data needed to fmt::format.
+	 */
+	struct FormattedMemSize
+	{
+		size_t size {};
+		bool   isBase10 = true;
+	};
+
+	/**
 	 * Convert a memory size to a string.
 	 */
 	[[nodiscard]] std::string memSizeToStr( size_t p_size, bool p_isBase10 = true );
+
+	/**
+	 * @brief Data needed to fmt::format.
+	 */
+	struct FormattedDuration
+	{
+		float durationInMs {};
+	};
 
 	/**
 	 * Convert a duration to a string.

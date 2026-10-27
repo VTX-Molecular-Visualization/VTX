@@ -2,6 +2,7 @@
 #define VTX_RENDERER_CONTEXT_BACKEND_GL_STRUCT_OPENGL_INFOS_HPP
 
 #include <array>
+#include <util/fmt/mem_size.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
 
@@ -40,21 +41,31 @@ namespace VTX::Renderer::Context::Backend::GL
 			VTX_INFO( "Version: {}", glVersion );
 
 			VTX_TRACE( "GLSL version: {}", glslVersion );
-			VTX_TRACE( "Max uniform block size: {}", Util::String::memSizeToStr( glMaxUniformBlockSize, false ) );
+			VTX_TRACE(
+				"Max uniform block size: {}",
+				Util::String::FormattedMemSize { static_cast<size_t>( glMaxUniformBlockSize ), false }
+			);
 			VTX_TRACE( "Max uniform buffer bindings: {}", glMaxUniformBufferBindings );
-			VTX_TRACE( "Max shader storage block size: {}", Util::String::memSizeToStr( glMaxShaderStorageBlockSize ) );
+			VTX_TRACE(
+				"Max shader storage block size: {}",
+				Util::String::FormattedMemSize { static_cast<size_t>( glMaxShaderStorageBlockSize ) }
+			);
 			VTX_TRACE( "Max shader storage buffer bindings: {}", glMaxShaderStorageBufferBindings );
 			VTX_TRACE( "Max texture size: {}", glMaxTextureSize );
 			VTX_TRACE( "Max patch vertices: {}", glMaxPatchVertices );
 			VTX_TRACE( "Max tess gen level: {}", glMaxTessGenLevel );
-			VTX_TRACE( "Max compute work group count: {} {} {}",
-					   glMaxComputeWorkGroupCount[ 0 ],
-					   glMaxComputeWorkGroupCount[ 1 ],
-					   glMaxComputeWorkGroupCount[ 2 ] );
-			VTX_TRACE( "Max compute work group size: {} {} {}",
-					   glMaxComputeWorkGroupSize[ 0 ],
-					   glMaxComputeWorkGroupSize[ 1 ],
-					   glMaxComputeWorkGroupSize[ 2 ] );
+			VTX_TRACE(
+				"Max compute work group count: {} {} {}",
+				glMaxComputeWorkGroupCount[ 0 ],
+				glMaxComputeWorkGroupCount[ 1 ],
+				glMaxComputeWorkGroupCount[ 2 ]
+			);
+			VTX_TRACE(
+				"Max compute work group size: {} {} {}",
+				glMaxComputeWorkGroupSize[ 0 ],
+				glMaxComputeWorkGroupSize[ 1 ],
+				glMaxComputeWorkGroupSize[ 2 ]
+			);
 			VTX_TRACE( "Max compute work group invocations: {}", glMaxComputeWorkGroupInvocations );
 		}
 	};

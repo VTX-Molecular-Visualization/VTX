@@ -1,4 +1,4 @@
-WarningsAsErrors: ''
+WarningsAsErrors: '*'
 ExcludeHeaderFilterRegex: '.*[/\\]\.conan2[/\\].*'
 
 Checks:
@@ -80,4 +80,4 @@ CheckOptions:
   cppcoreguidelines-special-member-functions.AllowMissingMoveFunctionsWhenCopyIsDeleted: true # Deleted copy already suppresses move.
   cppcoreguidelines-special-member-functions.AllowImplicitlyDeletedCopyOrMove: true           # Skip operations already deleted by members/bases.
   misc-include-cleaner.MissingIncludes: false                                                 # Report unused includes only, not missing ones.
-  misc-include-cleaner.IgnoreHeaders: '[Ww]indows\.h;exiv2[/\\]exiv2\.hpp;cpr[/\\]cpr\.h;fmt[/\\](chrono|ranges|std|ostream)\.h;pybind11[/\\].*;_caster\.hpp' # Headers excluded from include analysis.
+  misc-include-cleaner.IgnoreHeaders: '[Ww]indows\.h;exiv2[/\\]exiv2\.hpp;cpr[/\\]cpr\.h;fmt[/\\](chrono|ranges|std|ostream)\.h;pybind11[/\\].*;_caster\.hpp;util[/\\]fmt[/\\].*' # Headers excluded from include analysis.

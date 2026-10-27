@@ -12,6 +12,7 @@
 #include <tuple>
 #include <type_traits>
 #include <util/chrono.hpp>
+#include <util/fmt/duration.hpp>
 #include <util/hashing.hpp>
 #include <util/logger.hpp>
 #include <util/string.hpp>
@@ -84,13 +85,15 @@ namespace VTX::App::Action
 			else
 			{
 				THREAD().createThread(
-					[... args = std::forward<Args>( p_args ) ]( Util::Thread::StopToken	   p_token,
-																Util::Thread::BaseThread & p_thr ) mutable
+					[... args = std::forward<Args>( p_args ) ](
+						Util::Thread::StopToken p_token, Util::Thread::BaseThread & p_thr
+					) mutable
 					{
 						A action( Util::Thread::ThreadData { std::move( p_token ), p_thr } );
 						action.execute( std::move( args )... );
 						return 0;
-					} );
+					}
+				);
 			}
 		}
 
@@ -106,7 +109,8 @@ namespace VTX::App::Action
 			{
 				auto duration = Util::CHRONO_CPU( [ & ]() { p_action.execute( std::forward<Args>( p_args )... ); } );
 				VTX_TRACE(
-					"ActionSystem::execute( {} ) - done ({})", actionName, Util::String::durationToStr( duration ) );
+					"ActionSystem::execute( {} ) - done ({})", actionName, Util::String::FormattedDuration { duration }
+				);
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -124,7 +128,7 @@ namespace VTX::App::Action
 		};
 
 		std::unique_ptr<Data, Del> _attributesPtr;
-		float						_skipTime = 0.f;
+		float					   _skipTime = 0.f;
 
 		bool _noThread() const noexcept;
 	};
@@ -227,9 +231,11 @@ namespace VTX::App::Action
 		template<typename SomeAction, typename... Args>
 			requires( not std::same_as<std::remove_cvref_t<SomeAction>, QueuedAction> )
 		QueuedAction( SomeAction && p_action, Args &&... args ) :
-			_ptr( new _wrapper<SomeAction, Args...>( _state,
-													 std::forward<SomeAction>( p_action ),
-													 std::forward<Args>( args )... ) )
+			_ptr( new _wrapper<SomeAction, Args...>(
+				_state,
+				std::forward<SomeAction>( p_action ),
+				std::forward<Args>( args )...
+			) )
 		{
 		}
 
@@ -259,7 +265,7 @@ namespace VTX::App::Action
 			{
 				bool executed = false;
 				{
-					State *					 state = _statePtr.get();
+					State *						 state = _statePtr.get();
 					std::unique_lock<std::mutex> lock( state->mutex );
 					state->conditionVariable.wait( lock, [ state ]() { return state->executed || state->cancelled; } );
 					executed = state->executed;

@@ -1,6 +1,7 @@
 #ifndef VTX_UTIL_CHRONO_HPP
 #define VTX_UTIL_CHRONO_HPP
 
+#include "util/fmt/duration.hpp"
 #include "util/logger.hpp"
 #include "util/string.hpp"
 #include <chrono>
@@ -92,17 +93,9 @@ namespace VTX::Util
 
 		~ScopedChrono() noexcept
 		{
-			try
-			{
-				VTX_LOG(
-					_level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() )
-				);
-			}
-			// Destructor must not throw.
-			// NOLINTNEXTLINE(bugprone-empty-catch)
-			catch ( ... )
-			{
-			}
+			VTX_LOG(
+				_level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::FormattedDuration { elapsedTime() }
+			);
 		}
 
 	  private:
