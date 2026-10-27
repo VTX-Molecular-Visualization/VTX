@@ -30,11 +30,13 @@ namespace VTX::UI::QT::Widget
 		_resolution->setAutoRaise( false );
 		_resolution->setToolTip( "Change resolution" );
 		_resolution->setStatusTip( "Change the resolution of the renderer" );
-		connect( _resolution,
-				 &ToolButton::ResolutionSelector::resolutionChanged,
-				 this,
-				 [ this ]( const size_t width, const size_t height )
-				 { App::ACTION().execute<App::Action::Application::Resize>( width, height ); } );
+		connect(
+			_resolution,
+			&ToolButton::ResolutionSelector::resolutionChanged,
+			this,
+			[]( const size_t width, const size_t height )
+			{ App::ACTION().execute<App::Action::Application::Resize>( width, height ); }
+		);
 
 		// Labels.
 		auto * vendorLabel = Helper::makeQObject<QLabel>( this );

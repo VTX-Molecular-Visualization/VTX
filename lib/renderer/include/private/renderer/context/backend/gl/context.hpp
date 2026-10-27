@@ -367,7 +367,9 @@ namespace VTX::Renderer::Context::Backend::GL
 	class EGLContextWrapper
 	{
 	  public:
-		EGLContextWrapper() = default;
+		EGLContextWrapper()										   = default;
+		EGLContextWrapper( const EGLContextWrapper & )			   = delete;
+		EGLContextWrapper & operator=( const EGLContextWrapper & ) = delete;
 
 		~EGLContextWrapper() { destroy(); }
 
@@ -377,7 +379,7 @@ namespace VTX::Renderer::Context::Backend::GL
 				"[EGL] Creating context for surface {} with display {} and platform {}",
 				p_contextInfo.surface,
 				p_contextInfo.display,
-				int( p_contextInfo.plateform )
+				static_cast<int>( p_contextInfo.plateform )
 			);
 
 			_nativeDisplay = reinterpret_cast<void *>( p_contextInfo.display );
@@ -551,7 +553,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			if ( _context == EGL_NO_CONTEXT )
 			{
-				EGLint			   err = eglGetError();
+				const EGLint	   err = eglGetError();
 				std::ostringstream oss;
 				oss << "EGL context error: 0x" << std::hex << std::uppercase << err;
 				throw std::runtime_error( oss.str() );
@@ -629,7 +631,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 
 	  private:
-		enum class Platform
+		enum class Platform : uint8_t
 		{
 			Default,
 			X11,

@@ -35,7 +35,7 @@ namespace VTX::Renderer::Builder
 	{
 		const Core::Struct::Topology & topology = *p_system.data.topology;
 		std::vector<ColorIndex>		   residues( topology.getResidueCount() );
-		size_t						   count = 0;
+		[[maybe_unused]] size_t		   count = 0;
 
 		for ( const auto & [ scheme, ranges ] : *p_system.data.colorSchemeSecondaryStructureResidues )
 		{
@@ -84,9 +84,11 @@ namespace VTX::Renderer::Builder
 
 	struct SystemRegistry
 	{
-		static void clear( Layouts &						  p_layouts,
-						   Geometries &						  p_geometries,
-						   std::unordered_set<Desc::Handle> & p_geometryRefreshSystems )
+		static void clear(
+			Layouts &						   p_layouts,
+			Geometries &					   p_geometries,
+			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] SystemRegistry::clear" );
 
@@ -95,9 +97,11 @@ namespace VTX::Renderer::Builder
 			p_geometryRefreshSystems.clear();
 		}
 
-		static void clearSystemRanges( Layouts &						  p_layouts,
-									   Geometries &						  p_geometries,
-									   std::unordered_set<Desc::Handle> & p_geometryRefreshSystems )
+		static void clearSystemRanges(
+			Layouts &						   p_layouts,
+			Geometries &					   p_geometries,
+			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] SystemRegistry::clearSystemRanges" );
 
@@ -106,9 +110,11 @@ namespace VTX::Renderer::Builder
 			p_geometryRefreshSystems.clear();
 		}
 
-		static void removeSystemConstruction( Context::ContextWrapper & p_context,
-											  Geometries &				p_geometries,
-											  const Desc::Handle		p_handle )
+		static void removeSystemConstruction(
+			Context::ContextWrapper & p_context,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] SystemRegistry::removeSystemConstruction" );
 
@@ -116,10 +122,12 @@ namespace VTX::Renderer::Builder
 		}
 
 		template<typename Systems>
-		static void registerSystem( Systems &	 p_systems,
-									Geometries & p_geometries,
-									Layouts &	 p_layouts,
-									Desc::Handle p_handle )
+		static void registerSystem(
+			Systems &	 p_systems,
+			Geometries & p_geometries,
+			Layouts &	 p_layouts,
+			Desc::Handle p_handle
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] SystemRegistry::registerSystem" );
 
@@ -140,11 +148,13 @@ namespace VTX::Renderer::Builder
 		}
 
 		template<typename Systems>
-		static void uploadInput( Context::ContextWrapper &			p_context,
-								 Systems &							p_systems,
-								 Layouts &							p_layouts,
-								 const Desc::Handle					p_handle,
-								 std::unordered_set<Desc::Handle> & p_geometryRefreshSystems )
+		static void uploadInput(
+			Context::ContextWrapper &		   p_context,
+			Systems &						   p_systems,
+			Layouts &						   p_layouts,
+			const Desc::Handle				   p_handle,
+			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] AtomLayout::uploadInput" );
 
@@ -166,7 +176,7 @@ namespace VTX::Renderer::Builder
 		{
 			const Core::Struct::Topology & data = *p_system.data.topology;
 			std::vector<ColorIndex>		   atoms( data.getAtomCount() );
-			size_t						   count = 0;
+			[[maybe_unused]] size_t		   count = 0;
 
 			for ( const auto & [ scheme, ranges ] : *p_system.data.colorSchemeAtoms )
 			{
@@ -236,7 +246,7 @@ namespace VTX::Renderer::Builder
 			constexpr RepresentationIndex invalidRepresentation = std::numeric_limits<RepresentationIndex>::max();
 
 			std::vector<RepresentationIndex> atoms( p_system.data.topology->getAtomCount(), invalidRepresentation );
-			size_t							 count = 0;
+			[[maybe_unused]] size_t			 count = 0;
 			for ( const auto & [ preset, ranges ] : *p_system.data.presetAtoms )
 			{
 				const auto representationIt = p_system.data.representationHandles->find( preset );
@@ -266,26 +276,31 @@ namespace VTX::Renderer::Builder
 		{
 			std::vector<Flag> atomFlags( p_system.data.topology->getAtomCount(), 0 );
 			p_system.data.selection->forEachSetBit(
-				[ & ]( const size_t p_atom ) { atomFlags[ p_atom ] |= toUnderlying( E_ELEMENT_FLAGS::SELECTION ); } );
+				[ & ]( const size_t p_atom ) { atomFlags[ p_atom ] |= toUnderlying( E_ELEMENT_FLAGS::SELECTION ); }
+			);
 
 			return atomFlags;
 		}
 
 		template<typename Systems>
-		static void refreshColors( Context::ContextWrapper & p_context,
-								   Systems &				 p_systems,
-								   Layouts &				 p_layouts,
-								   const Desc::Handle		 p_handle )
+		static void refreshColors(
+			Context::ContextWrapper & p_context,
+			Systems &				  p_systems,
+			Layouts &				  p_layouts,
+			const Desc::Handle		  p_handle
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] AtomLayout::refreshColors" );
 
 			uploadColors( p_context, p_layouts, p_handle, buildAtomColors( p_systems.get( p_handle ) ) );
 		}
 
-		static void uploadSymbols( Context::ContextWrapper & p_context,
-								   Layouts &				 p_layouts,
-								   const Desc::Handle		 p_handle,
-								   std::span<const Symbol>	 p_symbols )
+		static void uploadSymbols(
+			Context::ContextWrapper & p_context,
+			Layouts &				  p_layouts,
+			const Desc::Handle		  p_handle,
+			std::span<const Symbol>	  p_symbols
+		)
 		{
 			using namespace Layout;
 
@@ -293,10 +308,12 @@ namespace VTX::Renderer::Builder
 			p_layouts.atoms.upload<ATOM_ATTR::SYMBOL, Symbol>( p_context, p_handle, p_symbols );
 		}
 
-		static void uploadIds( Context::ContextWrapper & p_context,
-							   Layouts &				 p_layouts,
-							   const Desc::Handle		 p_handle,
-							   std::span<const UID32>	 p_ids )
+		static void uploadIds(
+			Context::ContextWrapper & p_context,
+			Layouts &				  p_layouts,
+			const Desc::Handle		  p_handle,
+			std::span<const UID32>	  p_ids
+		)
 		{
 			using namespace Layout;
 
@@ -305,11 +322,13 @@ namespace VTX::Renderer::Builder
 		}
 
 		template<typename Systems>
-		static void uploadPositions( Context::ContextWrapper & p_context,
-									 Systems &				   p_systems,
-									 Layouts &				   p_layouts,
-									 const Desc::Handle		   p_handle,
-									 std::span<const Vec3f>	   p_positions )
+		static void uploadPositions(
+			Context::ContextWrapper & p_context,
+			Systems &				  p_systems,
+			Layouts &				  p_layouts,
+			const Desc::Handle		  p_handle,
+			std::span<const Vec3f>	  p_positions
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] AtomLayout::uploadPositions" );
 
@@ -320,10 +339,12 @@ namespace VTX::Renderer::Builder
 			p_layouts.atoms.upload<ATOM_ATTR::POSITION, Vec3f>( p_context, p_handle, p_positions );
 		}
 
-		static void uploadColors( Context::ContextWrapper &	  p_context,
-								  Layouts &					  p_layouts,
-								  const Desc::Handle		  p_handle,
-								  std::span<const ColorIndex> p_colors )
+		static void uploadColors(
+			Context::ContextWrapper &	p_context,
+			Layouts &					p_layouts,
+			const Desc::Handle			p_handle,
+			std::span<const ColorIndex> p_colors
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] AtomLayout::uploadColors" );
 
@@ -333,11 +354,13 @@ namespace VTX::Renderer::Builder
 			p_layouts.atoms.upload<ATOM_ATTR::COLOR, ColorIndex>( p_context, p_handle, p_colors );
 		}
 
-		static void uploadRepresentations( Context::ContextWrapper &			p_context,
-										   Layouts &							p_layouts,
-										   const Desc::Handle					p_handle,
-										   std::span<const RepresentationIndex> p_atomRepresentations,
-										   std::unordered_set<Desc::Handle> &	p_geometryRefreshSystems )
+		static void uploadRepresentations(
+			Context::ContextWrapper &			 p_context,
+			Layouts &							 p_layouts,
+			const Desc::Handle					 p_handle,
+			std::span<const RepresentationIndex> p_atomRepresentations,
+			std::unordered_set<Desc::Handle> &	 p_geometryRefreshSystems
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] AtomLayout::uploadRepresentations" );
 
@@ -345,14 +368,17 @@ namespace VTX::Renderer::Builder
 
 			assert( p_atomRepresentations.size() == p_layouts.atoms.size( p_handle ) );
 			p_layouts.atoms.upload<ATOM_ATTR::REPRESENTATION, RepresentationIndex>(
-				p_context, p_handle, p_atomRepresentations );
+				p_context, p_handle, p_atomRepresentations
+			);
 			p_geometryRefreshSystems.insert( p_handle );
 		}
 
-		static void uploadSelection( Context::ContextWrapper & p_context,
-									 Layouts &				   p_layouts,
-									 const Desc::Handle		   p_handle,
-									 std::span<const Flag>	   p_atomFlags )
+		static void uploadSelection(
+			Context::ContextWrapper & p_context,
+			Layouts &				  p_layouts,
+			const Desc::Handle		  p_handle,
+			std::span<const Flag>	  p_atomFlags
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] AtomLayout::uploadSelection" );
 
@@ -366,9 +392,11 @@ namespace VTX::Renderer::Builder
 	struct SystemVisibility
 	{
 		template<typename Systems>
-		static void uploadInput( Systems &							p_systems,
-								 const Desc::Handle					p_handle,
-								 std::unordered_set<Desc::Handle> & p_geometryRefreshSystems )
+		static void uploadInput(
+			Systems &						   p_systems,
+			const Desc::Handle				   p_handle,
+			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] SystemVisibility::uploadInput" );
 
@@ -376,9 +404,11 @@ namespace VTX::Renderer::Builder
 		}
 
 		template<typename Systems>
-		static void uploadVisibility( Systems &							 p_systems,
-									  std::unordered_set<Desc::Handle> & p_geometryRefreshSystems,
-									  const Desc::Handle				 p_handle )
+		static void uploadVisibility(
+			Systems &						   p_systems,
+			std::unordered_set<Desc::Handle> & p_geometryRefreshSystems,
+			const Desc::Handle				   p_handle
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] SystemVisibility::uploadVisibility" );
 
@@ -387,12 +417,14 @@ namespace VTX::Renderer::Builder
 		}
 
 		template<typename Systems, typename Representations>
-		static void refreshGeometryVisibility( Context::ContextWrapper & p_context,
-											   Systems &				 p_systems,
-											   Representations &		 p_representations,
-											   Layouts &				 p_layouts,
-											   Geometries &				 p_geometries,
-											   const Desc::Handle		 p_handle )
+		static void refreshGeometryVisibility(
+			Context::ContextWrapper & p_context,
+			Systems &				  p_systems,
+			Representations &		  p_representations,
+			Layouts &				  p_layouts,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] SystemVisibility::refreshGeometryVisibility" );
 
@@ -450,9 +482,11 @@ namespace VTX::Renderer::Builder
 					}
 					else if ( std::abs( sesProbeRadius - representationProbeRadius ) > EPSILON )
 					{
-						VTX_WARNING( "Multiple visible SES probe radii on the same system. Using {} and ignoring {}.",
-									 sesProbeRadius,
-									 representationProbeRadius );
+						VTX_WARNING(
+							"Multiple visible SES probe radii on the same system. Using {} and ignoring {}.",
+							sesProbeRadius,
+							representationProbeRadius
+						);
 					}
 					if ( not hasSesComputeMode )
 					{
@@ -478,30 +512,36 @@ namespace VTX::Renderer::Builder
 			{
 				p_geometries.ses.remove( p_context, p_handle );
 			}
-			else if ( p_geometries.ses.built( p_handle )
-					  && ( std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON
-						   || p_geometries.ses.computeMode( p_handle ) != sesComputeMode ) )
+			else if (
+				p_geometries.ses.built( p_handle )
+				&& ( std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON
+					 || p_geometries.ses.computeMode( p_handle ) != sesComputeMode )
+			)
 			{
 				p_geometries.ses.invalidateForRecompute( p_context, p_handle );
-				constructSES( p_context,
-							  p_systems,
-							  p_layouts,
-							  p_geometries,
-							  p_handle,
-							  sesProbeRadius,
-							  sesComputeMode,
-							  sesRepresentation );
+				constructSES(
+					p_context,
+					p_systems,
+					p_layouts,
+					p_geometries,
+					p_handle,
+					sesProbeRadius,
+					sesComputeMode,
+					sesRepresentation
+				);
 			}
 			else if ( not p_geometries.ses.built( p_handle ) )
 			{
-				constructSES( p_context,
-							  p_systems,
-							  p_layouts,
-							  p_geometries,
-							  p_handle,
-							  sesProbeRadius,
-							  sesComputeMode,
-							  sesRepresentation );
+				constructSES(
+					p_context,
+					p_systems,
+					p_layouts,
+					p_geometries,
+					p_handle,
+					sesProbeRadius,
+					sesComputeMode,
+					sesRepresentation
+				);
 			}
 
 			p_geometries.spheres.setVisibility( p_handle, visibleSpheres );
@@ -511,10 +551,12 @@ namespace VTX::Renderer::Builder
 		}
 
 		template<typename Systems>
-		static void constructRibbon( Systems &			p_systems,
-									 Layouts &			p_layouts,
-									 Geometries &		p_geometries,
-									 const Desc::Handle p_handle )
+		static void constructRibbon(
+			Systems &		   p_systems,
+			Layouts &		   p_layouts,
+			Geometries &	   p_geometries,
+			const Desc::Handle p_handle
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] SystemVisibility::constructRibbon" );
 
@@ -530,32 +572,38 @@ namespace VTX::Renderer::Builder
 		}
 
 		template<typename Systems>
-		static void constructSES( Context::ContextWrapper & p_context,
-								  Systems &					p_systems,
-								  Layouts &					p_layouts,
-								  Geometries &				p_geometries,
-								  const Desc::Handle		p_handle,
-								  const float				p_probeRadius,
-								  const E_SES_COMPUTE_MODE	p_computeMode,
-								  const RepresentationIndex p_representation )
+		static void constructSES(
+			Context::ContextWrapper & p_context,
+			Systems &				  p_systems,
+			Layouts &				  p_layouts,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle,
+			const float				  p_probeRadius,
+			const E_SES_COMPUTE_MODE  p_computeMode,
+			const RepresentationIndex p_representation
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] SystemVisibility::constructSES" );
 
 			const Cache::System & system = p_systems.get( p_handle );
-			p_geometries.constructSES( p_context,
-									   p_handle,
-									   system,
-									   p_layouts.atoms.offset( p_handle ),
-									   p_probeRadius,
-									   p_computeMode,
-									   p_representation );
+			p_geometries.constructSES(
+				p_context,
+				p_handle,
+				system,
+				p_layouts.atoms.offset( p_handle ),
+				p_probeRadius,
+				p_computeMode,
+				p_representation
+			);
 		}
 
-		static void uploadRibbonResidues( Context::ContextWrapper & p_context,
-										  Layouts &					p_layouts,
-										  Geometries &				p_geometries,
-										  const Desc::Handle		p_handle,
-										  const Cache::System &		p_system )
+		static void uploadRibbonResidues(
+			Context::ContextWrapper & p_context,
+			Layouts &				  p_layouts,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle,
+			const Cache::System &	  p_system
+		)
 		{
 			using namespace Layout;
 
@@ -591,15 +639,18 @@ namespace VTX::Renderer::Builder
 			p_layouts.residues.upload<RESIDUE_ATTR::TYPE, uint8_t>( p_context, p_handle, residueTypes );
 			p_layouts.residues.upload<RESIDUE_ATTR::COLOR, ColorIndex>( p_context, p_handle, residueColors );
 			p_layouts.residues.upload<RESIDUE_ATTR::REPRESENTATION, RepresentationIndex>(
-				p_context, p_handle, residueRepresentations );
+				p_context, p_handle, residueRepresentations
+			);
 			p_layouts.residues.upload<RESIDUE_ATTR::FLAG, Flag>( p_context, p_handle, residueFlags );
 		}
 
-		static void uploadRibbonPositions( Context::ContextWrapper & p_context,
-										   Layouts &				 p_layouts,
-										   Geometries &				 p_geometries,
-										   const Desc::Handle		 p_handle,
-										   std::span<const Vec3f>	 p_positions )
+		static void uploadRibbonPositions(
+			Context::ContextWrapper & p_context,
+			Layouts &				  p_layouts,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle,
+			std::span<const Vec3f>	  p_positions
+		)
 		{
 			using namespace Layout;
 
@@ -743,10 +794,12 @@ namespace VTX::Renderer::Builder
 
 	struct CameraState
 	{
-		static void upload( Context::ContextWrapper & p_context,
-							const Cache::Camera &	  p_camera,
-							const size_t			  p_width,
-							const size_t			  p_height )
+		static void upload(
+			Context::ContextWrapper & p_context,
+			const Cache::Camera &	  p_camera,
+			const size_t			  p_width,
+			const size_t			  p_height
+		)
 		{
 			BinaryBuffer140 buffer;
 			const Mat4f		matrixViewInv	   = Util::Math::inverse( p_camera.matView );
@@ -757,10 +810,12 @@ namespace VTX::Renderer::Builder
 			buffer.write( matrixViewInv );
 			buffer.write( matrixViewInvTrans );
 			buffer.write( p_camera.position );
-			buffer.write( Vec4f( p_camera.camera.near * p_camera.camera.far,
-								 p_camera.camera.far,
-								 p_camera.camera.far - p_camera.camera.near,
-								 p_camera.camera.near ) );
+			buffer.write( Vec4f(
+				p_camera.camera.near * p_camera.camera.far,
+				p_camera.camera.far,
+				p_camera.camera.far - p_camera.camera.near,
+				p_camera.camera.near
+			) );
 			buffer.write( Vec2i( static_cast<int>( p_width ), static_cast<int>( p_height ) ) );
 			buffer.write( Vec2i() );
 			buffer.write( static_cast<uint>( p_camera.camera.projection == PROJECTION::PERSPECTIVE ) );
@@ -837,11 +892,13 @@ namespace VTX::Renderer::Builder
 			p_layouts.residues.resize( p_context );
 		}
 
-		static void uploadInput( Context::ContextWrapper & p_context,
-								 Layouts &				   p_layouts,
-								 Geometries &			   p_geometries,
-								 const Desc::Handle		   p_handle,
-								 const Cache::System &	   p_system )
+		static void uploadInput(
+			Context::ContextWrapper & p_context,
+			Layouts &				  p_layouts,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle,
+			const Cache::System &	  p_system
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] ResidueLayout::uploadInput" );
 
@@ -853,15 +910,18 @@ namespace VTX::Renderer::Builder
 			uploadIds( p_context, p_layouts, p_geometries, p_handle, p_system );
 			uploadTypesAndColors( p_context, p_layouts, p_geometries, p_handle, p_system );
 			uploadRepresentations(
-				p_context, p_layouts, p_geometries, p_handle, AtomLayout::buildAtomRepresentations( p_system ) );
+				p_context, p_layouts, p_geometries, p_handle, AtomLayout::buildAtomRepresentations( p_system )
+			);
 			uploadSelection( p_context, p_layouts, p_geometries, p_handle, AtomLayout::buildAtomFlags( p_system ) );
 		}
 
-		static void uploadRepresentations( Context::ContextWrapper &			p_context,
-										   Layouts &							p_layouts,
-										   Geometries &							p_geometries,
-										   const Desc::Handle					p_handle,
-										   std::span<const RepresentationIndex> p_atomRepresentations )
+		static void uploadRepresentations(
+			Context::ContextWrapper &			 p_context,
+			Layouts &							 p_layouts,
+			Geometries &						 p_geometries,
+			const Desc::Handle					 p_handle,
+			std::span<const RepresentationIndex> p_atomRepresentations
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] ResidueLayout::uploadRepresentations" );
 
@@ -884,14 +944,17 @@ namespace VTX::Renderer::Builder
 			}
 
 			p_layouts.residues.upload<RESIDUE_ATTR::REPRESENTATION, RepresentationIndex>(
-				p_context, p_handle, residues );
+				p_context, p_handle, residues
+			);
 		}
 
-		static void uploadSelection( Context::ContextWrapper & p_context,
-									 Layouts &				   p_layouts,
-									 Geometries &			   p_geometries,
-									 const Desc::Handle		   p_handle,
-									 std::span<const Flag>	   p_atomFlags )
+		static void uploadSelection(
+			Context::ContextWrapper & p_context,
+			Layouts &				  p_layouts,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle,
+			std::span<const Flag>	  p_atomFlags
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] ResidueLayout::uploadSelection" );
 
@@ -919,11 +982,13 @@ namespace VTX::Renderer::Builder
 		}
 
 	  private:
-		static void uploadIds( Context::ContextWrapper & p_context,
-							   Layouts &				 p_layouts,
-							   Geometries &				 p_geometries,
-							   const Desc::Handle		 p_handle,
-							   const Cache::System &	 p_system )
+		static void uploadIds(
+			Context::ContextWrapper & p_context,
+			Layouts &				  p_layouts,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle,
+			const Cache::System &	  p_system
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] ResidueLayout::uploadIds" );
 
@@ -942,11 +1007,13 @@ namespace VTX::Renderer::Builder
 			p_layouts.residues.upload<RESIDUE_ATTR::ID, UID32>( p_context, p_handle, residueIds );
 		}
 
-		static void uploadTypesAndColors( Context::ContextWrapper & p_context,
-										  Layouts &					p_layouts,
-										  Geometries &				p_geometries,
-										  const Desc::Handle		p_handle,
-										  const Cache::System &		p_system )
+		static void uploadTypesAndColors(
+			Context::ContextWrapper & p_context,
+			Layouts &				  p_layouts,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle,
+			const Cache::System &	  p_system
+		)
 		{
 			using namespace Layout;
 
@@ -971,11 +1038,13 @@ namespace VTX::Renderer::Builder
 
 	struct RibbonGeometry
 	{
-		static void uploadPositions( Context::ContextWrapper & p_context,
-									 Layouts &				   p_layouts,
-									 Geometries &			   p_geometries,
-									 const Desc::Handle		   p_handle,
-									 std::span<const Vec3f>	   p_positions )
+		static void uploadPositions(
+			Context::ContextWrapper & p_context,
+			Layouts &				  p_layouts,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle,
+			std::span<const Vec3f>	  p_positions
+		)
 		{
 			using namespace Layout;
 
@@ -987,9 +1056,11 @@ namespace VTX::Renderer::Builder
 			SystemVisibility::uploadRibbonPositions( p_context, p_layouts, p_geometries, p_handle, p_positions );
 		}
 
-		static void writeOutput( Context::ContextWrapper & p_context,
-								 Geometries &			   p_geometries,
-								 const Desc::Handle		   p_handle )
+		static void writeOutput(
+			Context::ContextWrapper & p_context,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] RibbonGeometry::writeOutput" );
 
@@ -1009,9 +1080,11 @@ namespace VTX::Renderer::Builder
 			p_geometries.resizeSystems( p_context );
 		}
 
-		static void writeOutput( Context::ContextWrapper & p_context,
-								 Geometries &			   p_geometries,
-								 const Desc::Handle		   p_handle )
+		static void writeOutput(
+			Context::ContextWrapper & p_context,
+			Geometries &			  p_geometries,
+			const Desc::Handle		  p_handle
+		)
 		{
 			// Util::ScopedChrono timer( "[BUILDER] GeometryBuffers::writeOutput" );
 

@@ -33,6 +33,7 @@ namespace VTX::Util::Math
 	using ::glm::dot;
 	using ::glm::eulerAngles;
 	using ::glm::exp2;
+	using ::glm::floor;
 	using ::glm::inverse;
 	using ::glm::length;
 	using ::glm::length2;

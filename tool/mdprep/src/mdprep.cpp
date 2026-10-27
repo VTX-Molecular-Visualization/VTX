@@ -53,8 +53,8 @@ namespace VTX::Tool::Mdprep
 		  private:
 			using EngineCollection
 				= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
-			QComboBox * _w_mdEngine	   = nullptr;
-			QWidget *	_formContainer = nullptr;
+			[[maybe_unused]] QComboBox * _w_mdEngine	= nullptr;
+			[[maybe_unused]] QWidget *	 _formContainer = nullptr;
 
 			VTX::Tool::Mdprep::Gateway::MdParameters		  _paramaeters;
 			std::optional<VTX::Tool::Mdprep::ui::ScreenForms> _screen;
@@ -101,7 +101,8 @@ namespace VTX::Tool::Mdprep
 				win->resize( win->PREFERRED_SIZE );
 				win->show();
 				QTimer::singleShot(
-					0, [ win = win ] { win->raise(); } ); // The widget is not raised consistently on the same loop
+					0, [ win = win ] { win->raise(); }
+				); // The widget is not raised consistently on the same loop
 			}
 			else
 			{
@@ -114,8 +115,9 @@ namespace VTX::Tool::Mdprep
 
 	void MdPrep::registerActions()
 	{
-		UI::QT::UI_ACTIONS().registerAction( openMdPrepAction(),
-											 []( const UI::QT::ActionRegistry::ActionContext & ) { openMdPrep(); } );
+		UI::QT::UI_ACTIONS().registerAction(
+			openMdPrepAction(), []( const UI::QT::ActionRegistry::ActionContext & ) { openMdPrep(); }
+		);
 	}
 
 	void MdPrep::buildUI()

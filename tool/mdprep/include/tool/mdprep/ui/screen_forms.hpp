@@ -37,7 +37,7 @@ namespace VTX::Tool::Mdprep::ui
 		using EngineCollection
 			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
 
-		Gateway::MdParameters * _dataPtr = nullptr;
+		[[maybe_unused]] Gateway::MdParameters * _dataPtr = nullptr;
 
 		QComboBox *	  _w_mdEngine	 = nullptr;
 		QWidget *	  _formContainer = nullptr;

@@ -79,18 +79,21 @@ namespace VTX::Renderer::Geometry
 
 		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			assert( p_data.data.residueUids->getCount()
-					== p_data.data.topology->residueSecondaryStructureTypes.size() );
+			assert(
+				p_data.data.residueUids->getCount() == p_data.data.topology->residueSecondaryStructureTypes.size()
+			);
 			assert( p_data.data.residueUids->getCount() == p_data.data.topology->residueFirstAtomIndexes.size() );
 			assert( p_data.data.residueUids->getCount() == p_data.data.topology->residueAtomCounts.size() );
-			assert( p_data.data.topology->chainFirstResidues.size()
-					== p_data.data.topology->chainResidueCounts.size() );
+			assert(
+				p_data.data.topology->chainFirstResidues.size() == p_data.data.topology->chainResidueCounts.size()
+			);
 
 			if ( const auto it = _construction.find( p_handle ); it != _construction.end() )
 			{
 				const Construction & cache = it->second;
 				_addRange(
-					p_handle, static_cast<Index>( cache.indices.size() ), static_cast<Index>( cache.residues.size() ) );
+					p_handle, static_cast<Index>( cache.indices.size() ), static_cast<Index>( cache.residues.size() )
+				);
 
 				if ( not cache.isEmpty )
 				{
@@ -173,7 +176,7 @@ namespace VTX::Renderer::Geometry
 
 			assert( bufferIndices.size() % 4 == 0 );
 
-			const Index segmentCount = static_cast<Index>( bufferIndices.size() / 4 );
+			[[maybe_unused]] const Index segmentCount = static_cast<Index>( bufferIndices.size() / 4 );
 
 			assert( segmentCount == static_cast<Index>( residueToIndices.size() ) );
 			assert( segmentCount == static_cast<Index>( residueToPositions.size() ) );

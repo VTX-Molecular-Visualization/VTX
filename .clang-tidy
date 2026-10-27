@@ -17,6 +17,7 @@ Checks:
   - '-cert-msc51-cpp'                                                # Random engines seeded with constants (alias).
   - '-clang-analyzer-optin.core.EnumCastOutOfRange'                  # Enum casts of out-of-range values.
   - '-clang-analyzer-security.ArrayBound'                            # Out-of-bounds array access (analyzer).
+  - '-clang-diagnostic-unused-function'                              # Unused functions.
   - '-cppcoreguidelines-avoid-c-arrays'                              # C-style arrays (alias).
   - '-cppcoreguidelines-avoid-goto'                                  # goto statements.
   - '-cppcoreguidelines-avoid-const-or-ref-data-members'             # const or reference data members.

@@ -122,18 +122,20 @@ namespace VTX::App::Extractor
 		_attributesPtr->data.trajectoryBufferSettings = p_bufferSettings;
 	}
 
-	System::System( FilePath					   p_path,
-					std::string &&				   p_buffer,
-					IO::READER_OPTION			   p_options,
-					const TrajectoryBufferSettings p_bufferSettings ) :
-		System( std::move( p_path ), p_options, p_bufferSettings )
+	System::System(
+		FilePath					   p_path,
+		std::string &&				   p_buffer,
+		IO::READER_OPTION			   p_options,
+		const TrajectoryBufferSettings p_bufferSettings
+	) : System( std::move( p_path ), p_options, p_bufferSettings )
 	{ _attributesPtr->data.buffer = std::move( p_buffer ); }
 
-	System::System( const Entity				   p_entity,
-					FilePath					   p_path,
-					IO::READER_OPTION			   p_options,
-					const TrajectoryBufferSettings p_bufferSettings ) :
-		System( std::move( p_path ), p_options, p_bufferSettings )
+	System::System(
+		const Entity				   p_entity,
+		FilePath					   p_path,
+		IO::READER_OPTION			   p_options,
+		const TrajectoryBufferSettings p_bufferSettings
+	) : System( std::move( p_path ), p_options, p_bufferSettings )
 	{
 		_attributesPtr->data.entity			= p_entity;
 		_attributesPtr->data.onlyTrajectory = true;
@@ -141,8 +143,10 @@ namespace VTX::App::Extractor
 
 	void System::wait() { _attributesPtr->synchronizer.wait(); }
 
-	uint System::operator()( const Util::Thread::StopToken &			 p_stopToken,
-							 const Util::Thread::OptionalThreadReference p_thread )
+	uint System::operator()(
+		const Util::Thread::StopToken &				p_stopToken,
+		const Util::Thread::OptionalThreadReference p_thread
+	)
 	{
 		try
 		{
@@ -151,7 +155,8 @@ namespace VTX::App::Extractor
 			if ( p_thread )
 			{
 				p_thread.value().get().setProgressText(
-					fmt::format( "Reading {}...", pendingData.sourcePath.filename().string() ) );
+					fmt::format( "Reading {}...", pendingData.sourcePath.filename().string() )
+				);
 			}
 
 			if ( p_stopToken.stop_requested() )
@@ -162,10 +167,12 @@ namespace VTX::App::Extractor
 
 			if ( pendingData.buffer )
 			{
-				pendingData.reader.emplace( std::move( pendingData.buffer.value() ),
-											pendingData.sourcePath,
-											pendingData.readerOption,
-											p_stopToken );
+				pendingData.reader.emplace(
+					std::move( pendingData.buffer.value() ),
+					pendingData.sourcePath,
+					pendingData.readerOption,
+					p_stopToken
+				);
 			}
 			else
 			{
@@ -173,11 +180,13 @@ namespace VTX::App::Extractor
 			}
 			if ( not pendingData.onlyTrajectory )
 			{
-				pendingData.reader->get( ECS::getCtx<Core::ChemDB::Category::Dictionary>(),
-										 pendingData.topology,
-										 pendingData.metadata,
-										 pendingData.aabb,
-										 pendingData.atomGrid );
+				pendingData.reader->get(
+					ECS::getCtx<Core::ChemDB::Category::Dictionary>(),
+					pendingData.topology,
+					pendingData.metadata,
+					pendingData.aabb,
+					pendingData.atomGrid
+				);
 			}
 
 			if ( p_stopToken.stop_requested() )
@@ -201,12 +210,14 @@ namespace VTX::App::Extractor
 			if ( pendingData.trajectory.frameCount > 1 )
 			{
 				pendingData.trajectoryBufferMode.emplace( pendingData.trajectoryBufferSettings.selectMode(
-					firstFrame.size(), pendingData.trajectory.frameCount ) );
+					firstFrame.size(), pendingData.trajectory.frameCount
+				) );
 			}
 			const size_t frameStorageCount
 				= pendingData.trajectoryBufferMode
-					  ? pendingData.trajectoryBufferSettings.getStorageFrameCount( *pendingData.trajectoryBufferMode,
-																				   pendingData.trajectory.frameCount )
+					  ? pendingData.trajectoryBufferSettings.getStorageFrameCount(
+							*pendingData.trajectoryBufferMode, pendingData.trajectory.frameCount
+						)
 					  : pendingData.trajectory.frameCount;
 			pendingData.trajectory.frames.resize( frameStorageCount );
 			pendingData.trajectory.frames[ 0 ] = std::move( firstFrame );
@@ -214,7 +225,8 @@ namespace VTX::App::Extractor
 			{
 				pendingData.trajectoryPlayer.emplace();
 				pendingData.trajectoryPlayer->player.setStepCount(
-					static_cast<uint>( pendingData.trajectory.frameCount ) );
+					static_cast<uint>( pendingData.trajectory.frameCount )
+				);
 			}
 
 			if ( p_stopToken.stop_requested() )
@@ -225,7 +237,8 @@ namespace VTX::App::Extractor
 
 			auto attributesCopy = _attributesPtr; // Keep a copy so wait() can still access the latch.
 			ACTION().subscribe(
-				Action::QueuedAction( DeliverSystem<std::shared_ptr<Data>>(), std::move( attributesCopy ) ) );
+				Action::QueuedAction( DeliverSystem<std::shared_ptr<Data>>(), std::move( attributesCopy ) )
+			);
 			return 0;
 		}
 		catch ( ... )
@@ -249,9 +262,11 @@ namespace VTX::App::Extractor
 				registry.emplace<App::Trajectory::Player>( p_entity, std::move( *p_data.trajectoryPlayer ) );
 				registry.emplace<App::Trajectory::Loader>(
 					p_entity,
-					THREAD().createThread<App::Thread::TrajectoryLoader>( std::move( *p_data.reader ),
-																		  *p_data.trajectoryBufferMode ),
-					*p_data.trajectoryBufferMode );
+					THREAD().createThread<App::Thread::TrajectoryLoader>(
+						std::move( *p_data.reader ), *p_data.trajectoryBufferMode
+					),
+					*p_data.trajectoryBufferMode
+				);
 			}
 		}
 
@@ -260,11 +275,11 @@ namespace VTX::App::Extractor
 			auto & reg = REG();
 
 			// Add components.
-			auto   p_entity	 = reg.create();
-			auto & data		 = reg.emplace<Core::Struct::Topology>( p_entity, std::move( p_data.topology ) );
-			auto & metadata	 = reg.emplace<IO::Metadata>( p_entity, std::move( p_data.metadata ) );
-			auto & transform = reg.emplace<Util::Math::Transform>( p_entity );
-			auto & aabb		 = reg.emplace<Util::Math::AABB>( p_entity, p_data.aabb );
+			auto   p_entity = reg.create();
+			auto & data		= reg.emplace<Core::Struct::Topology>( p_entity, std::move( p_data.topology ) );
+			reg.emplace<IO::Metadata>( p_entity, std::move( p_data.metadata ) );
+			reg.emplace<Util::Math::Transform>( p_entity );
+			auto & aabb = reg.emplace<Util::Math::AABB>( p_entity, p_data.aabb );
 			reg.emplace<Util::Math::Grid<Index>>( p_entity, std::move( p_data.atomGrid ) );
 			auto & uid = reg.emplace<App::System::UID>( p_entity );
 
@@ -322,20 +337,23 @@ namespace VTX::App::Extractor
 				{
 					addTrajectory( *p_data.entity, p_data );
 
-					if ( auto * uid = REG().try_get<App::System::UID>( *p_data.entity ) )
+					if ( REG().all_of<App::System::UID>( *p_data.entity ) )
 					{
 						App::Helper::Trajectory::visitCurrentFrame(
 							*p_data.entity,
 							[ entity = *p_data.entity ]( const Core::Struct::FrameView p_frame )
-							{ HUB().trigger<Events::TrajectoryCurrentFrameChange>( { entity, p_frame } ); } );
+							{ HUB().trigger<Events::TrajectoryCurrentFrameChange>( { entity, p_frame } ); }
+						);
 					}
 				}
 				else
 				{
-					VTX::VTX_ERROR( "File {} has different atom count. ({}/{})",
-									p_data.sourcePath.string(),
-									topology.getAtomCount(),
-									pendingAtomCount );
+					VTX::VTX_ERROR(
+						"File {} has different atom count. ({}/{})",
+						p_data.sourcePath.string(),
+						topology.getAtomCount(),
+						pendingAtomCount
+					);
 				}
 			}
 			else

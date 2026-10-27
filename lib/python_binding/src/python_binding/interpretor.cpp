@@ -3,7 +3,6 @@
 #include "python_binding/binding/vtx_api.hpp"
 #include "python_binding/binding/vtx_module.hpp"
 #include "python_binding/command_filter.hpp"
-#include "python_binding/log_redirection.hpp"
 #include "python_binding/wrapper/module.hpp"
 #include <pybind11/embed.h>
 #include <pybind11/eval.h>
@@ -55,10 +54,10 @@ namespace VTX::PythonBinding
 			// ".exe" ).wstring();
 			// const std::wstring pythonExecDir = p_pythonHomePath;
 #else
-			std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "lib"
-										 / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR )
-										   .wstring();
-			std::wstring platlibdir	 = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
+			const std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "lib"
+											   / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR )
+												 .wstring();
+			const std::wstring platlibdir  = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
 			// std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin"
 			// / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR ).wstring();
 			// std::wstring pythonExecDir = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
@@ -80,7 +79,7 @@ namespace VTX::PythonBinding
 			PyWideStringList_Append( &config.module_search_paths, pyScriptDir.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, pythonArchivePathStr.c_str() );
 #ifndef _WIN32
-			std::wstring dynloadDir = ( VTX::FilePath( pyScriptDir ) / "lib-dynload" ).wstring();
+			const std::wstring dynloadDir = ( VTX::FilePath( pyScriptDir ) / "lib-dynload" ).wstring();
 			PyWideStringList_Append( &config.module_search_paths, dynloadDir.c_str() );
 #endif // !_WIN32
 			PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
@@ -148,7 +147,6 @@ namespace VTX::PythonBinding
 
 	  private:
 		const std::wstring _pythonBinDir { ( Util::Filesystem::getExecutableDir() / "external" / "python" ).wstring() };
-		LogRedirection	   _logger;
 		pybind11::scoped_interpreter _interpretor { createInterpretor( _pythonBinDir ) };
 		pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
 		Wrapper::Module				 _wrapper { _vtxModule, vtx_module_name() };

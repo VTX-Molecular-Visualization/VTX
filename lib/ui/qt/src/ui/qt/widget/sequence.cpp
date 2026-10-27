@@ -50,7 +50,7 @@ namespace VTX::UI::QT::Widget
 			using reference			= value_type &; // or also value_type&
 
 			ResidueIterator( std::function<Residue( Index )> p_residueGetter, Index p_idx ) :
-				_getter( std::move( p_residueGetter ) ), _idx( p_idx )
+				_idx( p_idx ), _getter( std::move( p_residueGetter ) )
 			{
 			}
 
@@ -130,11 +130,13 @@ namespace VTX::UI::QT::Widget
 				{
 					_oIdData.ruleSize++;
 				}
-				else if ( it_vtxResIdx > 0
-						  // case where the resid restart. Either
-						  // from a new chain, or some other reason.
-						  and topology.residueOriginalIds[ it_vtxResIdx - 1 ] != INVALID_INDEX
-						  and residueOriginalId > topology.residueOriginalIds[ it_vtxResIdx - 1 ] )
+				else if (
+					it_vtxResIdx > 0
+					// case where the resid restart. Either
+					// from a new chain, or some other reason.
+					and topology.residueOriginalIds[ it_vtxResIdx - 1 ] != INVALID_INDEX
+					and residueOriginalId > topology.residueOriginalIds[ it_vtxResIdx - 1 ]
+				)
 				{
 					_oIdData.ruleSize += residueOriginalId - topology.residueOriginalIds[ it_vtxResIdx - 1 ];
 				}
@@ -168,8 +170,9 @@ namespace VTX::UI::QT::Widget
 
 		ResidueIterator end( Index p_lastIndex )
 		{
-			return ResidueIterator( [ this ]( Index p_ ) { return this->residueAtRuleIndex( p_ ); },
-									std::min( p_lastIndex, ruleSize() ) );
+			return ResidueIterator(
+				[ this ]( Index p_ ) { return this->residueAtRuleIndex( p_ ); }, std::min( p_lastIndex, ruleSize() )
+			);
 		}
 
 		std::optional<Index> residueIndexfromRuleIndex( Index p_ruleIndex ) const
@@ -205,7 +208,8 @@ namespace VTX::UI::QT::Widget
 					break;
 				}
 				out.selected = App::Helper::System::getSelectionState(
-								   { _entity, Core::Struct::E_SYSTEM_ITEM::RESIDUE, p_index } )
+								   { _entity, Core::Struct::E_SYSTEM_ITEM::RESIDUE, p_index }
+							   )
 							   != App::System::E_SELECTION_STATE::NONE;
 
 				if ( p_index < topology.residueSymbols.size() )
@@ -254,7 +258,8 @@ namespace VTX::UI::QT::Widget
 						}
 					}
 					out.selected = App::Helper::System::getSelectionState(
-									   { _entity, Core::Struct::E_SYSTEM_ITEM::RESIDUE, resIdx } )
+									   { _entity, Core::Struct::E_SYSTEM_ITEM::RESIDUE, resIdx }
+								   )
 								   != App::System::E_SELECTION_STATE::NONE;
 				}
 				else
@@ -372,7 +377,8 @@ namespace VTX::UI::QT::Widget
 		const Index	  firstChain  = residue->chainIndex;
 		const QString headerLabel = QString( "%1/%2" ).arg(
 			QString::fromStdString( metadata.pdbIDCode ),
-			QString::fromStdString( std::string( residue->chainName.data(), residue->chainName.size() ) ) );
+			QString::fromStdString( std::string( residue->chainName.data(), residue->chainName.size() ) )
+		);
 		painter.setPen( Helper::toQColor( colorlayout.getChainColor( firstChain + 1 ) ) );
 		painter.drawText( 0, SEQ_CHAR_HEIGHT, headerLabel );
 		const int labelWidth = painter.fontMetrics().horizontalAdvance( headerLabel );
@@ -383,7 +389,8 @@ namespace VTX::UI::QT::Widget
 		for ( ; residue != end; ++residue )
 		{
 			painter.setPen(
-				Helper::toQColor( colorlayout.getChainColor( static_cast<size_t>( residue->chainIndex + 1 ) ) ) );
+				Helper::toQColor( colorlayout.getChainColor( static_cast<size_t>( residue->chainIndex + 1 ) ) )
+			);
 
 			// Chain labels.
 			if ( residue->chainIndex != lastChain )
@@ -391,7 +398,8 @@ namespace VTX::UI::QT::Widget
 				if ( x > labelWidth )
 				{
 					const QString chainLabel = QString( "/%1" ).arg(
-						QString::fromStdString( std::string( residue->chainName.data(), residue->chainName.size() ) ) );
+						QString::fromStdString( std::string( residue->chainName.data(), residue->chainName.size() ) )
+					);
 					// First we draw a background rectangle so edge cases where previous rule label is to wide it
 					// collide with this very label is prevented.
 					const QRect cellRect( x - 2, 0, SEQ_CHAR_WIDTH * chainLabel.size(), SEQ_CHAR_HEIGHT );
@@ -468,9 +476,6 @@ namespace VTX::UI::QT::Widget
 
 		Index index = *opt;
 
-		auto & reg		 = REG();
-		auto & selection = reg.get<App::System::Selection>( _system );
-
 		const bool shift = p_e->modifiers() & Qt::ShiftModifier;
 		const bool ctrl	 = p_e->modifiers() & Qt::ControlModifier;
 
@@ -541,9 +546,6 @@ namespace VTX::UI::QT::Widget
 
 		const Index index = *opt;
 
-		auto & reg		 = App::REG();
-		auto & selection = reg.get<App::System::Selection>( _system );
-
 		const Index a = Util::Math::min( _dragStartIndex, index );
 		const Index b = Util::Math::max( _dragStartIndex, index );
 
@@ -587,7 +589,6 @@ namespace VTX::UI::QT::Widget
 
 	void Sequence::_updateScrollBars()
 	{
-		auto &	   topology		= App::REG().get<Core::Struct::Topology>( _system );
 		const uint contentWidth = static_cast<uint>( _sequencer->ruleSize() ) * SEQ_CHAR_WIDTH;
 		horizontalScrollBar()->setRange( 0, contentWidth - viewport()->width() );
 		horizontalScrollBar()->setPageStep( viewport()->width() );

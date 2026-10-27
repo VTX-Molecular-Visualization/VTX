@@ -36,6 +36,7 @@ extern "C"
 
 namespace
 {
+#ifdef _WIN32
 	/**
 	 * @brief On windows, the console returns before the text is returned. The behavior is tight to the Windows OS : a
 
@@ -48,7 +49,6 @@ namespace
 	 */
 	void unblockParentConsole()
 	{
-#ifdef _WIN32
 		std::cout.flush();
 		// Inject Enter to unblock the cmd.exe prompt that fired before our output.
 		INPUT_RECORD ir = {};
@@ -64,8 +64,8 @@ namespace
 
 		DWORD written {};
 		WriteConsoleInput( GetStdHandle( STD_INPUT_HANDLE ), &ir, 1, &written );
-#endif
 	}
+#endif
 } // namespace
 
 int main( int p_argc, char * p_argv[] )

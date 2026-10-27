@@ -19,7 +19,7 @@
 namespace VTX::Tool::Mdprep::ui::form_advanced
 {
 	EventManager::EventManager( ReportManager & p_reportManager, Gateway::MdParameters p_param ) :
-		parameters( std::move( p_param ) ), reportManager( &p_reportManager )
+		reportManager( &p_reportManager ), parameters( std::move( p_param ) )
 	{
 	}
 
@@ -32,9 +32,9 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 	}
 
 	EventManager::EventManager( EventManager && p_other ) noexcept :
-		fieldPlacers( std::move( p_other.fieldPlacers ) ), _fieldSystemBoxShape( p_other._fieldSystemBoxShape ),
-		_fieldBioForceField( p_other._fieldBioForceField ), parameters( std::move( p_other.parameters ) ),
-		reportManager( p_other.reportManager ), _sentry( std::move( p_other._sentry ) )
+		fieldPlacers( std::move( p_other.fieldPlacers ) ), reportManager( p_other.reportManager ),
+		parameters( std::move( p_other.parameters ) ), _fieldSystemBoxShape( p_other._fieldSystemBoxShape ),
+		_fieldBioForceField( p_other._fieldBioForceField ), _sentry( std::move( p_other._sentry ) )
 	{
 		if ( _fieldSystemBoxShape )
 		{

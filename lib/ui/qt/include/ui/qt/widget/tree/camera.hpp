@@ -28,11 +28,6 @@ namespace VTX::UI::QT::Widget::Tree
 
 	  private:
 		/**
-		 * @brief Camera entitie.
-		 */
-		const Entity _entity;
-
-		/**
 		 * @brief Map viewpoint entities to tree items.
 		 */
 		std::unordered_map<Entity, QTreeWidgetItem *> _entityToItemMap;

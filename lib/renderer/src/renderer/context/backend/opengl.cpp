@@ -465,7 +465,7 @@ namespace VTX::Renderer::Context::Backend
 
 								if ( indexed )
 								{
-									PayloadDrawIndexed pDraw { hProgram, hVao };
+									PayloadDrawIndexed pDraw { { .program = hProgram, .pipeline = hVao } };
 									pDraw.primitive = toUnderlying( drawCall.primitive );
 									pDraw.indexBuffer
 										= _bufferHandle( geometry.indiceBuffer.value(), p_resources, chunk );
@@ -475,7 +475,7 @@ namespace VTX::Renderer::Context::Backend
 								}
 								else
 								{
-									PayloadDraw pDraw { hProgram, hVao };
+									PayloadDraw pDraw { { .program = hProgram, .pipeline = hVao } };
 									pDraw.primitive = toUnderlying( drawCall.primitive );
 									pDraw.first		= rangePtr->first;
 									pDraw.count		= rangePtr->count;
@@ -517,7 +517,7 @@ namespace VTX::Renderer::Context::Backend
 									}
 									else
 									{
-										PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
+										PayloadDrawIndexedIndirect pDraw { { .program = hProgram, .pipeline = hVao } };
 										pDraw.primitive = toUnderlying( drawCall.primitive );
 										pDraw.indirectBuffer
 											= _bufferHandle( geometry.indirectBuffer.value(), p_resources, chunk );
@@ -548,7 +548,7 @@ namespace VTX::Renderer::Context::Backend
 									}
 									else
 									{
-										PayloadDrawIndirect pDraw { hProgram, hVao };
+										PayloadDrawIndirect pDraw { { .program = hProgram, .pipeline = hVao } };
 										pDraw.primitive = toUnderlying( drawCall.primitive );
 										pDraw.indirectBuffer
 											= _bufferHandle( geometry.indirectBuffer.value(), p_resources, chunk );
@@ -564,7 +564,8 @@ namespace VTX::Renderer::Context::Backend
 					else
 					{
 						// Fullscreen quad draw.
-						PayloadDraw pDraw { hProgram, _vertexArrays.handle( Desc::Key { QUAD } ) };
+						PayloadDraw pDraw { { .program	= hProgram,
+											  .pipeline = _vertexArrays.handle( Desc::Key { QUAD } ) } };
 						pDraw.primitive = static_cast<uint32_t>( toUnderlying( E_PRIMITIVE::TRIANGLES ) );
 						pDraw.first		= 0;
 						pDraw.count		= 4;
@@ -597,7 +598,7 @@ namespace VTX::Renderer::Context::Backend
 
 					if ( program.dispatch )
 					{
-						PayloadDispatch pDispatch { hProgram };
+						PayloadDispatch pDispatch { { .program = hProgram } };
 						pDispatch.barriers = toUnderlying( program.dispatch->barriers );
 						pDispatch.groupX   = program.dispatch->groupX;
 						pDispatch.groupY   = program.dispatch->groupY;
@@ -606,7 +607,7 @@ namespace VTX::Renderer::Context::Backend
 					}
 					else if ( program.dispatchIndirect )
 					{
-						PayloadDispatchIndirect pDispatch { hProgram };
+						PayloadDispatchIndirect pDispatch { { .program = hProgram } };
 						pDispatch.barriers		 = toUnderlying( program.dispatchIndirect->barriers );
 						pDispatch.indirectBuffer = _buffers.handle( program.dispatchIndirect->indirectBuffer );
 						pDispatch.offset		 = program.dispatchIndirect->offset;

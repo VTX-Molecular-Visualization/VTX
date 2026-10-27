@@ -5,14 +5,14 @@
 namespace VTX::PythonBinding::Wrapper
 {
 	Function::Function( const Module & p_module, const std::string & p_funcName ) :
-		_funcHandle( _getFunctionAccessor( p_module, p_funcName ) ),
-		_functionPath( p_module.getModulePath() + "." + p_funcName )
+		_functionPath( p_module.getModulePath() + "." + p_funcName ),
+		_funcHandle( _getFunctionAccessor( p_module, p_funcName ) )
 	{
 	}
 
 	Function::Function( const Object & p_object, const std::string & p_funcName ) :
-		_funcHandle( _getFunctionAccessor( p_object, p_funcName ) ),
-		_functionPath( p_object.getObjectName() + "." + p_funcName )
+		_functionPath( p_object.getObjectName() + "." + p_funcName ),
+		_funcHandle( _getFunctionAccessor( p_object, p_funcName ) )
 	{
 	}
 

@@ -13,7 +13,7 @@
 namespace VTX::UI::QT::Model
 {
 	SystemModel::SystemModel( const Entity p_system, QObject * p_parent ) :
-		_system( p_system ), QAbstractItemModel( p_parent )
+		QAbstractItemModel( p_parent ), _system( p_system )
 	{
 		_viewMode = static_cast<ViewMode>(
 			SETTINGS().value( SETTING_KEY_TREE_VIEW_MODE, VTX::toUnderlying( ViewMode::ByChain ) ).toInt() );

@@ -46,11 +46,12 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		}
 	} // namespace
 
-	FormAdvanced::FormAdvanced( QWidget *					 p_container,
-								SpecificFieldsPlacerCallback p_specificFieldGenerator,
-								const MdParameters &		 p_defaults,
-								ReportManager &				 p_reportManager ) :
-		_eventManager( p_reportManager, p_defaults ), _specificFieldGenerator( std::move( p_specificFieldGenerator ) )
+	FormAdvanced::FormAdvanced(
+		QWidget *					 p_container,
+		SpecificFieldsPlacerCallback p_specificFieldGenerator,
+		const MdParameters &		 p_defaults,
+		ReportManager &				 p_reportManager
+	) : _specificFieldGenerator( std::move( p_specificFieldGenerator ) ), _eventManager( p_reportManager, p_defaults )
 	{
 		_createAndPlaceUiItems( p_container );
 		_loadValues( p_defaults );

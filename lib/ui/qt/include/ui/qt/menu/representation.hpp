@@ -29,8 +29,7 @@ namespace VTX::UI::QT::Menu
 
 			for ( const auto ent : view )
 			{
-				const auto & representation = view.get<Renderer::Representation>( ent );
-				const auto & name			= App::REG().get<App::Generic::Name>( ent );
+				const auto & name = App::REG().get<App::Generic::Name>( ent );
 
 				QAction * a = QMenu::addAction( QString::fromStdString( name.name ) );
 				if ( p_representation )

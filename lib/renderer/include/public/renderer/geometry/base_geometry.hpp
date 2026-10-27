@@ -87,7 +87,8 @@ namespace VTX::Renderer::Geometry
 					return Desc::DrawIndirectRecord { Desc::DrawIndirectCommand {
 														  data.range.getCount(), 1, data.range.getFirst(), 0 },
 													  static_cast<uint32_t>( uid ) };
-				} );
+				}
+			);
 
 			return records;
 		}
@@ -113,7 +114,8 @@ namespace VTX::Renderer::Geometry
 																 static_cast<int32_t>( data.vertexFirst ),
 																 0 },
 															 static_cast<uint32_t>( uid ) };
-				} );
+				}
+			);
 
 			return records;
 		}
@@ -160,7 +162,7 @@ namespace VTX::Renderer::Geometry
 			}
 
 			const Index countIndex = static_cast<Index>( count );
-			const auto [ it, inserted ]
+			[[maybe_unused]] const auto [ it, inserted ]
 				= _resources.emplace( p_handle, Data { IndexRange { _size, countIndex }, _vertexSize, p_countVertex } );
 			assert( inserted );
 

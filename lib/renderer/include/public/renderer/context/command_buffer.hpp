@@ -397,13 +397,15 @@ namespace VTX::Renderer::Context
 		{
 			const PassID id = static_cast<PassID>( passes.size() );
 
-			passes.emplace_back( PassCommandRange {
-				.name	   = p_pass.name,
-				.execution = p_pass.execution,
-				.commands  = CommandRange { .first = currentCommandID(), .count = 0 },
-			} );
+			passes.emplace_back(
+				PassCommandRange {
+					.name	   = p_pass.name,
+					.execution = p_pass.execution,
+					.commands  = CommandRange { .first = currentCommandID(), .count = 0 },
+				}
+			);
 
-			const auto [ it, inserted ] = passIDByName.emplace( p_pass.name, id );
+			[[maybe_unused]] const auto [ it, inserted ] = passIDByName.emplace( p_pass.name, id );
 			assert( inserted );
 
 			return id;

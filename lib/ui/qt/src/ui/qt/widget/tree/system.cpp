@@ -58,45 +58,52 @@ namespace VTX::UI::QT::Widget::Tree
 
 		// One expanded at a time.
 		// TODO: keep or remove?
-		connect( this,
-				 &QTreeView::expanded,
-				 [ this ]( const QModelIndex & p_index )
-				 {
-					 const QModelIndex parent	= p_index.parent();
-					 const int		   rowCount = model()->rowCount( parent );
+		connect(
+			this,
+			&QTreeView::expanded,
+			[ this ]( const QModelIndex & p_index )
+			{
+				const QModelIndex parent   = p_index.parent();
+				const int		  rowCount = model()->rowCount( parent );
 
-					 for ( int r = 0; r < rowCount; r++ )
-					 {
-						 const QModelIndex sibling = model()->index( r, 0, parent );
+				for ( int r = 0; r < rowCount; r++ )
+				{
+					const QModelIndex sibling = model()->index( r, 0, parent );
 
-						 if ( sibling != p_index && isExpanded( sibling ) )
-						 {
-							 collapse( sibling );
-						 }
-					 }
-				 } );
+					if ( sibling != p_index && isExpanded( sibling ) )
+					{
+						collapse( sibling );
+					}
+				}
+			}
+		);
 
 		// Double click: orient.
-		connect( delegate,
-				 &Delegate::SystemDelegate::doubleClicked,
-				 [ this ]( const QModelIndex & p_index ) { App::ACTION().execute<App::Action::Camera::Orient>(); } );
+		connect(
+			delegate,
+			&Delegate::SystemDelegate::doubleClicked,
+			[]( const QModelIndex & p_index ) { App::ACTION().execute<App::Action::Camera::Orient>(); }
+		);
 
 		// Click on visibility icon.
-		connect( delegate,
-				 &Delegate::SystemDelegate::visibilityClicked,
-				 [ this ]( const QModelIndex & p_index )
-				 {
-					 const auto &				 model = getSystemModel();
-					 Core::Struct::E_SYSTEM_ITEM item {};
-					 Index						 index {};
-					 Model::SystemModel::unpack( p_index.internalId(), item, index );
+		connect(
+			delegate,
+			&Delegate::SystemDelegate::visibilityClicked,
+			[ this ]( const QModelIndex & p_index )
+			{
+				Core::Struct::E_SYSTEM_ITEM item {};
+				Index						index {};
+				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
-					 const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
-						 p_index.data( Model::SystemModel::Roles::VisibleRole ).toInt() );
+				const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
+					p_index.data( Model::SystemModel::Roles::VisibleRole ).toInt()
+				);
 
-					 App::ACTION().execute<App::Action::Visibility::SetVisibleItem>(
-						 _system, item, index, visible == App::System::E_VISIBLE_STATE::HIDDEN );
-				 } );
+				App::ACTION().execute<App::Action::Visibility::SetVisibleItem>(
+					_system, item, index, visible == App::System::E_VISIBLE_STATE::HIDDEN
+				);
+			}
+		);
 
 		// Click on color scheme icon.
 		connect(
@@ -104,7 +111,6 @@ namespace VTX::UI::QT::Widget::Tree
 			&Delegate::SystemDelegate::colorSchemeClicked,
 			[ this ]( const QModelIndex & p_index )
 			{
-				const auto &				model = getSystemModel();
 				Core::Struct::E_SYSTEM_ITEM item {};
 				Index						index {};
 				Model::SystemModel::unpack( p_index.internalId(), item, index );
@@ -118,17 +124,19 @@ namespace VTX::UI::QT::Widget::Tree
 				Menu::ColorScheme						   menu( this, scheme, secondaryStructureScheme );
 				std::optional<Menu::ColorScheme::Selected> selected;
 				std::optional<Menu::ColorScheme::SecondaryStructureSelected> secondaryStructureSelected;
-				QObject::connect( &menu,
-								  &Menu::ColorScheme::selected,
-								  &menu,
-								  [ &selected ]( const Menu::ColorScheme::Selected & p_selected )
-								  { selected = p_selected; } );
+				QObject::connect(
+					&menu,
+					&Menu::ColorScheme::selected,
+					&menu,
+					[ &selected ]( const Menu::ColorScheme::Selected & p_selected ) { selected = p_selected; }
+				);
 				QObject::connect(
 					&menu,
 					&Menu::ColorScheme::secondaryStructureSelected,
 					&menu,
 					[ &secondaryStructureSelected ]( const Menu::ColorScheme::SecondaryStructureSelected & p_selected )
-					{ secondaryStructureSelected = p_selected; } );
+					{ secondaryStructureSelected = p_selected; }
+				);
 
 				if ( menu.exec( QCursor::pos() ) == nullptr )
 				{
@@ -138,45 +146,53 @@ namespace VTX::UI::QT::Widget::Tree
 				if ( selected )
 				{
 					App::ACTION().execute<App::Action::Color::AddItem>(
-						_system, item, selected->scheme, index, selected->index );
+						_system, item, selected->scheme, index, selected->index
+					);
 				}
 				else if ( secondaryStructureSelected )
 				{
 					App::ACTION().execute<App::Action::Color::AddSecondaryStructureItem>(
-						_system, item, secondaryStructureSelected->scheme, index, secondaryStructureSelected->index );
+						_system, item, secondaryStructureSelected->scheme, index, secondaryStructureSelected->index
+					);
 				}
-			} );
+			}
+		);
 
 		// Click on representation icon.
-		connect( delegate,
-				 &Delegate::SystemDelegate::representationClicked,
-				 [ this ]( const QModelIndex & p_index )
-				 {
-					 const auto &				 model = getSystemModel();
-					 Core::Struct::E_SYSTEM_ITEM item {};
-					 Index						 index {};
-					 Model::SystemModel::unpack( p_index.internalId(), item, index );
+		connect(
+			delegate,
+			&Delegate::SystemDelegate::representationClicked,
+			[ this ]( const QModelIndex & p_index )
+			{
+				Core::Struct::E_SYSTEM_ITEM item {};
+				Index						index {};
+				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
-					 // Get current representation.
-					 const std::optional<Entity> representation
-						 = App::Helper::System::getRepresentation( { _system, item, index } );
+				// Get current representation.
+				const std::optional<Entity> representation
+					= App::Helper::System::getRepresentation( { _system, item, index } );
 
-					 Menu::Representation  menu( this, representation );
-					 std::optional<Entity> selected;
-					 QObject::connect( &menu,
-									   &Menu::Representation::selected,
-									   &menu,
-									   [ &selected ]( const Entity p_selected ) { selected = p_selected; } );
+				Menu::Representation  menu( this, representation );
+				std::optional<Entity> selected;
+				QObject::connect(
+					&menu,
+					&Menu::Representation::selected,
+					&menu,
+					[ &selected ]( const Entity p_selected ) { selected = p_selected; }
+				);
 
-					 if ( menu.exec( QCursor::pos() ) && selected )
-					 {
-						 App::ACTION().execute<App::Action::Representation::AddItem>( _system, item, *selected, index );
-					 }
-				 } );
+				if ( menu.exec( QCursor::pos() ) && selected )
+				{
+					App::ACTION().execute<App::Action::Representation::AddItem>( _system, item, *selected, index );
+				}
+			}
+		);
 
-		connect( delegate,
-				 &Delegate::SystemDelegate::displayModeClicked,
-				 [ this ]( const QModelIndex & ) { _toggleViewMode(); } );
+		connect(
+			delegate,
+			&Delegate::SystemDelegate::displayModeClicked,
+			[ this ]( const QModelIndex & ) { _toggleViewMode(); }
+		);
 
 		_expandRoot();
 	}
@@ -264,9 +280,11 @@ namespace VTX::UI::QT::Widget::Tree
 		QTreeView::mouseReleaseEvent( p_e );
 	}
 
-	bool System::_shouldHandleSelectionClick( QMouseEvent *			 p_e,
-											  const QModelIndex &	 p_index,
-											  QStyleOptionViewItem & p_option ) const
+	bool System::_shouldHandleSelectionClick(
+		QMouseEvent *		   p_e,
+		const QModelIndex &	   p_index,
+		QStyleOptionViewItem & p_option
+	) const
 	{
 		initViewItemOption( &p_option );
 		p_option.rect			 = visualRect( p_index );

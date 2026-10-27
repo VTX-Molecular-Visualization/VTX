@@ -8,8 +8,8 @@ namespace VTX::UI::QT
 	// Validator class that enforce uint64 compatible user input
 	class QUInt64Validator : public QValidator
 	{
-		uint64_t _min = 0;
-		uint64_t _max = 0xffffffffffffffff;
+		[[maybe_unused]] uint64_t _min = 0;
+		[[maybe_unused]] uint64_t _max = 0xffffffffffffffff;
 
 	  public:
 		QUInt64Validator( uint64_t p_min, uint64_t p_max, QObject * p_parent ); // Allows to set min and max

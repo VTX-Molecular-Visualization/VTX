@@ -76,20 +76,24 @@ namespace VTX::Bench
 
 	Renderer::Cache::System Scene::_buildRendererSystem( const SystemEntry & p_system ) const
 	{
-		return Renderer::Cache::System { p_system.transform,
-										 p_system.topology.get(),
-										 p_system.positions,
-										 &p_system.atomUids,
-										 &p_system.residueUids,
-										 &p_system.colorSchemeAtoms,
-										 &p_system.customColorAtoms,
-										 &p_system.carbonCustomColorAtoms,
-										 &p_system.colorSchemeSecondaryStructureResidues,
-										 &p_system.customSecondaryStructureColorResidues,
-										 &p_system.representationHandles,
-										 &p_system.presetAtoms,
-										 &p_system.visibility,
-										 &p_system.selection };
+		return Renderer::Cache::System {
+			.transform = p_system.transform,
+			.data	   = {
+				.topology							   = p_system.topology.get(),
+				.trajectory							   = p_system.positions,
+				.atomUids							   = &p_system.atomUids,
+				.residueUids						   = &p_system.residueUids,
+				.colorSchemeAtoms					   = &p_system.colorSchemeAtoms,
+				.customColorAtoms					   = &p_system.customColorAtoms,
+				.carbonCustomColorAtoms				   = &p_system.carbonCustomColorAtoms,
+				.colorSchemeSecondaryStructureResidues = &p_system.colorSchemeSecondaryStructureResidues,
+				.customSecondaryStructureColorResidues = &p_system.customSecondaryStructureColorResidues,
+				.representationHandles				   = &p_system.representationHandles,
+				.presetAtoms						   = &p_system.presetAtoms,
+				.visibility							   = &p_system.visibility,
+				.selection							   = &p_system.selection,
+			},
+		};
 	}
 
 	void Scene::syncRenderer( Renderer::Renderer & p_renderer ) const

@@ -59,7 +59,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void bindElementBuffer( const Buffer & p_elementBuffer ) const noexcept
 		{
-			const GLuint id = p_elementBuffer.getId();
+			[[maybe_unused]] const GLuint id = p_elementBuffer.getId();
 
 			assert( id != 0 );
 			assert( glIsBuffer( id ) );
@@ -83,10 +83,12 @@ namespace VTX::Renderer::Context::Backend::GL
 			glEnableVertexArrayAttrib( _id, p_bindingIndex );
 		}
 
-		void setVertexBuffer( const GLuint	 p_bindingIndex,
-							  const Buffer & p_vertexBuffer,
-							  const GLintptr p_offset,
-							  const GLsizei	 p_stride ) const noexcept
+		void setVertexBuffer(
+			const GLuint   p_bindingIndex,
+			const Buffer & p_vertexBuffer,
+			const GLintptr p_offset,
+			const GLsizei  p_stride
+		) const noexcept
 		{
 			const GLuint bid = p_vertexBuffer.getId();
 
@@ -99,11 +101,13 @@ namespace VTX::Renderer::Context::Backend::GL
 			glVertexArrayVertexBuffer( _id, p_bindingIndex, bid, p_offset, p_stride );
 		}
 
-		void setAttributeFormat( const GLuint	 p_attributeIndex,
-								 const GLint	 p_size,
-								 const GLenum	 p_type,
-								 const GLuint	 p_relativeOffset = 0,
-								 const GLboolean p_normalized	  = GL_FALSE ) const noexcept
+		void setAttributeFormat(
+			const GLuint	p_attributeIndex,
+			const GLint		p_size,
+			const GLenum	p_type,
+			const GLuint	p_relativeOffset = 0,
+			const GLboolean p_normalized	 = GL_FALSE
+		) const noexcept
 		{
 			assert( glIsVertexArray( _id ) );
 
@@ -140,51 +144,65 @@ namespace VTX::Renderer::Context::Backend::GL
 		static void drawArrays( const GLenum p_mode, const GLint p_first, const GLsizei p_count ) noexcept
 		{ glDrawArrays( p_mode, p_first, p_count ); }
 
-		static void multiDrawArrays( const GLenum		   p_mode,
-									 const GLint * const   p_first,
-									 const GLsizei * const p_count,
-									 const GLsizei		   p_primcount ) noexcept
+		static void multiDrawArrays(
+			const GLenum		  p_mode,
+			const GLint * const	  p_first,
+			const GLsizei * const p_count,
+			const GLsizei		  p_primcount
+		) noexcept
 		{ glMultiDrawArrays( p_mode, p_first, p_count, p_primcount ); }
 
-		static void multiDrawArraysIndirect( const GLenum		  p_mode,
-											 const GLvoid * const p_indirect,
-											 const GLsizei		  p_drawCount,
-											 const GLsizei		  p_stride ) noexcept
+		static void multiDrawArraysIndirect(
+			const GLenum		 p_mode,
+			const GLvoid * const p_indirect,
+			const GLsizei		 p_drawCount,
+			const GLsizei		 p_stride
+		) noexcept
 		{ glMultiDrawArraysIndirect( p_mode, p_indirect, p_drawCount, p_stride ); }
 
-		static void multiDrawArraysIndirectCount( const GLenum		   p_mode,
-												  const GLvoid * const p_indirect,
-												  const GLintptr	   p_drawCountOffset,
-												  const GLsizei		   p_drawCapacity,
-												  const GLsizei		   p_stride ) noexcept
+		static void multiDrawArraysIndirectCount(
+			const GLenum		 p_mode,
+			const GLvoid * const p_indirect,
+			const GLintptr		 p_drawCountOffset,
+			const GLsizei		 p_drawCapacity,
+			const GLsizei		 p_stride
+		) noexcept
 		{ glMultiDrawArraysIndirectCount( p_mode, p_indirect, p_drawCountOffset, p_drawCapacity, p_stride ); }
 
-		static void drawElements( const GLenum		   p_mode,
-								  const GLsizei		   p_count,
-								  const GLenum		   p_type,
-								  const GLvoid * const p_offset = nullptr ) noexcept
+		static void drawElements(
+			const GLenum		 p_mode,
+			const GLsizei		 p_count,
+			const GLenum		 p_type,
+			const GLvoid * const p_offset = nullptr
+		) noexcept
 		{ glDrawElements( p_mode, p_count, p_type, p_offset ); }
 
-		static void multiDrawElements( const GLenum					p_mode,
-									   const GLsizei * const		p_count,
-									   const GLenum					p_type,
-									   const GLvoid * const * const p_offset,
-									   const GLsizei				p_primcount ) noexcept
+		static void multiDrawElements(
+			const GLenum				 p_mode,
+			const GLsizei * const		 p_count,
+			const GLenum				 p_type,
+			const GLvoid * const * const p_offset,
+			const GLsizei				 p_primcount
+		) noexcept
 		{ glMultiDrawElements( p_mode, p_count, p_type, p_offset, p_primcount ); }
 
-		static void multiDrawElementsIndirect( const GLenum			p_mode,
-											   const GLenum			p_type,
-											   const GLvoid * const p_indirect,
-											   const GLsizei		p_drawCount,
-											   const GLsizei		p_stride ) noexcept
+		static void multiDrawElementsIndirect(
+			const GLenum		 p_mode,
+			const GLenum		 p_type,
+			const GLvoid * const p_indirect,
+			const GLsizei		 p_drawCount,
+			const GLsizei		 p_stride
+		) noexcept
 		{ glMultiDrawElementsIndirect( p_mode, p_type, p_indirect, p_drawCount, p_stride ); }
 
-		static void multiDrawElementsIndirectCount( const GLenum		 p_mode,
-													const GLenum		 p_type,
-													const GLvoid * const p_indirect,
-													const GLintptr		 p_drawCountOffset,
-													const GLsizei		 p_drawCapacity,
-													const GLsizei		 p_stride ) noexcept
+		static void multiDrawElementsIndirectCount(
+			const GLenum		 p_mode,
+			const GLenum		 p_type,
+			const GLvoid * const p_indirect,
+			const GLintptr		 p_drawCountOffset,
+			const GLsizei		 p_drawCapacity,
+			const GLsizei		 p_stride
+		) noexcept
 		{ glMultiDrawElementsIndirectCount( p_mode, p_type, p_indirect, p_drawCountOffset, p_drawCapacity, p_stride ); }
 
 		bool hasEbo() const noexcept

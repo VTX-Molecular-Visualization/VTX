@@ -400,6 +400,7 @@ namespace VTX::App
 			return Filesystem::getDataHome();
 		}
 
+#ifdef _WIN32
 		FilePath _getPortableWindowsRoot()
 		{
 			const FilePath executablePath = Filesystem::getExecutable();
@@ -413,6 +414,7 @@ namespace VTX::App
 
 			return executableDir;
 		}
+#endif
 	} // namespace
 
 	FilePath Session::getDataHome() const

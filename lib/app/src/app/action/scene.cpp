@@ -20,7 +20,8 @@ namespace VTX::App::Action::Scene
 				{
 					REG().destroy( p_e );
 				}
-			} );
+			}
+		);
 	}
 
 	void Clear::execute()
@@ -32,9 +33,9 @@ namespace VTX::App::Action::Scene
 	{
 		using CL = App::Scene::ColorLayout;
 
-		auto & reg	 = REG();
-		auto   scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
-		auto   view	 = reg.view<CL>();
+		auto &				  reg	= REG();
+		auto				  scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
+		[[maybe_unused]] auto view	= reg.view<CL>();
 
 		assert( view.size() <= 1 );
 
@@ -46,9 +47,9 @@ namespace VTX::App::Action::Scene
 	{
 		using GC = App::Scene::GraphicsConfig;
 
-		auto & reg	 = REG();
-		auto   scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
-		auto   view	 = reg.view<GC>();
+		auto &				  reg	= REG();
+		auto				  scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
+		[[maybe_unused]] auto view	= reg.view<GC>();
 
 		assert( view.size() <= 1 );
 

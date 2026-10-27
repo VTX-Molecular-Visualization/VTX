@@ -111,9 +111,11 @@ namespace VTX::Renderer
 				if ( program.dispatchIndirect
 					 && not _resources.buffers.contains( program.dispatchIndirect->indirectBuffer ) )
 				{
-					throw GraphicException( "Program '{}': dispatch indirect buffer '{}' not found",
-											program.name,
-											program.dispatchIndirect->indirectBuffer );
+					throw GraphicException(
+						"Program '{}': dispatch indirect buffer '{}' not found",
+						program.name,
+						program.dispatchIndirect->indirectBuffer
+					);
 				}
 			}
 		}
@@ -132,7 +134,8 @@ namespace VTX::Renderer
 			if ( geometry.indirectBuffer && not _resources.buffers.contains( *geometry.indirectBuffer ) )
 			{
 				throw GraphicException(
-					"Geometry '{}': indirect buffer '{}' not found", key, *geometry.indirectBuffer );
+					"Geometry '{}': indirect buffer '{}' not found", key, *geometry.indirectBuffer
+				);
 			}
 		}
 
@@ -173,26 +176,26 @@ namespace VTX::Renderer
 		// Resources.
 		for ( const auto & [ key, texture ] : p_builder.resources.textures )
 		{
-			auto [ it, inserted ] = _resources.textures.emplace( key, texture );
+			[[maybe_unused]] auto [ it, inserted ] = _resources.textures.emplace( key, texture );
 			assert( inserted );
 		}
 		for ( const auto & [ key, vertexStream ] : p_builder.resources.vertexStreams )
 		{
-			auto [ it, inserted ] = _resources.vertexStreams.emplace( key, vertexStream );
+			[[maybe_unused]] auto [ it, inserted ] = _resources.vertexStreams.emplace( key, vertexStream );
 			assert( inserted );
 		}
 		for ( const auto & [ key, buffer ] : p_builder.resources.buffers )
 		{
-			auto [ it, inserted ] = _resources.buffers.emplace( key, buffer );
+			[[maybe_unused]] auto [ it, inserted ] = _resources.buffers.emplace( key, buffer );
 			assert( inserted );
 		}
 		for ( const auto & [ key, sampler ] : p_builder.resources.samplers )
 		{
-			auto [ it, inserted ] = _resources.samplers.emplace( key, sampler );
+			[[maybe_unused]] auto [ it, inserted ] = _resources.samplers.emplace( key, sampler );
 		}
 		for ( const auto & [ key, geometry ] : p_builder.resources.geometries )
 		{
-			auto [ it, inserted ] = _resources.geometries.emplace( key, geometry );
+			[[maybe_unused]] auto [ it, inserted ] = _resources.geometries.emplace( key, geometry );
 			assert( inserted );
 		}
 		// Passes.

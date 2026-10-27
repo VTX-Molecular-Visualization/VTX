@@ -16,7 +16,7 @@
 
 namespace VTX::UI::QT::Widget::Tree
 {
-	Camera::Camera( const Entity p_entity, QWidget * const p_parent ) : BaseTree( p_parent ), _entity( p_entity )
+	Camera::Camera( const Entity p_entity, QWidget * const p_parent ) : BaseTree( p_parent )
 	{
 		setExpandsOnDoubleClick( true );
 
@@ -31,19 +31,21 @@ namespace VTX::UI::QT::Widget::Tree
 			= App::HUB().connect<App::Events::ViewPointRenamed, &Camera::_onViewPointRenamed>( this );
 
 		// Connect double click to move to viewpoint.
-		connect( this,
-				 &QTreeWidget::itemDoubleClicked,
-				 this,
-				 [ this ]( QTreeWidgetItem * item, int column )
-				 {
-					 if ( item == nullptr || item->parent() == nullptr || column != 0 )
-					 {
-						 return;
-					 }
+		connect(
+			this,
+			&QTreeWidget::itemDoubleClicked,
+			this,
+			[]( QTreeWidgetItem * item, int column )
+			{
+				if ( item == nullptr || item->parent() == nullptr || column != 0 )
+				{
+					return;
+				}
 
-					 Entity entity = item->data( 0, Qt::UserRole ).value<Entity>();
-					 App::ACTION().execute<App::Action::Camera::GoToViewPoint>( entity );
-				 } );
+				Entity entity = item->data( 0, Qt::UserRole ).value<Entity>();
+				App::ACTION().execute<App::Action::Camera::GoToViewPoint>( entity );
+			}
+		);
 	}
 
 	void Camera::_addViewPoint( Registry & p_r, const Entity p_viewpoint )
