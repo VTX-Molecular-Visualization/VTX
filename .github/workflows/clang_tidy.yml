@@ -6,6 +6,14 @@ on:
     paths: ['app/**', 'lib/**', 'tool/**', 'dev/**', '.clang-tidy', '.github/workflows/clang_tidy.yml']
   workflow_dispatch:
       inputs:
+        build_type:
+          description: 'Build type'
+          required: true
+          default: 'Release'
+          type: choice
+          options:
+          - Debug
+          - Release
         level:
           description: 'clang-tidy level (WARN: report only, ERR: fail on diagnostics)'
           required: false
@@ -20,8 +28,8 @@ permissions:
 
 env:
   DEV_DIR: ${{github.workspace}}/dev
-  BUILD_DIR: ${{github.workspace}}/dev/build/Release
-  BUILD_TYPE: Release
+  BUILD_DIR: ${{github.workspace}}/dev/build/${{ inputs.build_type || 'Release' }}
+  BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
   LLVM_VERSION: 22
 
 jobs:
@@ -68,7 +76,7 @@ jobs:
     - name: Configure
       working-directory: ${{env.DEV_DIR}}
       run: |
-        cmake --preset conan-release \
+        cmake --preset conan-${BUILD_TYPE,,} \
           -DVTX_CLANG_TIDY_EXECUTABLE=$(command -v clang-tidy-${{ env.LLVM_VERSION }})
 
     - name: Build with clang-tidy
