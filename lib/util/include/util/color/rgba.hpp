@@ -28,8 +28,6 @@ namespace VTX::Util::Color
 
 		constexpr Rgba( int p_r, int p_g, int p_b ) : _v( p_r / 255.f, p_g / 255.f, p_b / 255.f, 1.f ) {}
 
-		constexpr Rgba( const Rgba & ) = default;
-
 		explicit Rgba( const std::vector<float> & p_c )
 		{
 			assert( p_c.size() == 4 );
@@ -70,8 +68,6 @@ namespace VTX::Util::Color
 
 		static void setSingleChannelHexaInStream( float v, std::stringstream & ss )
 		{ ss << std::hex << std::setw( 2 ) << std::setfill( '0' ) << static_cast<int>( v * 255 ); }
-
-		constexpr Rgba & operator=( const Rgba & ) = default;
 
 		constexpr Rgba & operator+=( const Rgba & p )
 		{

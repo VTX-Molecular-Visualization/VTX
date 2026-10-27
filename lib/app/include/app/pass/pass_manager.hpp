@@ -42,8 +42,10 @@ namespace VTX::App::Pass
 	  public:
 		using UpdateDelegate = Util::EventHub::Delegate<void( const float, const float )>;
 
-		PassManager()						   = default;
-		PassManager( PassManager && ) noexcept = default;
+		PassManager()									   = default;
+		PassManager( PassManager && ) noexcept			   = default;
+		PassManager & operator=( PassManager && ) noexcept = default;
+		~PassManager()									   = default;
 
 		/**
 		 * @brief Instantiates a pass.
@@ -72,8 +74,9 @@ namespace VTX::App::Pass
 			assert( _passes.has<T>() );
 
 			// Remove update delegate.
-			std::erase_if( _delegates,
-						   [ this ]( const UpdateDelegate & p_d ) { return p_d.data() == _passes.get<T>(); } );
+			std::erase_if(
+				_delegates, [ this ]( const UpdateDelegate & p_d ) { return p_d.data() == _passes.get<T>(); }
+			);
 
 			// Delete pass.
 			_passes.remove<T>();
@@ -135,9 +138,9 @@ namespace VTX::App::Pass
 			}
 
 			// Remove passes flagged for deletion.
-			std::erase_if( _delegates,
-						   []( const UpdateDelegate & d )
-						   { return static_cast<const IPass *>( d.data() )->_deleted; } );
+			std::erase_if(
+				_delegates, []( const UpdateDelegate & d ) { return static_cast<const IPass *>( d.data() )->_deleted; }
+			);
 
 			for ( auto it = _passes.begin(); it != _passes.end(); )
 			{

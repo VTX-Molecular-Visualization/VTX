@@ -1,9 +1,6 @@
 #ifndef VTX_UTIL_MATH_HPP
 #define VTX_UTIL_MATH_HPP
 
-#define GLM_FORCE_INLINE
-#define GLM_ENABLE_EXPERIMENTAL
-
 #include "constants.hpp"
 #include "types.hpp"
 #include <algorithm>
@@ -105,7 +102,7 @@ namespace VTX::Util::Math
 		Quatf rhs = p_rhs;
 		if ( dot( p_lhs, p_rhs ) < 0.f )
 		{
-			rhs = Quatf( -p_rhs.w, { -p_rhs.x, -p_rhs.y, -p_rhs.z } );
+			rhs = -p_rhs;
 		}
 
 		return normalize( ::glm::slerp( p_lhs, rhs, p_value ) );

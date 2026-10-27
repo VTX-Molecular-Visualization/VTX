@@ -1,4 +1,5 @@
 WarningsAsErrors: ''
+ExcludeHeaderFilterRegex: '.*[/\\]\.conan2[/\\].*'
 
 Checks:
   - '*'
@@ -10,49 +11,37 @@ Checks:
   - '-bugprone-easily-swappable-parameters'                          # Adjacent parameters of convertible types.
   - '-bugprone-narrowing-conversions'                                # Implicit narrowing conversions.
   - '-bugprone-random-generator-seed'                                # Random engines seeded with constants.
-  - '-cert-dcl37-c'                                                  # Reserved identifiers (alias).
-  - '-cert-dcl51-cpp'                                                # Reserved identifiers (alias).
-  - '-cert-int09-c'                                                  # Integer to/from string conversions errors.
+  - '-cert-dcl16-c'                                                  # Uppercase literal suffixes (alias).
+  - '-cert-int09-c'                                                  # Enum initial value consistency (alias).
   - '-cert-msc32-c'                                                  # Random engines seeded with constants (alias).
   - '-cert-msc51-cpp'                                                # Random engines seeded with constants (alias).
   - '-clang-analyzer-optin.core.EnumCastOutOfRange'                  # Enum casts of out-of-range values.
   - '-clang-analyzer-security.ArrayBound'                            # Out-of-bounds array access (analyzer).
-  - '-cppcoreguidelines-avoid-c-arrays'                              # C-style arrays.
+  - '-cppcoreguidelines-avoid-c-arrays'                              # C-style arrays (alias).
   - '-cppcoreguidelines-avoid-goto'                                  # goto statements.
   - '-cppcoreguidelines-avoid-const-or-ref-data-members'             # const or reference data members.
-  - '-cppcoreguidelines-avoid-magic-numbers'                         # Magic numbers.
+  - '-cppcoreguidelines-avoid-magic-numbers'                         # Magic numbers (alias).
   - '-cppcoreguidelines-narrowing-conversions'                       # Implicit narrowing conversions (alias).
-  - '-cppcoreguidelines-non-private-member-variables-in-classes'     # Public/protected data members.
+  - '-cppcoreguidelines-non-private-member-variables-in-classes'     # Public/protected data members (alias).
   - '-cppcoreguidelines-pro-bounds-array-to-pointer-decay'           # Array to pointer decay.
   - '-cppcoreguidelines-pro-bounds-avoid-unchecked-container-access' # Unchecked operator[] on containers.
   - '-cppcoreguidelines-pro-bounds-constant-array-index'             # Non-constant array indexing.
   - '-cppcoreguidelines-pro-bounds-pointer-arithmetic'               # Pointer arithmetic.
   - '-cppcoreguidelines-pro-type-reinterpret-cast'                   # reinterpret_cast.
-  - '-cppcoreguidelines-pro-type-union-access'                       # Union member access.
-  - '-cppcoreguidelines-special-member-functions'                    # Rule of five.
   - '-fuchsia-*'                                                     # Fuchsia OS guidelines.
   - '-google-build-using-namespace'                                  # using namespace directives.
   - '-google-explicit-constructor'                                   # Non-explicit single-argument constructors.
+  - '-google-readability-namespace-comments'                         # Closing namespace comments (alias).
   - '-google-readability-todo'                                       # TODO comment format.
   - '-hicpp-avoid-c-arrays'                                          # C-style arrays (alias).
   - '-hicpp-avoid-goto'                                              # goto statements (alias).
-  - '-hicpp-braces-around-statements'                                # Mandatory braces around statements.
-  - '-hicpp-deprecated-headers'                                      # Deprecated C headers (alias).
-  - '-hicpp-explicit-conversions'                                    # Non-explicit constructors/conversions.
-  - '-hicpp-member-init'                                             # Uninitialized members (alias).
-  - '-hicpp-move-const-arg'                                          # std::move on const values (alias).
+  - '-hicpp-explicit-conversions'                                    # Non-explicit constructors/conversions (alias).
   - '-hicpp-named-parameter'                                         # Unnamed parameters (alias).
   - '-hicpp-no-array-decay'                                          # Array to pointer decay (alias).
   - '-hicpp-signed-bitwise'                                          # Bitwise operations on signed integers.
   - '-hicpp-special-member-functions'                                # Rule of five (alias).
   - '-hicpp-uppercase-literal-suffix'                                # Uppercase literal suffixes (alias).
   - '-hicpp-use-auto'                                                # Suggests auto (alias).
-  - '-hicpp-use-emplace'                                             # Suggests emplace (alias).
-  - '-hicpp-use-equals-default'                                      # Suggests = default (alias).
-  - '-hicpp-use-equals-delete'                                       # Suggests = delete (alias).
-  - '-hicpp-use-nullptr'                                             # Suggests nullptr (alias).
-  - '-hicpp-use-override'                                            # Suggests override (alias).
-  - '-hicpp-vararg'                                                  # C-style variadic functions.
   - '-llvm-else-after-return'                                        # else after return (alias).
   - '-llvm-header-guard'                                             # LLVM header guard style.
   - '-llvm-namespace-comment'                                        # Closing namespace comments.
@@ -60,10 +49,9 @@ Checks:
   - '-llvm-use-ranges'                                               # Suggests llvm::ranges algorithms.
   - '-llvmlibc-*'                                                    # LLVM libc conventions.
   - '-misc-no-recursion'                                             # Recursive functions.
-  - '-misc-non-private-member-variables-in-classes'                  # Public/protected data members (alias).
+  - '-misc-non-private-member-variables-in-classes'                  # Public/protected data members.
   - '-misc-unused-parameters'                                        # Unused parameters.
-  - '-modernize-avoid-c-arrays'                                      # C-style arrays (alias).
-  - '-modernize-pass-by-value'                                       # Suggests pass-by-value then move.
+  - '-modernize-avoid-c-arrays'                                      # C-style arrays.
   - '-modernize-return-braced-init-list'                             # Suggests braced init list in return.
   - '-modernize-use-auto'                                            # Suggests auto.
   - '-modernize-use-designated-initializers'                         # Suggests designated initializers.
@@ -78,7 +66,7 @@ Checks:
   - '-readability-function-cognitive-complexity'                     # Function cognitive complexity.
   - '-readability-identifier-length'                                 # Short identifier names.
   - '-readability-implicit-bool-conversion'                          # Implicit conversions to bool.
-  - '-readability-magic-numbers'                                     # Magic numbers (alias).
+  - '-readability-magic-numbers'                                     # Magic numbers.
   - '-readability-math-missing-parentheses'                          # Missing parentheses in math expressions.
   - '-readability-named-parameter'                                   # Unnamed parameters.
   - '-readability-static-accessed-through-instance'                  # Static members accessed through instances.
@@ -86,8 +74,11 @@ Checks:
   - '-readability-uppercase-literal-suffix'                          # Uppercase literal suffixes.
 
 CheckOptions:
-  bugprone-exception-escape.CheckMoveMemberFunctions: false
-  cppcoreguidelines-rvalue-reference-param-not-moved.AllowPartialMove: true
-  cppcoreguidelines-rvalue-reference-param-not-moved.IgnoreNonDeducedTemplateTypes: true
-  misc-include-cleaner.MissingIncludes: false
-  misc-include-cleaner.IgnoreHeaders: '[Ww]indows\.h;exiv2[/\\]exiv2\.hpp;cpr[/\\]cpr\.h;fmt[/\\](chrono|ranges|std|ostream)\.h;pybind11[/\\].*;_caster\.hpp'
+  bugprone-exception-escape.CheckMoveMemberFunctions: false                                   # Do not analyze move constructors/assignments.
+  cppcoreguidelines-rvalue-reference-param-not-moved.AllowPartialMove: true                   # Accept moving only part of the parameter.
+  cppcoreguidelines-rvalue-reference-param-not-moved.IgnoreNonDeducedTemplateTypes: true      # Ignore T&& where T is not deduced.
+  cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor: true                       # Allow a lone '~T() = default' (interfaces).
+  cppcoreguidelines-special-member-functions.AllowMissingMoveFunctionsWhenCopyIsDeleted: true # Deleted copy already suppresses move.
+  cppcoreguidelines-special-member-functions.AllowImplicitlyDeletedCopyOrMove: true           # Skip operations already deleted by members/bases.
+  misc-include-cleaner.MissingIncludes: false                                                 # Report unused includes only, not missing ones.
+  misc-include-cleaner.IgnoreHeaders: '[Ww]indows\.h;exiv2[/\\]exiv2\.hpp;cpr[/\\]cpr\.h;fmt[/\\](chrono|ranges|std|ostream)\.h;pybind11[/\\].*;_caster\.hpp' # Headers excluded from include analysis.

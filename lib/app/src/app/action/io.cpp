@@ -71,6 +71,11 @@ namespace VTX::App::Action::IO
 		{
 			std::latch & latch;
 
+			explicit CreationGuard( std::latch & p_latch ) : latch( p_latch ) {}
+
+			CreationGuard( const CreationGuard & )			   = delete;
+			CreationGuard & operator=( const CreationGuard & ) = delete;
+
 			~CreationGuard() { latch.count_down(); }
 		};
 
@@ -191,8 +196,10 @@ namespace VTX::App::Action::IO
 	{
 		execute(
 			Util::String::replaceFirst(
-				std::string( RCSB_PDB_DOWNLOAD_URL_TEMPLATE ), std::string( SYSTEM_REPLACEMENT_TOKEN ), p_systemId ),
-			p_systemId + std::string( RCSB_PDB_DOWNLOAD_FILE_EXTENSION ) );
+				std::string( RCSB_PDB_DOWNLOAD_URL_TEMPLATE ), std::string( SYSTEM_REPLACEMENT_TOKEN ), p_systemId
+			),
+			p_systemId + std::string( RCSB_PDB_DOWNLOAD_FILE_EXTENSION )
+		);
 	}
 
 	void DownloadSystem::execute( const std::string & p_url, FilePath p_path )
@@ -202,34 +209,41 @@ namespace VTX::App::Action::IO
 			p_url,
 			filename,
 			[ path = std::move( p_path ) ]( std::string && p_text ) mutable
-			{ ACTION().execute<Action::IO::LoadSystem>( std::move( path ), std::move( p_text ) ); } );
+			{ ACTION().execute<Action::IO::LoadSystem>( std::move( path ), std::move( p_text ) ); }
+		);
 	}
 
 	void Snapshot::execute()
 	{ execute( std::nullopt, std::nullopt, Util::Image::E_FORMAT::PNG, std::nullopt, std::nullopt, std::nullopt ); }
 
-	void Snapshot::execute( const std::optional<FilePath> & p_path,
-							const std::optional<FilePath> & p_filename,
-							const Util::Image::E_FORMAT		p_format,
-							const std::optional<size_t>		p_width,
-							const std::optional<size_t>		p_height,
-							const std::optional<float>		p_backgroundOpacity )
+	void Snapshot::execute(
+		const std::optional<FilePath> & p_path,
+		const std::optional<FilePath> & p_filename,
+		const Util::Image::E_FORMAT		p_format,
+		const std::optional<size_t>		p_width,
+		const std::optional<size_t>		p_height,
+		const std::optional<float>		p_backgroundOpacity
+	)
 	{
 		const FilePath directory = p_path.value_or( SESSION().getSnapshotsDir() );
 		const FilePath filename	 = p_filename.value_or( FilePath( std::to_string( Util::Chrono::getTimestamp() ) ) );
 
-		execute( directory / filename,
-				 p_format,
-				 p_width.value_or( RENDERER().width() ),
-				 p_height.value_or( RENDERER().height() ),
-				 p_backgroundOpacity );
+		execute(
+			directory / filename,
+			p_format,
+			p_width.value_or( RENDERER().width() ),
+			p_height.value_or( RENDERER().height() ),
+			p_backgroundOpacity
+		);
 	}
 
-	void Snapshot::execute( const FilePath &			p_path,
-							const Util::Image::E_FORMAT p_format,
-							const size_t				p_width,
-							const size_t				p_height,
-							const std::optional<float>	p_backgroundOpacity )
+	void Snapshot::execute(
+		const FilePath &			p_path,
+		const Util::Image::E_FORMAT p_format,
+		const size_t				p_width,
+		const size_t				p_height,
+		const std::optional<float>	p_backgroundOpacity
+	)
 	{
 		try
 		{

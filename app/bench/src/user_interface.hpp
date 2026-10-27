@@ -16,6 +16,8 @@ namespace VTX::Bench
 	{
 	  public:
 		UserInterface( size_t p_width, size_t p_height );
+		UserInterface( const UserInterface & )			   = delete;
+		UserInterface & operator=( const UserInterface & ) = delete;
 		~UserInterface();
 
 		double getTime() const { return static_cast<double>( SDL_GetTicks() ); }

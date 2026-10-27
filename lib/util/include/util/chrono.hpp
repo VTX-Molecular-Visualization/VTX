@@ -86,12 +86,16 @@ namespace VTX::Util
 			_name( p_name ), _level( p_level )
 		{ start(); }
 
+		ScopedChrono( const ScopedChrono & )			 = delete;
+		ScopedChrono & operator=( const ScopedChrono & ) = delete;
+
 		~ScopedChrono() noexcept
 		{
 			try
 			{
 				VTX_LOG(
-					_level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() ) );
+					_level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() )
+				);
 			}
 			catch ( ... ) // NOLINT(bugprone-empty-catch)
 			{

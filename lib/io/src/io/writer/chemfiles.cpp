@@ -306,9 +306,11 @@ namespace VTX::IO::Writer
 				{
 					::chemfiles::Bond::BondOrder cf_bondOrder = ::chemfiles::Bond::BondOrder::UNKNOWN;
 					convert( it_bond.bondOrder, cf_bondOrder );
-					cf_frame.add_bond( atomIdCorrespondaceTable.at( it_bond.a1 ),
-									   atomIdCorrespondaceTable.at( it_bond.a2 ),
-									   cf_bondOrder );
+					cf_frame.add_bond(
+						atomIdCorrespondaceTable.at( it_bond.a1 ),
+						atomIdCorrespondaceTable.at( it_bond.a2 ),
+						cf_bondOrder
+					);
 				}
 
 				cf_traj.write( cf_frame );
@@ -323,7 +325,7 @@ namespace VTX::IO::Writer
 	{
 		FilePath	   _dest;
 		E_FILE_FORMATS _format = E_FILE_FORMATS::none;
-		SystemImpl		   _system;
+		SystemImpl	   _system;
 
 	  public:
 		void setWriteDestination( FilePath && p_ ) noexcept { _dest = std::move( p_ ); }
@@ -332,11 +334,12 @@ namespace VTX::IO::Writer
 
 		System system() noexcept { return _system; }
 
-		Impl()							   = default;
-		Impl( const Impl & )			   = delete;
-		Impl( Impl && )				   = delete;
+		Impl()							 = default;
+		Impl( const Impl & )			 = delete;
+		Impl( Impl && )					 = delete;
 		Impl & operator=( const Impl & ) = delete;
-		Impl & operator=( Impl && )	   = delete;
+		Impl & operator=( Impl && )		 = delete;
+		~Impl()							 = default;
 
 		void close()
 		{

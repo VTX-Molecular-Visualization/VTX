@@ -1,5 +1,3 @@
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-
 #include "user_interface.hpp"
 #include "camera_controller.hpp"
 #include "scene.hpp"

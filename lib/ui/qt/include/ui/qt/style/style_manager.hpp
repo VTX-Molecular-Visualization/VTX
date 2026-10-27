@@ -47,6 +47,8 @@ namespace VTX::UI::QT::Style
 	{
 	  public:
 		StyleManager();
+		StyleManager( const StyleManager & )			 = delete;
+		StyleManager & operator=( const StyleManager & ) = delete;
 		~StyleManager();
 
 		/**

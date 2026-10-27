@@ -17,6 +17,9 @@ namespace VTX::Renderer::Context::Backend::GL
 			assert( glIsQuery( _queryEnd ) );
 		}
 
+		Chrono( const Chrono & )			 = delete;
+		Chrono & operator=( const Chrono & ) = delete;
+
 		~Chrono()
 		{
 			glDeleteQueries( 1, &_queryStart );

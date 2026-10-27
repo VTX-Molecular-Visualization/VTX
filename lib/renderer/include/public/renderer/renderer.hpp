@@ -34,6 +34,7 @@ namespace VTX::Renderer
 		Renderer( size_t p_width = 0, size_t p_height = 0 );
 		Renderer( const Renderer & )			 = delete;
 		Renderer & operator=( const Renderer & ) = delete;
+		~Renderer()								 = default;
 
 		/**
 		 * @brief Accessors.
@@ -124,8 +125,10 @@ namespace VTX::Renderer
 		/**
 		 * @brief Exports the renderer to an array of pixels.
 		 */
-		std::vector<std::byte> snapshot( const std::optional<Util::Resolution> & p_resolution		 = std::nullopt,
-										 std::optional<float>					 p_backgroundOpacity = std::nullopt );
+		std::vector<std::byte> snapshot(
+			const std::optional<Util::Resolution> & p_resolution		= std::nullopt,
+			std::optional<float>					p_backgroundOpacity = std::nullopt
+		);
 
 		/**
 		 * @brief Get the id of the the data stored in the given pixel.

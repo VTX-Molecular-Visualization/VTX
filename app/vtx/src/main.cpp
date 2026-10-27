@@ -51,12 +51,14 @@ namespace
 		std::cout.flush();
 		// Inject Enter to unblock the cmd.exe prompt that fired before our output.
 		INPUT_RECORD ir						= {};
+		// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
 		ir.EventType						= KEY_EVENT;
 		ir.Event.KeyEvent.bKeyDown			= TRUE;
 		ir.Event.KeyEvent.wRepeatCount		= 1;
 		ir.Event.KeyEvent.wVirtualKeyCode	= VK_RETURN;
 		ir.Event.KeyEvent.wVirtualScanCode	= MapVirtualKey( VK_RETURN, MAPVK_VK_TO_VSC );
 		ir.Event.KeyEvent.uChar.UnicodeChar = L'\r';
+		// NOLINTEND(cppcoreguidelines-pro-type-union-access)
 
 		DWORD written {};
 		WriteConsoleInput( GetStdHandle( STD_INPUT_HANDLE ), &ir, 1, &written );
