@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.28)
+
 set(DIR_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 set(DIR_APPS ${CMAKE_CURRENT_SOURCE_DIR}/../app)
 set(DIR_TOOLS ${CMAKE_CURRENT_SOURCE_DIR}/../tool)
@@ -8,7 +10,6 @@ include("${DIR_LIBS}/renderer/cmake/vtx_link_cuda.cmake")
 set(PYBIND11_FINDPYTHON ON)
 
 message(STATUS "VTX - vtx")
-cmake_minimum_required(VERSION 3.28)
 
 project(vtx)
 
