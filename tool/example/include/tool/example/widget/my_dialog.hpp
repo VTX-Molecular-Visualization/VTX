@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <ui/qt/dialog/base_dialog.hpp>
+#include <ui/qt/helper.hpp>
 
 namespace VTX::Tool::Example::Widget
 {
@@ -12,20 +13,21 @@ namespace VTX::Tool::Example::Widget
 	class MyDialog : public UI::QT::Dialog::BaseDialog<MyDialog>
 	{
 	  public:
-		MyDialog() : BaseDialog()
+		MyDialog()
 		{
 			setWindowTitle( "Example tool dialog" );
 			setMinimumSize( 300, 100 );
 
 			// Layout.
-			QVBoxLayout * layout = new QVBoxLayout( this );
+			auto * layout = UI::QT::Helper::makeQObject<QVBoxLayout>( this );
 
 			// Add other widgets.
 			//
 
 			// Buttons.
-			QDialogButtonBox * buttonBox = new QDialogButtonBox(
-				QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open, this );
+			auto * buttonBox = UI::QT::Helper::makeQObject<QDialogButtonBox>(
+				QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open, this
+			);
 
 			layout->addWidget( buttonBox );
 			setLayout( layout );
@@ -34,15 +36,17 @@ namespace VTX::Tool::Example::Widget
 			connect( buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept );
 			connect( buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
 
-			connect( this,
-					 &QDialog::accepted,
-					 [ this ]()
-					 {
-						 // TODO: logic
-					 } );
+			connect(
+				this,
+				&QDialog::accepted,
+				[]()
+				{
+					// TODO: logic
+				}
+			);
 		}
 
-		virtual ~MyDialog() {}
+		~MyDialog() override = default;
 	};
 
 } // namespace VTX::Tool::Example::Widget

@@ -25,7 +25,7 @@ namespace VTX::Tool::Example::Widget
 			UI::QT::UI_ACTIONS().addTo( *this, Action::MY_ACTION_4 );
 		}
 
-		virtual ~MyMenu() {}
+		~MyMenu() override = default;
 
 	  private:
 	};

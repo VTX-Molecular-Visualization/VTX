@@ -1112,7 +1112,10 @@ namespace VTX::Renderer::Context::Backend
 			{
 			case E_RESOURCE_TYPE::TEXTURE:
 			{
-				assert( input.secondary );
+				if ( not input.secondary )
+				{
+					throw GraphicException( "Texture input requires a sampler" );
+				}
 				const Handle hTex  = _textures.handle( input.primary );
 				const Handle hSamp = _samplers.handle( *input.secondary );
 				rt.textures.emplace_back( hTex, hSamp, b++ );

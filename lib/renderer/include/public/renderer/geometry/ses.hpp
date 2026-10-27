@@ -125,7 +125,10 @@ namespace VTX::Renderer::Geometry
 
 			void resize( Context::ContextWrapper & p_context ) override
 			{
-				assert( indiceBuffer );
+				if ( not indiceBuffer )
+				{
+					throw GraphicException( "Geometry has no index buffer" );
+				}
 
 				for ( const auto & [ surface, data ] : _data() )
 				{
@@ -142,7 +145,10 @@ namespace VTX::Renderer::Geometry
 
 			void uploadIndexes( Context::ContextWrapper & p_context, const SurfaceID p_surface ) override
 			{
-				assert( indiceBuffer );
+				if ( not indiceBuffer )
+				{
+					throw GraphicException( "Geometry has no index buffer" );
+				}
 
 				const auto it = _data().find( p_surface );
 				assert( it != _data().end() );

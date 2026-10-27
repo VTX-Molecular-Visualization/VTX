@@ -7,6 +7,7 @@
 #include <atomic>
 #include <iostream>
 #include <util/event_hub.hpp>
+#include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/thread/thread_manager.hpp>
@@ -376,7 +377,10 @@ namespace VTX::App
 
 	bool Session::isPortable() const
 	{
-		assert( _impl->manager );
+		if ( not _impl->manager )
+		{
+			throw VTXException( "Session manager is not initialized" );
+		}
 
 		return ( *_impl->manager ).IsPortable();
 	}

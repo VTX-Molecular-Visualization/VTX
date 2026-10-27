@@ -5,6 +5,7 @@
 #include "app/system/uid.hpp"
 #include <optional>
 #include <renderer/renderer.hpp>
+#include <util/exceptions.hpp>
 
 namespace VTX::App::Action::Selection
 {
@@ -198,7 +199,10 @@ namespace VTX::App::Action::Selection
 		{
 			// Look for residue.
 			firstEntOpt = Helper::Scene::findSystemByResidueUID( first );
-			assert( firstEntOpt );
+			if ( not firstEntOpt )
+			{
+				throw VTXException( "No system found for residue UID {}", first );
+			}
 			assert( second == INVALID_UID );
 			if ( granularity == E_GRANULARITY::ATOM )
 			{

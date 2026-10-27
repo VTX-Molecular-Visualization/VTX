@@ -13,7 +13,7 @@ namespace VTX::Tool::Example::Widget
 		MyDockWidget( QWidget * const p_parent ) : BaseDockWidget( p_parent, "My Dock Panel" )
 		{ setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea ); }
 
-		virtual ~MyDockWidget() {}
+		~MyDockWidget() override = default;
 	};
 
 } // namespace VTX::Tool::Example::Widget

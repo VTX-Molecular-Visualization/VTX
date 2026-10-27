@@ -62,7 +62,10 @@ namespace VTX::Renderer::Geometry
 		 */
 		virtual void uploadIndexes( Context::ContextWrapper & p_context, const Desc::Handle p_handle )
 		{
-			assert( indiceBuffer );
+			if ( not indiceBuffer )
+			{
+				throw GraphicException( "Geometry has no index buffer" );
+			}
 
 			const auto it = _resources.find( p_handle );
 			assert( it != _resources.end() );

@@ -112,7 +112,7 @@ namespace VTX::Renderer
 
 		if ( p_binding )
 		{
-			desc.binding = *p_binding;
+			desc.binding = p_binding;
 		}
 
 		if ( not std::empty( p_values ) )

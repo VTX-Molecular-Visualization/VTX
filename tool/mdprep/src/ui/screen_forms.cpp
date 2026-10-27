@@ -3,6 +3,7 @@
 #include <qpushbutton.h>
 #include <ui/qt/helper.hpp>
 #include <util/event_hub.hpp>
+#include <util/exceptions.hpp>
 //
 #include "tool/mdprep/gateway/engine_job_manager.hpp"
 #include "tool/mdprep/gateway/form_data.hpp"
@@ -164,6 +165,10 @@ namespace VTX::Tool::Mdprep::ui
 
 	void ScreenForms::_setFormBasic()
 	{
+		if ( not _reportManager )
+		{
+			throw VTXException( "Report manager is not initialized" );
+		}
 		_formEngine.deactivate();
 		VTX::Tool::Mdprep::Gateway::MdParameters param;
 		_currentForm.get( param );
@@ -180,6 +185,10 @@ namespace VTX::Tool::Mdprep::ui
 
 	void ScreenForms::_setFormAdvanced()
 	{
+		if ( not _reportManager )
+		{
+			throw VTXException( "Report manager is not initialized" );
+		}
 		_formEngine.deactivate();
 		VTX::Tool::Mdprep::Gateway::MdParameters param;
 		_currentForm.get( param );

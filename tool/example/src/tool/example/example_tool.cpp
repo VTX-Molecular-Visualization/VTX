@@ -27,19 +27,23 @@ namespace VTX::Tool::Example
 		action.tip	= "Example tool";
 		action.icon = "sprite/king.png";
 
-		UI::QT::UI_ACTIONS().registerAction( action,
-											 [ this ]( const UI::QT::ActionRegistry::ActionContext & )
-											 {
-												 VTX_DEBUG( "Action triggered" );
-												 // Implement logic.
-											 } );
+		UI::QT::UI_ACTIONS().registerAction(
+			action,
+			[]( const UI::QT::ActionRegistry::ActionContext & )
+			{
+				VTX_DEBUG( "Action triggered" );
+				// Implement logic.
+			}
+		);
 
-		UI::QT::UI_ACTIONS().registerAction( Action::myAction1(),
-											 []( const UI::QT::ActionRegistry::ActionContext & )
-											 {
-												 Widget::MyDialog dialog;
-												 dialog.exec();
-											 } );
+		UI::QT::UI_ACTIONS().registerAction(
+			Action::myAction1(),
+			[]( const UI::QT::ActionRegistry::ActionContext & )
+			{
+				Widget::MyDialog dialog;
+				dialog.exec();
+			}
+		);
 		UI::QT::UI_ACTIONS().registerAction( Action::myAction2() );
 		UI::QT::UI_ACTIONS().registerAction( Action::myAction3() );
 		UI::QT::UI_ACTIONS().registerAction( Action::myAction4() );
