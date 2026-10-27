@@ -53,7 +53,6 @@ jobs:
           -o vtx/*:tool_example=True \
           -o vtx/*:tool_mdprep=True \
           -o vtx/*:tool_topology_editor=True \
-          -c tools.cmake.cmaketoolchain:extra_variables='{"VTX_ENABLE_CLANG_TIDY":False}' \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True
 

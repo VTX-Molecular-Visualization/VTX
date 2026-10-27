@@ -3,11 +3,14 @@ name: Clang-Tidy
 on:
   workflow_dispatch:
       inputs:
-        fail_on_diagnostics:
-          description: 'Fail the job if clang-tidy reports diagnostics'
+        level:
+          description: 'clang-tidy level (WARN: report only, ERR: fail on diagnostics)'
           required: false
-          default: false
-          type: boolean
+          default: WARN
+          type: choice
+          options:
+            - WARN
+            - ERR
 
 permissions:
   contents: read
@@ -55,6 +58,7 @@ jobs:
           -o vtx/*:tool_example=True \
           -o vtx/*:tool_mdprep=True \
           -o vtx/*:tool_topology_editor=True \
+          -o vtx/*:clang_tidy=${{ inputs.level }} \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True
 
@@ -62,22 +66,21 @@ jobs:
       working-directory: ${{env.DEV_DIR}}
       run: |
         cmake --preset conan-release \
-          -DVTX_ENABLE_CLANG_TIDY=ON \
           -DVTX_CLANG_TIDY_EXECUTABLE=$(command -v clang-tidy-${{ env.LLVM_VERSION }})
 
     - name: Build with clang-tidy
       working-directory: ${{github.workspace}}
       shell: bash
       run: |
-        cmake --build ${{env.BUILD_DIR}} -- -k 0 > clang-tidy.out 2>&1 || true
+        cmake --build ${{env.BUILD_DIR}} -- -k 0 > clang-tidy.out 2>&1
 
     - name: Report
+      if: always()
       working-directory: ${{github.workspace}}
       shell: bash
       run: |
         grep -E ':[0-9]+:[0-9]+: (warning|error): .*\[[a-z][^]]*\]$' clang-tidy.out | sort -u > clang-tidy.diagnostics || true
         COUNT=$(wc -l < clang-tidy.diagnostics)
-        echo "CLANG_TIDY_COUNT=$COUNT" >> "$GITHUB_ENV"
         {
           echo "## Clang-Tidy"
           echo ""
@@ -98,11 +101,3 @@ jobs:
         path: |
           clang-tidy.out
           clang-tidy.diagnostics
-
-    - name: Check diagnostics
-      if: inputs.fail_on_diagnostics
-      run: |
-        if [ "$CLANG_TIDY_COUNT" -gt 0 ]; then
-          echo "clang-tidy reported $CLANG_TIDY_COUNT diagnostics."
-          exit 1
-        fi

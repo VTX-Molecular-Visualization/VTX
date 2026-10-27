@@ -1,6 +1,11 @@
 option(VTX_ENABLE_NATIVE_OPTIMIZATIONS "Enable CPU-specific release optimizations for local builds." OFF)
 option(VTX_ENABLE_INTERPROCEDURAL_OPTIMIZATION "Enable interprocedural optimization for VTX targets." OFF)
-option(VTX_ENABLE_CLANG_TIDY "Enable clang-tidy analysis for VTX targets." ON)
+set(_vtx_clang_tidy_levels OFF WARN ERR)
+set(VTX_CLANG_TIDY "OFF" CACHE STRING "clang-tidy analysis level for VTX targets (OFF, WARN, ERR).")
+set_property(CACHE VTX_CLANG_TIDY PROPERTY STRINGS ${_vtx_clang_tidy_levels})
+if(NOT VTX_CLANG_TIDY IN_LIST _vtx_clang_tidy_levels)
+	message(FATAL_ERROR "VTX_CLANG_TIDY must be OFF, WARN or ERR (got '${VTX_CLANG_TIDY}').")
+endif()
 
 # Exclude vendor sources from linting.
 function(_vtx_exclude_vendor_sources_from_linting p_target)
@@ -18,7 +23,7 @@ function(vtx_configure_target p_target)
 	cmake_parse_arguments(PARSE_ARGV 1 arg "NO_LINTER" "" "")
 
 	# Static analysis.
-	if(VTX_ENABLE_CLANG_TIDY AND NOT arg_NO_LINTER)
+	if(NOT VTX_CLANG_TIDY STREQUAL "OFF" AND NOT arg_NO_LINTER)
 		get_filename_component(_vtx_compiler_dir "${CMAKE_CXX_COMPILER}" DIRECTORY)
 		# TODO: remove hardcoded path.
 		find_program(VTX_CLANG_TIDY_EXECUTABLE NAMES clang-tidy
@@ -26,6 +31,11 @@ function(vtx_configure_target p_target)
 			REQUIRED
 		)
 		set_property(TARGET ${p_target} PROPERTY CXX_CLANG_TIDY "${VTX_CLANG_TIDY_EXECUTABLE}")
+		if(VTX_CLANG_TIDY STREQUAL "WARN")
+			set_property(TARGET ${p_target} APPEND PROPERTY CXX_CLANG_TIDY "--warnings-as-errors=-*")
+		else()
+			set_property(TARGET ${p_target} APPEND PROPERTY CXX_CLANG_TIDY "--warnings-as-errors=*")
+		endif()
 		if(MSVC)
 			set_property(TARGET ${p_target} APPEND PROPERTY CXX_CLANG_TIDY "--extra-arg=/EHsc")
 		endif()

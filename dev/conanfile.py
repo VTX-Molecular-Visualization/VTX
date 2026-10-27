@@ -41,6 +41,7 @@ class VTXRecipe(ConanFile):
         "python_binding": [True, False],
         "python_version": ["ANY"],
         "cuda_arch": ["ANY"],
+        "clang_tidy": ["OFF", "WARN", "ERR"],
     }
     default_options = {
         "version": "0.0.0",
@@ -53,6 +54,7 @@ class VTXRecipe(ConanFile):
         "python_binding": True,
         "python_version": DEFAULT_PYTHON_VERSION,
         "cuda_arch": renderer_module.DEFAULT_CUDA_ARCH,
+        "clang_tidy": "OFF",
     }
     
     settings = "os", "compiler", "build_type", "arch"
@@ -146,6 +148,7 @@ class VTXRecipe(ConanFile):
         if self.options.renderer:
             tc.cache_variables["VTX_CUDA_ARCH"] = self.options.cuda_arch
         tc.cache_variables["LOCAL_PDB100"] = "1" if self.options.local_pdb100 else "0"
+        tc.cache_variables["VTX_CLANG_TIDY"] = str(self.options.clang_tidy)
         if self.options.ui_qt:
             tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_module.qt_runtime_root(self)
         if self.options.tool_mdprep:
