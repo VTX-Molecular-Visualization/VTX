@@ -1,12 +1,15 @@
 name: Clang-Tidy
 
 on:
+  push:
+    branches: [ "master", "dev" ]
+    paths: ['app/**', 'lib/**', 'tool/**', 'dev/**', '.clang-tidy', '.github/workflows/clang_tidy.yml']
   workflow_dispatch:
       inputs:
         level:
           description: 'clang-tidy level (WARN: report only, ERR: fail on diagnostics)'
           required: false
-          default: WARN
+          default: ERR
           type: choice
           options:
             - WARN
@@ -58,7 +61,7 @@ jobs:
           -o vtx/*:tool_example=True \
           -o vtx/*:tool_mdprep=True \
           -o vtx/*:tool_topology_editor=True \
-          -o vtx/*:clang_tidy=${{ inputs.level }} \
+          -o vtx/*:clang_tidy=${{ inputs.level || 'ERR' }} \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True
 
