@@ -1,6 +1,7 @@
 #ifndef VTX_APP_ACTION_CONTROLLER_HPP
 #define VTX_APP_ACTION_CONTROLLER_HPP
 
+#include "app/ecs.hpp"
 #include "app/services.hpp"
 #include "app/setting/controller.hpp"
 

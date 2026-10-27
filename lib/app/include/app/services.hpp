@@ -1,8 +1,6 @@
 #ifndef VTX_APP_SERVICES_HPP
 #define VTX_APP_SERVICES_HPP
 
-#include "app/ecs.hpp"
-
 /**
  * @brief Forward declarations of services stored in the ECS context.
  */
@@ -71,62 +69,62 @@ namespace VTX::App
 	/**
 	 * @brief Arguments launching the application with.
 	 */
-	inline const Arguments & ARGS() { return ECS::getCtx<Arguments>(); }
+	const Arguments & ARGS();
 
 	/**
 	 * @brief Main event bus.
 	 */
-	inline Util::EventHub & HUB() { return ECS::getCtx<Util::EventHub>(); }
+	Util::EventHub & HUB();
 
 	/**
 	 * @brief Statistics.
 	 */
-	inline Util::Monitoring::Stats & STATS() { return ECS::getCtx<Util::Monitoring::Stats>(); }
+	Util::Monitoring::Stats & STATS();
 
 	/**
 	 * @brief Renderer facade.
 	 */
-	inline Renderer::Renderer & RENDERER() { return ECS::getCtx<Renderer::Renderer>(); }
+	Renderer::Renderer & RENDERER();
 
 	/**
 	 * @brief Action manager.
 	 */
-	inline Action::ActionManager & ACTION() { return ECS::getCtx<Action::ActionManager>(); }
+	Action::ActionManager & ACTION();
 
 	/**
 	 * @brief Input manager.
 	 */
-	inline Input::InputManager & INPUT() { return ECS::getCtx<Input::InputManager>(); }
+	Input::InputManager & INPUT();
 
 	/**
 	 * @brief Network manager.
 	 */
-	inline Network::NetworkManager & NETWORK() { return ECS::getCtx<Network::NetworkManager>(); }
+	Network::NetworkManager & NETWORK();
 
 	/**
 	 * @brief Runtime session.
 	 */
-	inline Session & SESSION() { return ECS::getCtx<Session>(); }
+	Session & SESSION();
 
 	/**
 	 * @brief Thread manager.
 	 */
-	inline Util::Thread::ThreadManager & THREAD() { return ECS::getCtx<Util::Thread::ThreadManager>(); }
+	Util::Thread::ThreadManager & THREAD();
 
 	/**
 	 * @brief UID manager.
 	 */
-	inline Uid::UIDManager & UID() { return ECS::getCtx<Uid::UIDManager>(); }
+	Uid::UIDManager & UID();
 
 	/**
 	 * @brief Pass manager.
 	 */
-	inline Pass::PassManager & PASS() { return ECS::getCtx<Pass::PassManager>(); }
+	Pass::PassManager & PASS();
 
 	/**
 	 * @brief Python interpretor.
 	 */
-	inline PythonBinding::Interpretor & INTERPRETOR() { return ECS::getCtx<PythonBinding::Interpretor>(); }
+	PythonBinding::Interpretor & INTERPRETOR();
 } // namespace VTX::App
 
 #endif

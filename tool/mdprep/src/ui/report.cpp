@@ -4,6 +4,7 @@
 #include "tool/mdprep/ui/shared.hpp"
 #include <QPointer>
 #include <QTimer>
+#include <app/ecs.hpp>
 #include <app/services.hpp>
 #include <app/system/visibility.hpp>
 #include <tool/mdprep/gateway/form_data.hpp>

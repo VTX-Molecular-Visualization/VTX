@@ -1,8 +1,6 @@
 #ifndef VTX_UI_QT_SERVICES_HPP
 #define VTX_UI_QT_SERVICES_HPP
 
-#include <app/ecs.hpp>
-
 namespace VTX::UI::QT
 {
 	class ActionRegistry;
@@ -24,15 +22,15 @@ namespace VTX::UI::QT
 		class MainWindow;
 	}
 
-	inline ActionRegistry & UI_ACTIONS() { return App::ECS::getCtx<ActionRegistry>(); }
+	ActionRegistry & UI_ACTIONS();
 
-	inline SelectionManager & SELECTION() { return App::ECS::getCtx<SelectionManager>(); }
+	SelectionManager & SELECTION();
 
-	inline Settings & SETTINGS() { return App::ECS::getCtx<Settings>(); }
+	Settings & SETTINGS();
 
-	inline Style::StyleManager & STYLE() { return App::ECS::getCtx<Style::StyleManager>(); }
+	Style::StyleManager & STYLE();
 
-	inline Widget::MainWindow & MAIN_WINDOW() { return App::ECS::getCtx<Widget::MainWindow>(); }
+	Widget::MainWindow & MAIN_WINDOW();
 
 } // namespace VTX::UI::QT
 
