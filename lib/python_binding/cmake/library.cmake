@@ -45,9 +45,9 @@ target_compile_definitions(vtx_python_binding_test PRIVATE CPYTHON_VERSION_PATCH
 
 get_target_property(VTX_PY_LINK_LIBS vtx_python_binding LINK_LIBRARIES)
 
-message("VTX - vtx_python_binding links: ${VTX_PY_LINK_LIBS}")
+message(STATUS "VTX - vtx_python_binding links: ${VTX_PY_LINK_LIBS}")
 get_target_property(VTX_PY_TEST_LINK_LIBS vtx_python_binding_test LINK_LIBRARIES)
-message("VTX - vtx_python_binding_test links: ${VTX_PY_TEST_LINK_LIBS}")
+message(STATUS "VTX - vtx_python_binding_test links: ${VTX_PY_TEST_LINK_LIBS}")
 include ("${CMAKE_CURRENT_LIST_DIR}/vtx_python_binding_copy_runtime.cmake")
 vtx_python_binding_copy_runtime(vtx_python_binding_test)
 

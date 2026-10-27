@@ -1,4 +1,4 @@
-message("vtx_util")
+message(STATUS "VTX - vtx_util")
 cmake_minimum_required(VERSION 3.28)
 project(vtx_util)
 

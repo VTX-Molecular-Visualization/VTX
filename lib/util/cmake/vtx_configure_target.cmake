@@ -4,8 +4,9 @@ set(_vtx_clang_tidy_levels OFF WARN ERR)
 set(VTX_CLANG_TIDY "OFF" CACHE STRING "clang-tidy analysis level for VTX targets (OFF, WARN, ERR).")
 set_property(CACHE VTX_CLANG_TIDY PROPERTY STRINGS ${_vtx_clang_tidy_levels})
 if(NOT VTX_CLANG_TIDY IN_LIST _vtx_clang_tidy_levels)
-	message(FATAL_ERROR "VTX_CLANG_TIDY must be OFF, WARN or ERR (got '${VTX_CLANG_TIDY}').")
+	message(FATAL_ERROR "VTX_CLANG_TIDY must be OFF, WARN or ERR (got <${VTX_CLANG_TIDY}>).")
 endif()
+message(STATUS "VTX - clang-tidy: ${VTX_CLANG_TIDY}")
 
 # Exclude vendor sources from linting.
 function(_vtx_exclude_vendor_sources_from_linting p_target)

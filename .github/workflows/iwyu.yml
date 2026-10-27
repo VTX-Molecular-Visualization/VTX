@@ -89,36 +89,10 @@ jobs:
           ${{ inputs.iwyu_args }} \
           > iwyu.out 2>&1 || true
 
-    - name: Build patch
-      working-directory: ${{github.workspace}}
-      shell: bash
-      run: |
-        FIX_INCLUDES=$(command -v fix_include || command -v fix_includes.py)
-        "$FIX_INCLUDES" --nocomments --noreorder --nosafe_headers < iwyu.out || true
-        git diff -- lib tool app > iwyu.patch
-
-    - name: Summary
-      working-directory: ${{github.workspace}}
-      shell: bash
-      run: |
-        {
-          echo "## IWYU"
-          echo ""
-          echo "- Files with suggestions: $(grep -c 'should add these lines:' iwyu.out || true)"
-          echo "- Errors: $(grep -c 'error:' iwyu.out || true)"
-          echo "- Patch: $(git diff --shortstat -- lib tool app)"
-          echo ""
-          echo "### Forward declarations suggested"
-          echo '```'
-          grep -E '^(namespace .*\{ *)?(class|struct) [A-Za-z_][A-Za-z0-9_:<>, ]*;' iwyu.out | sort | uniq -c | sort -rn | head -200 || true
-          echo '```'
-        } >> "$GITHUB_STEP_SUMMARY"
-
     - name: Upload results
       uses: actions/upload-artifact@v4
       with:
         name: iwyu
         path: |
           iwyu.out
-          iwyu.patch
           ${{env.BUILD_DIR}}/compile_commands.json

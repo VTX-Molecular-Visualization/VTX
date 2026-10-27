@@ -1,4 +1,4 @@
-message("vtx_tool_mdprep")
+message(STATUS "VTX - vtx_tool_mdprep")
 cmake_minimum_required(VERSION 3.28)
 
 project(vtx_tool_mdprep)
