@@ -1,0 +1,108 @@
+name: Clang-Tidy
+
+on:
+  workflow_dispatch:
+      inputs:
+        fail_on_diagnostics:
+          description: 'Fail the job if clang-tidy reports diagnostics'
+          required: false
+          default: false
+          type: boolean
+
+permissions:
+  contents: read
+
+env:
+  DEV_DIR: ${{github.workspace}}/dev
+  BUILD_DIR: ${{github.workspace}}/dev/build/Release
+  BUILD_TYPE: Release
+  LLVM_VERSION: 22
+
+jobs:
+  clang-tidy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6.0.2
+      with:
+        submodules: recursive
+
+    - name: Install clang-tidy
+      run: |
+        wget -q https://apt.llvm.org/llvm.sh
+        sudo bash llvm.sh ${{ env.LLVM_VERSION }}
+        sudo apt-get install -y clang-tidy-${{ env.LLVM_VERSION }}
+        clang-tidy-${{ env.LLVM_VERSION }} --version
+
+    - name: Setup Conan
+      uses: conan-io/setup-conan@v1.3.0
+      with:
+        use_venv: true
+        profile_detect: true
+
+    - name: Add custom remote
+      run: |
+        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
+        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
+
+    - name: Install dependencies
+      working-directory: ${{env.DEV_DIR}}
+      shell: bash
+      run: |
+        conan install . -b missing \
+          -s build_type=${{ env.BUILD_TYPE }} \
+          -s compiler.cppstd=gnu20 \
+          -o vtx/*:tool_example=True \
+          -o vtx/*:tool_mdprep=True \
+          -o vtx/*:tool_topology_editor=True \
+          -c tools.system.package_manager:mode=install \
+          -c tools.system.package_manager:sudo=True
+
+    - name: Configure
+      working-directory: ${{env.DEV_DIR}}
+      run: |
+        cmake --preset conan-release \
+          -DVTX_ENABLE_CLANG_TIDY=ON \
+          -DVTX_CLANG_TIDY_EXECUTABLE=$(command -v clang-tidy-${{ env.LLVM_VERSION }})
+
+    - name: Build with clang-tidy
+      working-directory: ${{github.workspace}}
+      shell: bash
+      run: |
+        cmake --build ${{env.BUILD_DIR}} -- -k 0 > clang-tidy.out 2>&1 || true
+
+    - name: Report
+      working-directory: ${{github.workspace}}
+      shell: bash
+      run: |
+        grep -E ':[0-9]+:[0-9]+: (warning|error): .*\[[a-z][^]]*\]$' clang-tidy.out | sort -u > clang-tidy.diagnostics || true
+        COUNT=$(wc -l < clang-tidy.diagnostics)
+        echo "CLANG_TIDY_COUNT=$COUNT" >> "$GITHUB_ENV"
+        {
+          echo "## Clang-Tidy"
+          echo ""
+          echo "- Diagnostics (deduplicated): $COUNT"
+          echo "- Files: $(cut -d: -f1 clang-tidy.diagnostics | sort -u | wc -l)"
+          echo ""
+          echo "### Diagnostics per check"
+          echo '```'
+          sed -E 's/.*\[([^]]*)\]$/\1/; s/,-warnings-as-errors//' clang-tidy.diagnostics | sort | uniq -c | sort -rn || true
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Upload results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: clang-tidy
+        path: |
+          clang-tidy.out
+          clang-tidy.diagnostics
+
+    - name: Check diagnostics
+      if: inputs.fail_on_diagnostics
+      run: |
+        if [ "$CLANG_TIDY_COUNT" -gt 0 ]; then
+          echo "clang-tidy reported $CLANG_TIDY_COUNT diagnostics."
+          exit 1
+        fi
