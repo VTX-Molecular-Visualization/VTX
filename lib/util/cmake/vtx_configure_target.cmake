@@ -52,7 +52,16 @@ function(vtx_configure_target p_target)
 			set_property(TARGET ${p_target} APPEND PROPERTY CXX_CLANG_TIDY "--warnings-as-errors=*")
 		endif()
 		if(MSVC)
-			set_property(TARGET ${p_target} APPEND PROPERTY CXX_CLANG_TIDY "--extra-arg=/EHsc")
+			# Workaround for MSVC: clang-tidy discard flagd starting with '/'.
+			string(TOUPPER "${CMAKE_BUILD_TYPE}" _vtx_build_type)
+			separate_arguments(_vtx_cxx_flags NATIVE_COMMAND "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${_vtx_build_type}}")
+			list(APPEND _vtx_cxx_flags /EHsc /W3 /utf-8 /fp:fast /Zc:__cplusplus)
+			list(REMOVE_DUPLICATES _vtx_cxx_flags)
+			foreach(_vtx_flag IN LISTS _vtx_cxx_flags)
+				if(_vtx_flag MATCHES "^/")
+					set_property(TARGET ${p_target} APPEND PROPERTY CXX_CLANG_TIDY "--extra-arg=${_vtx_flag}")
+				endif()
+			endforeach()
 		endif()
 		# Defer function call to the end of the configuration to ensure that all sources have been added to the target.
 		cmake_language(EVAL CODE "cmake_language(DEFER CALL _vtx_exclude_vendor_sources_from_linting [[${p_target}]])"
