@@ -9,11 +9,7 @@
 #include <QPushButton>
 #include <QTimer>
 #include <QValidator>
-#include <fmt/format.h>
 //
-#include "util/logger.hpp"
-#include "util/sentry.hpp"
-#include <util/event_hub.hpp>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/ui/shared.hpp"
@@ -24,15 +20,12 @@
 //
 #include "tool/mdprep/ui/form_basic/settings_dialog.hpp"
 //
-#include "app/vtx_app.hpp"
 #include "tool/mdprep/ui/form_basic/event_manager.hpp"
-#include <app/services.hpp>
 //
 #include <ui/qt/services.hpp>
 #include <ui/qt/style/icons.hpp>
 #include <ui/qt/style/style_manager.hpp>
 #include <ui/qt/util.hpp>
-#include <ui/qt/validator.hpp>
 //
 #include "tool/mdprep/ui/form_basic/form_basic.hpp"
 

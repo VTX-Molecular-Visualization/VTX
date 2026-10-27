@@ -1,8 +1,5 @@
-#include <thread>
-#include <ui/qt/util.hpp>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
-#include "tool/mdprep/gateway/shared.hpp"
 //
 #include "tool/mdprep/gateway/backend_gromacs.hpp"
 #include "tool/mdprep/gateway/engine_job_manager.hpp"
@@ -22,11 +19,11 @@ namespace VTX::Tool::Mdprep::ui
 	class Gromacs::Impl
 	{
 	  public:
-		void get( Gateway::EngineJobManager & p_out ) noexcept { p_out = _jobManager; }
+		void get( Gateway::EngineJobManager & p_out ) { p_out = _jobManager; }
 
-		void get( MdEngineFieldPlacer & p_out ) noexcept { p_out = GromacsFieldPlacer( _data ); }
+		void get( MdEngineFieldPlacer & p_out ) { p_out = GromacsFieldPlacer( _data ); }
 
-		void get( const E_FIELD_SECTION & p_section, MdEngineSpecificFieldPlacer & p_out ) noexcept
+		void get( const E_FIELD_SECTION & p_section, MdEngineSpecificFieldPlacer & p_out )
 		{
 			switch ( p_section )
 			{
@@ -54,15 +51,14 @@ namespace VTX::Tool::Mdprep::ui
 
 	Gromacs::Gromacs() : _impl( new Impl() ) {}
 
-	void Gromacs::get( MdEngineFieldPlacer & p_out ) noexcept { _impl->get( p_out ); }
+	void Gromacs::get( MdEngineFieldPlacer & p_out ) { _impl->get( p_out ); }
 
-	void Gromacs::get( const E_FIELD_SECTION & p_section, MdEngineSpecificFieldPlacer & p_out ) noexcept
+	void Gromacs::get( const E_FIELD_SECTION & p_section, MdEngineSpecificFieldPlacer & p_out )
 	{ _impl->get( p_section, p_out ); }
 
-	void Gromacs::get( Gateway::EngineJobManager & p_out ) noexcept { _impl->get( p_out ); }
+	void Gromacs::get( Gateway::EngineJobManager & p_out ) { _impl->get( p_out ); }
 
-	void get( const Gromacs &, Gateway::EngineSpecificCommonInformation & p_out ) noexcept
-	{ Gateway::Gromacs::get( p_out ); }
+	void get( const Gromacs &, Gateway::EngineSpecificCommonInformation & p_out ) { Gateway::Gromacs::get( p_out ); }
 
 	void Gromacs::Del::operator()( Gromacs::Impl * p_ ) noexcept { std::default_delete<Gromacs::Impl>()( p_ ); }
 } // namespace VTX::Tool::Mdprep::ui

@@ -2,16 +2,12 @@
 #include <qpushbutton.h>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
-#include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
-#include "tool/mdprep/ui/md_engine_field_placer.hpp"
 #include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
 #include "tool/mdprep/ui/report.hpp"
 //
 #include "tool/mdprep/ui/form_basic/data.hpp"
 #include "tool/mdprep/ui/shared.hpp"
-#include <app/vtx_app.hpp>
-#include <ui/qt/util.hpp>
 #include <util/sentry.hpp>
 //
 #include "tool/mdprep/ui/form_basic/settings_dialog.hpp"

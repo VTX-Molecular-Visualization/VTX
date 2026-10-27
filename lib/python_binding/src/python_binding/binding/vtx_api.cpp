@@ -1,11 +1,8 @@
 #include "python_binding/binding/vtx_api.hpp"
-#include "python_binding/binding/helper.hpp"
 #include "python_binding/interpretor.hpp"
 #include "python_binding/log_redirection.hpp"
-#include <memory>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
 #include <string>
 #include <util/color/rgba.hpp>
 #include <util/math/aabb.hpp>

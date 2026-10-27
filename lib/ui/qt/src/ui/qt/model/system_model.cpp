@@ -1,20 +1,14 @@
 #include "ui/qt/model/system_model.hpp"
-#include "app/system/uid.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include <algorithm>
 #include <app/helper/system.hpp>
-#include <app/services.hpp>
 #include <io/reader.hpp>
 #include <iterator>
 #include <string_view>
-#include <util/enum.hpp>
-#include <util/event_hub.hpp>
-#include <util/logger.hpp>
 #include <utility>
-#include <variant>
 
 namespace VTX::UI::QT::Model
 {

@@ -1,16 +1,13 @@
-#include "util/sentry.hpp"
 #include <QTimer>
 #include <memory>
 #include <qpushbutton.h>
 #include <ui/qt/helper.hpp>
-#include <ui/qt/util.hpp>
 #include <util/event_hub.hpp>
 //
 #include "tool/mdprep/gateway/engine_job_manager.hpp"
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
-#include <tool/mdprep/actions/jobs.hpp>
 //
 #include "tool/mdprep/ui/form.hpp"
 #include "tool/mdprep/ui/form_switch_button.hpp"
@@ -22,7 +19,6 @@
 //
 #include "tool/mdprep/ui/form_advanced/form_advanced.hpp"
 #include "tool/mdprep/ui/form_basic/form_basic.hpp"
-#include <app/events.hpp>
 #include <app/services.hpp>
 //
 #include "tool/mdprep/ui/screen_forms.hpp"

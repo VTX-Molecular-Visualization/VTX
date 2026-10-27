@@ -1,7 +1,5 @@
 #include "ui/qt/application.hpp"
 #include "ui/qt/action_registry.hpp"
-#include "ui/qt/dialog/trajectory_association.hpp"
-#include "ui/qt/menu/file.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"

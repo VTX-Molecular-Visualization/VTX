@@ -2,12 +2,10 @@
 #include <qcombobox.h>
 #include <qpushbutton.h>
 //
-#include <ui/qt/util.hpp>
 #include <util/logger.hpp>
 #include <util/sentry.hpp>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
-#include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/form_advanced/shared.hpp"
 //
 #include "tool/mdprep/ui/input_checker.hpp"

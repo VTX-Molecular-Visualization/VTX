@@ -1,10 +1,9 @@
-#include <string>
 //
 #include "tool/mdprep/ui/md_engine.hpp"
 
 namespace VTX::Tool::Mdprep::ui
 {
-	void get( const MdEngine & p_engine, Gateway::EngineSpecificCommonInformation & p_info ) noexcept
+	void get( const MdEngine & p_engine, Gateway::EngineSpecificCommonInformation & p_info )
 	{
 		if ( p_engine._ptr )
 		{

@@ -4,7 +4,6 @@
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/style_manager.hpp"
-#include "ui/qt/widget/main_window.hpp"
 #include <QActionGroup>
 #include <app/services.hpp>
 #include <string>

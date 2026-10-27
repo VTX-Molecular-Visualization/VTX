@@ -1,5 +1,4 @@
 #include "app/python_binding/scene.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/action/scene.hpp"
 #include "app/helper/preset.hpp"
 #include <python_binding/binding/entity_caster.hpp>

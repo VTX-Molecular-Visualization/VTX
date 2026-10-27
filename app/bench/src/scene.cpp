@@ -1,10 +1,7 @@
 #include "scene.hpp"
 #include "util.hpp"
-#include <io/util/secondary_structure.hpp>
-#include <numeric>
 #include <renderer/color.hpp>
 #include <renderer/renderer.hpp>
-#include <util/math.hpp>
 
 namespace VTX::Bench
 {

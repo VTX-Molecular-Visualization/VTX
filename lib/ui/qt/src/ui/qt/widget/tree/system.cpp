@@ -12,7 +12,6 @@
 #include <app/action/camera.hpp>
 #include <app/action/color.hpp>
 #include <app/action/representation.hpp>
-#include <app/action/selection.hpp>
 #include <app/action/visibility.hpp>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>

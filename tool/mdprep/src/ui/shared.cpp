@@ -1,7 +1,6 @@
 #include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/ui/shared.hpp"
-#include <app/vtx_app.hpp>
 #include <memory>
 #include <qgridlayout.h>
 #include <qlineedit.h>
@@ -9,7 +8,6 @@
 #include <ui/qt/helper.hpp>
 #include <ui/qt/util.hpp>
 #include <ui/qt/validator.hpp>
-#include <util/sentry.hpp>
 
 namespace VTX::Tool::Mdprep::ui
 {

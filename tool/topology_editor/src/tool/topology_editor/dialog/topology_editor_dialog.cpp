@@ -12,7 +12,6 @@
 #include <QTableWidget>
 #include <QVBoxLayout>
 #include <app/helper/trajectory.hpp>
-#include <app/services.hpp>
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/bond.hpp>
 #include <core/chemdb/residue.hpp>
@@ -23,7 +22,6 @@
 #include <ui/qt/services.hpp>
 #include <ui/qt/style/icons.hpp>
 #include <ui/qt/style/style_manager.hpp>
-#include <util/constants.hpp>
 #include <util/enum.hpp>
 #include <utility>
 

@@ -1,14 +1,7 @@
 #include <array>
-#include <string>
-#include <thread>
 //
-#include <ui/qt/util.hpp>
 //
-#include "tool/mdprep/gateway/form_data.hpp"
-#include "tool/mdprep/gateway/shared.hpp"
 //
-#include "tool/mdprep/gateway/backend_gromacs.hpp"
-#include "tool/mdprep/ui/shared.hpp"
 //
 #include "tool/mdprep/ui/gromacs.hpp"
 //

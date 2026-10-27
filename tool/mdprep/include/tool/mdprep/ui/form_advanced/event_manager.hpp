@@ -2,6 +2,7 @@
 #define VTX_TOOL_MDPREP_UI_FORM_ADVANCED_EVENT_MANAGER_HPP
 
 #include <array>
+#include <util/sentry.hpp>
 
 class QLineEdit;
 class QComboBox;

@@ -1,7 +1,6 @@
 #include "ui/qt/widget/library/graphics_config/lighting_section.hpp"
 #include "ui/qt/helper.hpp"
 #include <QSignalBlocker>
-#include <string_view>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig

@@ -30,7 +30,6 @@
 #include <util/logger.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/grid.hpp>
-#include <util/math/range_list.hpp>
 #include <util/math/transform.hpp>
 #include <util/thread/thread_manager.hpp>
 #include <utility>

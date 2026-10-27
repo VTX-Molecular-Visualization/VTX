@@ -1,15 +1,20 @@
 #ifndef VTX_TOOL_MDPREP_UI_GROMACS_HPP
 #define VTX_TOOL_MDPREP_UI_GROMACS_HPP
 
+#include <cstdint>
+#include <memory>
+
 namespace VTX::Tool::Mdprep::Gateway
 {
 	class EngineJobManager;
+	struct EngineSpecificCommonInformation;
 } // namespace VTX::Tool::Mdprep::Gateway
 
 namespace VTX::Tool::Mdprep::ui
 {
 	class MdEngineFieldPlacer;
 	class MdEngineSpecificFieldPlacer;
+	enum class E_FIELD_SECTION : uint8_t;
 
 	/**
 	 * @brief Class responsible for providing gromacs specific ui objects
@@ -19,9 +24,9 @@ namespace VTX::Tool::Mdprep::ui
 	  public:
 		Gromacs();
 
-		void get( MdEngineFieldPlacer & p_out ) noexcept;
-		void get( const E_FIELD_SECTION &, MdEngineSpecificFieldPlacer & ) noexcept;
-		void get( Gateway::EngineJobManager & ) noexcept;
+		void get( MdEngineFieldPlacer & p_out );
+		void get( const E_FIELD_SECTION &, MdEngineSpecificFieldPlacer & );
+		void get( Gateway::EngineJobManager & );
 
 	  private:
 		class Impl;
@@ -34,7 +39,7 @@ namespace VTX::Tool::Mdprep::ui
 		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
 
-	void get( const Gromacs &, Gateway::EngineSpecificCommonInformation & ) noexcept;
+	void get( const Gromacs &, Gateway::EngineSpecificCommonInformation & );
 } // namespace VTX::Tool::Mdprep::ui
 
 #endif

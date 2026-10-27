@@ -14,7 +14,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 #include <array>
-#include <memory>
 #include <renderer/renderer.hpp>
 #include <string_view>
 #include <util/image.hpp>

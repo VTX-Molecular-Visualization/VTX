@@ -5,7 +5,6 @@
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/library/graphics_config_widget.hpp"
 #include <memory>
-#include <util/factories.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {

@@ -20,12 +20,10 @@
 #include <QVBoxLayout>
 //
 #include <app/services.hpp>
-#include <ui/qt/application.hpp>
 #include <ui/qt/services.hpp>
 #include <ui/qt/widget/main_window.hpp>
 #include <util/event_hub.hpp>
 //
-#include <tool/mdprep/actions/jobs.hpp>
 #include <tool/mdprep/gateway/shared.hpp>
 //
 #include <tool/mdprep/ui/preparation_timeline.hpp>

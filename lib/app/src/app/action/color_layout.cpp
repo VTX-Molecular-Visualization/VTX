@@ -1,5 +1,4 @@
 #include "app/action/color_layout.hpp"
-#include "app/scene/tag_root.hpp"
 #include <algorithm>
 
 namespace VTX::App::Action::ColorLayout

@@ -5,7 +5,6 @@
 #include <QRegularExpression>
 #include <QWidgetAction>
 #include <array>
-#include <string>
 #include <util/resolution.hpp>
 
 namespace

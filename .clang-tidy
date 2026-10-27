@@ -90,3 +90,4 @@ CheckOptions:
   cppcoreguidelines-rvalue-reference-param-not-moved.AllowPartialMove: true
   cppcoreguidelines-rvalue-reference-param-not-moved.IgnoreNonDeducedTemplateTypes: true
   misc-include-cleaner.MissingIncludes: false
+  misc-include-cleaner.IgnoreHeaders: '[Ww]indows\.h;exiv2[/\\]exiv2\.hpp;cpr[/\\]cpr\.h;fmt[/\\](chrono|ranges|std|ostream)\.h;pybind11[/\\].*;_caster\.hpp'

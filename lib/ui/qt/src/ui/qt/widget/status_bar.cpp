@@ -7,11 +7,7 @@
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/services.hpp>
-#include <app/vtx_app.hpp>
-#include <array>
 #include <renderer/renderer.hpp>
-#include <string>
-#include <string_view>
 #include <util/event_hub.hpp>
 #include <util/monitoring/stats.hpp>
 

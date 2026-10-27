@@ -1,5 +1,4 @@
 #include "ui/qt/validator.hpp"
-#include <string>
 #include <utility>
 
 namespace VTX::UI::QT

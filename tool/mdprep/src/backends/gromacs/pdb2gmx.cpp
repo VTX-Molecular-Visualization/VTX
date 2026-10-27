@@ -3,7 +3,6 @@
 #include <fstream>
 #include <re2/re2.h>
 #include <regex>
-#include <set>
 #include <stdexcept>
 #include <string_view>
 //

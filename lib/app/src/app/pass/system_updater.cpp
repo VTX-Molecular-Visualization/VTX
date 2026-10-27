@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <core/chemdb/atom.hpp>
 #include <renderer/renderer.hpp>
-#include <util/chrono.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/grid.hpp>
 #include <util/math/transform.hpp>

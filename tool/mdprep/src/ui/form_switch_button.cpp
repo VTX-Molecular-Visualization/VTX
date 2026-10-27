@@ -1,6 +1,4 @@
-#include <string>
 #include <ui/qt/helper.hpp>
-#include <vector>
 //
 #include <QFormLayout>
 #include <QLabel>

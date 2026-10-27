@@ -1,5 +1,4 @@
 #include "app/python_binding/io.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/action/io.hpp"
 #include <optional>
 #include <pybind11/stl.h>
@@ -9,7 +8,6 @@
 #include <python_binding/wrapper/arg.hpp>
 #include <string>
 #include <util/image.hpp>
-#include <util/types.hpp>
 
 namespace VTX::App::PythonBinding
 {

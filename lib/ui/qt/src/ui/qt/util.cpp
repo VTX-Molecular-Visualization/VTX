@@ -1,6 +1,5 @@
 #include "ui/qt/util.hpp"
 #include "ui/qt/helper.hpp"
-#include "ui/qt/resources.hpp"
 #include "ui/qt/validator.hpp"
 #include <QAction>
 #include <QBoxLayout>

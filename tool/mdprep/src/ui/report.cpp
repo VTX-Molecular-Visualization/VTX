@@ -4,16 +4,12 @@
 #include "tool/mdprep/ui/shared.hpp"
 #include <QPointer>
 #include <QTimer>
-#include <app/action/action_manager.hpp>
 #include <app/services.hpp>
 #include <app/system/visibility.hpp>
-#include <latch>
 #include <tool/mdprep/gateway/form_data.hpp>
 #include <ui/qt/helper.hpp>
 #include <ui/qt/util.hpp>
 #include <util/event_hub.hpp>
-#include <util/sentry.hpp>
-#include <util/thread/base_thread.hpp>
 #include <utility>
 
 namespace VTX::Tool::Mdprep::ui

@@ -4,10 +4,7 @@
 #include "app/system/representation.hpp"
 #include <algorithm>
 #include <core/struct/topology.hpp>
-#include <io/metadata.hpp>
-#include <span>
 #include <stdexcept>
-#include <util/string.hpp>
 
 namespace
 {

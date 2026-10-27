@@ -1,7 +1,5 @@
 #include <app/services.hpp>
 #include <app/session.hpp>
-#include <latch>
-#include <thread>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <util/thread/base_thread.hpp>

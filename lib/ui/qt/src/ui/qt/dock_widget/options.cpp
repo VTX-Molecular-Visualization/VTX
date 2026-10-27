@@ -1,7 +1,6 @@
 #include "ui/qt/dock_widget/options.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
-#include "ui/qt/application.hpp"
 #include "ui/qt/events.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/model/system_model.hpp"
@@ -19,7 +18,6 @@
 #include <app/action/accessibility.hpp>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
-#include <app/network/network_manager.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
 #include <app/setting/accessibility.hpp>
@@ -29,7 +27,6 @@
 #include <util/enum.hpp>
 #include <util/event_hub.hpp>
 #include <util/string.hpp>
-#include <util/type_traits.hpp>
 #include <util/types.hpp>
 #include <utility>
 

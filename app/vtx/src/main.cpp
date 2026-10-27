@@ -3,8 +3,6 @@
 #include <cstdio>
 #include <string>
 #include <tuple>
-#include <util/types.hpp>
-#include <vector>
 
 // Conditional includes.
 #if VTX_UI_QT

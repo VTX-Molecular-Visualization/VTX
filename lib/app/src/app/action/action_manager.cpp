@@ -1,10 +1,8 @@
 #include "app/action/action_manager.hpp"
-#include "app/events.hpp"
+#include "app/arguments.hpp"
 #include "app/services.hpp"
-#include "app/vtx_app.hpp"
 #include <mutex>
 #include <queue>
-#include <util/event_hub.hpp>
 
 namespace VTX::App::Action
 {

@@ -1,5 +1,4 @@
 #include "app/python_binding/camera.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
 #include "app/ecs.hpp"
 #include "app/helper/aabb.hpp"

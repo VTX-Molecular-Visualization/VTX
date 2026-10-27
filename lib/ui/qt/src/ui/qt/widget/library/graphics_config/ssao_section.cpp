@@ -4,7 +4,6 @@
 #include <QSignalBlocker>
 #include <app/arguments.hpp>
 #include <app/services.hpp>
-#include <string_view>
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 {

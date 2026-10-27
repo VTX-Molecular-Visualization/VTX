@@ -1,18 +1,12 @@
 #include <memory>
 #include <qformlayout.h>
-#include <qlabel.h>
-#include <qlayout.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
 #include <qscrollarea.h>
-#include <qscrollbar.h>
-#include <qsizepolicy.h>
 #include <qspinbox.h>
 #include <ui/qt/helper.hpp>
 //
 #include <ui/qt/util.hpp>
-#include <util/logger.hpp>
-#include <util/sentry.hpp>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"

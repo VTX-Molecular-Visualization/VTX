@@ -1,7 +1,6 @@
 #include "ui/qt/widget/controller.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/helper.hpp"
-#include "ui/qt/services.hpp"
 #include "ui/qt/widget/expandable_tool_bar.hpp"
 #include <QLabel>
 #include <QSignalBlocker>

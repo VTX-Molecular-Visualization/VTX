@@ -1,7 +1,7 @@
 #include "core/chemdb/residue.hpp"
 #include <algorithm>
+#include <magic_enum/magic_enum.hpp>
 #include <optional>
-#include <util/enum.hpp>
 #include <util/string.hpp>
 
 namespace VTX::Core::ChemDB::Residue

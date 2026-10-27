@@ -3,7 +3,6 @@
 #include "app/services.hpp"
 #include <pybind11/pybind11.h>
 #include <python_binding/interpretor.hpp>
-#include <util/logger.hpp>
 
 namespace VTX::App::PythonBinding
 {

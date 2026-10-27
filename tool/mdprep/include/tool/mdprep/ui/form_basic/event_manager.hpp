@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <optional>
+#include <util/sentry.hpp>
 class QPushButton;
 class QVBoxLayout;
 

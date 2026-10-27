@@ -3,8 +3,6 @@
 //  pybind MUST be included before any QT because of macro shenanigans
 #include "ui/qt/widget/command_launcher.hpp"
 #include <qevent.h>
-#include <util/logger.hpp>
-#include <util/thread/thread_manager.hpp>
 
 namespace VTX::UI::QT::Widget
 {

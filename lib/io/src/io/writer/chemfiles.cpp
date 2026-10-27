@@ -1,5 +1,4 @@
 #include "io/writer/chemfiles.hpp"
-#include <algorithm>
 #include <list>
 #include <map>
 #include <unordered_map>

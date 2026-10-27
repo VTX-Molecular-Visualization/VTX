@@ -1,5 +1,4 @@
 #include "ui/qt/dialog/progress.hpp"
-#include "ui/qt/application.hpp"
 #include "ui/qt/helper.hpp"
 #include <QPushButton>
 

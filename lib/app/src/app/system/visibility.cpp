@@ -1,5 +1,4 @@
 #include <app/ecs.hpp>
-#include <app/services.hpp>
 #include <app/system/visibility.hpp>
 
 namespace VTX::App::System

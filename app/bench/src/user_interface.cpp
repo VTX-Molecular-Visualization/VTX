@@ -8,10 +8,8 @@
 #include <imgui.h>
 #include <imnodes/imnodes.h>
 #include <renderer/color.hpp>
-#include <util/enum.hpp>
 #include <util/image.hpp>
 #include <util/logger.hpp>
-#include <util/string.hpp>
 
 namespace VTX::Bench
 {

@@ -7,7 +7,6 @@
 #include <util/constants.hpp>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
-#include <util/type_traits.hpp>
 #include <utility>
 
 namespace

@@ -1,5 +1,4 @@
 #include "app/python_binding/selection.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/action/representation.hpp"
 #include "app/action/selection.hpp"
 #include "app/action/visibility.hpp"
@@ -8,7 +7,6 @@
 #include "app/python_binding/preset/helpers.hpp"
 #include "app/python_binding/preset/types.hpp"
 #include "app/python_binding/topology/types.hpp"
-#include "app/services.hpp"
 #include "app/system/selection.hpp"
 #include <core/struct/topology.hpp>
 #include <optional>

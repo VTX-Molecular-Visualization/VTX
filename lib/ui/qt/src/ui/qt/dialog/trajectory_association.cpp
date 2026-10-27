@@ -5,14 +5,10 @@
 #include <QVariant>
 #include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
-#include <app/action/scene.hpp>
 #include <app/ecs.hpp>
-#include <app/events.hpp>
 #include <app/services.hpp>
-#include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
 #include <qboxlayout.h>
-#include <util/event_hub.hpp>
 
 Q_DECLARE_METATYPE( VTX::Entity ) // used to allow QVariant conversion
 

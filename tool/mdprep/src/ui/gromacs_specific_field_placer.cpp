@@ -2,21 +2,16 @@
 #include <qformlayout.h>
 #include <qlineedit.h>
 #include <qspinbox.h>
-#include <qvalidator.h>
 #include <string>
-#include <thread>
 #include <ui/qt/helper.hpp>
 #include <utility>
 #include <vector>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
-#include "tool/mdprep/gateway/shared.hpp"
 //
 #include "tool/mdprep/ui/shared.hpp"
 //
 #include "tool/mdprep/gateway/backend_gromacs.hpp"
-#include "tool/mdprep/ui/gromacs.hpp"
-#include "tool/mdprep/ui/md_engine.hpp"
 #include <ui/qt/util.hpp>
 #include <ui/qt/validator.hpp>
 //

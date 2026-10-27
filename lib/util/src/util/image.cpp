@@ -3,8 +3,6 @@
 #define TINYEXR_IMPLEMENTATION
 
 #include "util/image.hpp"
-#include <algorithm>
-#include <cctype>
 #include <cstdlib>
 #include <exiv2/exiv2.hpp>
 #include <memory>

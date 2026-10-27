@@ -5,10 +5,8 @@
 #include "python_binding/command_filter.hpp"
 #include "python_binding/log_redirection.hpp"
 #include "python_binding/wrapper/module.hpp"
-#include <algorithm>
 #include <pybind11/embed.h>
 #include <pybind11/eval.h>
-#include <source_location>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>

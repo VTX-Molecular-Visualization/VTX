@@ -1,7 +1,6 @@
 #include "ui/qt/dock_widget/sequences.hpp"
 #include "app/scene/color_layout.hpp"
 #include "ui/qt/helper.hpp"
-#include "ui/qt/services.hpp"
 #include <app/events.hpp>
 #include <app/services.hpp>
 #include <app/system/selection.hpp>

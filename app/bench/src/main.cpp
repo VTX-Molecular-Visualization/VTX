@@ -1,12 +1,10 @@
 #include "input_manager.hpp"
 #include "scene.hpp"
 #include "user_interface.hpp"
-#include <iostream>
 #include <renderer/graphics_config.hpp>
 #include <renderer/renderer.hpp>
 #include <renderer/representation.hpp>
 #include <util/filesystem.hpp>
-#include <util/math/aabb.hpp>
 
 #ifdef _WIN32
 extern "C"

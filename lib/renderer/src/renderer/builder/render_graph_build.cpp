@@ -11,8 +11,6 @@
 #include "renderer/builder/post_process/ssao.hpp"
 #include "renderer/builder/post_process/tone_mapping.hpp"
 #include "renderer/graphics_config.hpp"
-#include "renderer/representation.hpp"
-#include <util/chrono.hpp>
 
 namespace VTX::Renderer::Builder
 {

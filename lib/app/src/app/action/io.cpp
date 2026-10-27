@@ -1,6 +1,5 @@
 #include "app/action/io.hpp"
 #include "app/action/action_manager.hpp"
-#include "app/action/scene.hpp"
 #include "app/constants.hpp"
 #include "app/extractor/mesh.hpp"
 #include "app/extractor/system.hpp"
@@ -11,18 +10,15 @@
 #include "app/arguments.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
-#include "app/system/uid.hpp"
 #include "app/system/writer.hpp"
 #include <fmt/format.h>
 #include <io/mesh_reader.hpp>
-#include <renderer/camera.hpp>
 #include <renderer/renderer.hpp>
 #include <string>
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/resolution.hpp>
 #include <util/string.hpp>
-#include <util/thread/thread_manager.hpp>
 
 namespace VTX::App::Action::IO
 {

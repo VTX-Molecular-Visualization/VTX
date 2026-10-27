@@ -1,6 +1,5 @@
 #include "ui/qt/widget/library/graphics_config_widget.hpp"
 #include "ui/qt/helper.hpp"
-#include <app/services.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {

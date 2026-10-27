@@ -3,7 +3,6 @@
 #include "ui/qt/actions.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
-#include <app/action/scene.hpp>
 #include <app/helper/system.hpp>
 #include <app/system/selection.hpp>
 #include <core/struct/topology.hpp>

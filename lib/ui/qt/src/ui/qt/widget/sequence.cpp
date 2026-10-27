@@ -4,13 +4,10 @@
 #include <QScrollBar>
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
-#include <app/action/selection.hpp>
 #include <app/ecs.hpp>
 #include <app/helper/system.hpp>
 #include <app/scene/color_layout.hpp>
 #include <app/system/selection.hpp>
-#include <app/system/uid.hpp>
-#include <app/system/visibility.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>

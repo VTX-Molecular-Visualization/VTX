@@ -1,14 +1,11 @@
 #include "tool/mdprep/ui/gromacs_field_placer.hpp"
-#include "tool/mdprep/backends/gromacs/gromacs.hpp"
 #include "tool/mdprep/gateway/backend_gromacs.hpp"
 #include "tool/mdprep/gateway/form_data.hpp"
-#include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/gromacs_specific_field_placer.hpp"
 #include "tool/mdprep/ui/shared.hpp"
 #include <memory>
 #include <qformlayout.h>
 #include <qspinbox.h>
-#include <thread>
 #include <ui/qt/util.hpp>
 
 namespace VTX::Tool::Mdprep::ui

@@ -1,6 +1,5 @@
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include <qprocess.h>
-#include <util/exceptions.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::Tool::Mdprep::backends::Gromacs

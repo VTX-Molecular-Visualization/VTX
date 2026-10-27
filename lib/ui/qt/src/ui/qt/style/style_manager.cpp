@@ -1,5 +1,4 @@
 #include "ui/qt/style/style_manager.hpp"
-#include "ui/qt/actions.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/services.hpp"
 #include <QIcon>

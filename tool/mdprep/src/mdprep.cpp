@@ -6,25 +6,18 @@
 #include <QTextDocument>
 #include <ui/qt/helper.hpp>
 //
-#include "util/sentry.hpp"
-#include <util/event_hub.hpp>
-#include <util/logger.hpp>
 //
 #include "tool/mdprep/gateway/engine_job_manager.hpp"
 #include "tool/mdprep/gateway/form_data.hpp"
-#include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
 #include "tool/mdprep/ui/shared.hpp"
 //
 #include "tool/mdprep/ui/report.hpp"
 //
-#include <app/tool/base_tool.hpp>
 #include <string_view>
 #include <ui/qt/action_registry.hpp>
-#include <ui/qt/application.hpp>
 #include <ui/qt/dock_widget/base_dock_widget.hpp>
 #include <ui/qt/services.hpp>
-#include <ui/qt/util.hpp>
 #include <ui/qt/widget/main_window.hpp>
 //
 #include "tool/mdprep/mdprep.hpp"

@@ -10,7 +10,6 @@
 #include <qpushbutton.h>
 #include <qspinbox.h>
 #include <ui/qt/helper.hpp>
-#include <ui/qt/util.hpp>
 #include <utility>
 
 namespace VTX::Tool::Mdprep::ui::form_basic

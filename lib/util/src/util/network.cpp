@@ -1,5 +1,4 @@
 #include "util/network.hpp"
-#include "util/callback.hpp"
 #include <cpr/cpr.h>
 
 namespace
