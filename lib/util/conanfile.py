@@ -23,10 +23,10 @@ class VTXUtilRecipe(ConanFile):
         self.requires("assimp/6.0.5", transitive_headers=True)
         self.requires("minizip/1.3.2", force=True)
         self.requires("cpr/1.14.2")
-        self.requires("stb/cci.20240531", force=True)
+        self.requires("stb/cci.20261021", force=True)
         self.requires("tinyexr/1.0.7")
         self.requires("exiv2/0.28.3")
-        self.requires("catch2/3.16.0")
+        self.requires("catch2/3.16.1")
         self.requires("platformfolders/4.3.0")
         
     def config_options(self):

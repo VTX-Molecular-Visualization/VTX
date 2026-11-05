@@ -78,14 +78,14 @@ class VTXRecipe(ConanFile):
         self.requires("fmt/12.2.0", force=True)
         self.requires("magic_enum/0.9.8")
         self.requires("cpr/1.14.2")
-        self.requires("catch2/3.16.0")
+        self.requires("catch2/3.16.1")
         self.requires("chemfiles/2026.02.5")
         self.requires("argparse/3.2")
         if self.options.renderer:
-            self.requires("sdl/3.4.8")
+            self.requires("sdl/3.4.16")
             self.requires("imgui/1.92.9b")
             self.requires("ktx/4.4.2")
-        self.requires("stb/cci.20240531", force=True)
+        self.requires("stb/cci.20261021", force=True)
         self.requires("tinyexr/1.0.7")
         self.requires("exiv2/0.28.3")
         self.requires("entt/4.0.0")
@@ -94,7 +94,7 @@ class VTXRecipe(ConanFile):
         if self.options.python_binding:
             self.requires("pybind11/3.0.1")
         if self.options.ui_qt:
-            self.requires("qt/6.11.1")
+            self.requires("qt/6.12.0")
         if self.options.tool_mdprep:
             self.requires("gromacs/2026.0.1")
         self.requires("re2/20251105")
