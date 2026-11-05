@@ -20,9 +20,9 @@ namespace VTX::Bench
 		UserInterface & operator=( const UserInterface & ) = delete;
 		~UserInterface();
 
-		double getTime() const { return static_cast<double>( SDL_GetTicks() ); }
+		double getTime() const noexcept { return static_cast<double>( SDL_GetTicks() ); }
 
-		float getDeltaTime() const { return ImGui::GetIO().DeltaTime; }
+		float getDeltaTime() const noexcept { return ImGui::GetIO().DeltaTime; }
 
 		void setVSync( const bool p_vsync ) { _vsync = p_vsync; }
 

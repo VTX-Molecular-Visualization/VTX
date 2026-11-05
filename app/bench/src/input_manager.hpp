@@ -38,9 +38,9 @@ namespace VTX::Bench
 	class InputManager
 	{
 	  public:
-		bool isKeyPressed( const SDL_Scancode p_key ) const { return _keys[ p_key ]; }
+		bool isKeyPressed( const SDL_Scancode p_key ) const noexcept { return _keys[ p_key ]; }
 
-		bool isMouseButtonPressed( const size_t p_button ) const { return _mouseButtons[ p_button ]; }
+		bool isMouseButtonPressed( const size_t p_button ) const noexcept { return _mouseButtons[ p_button ]; }
 
 		void handle( const SDL_Event & p_event )
 		{

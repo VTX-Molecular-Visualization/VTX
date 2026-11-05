@@ -188,6 +188,11 @@ int main( int, char ** )
 		VTX_ERROR( "Unhandled exception: {}", p_e.what() );
 		return EXIT_FAILURE;
 	}
+	catch ( ... )
+	{
+		VTX_ERROR( "Unhandled unknown exception" );
+		return EXIT_FAILURE;
+	}
 
 	return EXIT_SUCCESS;
 }

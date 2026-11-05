@@ -50,7 +50,7 @@ namespace VTX::Bench
 			_updateTarget();
 		}
 
-		void resize( const size_t p_width, const size_t p_height )
+		void resize( const size_t p_width, const size_t p_height ) noexcept
 		{
 			_camera.screenWidth	 = p_width;
 			_camera.screenHeight = p_height;

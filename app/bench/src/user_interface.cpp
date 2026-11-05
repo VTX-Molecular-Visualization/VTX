@@ -284,14 +284,7 @@ namespace VTX::Bench
 			}
 			if ( ImGui::Button( "Disable" ) )
 			{
-				try
-				{
-					// p_renderer->disableGraphicAPI();
-				}
-				catch ( const std::exception & e )
-				{
-					VTX_ERROR( "{}", e.what() );
-				}
+				// p_renderer->disableGraphicAPI();
 			}
 
 			ImGui::Checkbox( "UI", &_drawUi );
@@ -582,14 +575,7 @@ namespace VTX::Bench
 			}
 			if ( ImGui::Button( "Build" ) )
 			{
-				try
-				{
-					// p_renderer->build();
-				}
-				catch ( const std::exception & e )
-				{
-					VTX_ERROR( "{}", e.what() );
-				}
+				// p_renderer->build();
 			}
 			if ( ImGui::Button( "X" ) )
 			{

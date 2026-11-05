@@ -25,7 +25,7 @@ namespace VTX::Bench
 		Scene() = delete;
 		Scene( size_t p_width, size_t p_height );
 
-		CameraController & getCamera() { return _camera; }
+		CameraController & getCamera() noexcept { return _camera; }
 
 		void addSystem( const std::string & p_name );
 		void removeSystem( size_t p_index );
