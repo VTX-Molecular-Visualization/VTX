@@ -47,6 +47,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			}
 		}
 
+		std::ranges::sort( out, {}, &forcefield::forcefieldFolderPath );
+
 		return out;
 	}
 
