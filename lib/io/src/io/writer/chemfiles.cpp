@@ -595,9 +595,10 @@ namespace VTX::IO::Writer
 			return false;
 		}
 
-		if ( _data->atoms.contains( id ) )
+		const auto it = _data->atoms.find( id );
+		if ( it != _data->atoms.end() )
 		{
-			p_out = Atom( _data->atoms.at( id ) );
+			p_out = Atom( it->second );
 			return true;
 		}
 		return false;

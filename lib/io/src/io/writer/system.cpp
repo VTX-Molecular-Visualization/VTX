@@ -68,7 +68,7 @@ namespace VTX::IO::Writer
 				}
 				else if ( _currentSystem->topology->atomOriginalIndexes )
 				{
-					return _currentSystem->topology->atomOriginalIndexes.value()[ p_currentSystemAtomIdx ];
+					return ( *_currentSystem->topology->atomOriginalIndexes )[ p_currentSystemAtomIdx ];
 				}
 				else
 				{
