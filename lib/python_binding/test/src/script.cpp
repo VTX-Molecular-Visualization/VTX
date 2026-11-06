@@ -110,7 +110,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
 		customModule.runFunction<std::pair<int, int>>( "testStr", "testStrWithParam" );
 		CHECK( false );
 	}
-	catch ( const pybind11::cast_error & )
+	catch ( const PythonWrapperException & )
 	{
 		CHECK( true );
 	}
