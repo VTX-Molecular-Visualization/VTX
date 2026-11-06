@@ -8,6 +8,7 @@
 //
 #include "tool/mdprep/ui/form_basic/data.hpp"
 #include "tool/mdprep/ui/shared.hpp"
+#include <util/logger.hpp>
 #include <util/sentry.hpp>
 //
 #include "tool/mdprep/ui/form_basic/settings_dialog.hpp"
@@ -25,12 +26,19 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	{
 		_disconnectAll( p_._uiObjects );
 		std::swap( p_._uiObjects, _uiObjects );
-		_connectSettingsMinimization();
-		_connectSettingsNvt();
-		_connectSettingsNpt();
-		_connectSettingsProd();
-		_connectSettingsManager();
-		_connectInputCheck();
+		try
+		{
+			_connectSettingsMinimization();
+			_connectSettingsNvt();
+			_connectSettingsNpt();
+			_connectSettingsProd();
+			_connectSettingsManager();
+			_connectInputCheck();
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "[MDPREP] Failed to reconnect EventManager signals after move." );
+		}
 	}
 
 	EventManager & EventManager::operator=( EventManager && p_ ) noexcept
@@ -48,12 +56,19 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_uiObjects = std::move( p_._uiObjects );
 
 		p_._uiObjects = UiObjects();
-		_connectSettingsMinimization();
-		_connectSettingsNvt();
-		_connectSettingsNpt();
-		_connectSettingsProd();
-		_connectSettingsManager();
-		_connectInputCheck();
+		try
+		{
+			_connectSettingsMinimization();
+			_connectSettingsNvt();
+			_connectSettingsNpt();
+			_connectSettingsProd();
+			_connectSettingsManager();
+			_connectInputCheck();
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "[MDPREP] Failed to reconnect EventManager signals after move." );
+		}
 
 		return *this;
 	}
@@ -119,6 +134,10 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		if ( p_uiObjects._buttonSystemSettings )
 		{
 			p_uiObjects._buttonSystemSettings->disconnect( p_uiObjects._buttonSystemSettings );
+		}
+		if ( p_uiObjects._buttonInputCheck )
+		{
+			p_uiObjects._buttonInputCheck->disconnect( p_uiObjects._buttonInputCheck );
 		}
 	}
 

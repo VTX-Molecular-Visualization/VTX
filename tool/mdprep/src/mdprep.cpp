@@ -2,6 +2,7 @@
 #include <QDockWidget>
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QPointer>
 #include <QPushButton>
 #include <QTextDocument>
 #include <ui/qt/helper.hpp>
@@ -86,9 +87,9 @@ namespace VTX::Tool::Mdprep
 
 		void openMdPrep()
 		{
-			static MainWindow * win			= nullptr;
-			bool				justCreated = false;
-			if ( win == nullptr )
+			static QPointer<MainWindow> win;
+			bool						justCreated = false;
+			if ( win.isNull() )
 			{
 				auto & mainWindow = UI::QT::MAIN_WINDOW();
 				win				  = mainWindow.createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
@@ -101,7 +102,7 @@ namespace VTX::Tool::Mdprep
 				win->resize( win->PREFERRED_SIZE );
 				win->show();
 				QTimer::singleShot(
-					0, [ win = win ] { win->raise(); }
+					0, win.data(), [ win = win ] { win->raise(); }
 				); // The widget is not raised consistently on the same loop
 			}
 			else

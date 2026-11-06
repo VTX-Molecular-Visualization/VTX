@@ -35,66 +35,81 @@ namespace VTX::Tool::Mdprep::Actions
 
 	void StartPreparation::execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions p_instr )
 	{
-		if ( not App::System::isAnythingVisible() )
+		try
 		{
-			goto theEnd;
-		}
-		{
-			const FilePath dest { p_instr.rootDir
-								  / "your_system.pdb" }; // TODO bad design (see backend_gromacs.cpp:convert)
+			if ( not App::System::isAnythingVisible() )
+			{
+				goto theEnd;
+			}
+			{
+				const FilePath dest { p_instr.rootDir
+									  / "your_system.pdb" }; // TODO bad design (see backend_gromacs.cpp:convert)
 
-			App::Action::IO::WriteVisible a;
-			App::ACTION().execute( a, FilePath( dest ) );
-			if ( _impl->thrData.stopToken.stop_requested() )
-			{
-				goto theEnd;
-			}
-			backends::Gromacs::prepareStructure( _impl->thrData, dest, p_instr );
-			const FilePath							resultDir = p_instr.rootDir / "md_ready";
-			const backends::Gromacs::MdInstructions packInstructions;
-			const backends::Gromacs::ErrorReport	packReport
-				= backends::Gromacs::pack( resultDir, p_instr.outputs, p_instr.mdInstructions );
-			if ( packReport.error )
-			{
-				VTX_ERROR( "[MDPREP] Packing failed: {}", packReport.errMsg );
-			}
-			App::THREAD().dispatch(
-				[ event = Gateway::SystemPacked { not packReport.error, resultDir.string() } ]() mutable
-				{ App::HUB().trigger( std::move( event ) ); } );
-			if ( _impl->thrData.stopToken.stop_requested() )
-			{
-				goto theEnd;
-			}
-			bool noErrors = true;
-			for ( size_t jobIndex = 0; jobIndex < p_instr.jobData.size(); jobIndex++ )
-			{
-				auto & jobData = p_instr.jobData[ jobIndex ];
-				noErrors &= not jobData.report.errorOccured;
-				if ( jobData.report.errorOccured )
+				App::Action::IO::WriteVisible a;
+				App::ACTION().execute( a, FilePath( dest ) );
+				if ( _impl->thrData.stopToken.stop_requested() )
 				{
-					VTX_ERROR( "[MDPREP] Job {} failed (finished: {}, errors: {}).",
-							   jobIndex,
-							   jobData.report.finished,
-							   jobData.report.errors.size() );
-					for ( const std::string & error : jobData.report.errors )
+					goto theEnd;
+				}
+				backends::Gromacs::prepareStructure( _impl->thrData, dest, p_instr );
+				const FilePath							resultDir = p_instr.rootDir / "md_ready";
+				const backends::Gromacs::MdInstructions packInstructions;
+				const backends::Gromacs::ErrorReport	packReport
+					= backends::Gromacs::pack( resultDir, p_instr.outputs, p_instr.mdInstructions );
+				if ( packReport.error )
+				{
+					VTX_ERROR( "[MDPREP] Packing failed: {}", packReport.errMsg );
+				}
+				App::THREAD().dispatch( [ event = Gateway::SystemPacked { not packReport.error,
+																		  resultDir.string() } ]() mutable
+										{ App::HUB().trigger( std::move( event ) ); } );
+				if ( _impl->thrData.stopToken.stop_requested() )
+				{
+					goto theEnd;
+				}
+				bool noErrors = true;
+				for ( size_t jobIndex = 0; jobIndex < p_instr.jobData.size(); jobIndex++ )
+				{
+					auto & jobData = p_instr.jobData[ jobIndex ];
+					noErrors &= not jobData.report.errorOccured;
+					if ( jobData.report.errorOccured )
 					{
-						VTX_ERROR( "[MDPREP] Job {}: {}", jobIndex, error );
+						VTX_ERROR(
+							"[MDPREP] Job {} failed (finished: {}, errors: {}).",
+							jobIndex,
+							jobData.report.finished,
+							jobData.report.errors.size()
+						);
+						for ( const std::string & error : jobData.report.errors )
+						{
+							VTX_ERROR( "[MDPREP] Job {}: {}", jobIndex, error );
+						}
 					}
 				}
+				if ( noErrors )
+				{
+					App::ACTION().execute<App::Action::IO::LoadSystem>( p_instr.editconf2.out );
+					App::ACTION().execute<App::Action::Visibility::SetVisibleAll>( false );
+					VTX_INFO(
+						"System written at : {}",
+						fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), resultDir.string() )
+					);
+					App::THREAD().dispatch( [ event = Gateway::PreparationFinished { true } ]() mutable
+											{ App::HUB().trigger( event ); } );
+				}
+				else
+				{
+					VTX_ERROR( "Preparation failed." ); // TODO : do better.
+				}
 			}
-			if ( noErrors )
-			{
-				App::ACTION().execute<App::Action::IO::LoadSystem>( p_instr.editconf2.out );
-				App::ACTION().execute<App::Action::Visibility::SetVisibleAll>( false );
-				VTX_INFO( "System written at : {}",
-						  fmt::format( fmt::runtime( std::string( App::LOG_LINK_FORMAT ) ), resultDir.string() ) );
-				App::THREAD().dispatch( [ event = Gateway::PreparationFinished { true } ]() mutable
-										{ App::HUB().trigger( event ); } );
-			}
-			else
-			{
-				VTX_ERROR( "Preparation failed." ); // TODO : do better.
-			}
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "[MDPREP] Preparation failed: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "[MDPREP] Preparation failed: unknown exception" );
 		}
 
 	theEnd:
@@ -123,36 +138,70 @@ namespace VTX::Tool::Mdprep::Actions
 
 	void CheckSystem::execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions p_gmxIntructions )
 	{
-		if ( not App::System::isAnythingVisible() )
+		const auto reportFailure = []( const std::string_view p_reason ) noexcept
 		{
-			App::THREAD().dispatch(
-				[ event = Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
-														 0,
-														 true,
-														 "Nothing to check." } ]() mutable
-				{ App::HUB().trigger( std::move( event ) ); } );
-			goto theEnd;
-		}
-		if ( _impl->thrData.thrRef )
-		{
-			_impl->thrData.thrRef->get().setProgressText( "Checking system for MD" );
-		}
-		{
-			const FilePath				  dest { p_gmxIntructions.rootDir / "test.pdb" };
-			App::Action::IO::WriteVisible a;
-			App::ACTION().execute( a, FilePath( dest ) );
+			try
+			{
+				App::THREAD().dispatch(
+					[ event = Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
+															 0,
+															 false,
+															 std::string( p_reason ) } ]() mutable
+					{ App::HUB().trigger( std::move( event ) ); }
+				);
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "[MDPREP] Failed to report system check failure." );
+			}
+		};
 
-			const backends::Gromacs::SystemTester tester(
-				dest,
-				p_gmxIntructions.pdb2gmx.forcefields[ p_gmxIntructions.pdb2gmx.forcefieldIndex ],
-				p_gmxIntructions.pdb2gmx.water );
-			auto reason = tester.why();
-			App::THREAD().dispatch(
-				[ event = Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
-														 0,
-														 tester.isSystemOk(),
-														 std::string( reason.begin(), reason.end() ) } ]() mutable
-				{ App::HUB().trigger( std::move( event ) ); } );
+		try
+		{
+			if ( not App::System::isAnythingVisible() )
+			{
+				App::THREAD().dispatch(
+					[ event = Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
+															 0,
+															 true,
+															 "Nothing to check." } ]() mutable
+					{ App::HUB().trigger( std::move( event ) ); }
+				);
+				goto theEnd;
+			}
+			if ( _impl->thrData.thrRef )
+			{
+				_impl->thrData.thrRef->get().setProgressText( "Checking system for MD" );
+			}
+			{
+				const FilePath				  dest { p_gmxIntructions.rootDir / "test.pdb" };
+				App::Action::IO::WriteVisible a;
+				App::ACTION().execute( a, FilePath( dest ) );
+
+				const backends::Gromacs::SystemTester tester(
+					dest,
+					p_gmxIntructions.pdb2gmx.forcefields[ p_gmxIntructions.pdb2gmx.forcefieldIndex ],
+					p_gmxIntructions.pdb2gmx.water
+				);
+				auto reason = tester.why();
+				App::THREAD().dispatch(
+					[ event = Mdprep::Gateway::CheckReport { Gateway::E_REPORT_CHECKED_ITEM::systemWithForceField,
+															 0,
+															 tester.isSystemOk(),
+															 std::string( reason.begin(), reason.end() ) } ]() mutable
+					{ App::HUB().trigger( std::move( event ) ); }
+				);
+			}
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "[MDPREP] System check failed: {}", p_e.what() );
+			reportFailure( p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "[MDPREP] System check failed: unknown exception" );
+			reportFailure( "Unknown error." );
 		}
 
 	theEnd:

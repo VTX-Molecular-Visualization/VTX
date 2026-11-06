@@ -29,8 +29,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		{
 			for ( auto & fileStrPtrIdx : p_currentJobData.expectedOutputFilesIndexes )
 			{
-				p_in.outputs.fileStringPtrs.emplace( p_in.outputs.fileStringPtrs.begin(),
-													 &p_currentJobData.arguments.at( fileStrPtrIdx ) );
+				p_in.outputs.fileStringPtrs.emplace(
+					p_in.outputs.fileStringPtrs.begin(), &p_currentJobData.arguments.at( fileStrPtrIdx )
+				);
 			}
 		}
 
@@ -49,9 +50,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		template<>
-		void fillOutputs( GromacsInstructions & p_in,
-						  Pdb2gmxInstructions & p_stepIn,
-						  GromacsJobData &		p_currentJobData )
+		void fillOutputs(
+			GromacsInstructions & p_in,
+			Pdb2gmxInstructions & p_stepIn,
+			GromacsJobData &	  p_currentJobData
+		)
 		{
 			fillOutputsFromExpectations( p_in, p_currentJobData );
 			if ( const auto * const fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
@@ -61,9 +64,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		template<>
-		void fillOutputs( GromacsInstructions & p_in,
-						  SolvateInstructions & p_stepIn,
-						  GromacsJobData &		p_currentJobData )
+		void fillOutputs(
+			GromacsInstructions & p_in,
+			SolvateInstructions & p_stepIn,
+			GromacsJobData &	  p_currentJobData
+		)
 		{
 			fillOutputsFromExpectations( p_in, p_currentJobData );
 			if ( const auto * const fileStrPtr = getFirstFileOfType( p_in.outputs, ".top" ) )
@@ -73,10 +78,12 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		template<typename Instruction>
-		bool carryPreparationStep( GromacsInstructions & p_in,
-								   Instruction &		 p_stepIn,
-								   const char *			 p_stepName,
-								   int &				 stepNum )
+		bool carryPreparationStep(
+			GromacsInstructions & p_in,
+			Instruction &		  p_stepIn,
+			const char *		  p_stepName,
+			int &				  stepNum
+		)
 		{
 			const int displayIndex = stepNum;
 			App::THREAD().dispatch( [ event = Gateway::PreparationStepStarted { displayIndex, p_stepName } ]() mutable
@@ -113,9 +120,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 			if ( currentJobData.report.errorOccured )
 			{
-				VTX_ERROR( "[MDPREP] Preparation step <{}> failed with {} error(s).",
-						   p_stepName,
-						   currentJobData.report.errors.size() );
+				VTX_ERROR(
+					"[MDPREP] Preparation step <{}> failed with {} error(s).",
+					p_stepName,
+					currentJobData.report.errors.size()
+				);
 				for ( const std::string & error : currentJobData.report.errors )
 				{
 					VTX_ERROR( "[MDPREP] Step <{}>: {}", p_stepName, error );
@@ -142,9 +151,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	} // namespace
 
-	void prepareStructure( VTX::Util::Thread::ThreadData & p_thrData,
-						   const FilePath &				   p_structurePdb,
-						   GromacsInstructions &		   p_in )
+	void prepareStructure(
+		VTX::Util::Thread::ThreadData & p_thrData,
+		const FilePath &				p_structurePdb,
+		GromacsInstructions &			p_in
+	)
 	{
 		p_in.fileStem		  = p_structurePdb.stem().string();
 		p_in.pdb2gmx.inputPdb = p_structurePdb;
@@ -271,9 +282,10 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		Impl( const FilePath & p_structurePdb, const forcefield & p_ff, const E_WATER_MODEL & p_w ) :
 			_testData( TestData { p_structurePdb, p_ff, p_w } )
 		{
-			const FilePath rootDir = createRootDir();
+			FilePath rootDir;
 			try
 			{
+				rootDir = createRootDir();
 				Pdb2gmxInstructions inst;
 				if ( fs::exists( rootDir ) )
 				{
@@ -285,8 +297,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				inst.water			  = _testData._w;
 				inst.fileStem		  = _testData._structurePdb.stem().string();
 				inst.inputPdb		  = _testData._structurePdb;
-				const FilePath jobDir = rootDir.parent_path() / "1";
-				prepareJob( {}, rootDir.parent_path(), "1", inst );
+				const FilePath jobDir = rootDir;
+				prepareJob( {}, rootDir.parent_path(), rootDir.filename().string(), inst );
 				GromacsJobData jobData;
 				convert( inst, jobData );
 				declareFfDirectory( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
@@ -301,7 +313,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				_testData._why += channels->stdout_ + "\n";
 				_testData._why += channels->stderr_ + "\n";
 			}
-			catch ( std::exception & e )
+			catch ( const std::exception & e )
 			{
 				_testData._why = e.what();
 			}
@@ -309,7 +321,11 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			{
 				_testData._why = "Unknown error.";
 			}
-			fs::remove_all( rootDir );
+			if ( not rootDir.empty() )
+			{
+				std::error_code error;
+				fs::remove_all( rootDir, error );
+			}
 		}
 
 		bool isSystemOk() const noexcept { return _testData._systemOk; }

@@ -19,7 +19,7 @@ namespace VTX::Tool::Mdprep::Gateway
 	{
 		switch ( p_ )
 		{
-		case E_MD_DURATION_UNIT::femtoSeconds: return 1e3;
+		case E_MD_DURATION_UNIT::femtoSeconds: return 1e-3;
 		case E_MD_DURATION_UNIT::picoSeconds: return 1e0;
 		case E_MD_DURATION_UNIT::nanoSeconds: return 1e3;
 		case E_MD_DURATION_UNIT::microSeconds: return 1e6;
