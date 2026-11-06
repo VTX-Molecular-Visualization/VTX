@@ -21,7 +21,7 @@ namespace VTX::UI::QT::Widget
 							  [ this ]( const QColor & p_color )
 							  {
 								  setColor( p_color );
-								  onColorChanged( p_color );
+								  emit colorChanged( p_color );
 							  } );
 
 					 dialog.exec();
@@ -30,7 +30,7 @@ namespace VTX::UI::QT::Widget
 					 if ( dialog.result() == QDialog::Rejected )
 					 {
 						 setColor( colorOld );
-						 onColorChanged( colorOld );
+						 emit colorChanged( colorOld );
 					 }
 				 } );
 	}

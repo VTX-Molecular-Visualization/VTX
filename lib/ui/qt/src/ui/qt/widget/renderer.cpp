@@ -65,13 +65,7 @@ namespace VTX::UI::QT::Widget
 
 		_rendererResizeConnection
 			= App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
-		App::RENDERER().onReady += [ this ]( const VTX::Renderer::StructInfos & )
-		{
-			_rendererReady = true;
-			App::ACTION().execute<App::Action::Application::SetVSync>(
-				SETTINGS().value( SETTING_KEY_VSYNC, VSYNC_DEFAULT ).toBool() );
-			QTimer::singleShot( 0, this, &Renderer::onResizeFinished );
-		};
+		_rendererReadyConnection = App::HUB().connect<App::Events::RendererReady, &Renderer::_onRendererReady>( this );
 	}
 
 	Renderer::~Renderer()
@@ -257,6 +251,14 @@ namespace VTX::UI::QT::Widget
 
 		_container->setFocus( Qt::OtherFocusReason );
 		_window->requestActivate();
+	}
+
+	void Renderer::_onRendererReady( const App::Events::RendererReady & )
+	{
+		_rendererReady = true;
+		App::ACTION().execute<App::Action::Application::SetVSync>(
+			SETTINGS().value( SETTING_KEY_VSYNC, VSYNC_DEFAULT ).toBool() );
+		QTimer::singleShot( 0, this, &Renderer::onResizeFinished );
 	}
 
 	void Renderer::_onRendererResize( const App::Events::RendererResize & p_e )

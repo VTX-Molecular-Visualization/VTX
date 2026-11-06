@@ -149,6 +149,8 @@ namespace VTX::App
 
 		ECS::setCtx<Util::Monitoring::Stats>();
 		ECS::setCtx<Renderer::Renderer>();
+		RENDERER().onReady
+			= []( const Renderer::StructInfos & p_infos ) { HUB().trigger<Events::RendererReady>( p_infos ); };
 		ECS::setCtx<Action::ActionManager>();
 		ECS::setCtx<Input::InputManager>();
 		ECS::setCtx<Network::NetworkManager>();

@@ -107,11 +107,11 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderIblIntensity->setDecimals( 2 );
 		_sliderIblIntensity->setSuffix( "EV" );
 
-		_colorPicker->onColorChanged += [ this ]( const QColor & p_color )
+		connect( _colorPicker, &Widget::ColorPicker::colorChanged, [ this ]( const QColor & p_color )
 		{
 			_changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_BACKGROUND, Util::Color::Rgba>(
 				Helper::fromQColor( p_color ) );
-		};
+		} );
 
 		connect( _radioBackgroundColor,
 				 &QRadioButton::toggled,

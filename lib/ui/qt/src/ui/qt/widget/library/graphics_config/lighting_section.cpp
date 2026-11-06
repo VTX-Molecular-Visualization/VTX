@@ -110,8 +110,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 [ this ]( const int p_index )
 				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::SHADING_MODE, E_SHADING>( E_SHADING( p_index ) ); } );
-		_colorPickerLight->onColorChanged += [ this ]( const QColor & p_color )
-		{ _changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_LIGHT, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
+		connect( _colorPickerLight, &Widget::ColorPicker::colorChanged, [ this ]( const QColor & p_color )
+		{ _changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_LIGHT, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); } );
 		connect( _sliderLightIntensity,
 				 &EditableSlider::valueChanged,
 				 [ this ]( const float p_value )

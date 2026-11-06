@@ -3,7 +3,6 @@
 
 #include "frame_info.hpp"
 #include <list>
-#include <util/callback.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
 

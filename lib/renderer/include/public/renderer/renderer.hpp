@@ -13,9 +13,9 @@
 #include "renderer/render_graph.hpp"
 #include "renderer/representation.hpp"
 #include "renderer/struct_infos.hpp"
+#include <functional>
 #include <optional>
 #include <unordered_set>
-#include <util/callback.hpp>
 #include <util/math/bitset.hpp>
 #include <util/resolution.hpp>
 #include <vector>
@@ -161,7 +161,7 @@ namespace VTX::Renderer
 		 * @brief Callback when ready.
 		 * TODO: use event hub?
 		 */
-		Util::Callback<const StructInfos &> onReady;
+		std::function<void( const StructInfos & )> onReady;
 
 		/**
 		 * @brief Resolve shaders dir.

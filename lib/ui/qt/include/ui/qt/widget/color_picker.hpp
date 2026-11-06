@@ -3,13 +3,14 @@
 
 #include <QColor>
 #include <QPushButton>
-#include <util/callback.hpp>
 #include <util/color/rgba.hpp>
 
 namespace VTX::UI::QT::Widget
 {
 	class ColorPicker : public QPushButton
 	{
+		Q_OBJECT
+
 	  public:
 		ColorPicker( QWidget * );
 		ColorPicker( const QColor &, QWidget * );
@@ -20,7 +21,8 @@ namespace VTX::UI::QT::Widget
 
 		void setColor( const QColor & );
 
-		Util::Callback<QColor> onColorChanged;
+	  signals:
+		void colorChanged( const QColor & );
 
 	  private:
 		QColor _color;

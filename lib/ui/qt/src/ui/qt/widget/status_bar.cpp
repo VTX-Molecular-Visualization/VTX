@@ -39,8 +39,8 @@ namespace VTX::UI::QT::Widget
 		);
 
 		// Labels.
-		auto * vendorLabel = Helper::makeQObject<QLabel>( this );
-		vendorLabel->setText( "No renderer" );
+		_vendor = Helper::makeQObject<QLabel>( this );
+		_vendor->setText( "No renderer" );
 		// vendorLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 
 		QWidget * spacer = Helper::makeQObject<QWidget>( this );
@@ -60,13 +60,13 @@ namespace VTX::UI::QT::Widget
 		addPermanentWidget( resolutionIcon );
 		addPermanentWidget( _resolution );
 		addPermanentWidget( gpuIcon );
-		addPermanentWidget( vendorLabel );
+		addPermanentWidget( _vendor );
 		addPermanentWidget( pythonIcon );
 		addPermanentWidget( _python );
 
 		// Update vendor when renderer is available.
-		App::RENDERER().onReady += [ vendorLabel ]( const VTX::Renderer::StructInfos & p_infos )
-		{ vendorLabel->setText( QString::fromStdString( p_infos.renderer ) ); };
+		_rendererReadyConnection
+			= App::HUB().connect<App::Events::RendererReady, &StatusBar::_rendererReady>( this );
 
 		// Update FPS each second.
 		auto * timer = Helper::makeQObject<QTimer>( this );
@@ -113,5 +113,8 @@ namespace VTX::UI::QT::Widget
 
 	void StatusBar::_pythonInitialized( const App::Events::PythonInitialized & p_e )
 	{ _python->setText( QString( "Python %1" ).arg( QString::fromStdString( p_e.version ) ) ); }
+
+	void StatusBar::_rendererReady( const App::Events::RendererReady & p_e )
+	{ _vendor->setText( QString::fromStdString( p_e.infos.renderer ) ); }
 
 } // namespace VTX::UI::QT::Widget

@@ -50,7 +50,10 @@ namespace VTX::Renderer
 				reinterpret_cast<uintptr_t>( this ) );
 			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ENVIRONMENT;
 			_context.fillInfos( _infos );
-			onReady( _infos );
+			if ( onReady )
+			{
+				onReady( _infos );
+			}
 		}
 		catch ( const std::exception & p_e )
 		{

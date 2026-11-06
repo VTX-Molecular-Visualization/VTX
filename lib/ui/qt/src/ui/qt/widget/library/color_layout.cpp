@@ -117,7 +117,7 @@ namespace VTX::UI::QT::Widget::Library
 			}
 
 			// Connect picker.
-			_buttons[ i ]->onColorChanged += [ this, i ]( const QColor & p_color ) { _changeColor( i, p_color ); };
+			connect( _buttons[ i ], &Widget::ColorPicker::colorChanged, [ this, i ]( const QColor & p_color ) { _changeColor( i, p_color ); } );
 
 			layout->addWidget( _buttons[ i ] );
 			offset++;

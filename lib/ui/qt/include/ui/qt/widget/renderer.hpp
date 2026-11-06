@@ -170,8 +170,10 @@ namespace VTX::UI::QT::Widget
 		 * @brief Synchronize widget size after an App renderer resize.
 		 */
 		void _onRendererResize( const App::Events::RendererResize & );
+		void _onRendererReady( const App::Events::RendererReady & );
 
 		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
+		VTX::Util::EventHub::ScopedConnection _rendererReadyConnection;
 	};
 } // namespace VTX::UI::QT::Widget
 

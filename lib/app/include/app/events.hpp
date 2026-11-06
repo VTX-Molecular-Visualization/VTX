@@ -4,6 +4,7 @@
 #include "app/controller/animation.hpp"
 #include "app/ecs.hpp"
 #include <core/struct/trajectory.hpp>
+#include <renderer/struct_infos.hpp>
 #include <string>
 #include <thread>
 #include <util/types.hpp>
@@ -72,6 +73,11 @@ namespace VTX::App::Events
 		size_t width;
 		size_t height;
 		bool   resizeMainWindow;
+	};
+
+	struct RendererReady
+	{
+		Renderer::StructInfos infos;
 	};
 
 	struct BlockingOperationStart

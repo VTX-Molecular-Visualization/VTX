@@ -46,6 +46,8 @@ namespace VTX::UI::QT::Widget
 		 */
 		QPointer<QLabel> _python;
 
+		QPointer<QLabel> _vendor;
+
 		/**
 		 * @brief Update functions.
 		 */
@@ -53,9 +55,11 @@ namespace VTX::UI::QT::Widget
 		void _updateResolution( const App::Events::RendererResize & p_e );
 		void _setCurrentFPS();
 		void _pythonInitialized( const App::Events::PythonInitialized & );
+		void _rendererReady( const App::Events::RendererReady & );
 
 		VTX::Util::EventHub::ScopedConnection _postRenderConnection;
 		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
+		VTX::Util::EventHub::ScopedConnection _rendererReadyConnection;
 		VTX::Util::EventHub::ScopedConnection _pythonInitializedConnection;
 	};
 

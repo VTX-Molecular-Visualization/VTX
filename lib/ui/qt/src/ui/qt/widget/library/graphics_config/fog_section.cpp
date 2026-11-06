@@ -30,8 +30,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 				 &HideableGroupBox::toggled,
 				 [ this ]( const bool p_state )
 				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::ACTIVE_FOG, bool>( p_state ); } );
-		_colorPicker->onColorChanged += [ this ]( const QColor & p_color )
-		{ _changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_FOG, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
+		connect( _colorPicker, &Widget::ColorPicker::colorChanged, [ this ]( const QColor & p_color )
+		{ _changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_FOG, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); } );
 		connect( _sliderNear,
 				 &EditableSlider::valueChanged,
 				 [ this ]( const float p_value )
