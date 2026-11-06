@@ -125,7 +125,7 @@ namespace VTX::UI::QT
 		QTimer::singleShot( 0, this, &QCoreApplication::quit );
 	}
 
-	bool Application::notify( QObject * const p_receiver, QEvent * const p_event )
+	bool Application::notify( QObject * const p_receiver, QEvent * const p_event ) noexcept
 	{
 		try
 		{

@@ -268,19 +268,19 @@ namespace VTX::Renderer::Context
 
 		std::size_t size() const noexcept { return _size; }
 
-		bool empty() const { return _size == 0; }
+		bool empty() const noexcept { return _size == 0; }
 
 		std::byte * data() noexcept { return _data.get(); }
 
 		const std::byte * data() const noexcept { return _data.get(); }
 
-		std::byte operator[]( const std::size_t p_index ) const
+		std::byte operator[]( const std::size_t p_index ) const noexcept
 		{
 			assert( p_index < _size );
 			return _data[ p_index ];
 		}
 
-		void clear() { _size = 0; }
+		void clear() noexcept { _size = 0; }
 
 	  private:
 		friend struct CommandBuffer;
@@ -370,7 +370,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Clear all.
 		 */
-		void clear()
+		void clear() noexcept
 		{
 			commands.clear();
 			payload.clear();
@@ -383,12 +383,12 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Check if empty.
 		 */
-		bool empty() const { return commands.empty(); }
+		bool empty() const noexcept { return commands.empty(); }
 
 		/**
 		 * @brief Get current command ID.
 		 */
-		CommandID currentCommandID() const { return static_cast<CommandID>( commands.size() ); }
+		CommandID currentCommandID() const noexcept { return static_cast<CommandID>( commands.size() ); }
 
 		/**
 		 * @brief Begin a pass command range.

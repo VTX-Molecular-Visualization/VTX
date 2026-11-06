@@ -27,7 +27,7 @@ namespace VTX::Util::Monitoring
 		/**
 		 * @brief Returns a reference to the current (most recent) frame.
 		 */
-		FrameInfo & currentFrame() { return _frames.back(); }
+		FrameInfo & currentFrame() noexcept { return _frames.back(); }
 
 		/**
 		 * @brief Calculates the average elapsed time between recorded frames.

@@ -181,7 +181,7 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Getters.
 		 */
-		const CommandBuffer & commands() const;
+		const CommandBuffer & commands() const noexcept;
 
 		/**
 		 * @brief Clean all.

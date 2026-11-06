@@ -50,12 +50,12 @@ namespace VTX::PythonBinding
 		 */
 		Wrapper::Module loadModule( const FilePath & p_path ) const;
 
-		const Wrapper::Module & getModule() const;
-		Wrapper::Module &		getModule();
+		const Wrapper::Module & getModule() const noexcept;
+		Wrapper::Module &		getModule() noexcept;
 
 		static void print( const std::string & p_line );
 
-		void getPythonModule( pybind11::module_ ** );
+		void getPythonModule( pybind11::module_ ** ) noexcept;
 
 	  private:
 		struct Impl;

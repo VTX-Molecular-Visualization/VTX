@@ -328,6 +328,6 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	SystemTester::operator bool() const noexcept { return _pimpl->isSystemOk(); }
 
-	void SystemTester::Del::operator()( const Impl * p ) const { std::default_delete<const Impl>()( p ); }
+	void SystemTester::Del::operator()( const Impl * p ) const noexcept { std::default_delete<const Impl>()( p ); }
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs

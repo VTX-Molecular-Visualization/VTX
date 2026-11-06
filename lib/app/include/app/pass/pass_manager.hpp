@@ -25,9 +25,9 @@ namespace VTX::App::Pass
 
 		virtual ~IPass() = default;
 
-		void setPaused( const bool p_paused ) { _paused = p_paused; }
+		void setPaused( const bool p_paused ) noexcept { _paused = p_paused; }
 
-		void setDeleteNextFrame( const bool p_deleted ) { _deleted = p_deleted; }
+		void setDeleteNextFrame( const bool p_deleted ) noexcept { _deleted = p_deleted; }
 
 	  protected:
 		bool _paused  = false;
@@ -43,8 +43,8 @@ namespace VTX::App::Pass
 		using UpdateDelegate = Util::EventHub::Delegate<void( const float, const float )>;
 
 		PassManager()									   = default;
-		PassManager( PassManager && ) noexcept			   = default;
-		PassManager & operator=( PassManager && ) noexcept = default;
+		PassManager( PassManager && )					   = default;
+		PassManager & operator=( PassManager && )		   = default;
 		~PassManager()									   = default;
 
 		/**

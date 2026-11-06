@@ -23,17 +23,18 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Constructor.
 		 */
-		constexpr DenseGrid( const Vec3f & p_worldOrigin = Vec3f( 0.f ),
-							 const Vec3f & p_cellSize	 = Vec3f( 10.f ),
-							 const Vec3u & p_size		 = Vec3u( 0u ) ) :
-			_worldOrigin( p_worldOrigin ), _cellSize( p_cellSize ), _size( p_size )
+		constexpr DenseGrid(
+			const Vec3f & p_worldOrigin = Vec3f( 0.f ),
+			const Vec3f & p_cellSize	= Vec3f( 10.f ),
+			const Vec3u & p_size		= Vec3u( 0u )
+		) noexcept : _worldOrigin( p_worldOrigin ), _cellSize( p_cellSize ), _size( p_size )
 		{
 		}
 
 		/**
 		 * @brief Get the center of a cell in world position.
 		 */
-		constexpr Vec3f worldPosition( const CellPosition & p_gridPosition ) const
+		constexpr Vec3f worldPosition( const CellPosition & p_gridPosition ) const noexcept
 		{
 			Vec3f position = _worldOrigin;
 			position += ( Vec3f( p_gridPosition ) + 0.5f ) * _cellSize;
@@ -44,7 +45,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the grid position of a world position.
 		 */
-		CellPosition gridPosition( const Vec3f & p_worldPosition ) const
+		CellPosition gridPosition( const Vec3f & p_worldPosition ) const noexcept
 		{
 			CellPosition gridPos;
 
@@ -58,7 +59,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the grid position of a dense index in the grid.
 		 */
-		constexpr CellPosition gridPosition( const size_t p_denseIndex ) const
+		constexpr CellPosition gridPosition( const size_t p_denseIndex ) const noexcept
 		{
 			const size_t z = p_denseIndex / ( static_cast<size_t>( _size.x ) * _size.y );
 			const size_t r = p_denseIndex % ( static_cast<size_t>( _size.x ) * _size.y );
@@ -71,24 +72,24 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the dense index of a cell position in the grid.
 		 */
-		constexpr size_t denseIndex( const CellPosition & p_gridPosition ) const
+		constexpr size_t denseIndex( const CellPosition & p_gridPosition ) const noexcept
 		{
 			return static_cast<size_t>( p_gridPosition.z ) * _size.x * _size.y
 				   + static_cast<size_t>( p_gridPosition.y ) * _size.x + p_gridPosition.x;
 		}
 
-		constexpr size_t denseIndex( const uint p_x, const uint p_y, const uint p_z ) const
+		constexpr size_t denseIndex( const uint p_x, const uint p_y, const uint p_z ) const noexcept
 		{ return denseIndex( CellPosition( p_x, p_y, p_z ) ); }
 
 		/**
 		 * @brief Get the number of cells in the grid (fixed).
 		 */
-		constexpr size_t getCellCount() const { return static_cast<size_t>( _size.x ) * _size.y * _size.z; }
+		constexpr size_t getCellCount() const noexcept { return static_cast<size_t>( _size.x ) * _size.y * _size.z; }
 
 		/**
 		 * @brief Grid size.
 		 */
-		constexpr const Vec3u & getSize() const { return _size; }
+		constexpr const Vec3u & getSize() const noexcept { return _size; }
 
 	  private:
 		/**
@@ -131,7 +132,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the center of a cell in world position.
 		 */
-		Vec3f worldPosition( const CellPosition & p_gridPosition ) const
+		Vec3f worldPosition( const CellPosition & p_gridPosition ) const noexcept
 		{
 			Vec3f position = _worldOrigin;
 			position += ( Vec3f( p_gridPosition ) + 0.5f ) * _cellSize;
@@ -142,7 +143,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the grid position of a world position.
 		 */
-		CellPosition gridPosition( const Vec3f & p_worldPosition ) const
+		CellPosition gridPosition( const Vec3f & p_worldPosition ) const noexcept
 		{
 			CellPosition gridPos;
 
@@ -156,18 +157,18 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the number of occupied cells.
 		 */
-		size_t getCellCount() const { return _data.size(); }
+		size_t getCellCount() const noexcept { return _data.size(); }
 
 		/**
 		 * @brief Iterators.
 		 */
-		auto begin() { return _data.begin(); }
+		auto begin() noexcept { return _data.begin(); }
 
-		auto end() { return _data.end(); }
+		auto end() noexcept { return _data.end(); }
 
-		auto begin() const { return _data.begin(); }
+		auto begin() const noexcept { return _data.begin(); }
 
-		auto end() const { return _data.end(); }
+		auto end() const noexcept { return _data.end(); }
 
 		/**
 		 * @brief Visitor function to iterate over all neighbour cells.
@@ -202,7 +203,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the grid size derived from occupied cells bounds.
 		 */
-		Vec3u getSize() const
+		Vec3u getSize() const noexcept
 		{
 			if ( _data.empty() )
 			{
@@ -217,15 +218,15 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the bounds of occupied cells.
 		 */
-		const CellPosition & getMinCell() const { return _minCell; }
+		const CellPosition & getMinCell() const noexcept { return _minCell; }
 
-		const CellPosition & getMaxCell() const { return _maxCell; }
+		const CellPosition & getMaxCell() const noexcept { return _maxCell; }
 
 		/**
 		 * @brief Get the dense index of a cell position in the grid.
 		 * Useful to store in 1D array.
 		 */
-		size_t denseIndex( const CellPosition & p_gridPosition ) const
+		size_t denseIndex( const CellPosition & p_gridPosition ) const noexcept
 		{
 			const CellPosition localPosition = p_gridPosition - _minCell;
 			const Vec3u		   size			 = getSize();

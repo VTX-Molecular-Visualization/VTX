@@ -3,7 +3,7 @@
 namespace VTX::Util::Math
 {
 
-	Vec3f orthogonalVector( const Vec3f & normal )
+	Vec3f orthogonalVector( const Vec3f & normal ) noexcept
 	{
 		// Solve a*x + b*y + c*z = 0
 		const float a = normal.x;

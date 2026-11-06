@@ -778,7 +778,7 @@ namespace VTX::IO
 			}
 		}
 
-		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position )
+		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position ) noexcept
 		{ return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] ); }
 	};
 

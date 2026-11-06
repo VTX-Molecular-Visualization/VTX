@@ -82,7 +82,7 @@ namespace VTX::App
 		/**
 		 * @brief Get instantiated tools.
 		 */
-		std::vector<std::unique_ptr<Tool::BaseTool>> & getTools() { return _tools; }
+		std::vector<std::unique_ptr<Tool::BaseTool>> & getTools() noexcept { return _tools; }
 
 	  private:
 		/**

@@ -59,7 +59,7 @@ namespace VTX::IO::Writer
 			 * @param p_currentSystemAtomIdx
 			 * @return
 			 */
-			uint getAtomIdx( const uint & p_currentSystemAtomIdx ) const
+			uint getAtomIdx( const uint & p_currentSystemAtomIdx ) const noexcept
 			{
 				if ( _multiSystem )
 				{
@@ -103,14 +103,14 @@ namespace VTX::IO::Writer
 			/**
 			 * @brief Tells the manager that from now on, we are going to query next system's atom indexes.
 			 */
-			void nextSystem()
+			void nextSystem() noexcept
 			{
 				_currentSystem++;
 				_currentSystemAtomIdxMap.clear();
 				_currentSystemResIdxMap.clear();
 			}
 
-			bool multiSystem() const { return _multiSystem; }
+			bool multiSystem() const noexcept { return _multiSystem; }
 
 		  private:
 			std::reference_wrapper<const std::vector<WriteArgs::System>> _topologies;
@@ -139,9 +139,11 @@ namespace VTX::IO::Writer
 			return p_residueIdx < p_mol.getResidueCount();
 		}
 
-		inline bool isAtomOfResidue( const size_t &						 p_atomIdx,
-									 const size_t &						 p_residueIdx,
-									 const VTX::Core::Struct::Topology & p_mol )
+		inline bool isAtomOfResidue(
+			const size_t &						p_atomIdx,
+			const size_t &						p_residueIdx,
+			const VTX::Core::Struct::Topology & p_mol
+		) noexcept
 		{
 			if ( p_residueIdx < p_mol.getResidueCount() - 1 )
 			{

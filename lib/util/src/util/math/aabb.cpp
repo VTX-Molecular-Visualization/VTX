@@ -4,16 +4,16 @@
 
 namespace VTX::Util::Math
 {
-	AABB::AABB( const Vec3f & p_point ) : _min( p_point ), _max( p_point ) {}
+	AABB::AABB( const Vec3f & p_point ) noexcept : _min( p_point ), _max( p_point ) {}
 
-	AABB::AABB( const Vec3f & p_min, const Vec3f & p_max ) : _min( p_min ), _max( p_max ) {}
+	AABB::AABB( const Vec3f & p_min, const Vec3f & p_max ) noexcept : _min( p_min ), _max( p_max ) {}
 
-	AABB::AABB( const Vec3f & p_center, const float p_radius ) :
+	AABB::AABB( const Vec3f & p_center, const float p_radius ) noexcept :
 		_min( p_center - p_radius ), _max( p_center + p_radius )
 	{
 	}
 
-	void AABB::invalidate()
+	void AABB::invalidate() noexcept
 	{
 		_min = VEC3F_MAX;
 		_max = VEC3F_LOWEST;
@@ -43,7 +43,7 @@ namespace VTX::Util::Math
 		return transformedAABB;
 	}
 
-	uint AABB::largestAxis() const
+	uint AABB::largestAxis() const noexcept
 	{
 		const Vec3f d = diagonal();
 		if ( d.x > d.y && d.x > d.z )
@@ -60,13 +60,13 @@ namespace VTX::Util::Math
 		}
 	}
 
-	float AABB::area() const
+	float AABB::area() const noexcept
 	{
 		const Vec3f d = diagonal();
 		return isValid() ? ( d.x * d.y + d.y * d.z + d.z * d.x ) * 2.f : 0.f;
 	}
 
-	Vec3f AABB::offset( const Vec3f & p_pt ) const
+	Vec3f AABB::offset( const Vec3f & p_pt ) const noexcept
 	{
 		Vec3f o = p_pt - _min;
 		if ( _max.x > _min.x )
@@ -84,7 +84,7 @@ namespace VTX::Util::Math
 		return o;
 	}
 
-	float AABB::offset( const Vec3f & p_pt, const uint p_dim ) const
+	float AABB::offset( const Vec3f & p_pt, const uint p_dim ) const noexcept
 	{
 		float o = p_pt[ p_dim ] - _min[ p_dim ];
 		if ( _max[ p_dim ] > _min[ p_dim ] )
@@ -142,6 +142,6 @@ namespace VTX::Util::Math
 	}
 	*/
 
-	AABB AABB::join( const AABB & p_aabb1, const AABB & p_aabb2 )
+	AABB AABB::join( const AABB & p_aabb1, const AABB & p_aabb2 ) noexcept
 	{ return AABB( Util::Math::min( p_aabb1._min, p_aabb2._min ), Util::Math::max( p_aabb1._max, p_aabb2._max ) ); }
 } // namespace VTX::Util::Math

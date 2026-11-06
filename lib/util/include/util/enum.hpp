@@ -38,7 +38,7 @@ namespace VTX::Util::Enum
 	 * @brief Returns the name of an enumeration value as a string view.
 	 */
 	template<Concept E>
-	constexpr std::string_view enumName( const E & p_enum )
+	constexpr std::string_view enumName( const E & p_enum ) noexcept
 	{ return magic_enum::enum_name( p_enum ); }
 
 	/**
@@ -63,14 +63,14 @@ namespace VTX::Util::Enum
 	 * @brief Returns the underlying integer value of an enumeration constant.
 	 */
 	template<Concept E>
-	constexpr uint enumInteger( const E & p_enum )
+	constexpr uint enumInteger( const E & p_enum ) noexcept
 	{ return magic_enum::enum_integer( p_enum ); }
 
 	/**
 	 * @brief Returns the enumeration value of type E at the specified index.
 	 */
 	template<Concept E>
-	constexpr E enumValue( const size_t p_index )
+	constexpr E enumValue( const size_t p_index ) noexcept
 	{ return magic_enum::enum_value<E>( p_index ); }
 
 	/**

@@ -87,5 +87,5 @@ namespace VTX::App::Action
 
 	bool ActionManager::_noThread() const noexcept { return _attributesPtr->noThread; }
 
-	QueuedAction::Waiter QueuedAction::getWaiter() { return Waiter( _ptr, _state ); }
+	QueuedAction::Waiter QueuedAction::getWaiter() noexcept { return Waiter( _ptr, _state ); }
 } // namespace VTX::App::Action

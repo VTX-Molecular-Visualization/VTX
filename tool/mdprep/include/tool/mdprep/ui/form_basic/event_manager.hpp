@@ -47,12 +47,12 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		EventManager( const EventManager & )			 = delete;
 		EventManager & operator=( const EventManager & ) = delete;
 
-		void setMinimizationSettings( QPushButton * ) noexcept;
+		void setMinimizationSettings( QPushButton * );
 		void setInputCheck( QPushButton * ) noexcept;
-		void setNvtSettings( QPushButton * ) noexcept;
-		void setNptSettings( QPushButton * ) noexcept;
-		void setProductionSettings( QPushButton * ) noexcept;
-		void setSystemSettings( QPushButton * ) noexcept;
+		void setNvtSettings( QPushButton * );
+		void setNptSettings( QPushButton * );
+		void setProductionSettings( QPushButton * );
+		void setSystemSettings( QPushButton * );
 		void setSystemMsg( QVBoxLayout * );
 		void performFirstInputCheck();
 
@@ -75,17 +75,17 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 		static void _disconnectAll( UiObjects & ) noexcept;
 
-		void _connectSettingsMinimization() noexcept;
-		void _connectSettingsNvt() noexcept;
-		void _connectSettingsNpt() noexcept;
-		void _connectSettingsProd() noexcept;
-		void _connectSettingsManager() noexcept;
-		void _connectInputCheck() noexcept;
-		void _openSettingsMinimization() noexcept;
-		void _openSettingsNvt() noexcept;
-		void _openSettingsNpt() noexcept;
-		void _openSettingsProd() noexcept;
-		void _openSettingsManager() noexcept;
+		void _connectSettingsMinimization();
+		void _connectSettingsNvt();
+		void _connectSettingsNpt();
+		void _connectSettingsProd();
+		void _connectSettingsManager();
+		void _connectInputCheck();
+		void _openSettingsMinimization();
+		void _openSettingsNvt();
+		void _openSettingsNpt();
+		void _openSettingsProd();
+		void _openSettingsManager();
 		void _startInputCheck();
 
 		void _systemSettingsApplied() noexcept;

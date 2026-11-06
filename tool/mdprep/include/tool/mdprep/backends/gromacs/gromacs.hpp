@@ -84,7 +84,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		struct Del
 		{
-			void operator()( const Impl * p ) const;
+			void operator()( const Impl * p ) const noexcept;
 		};
 
 		std::unique_ptr<Impl, Del> _pimpl = nullptr;

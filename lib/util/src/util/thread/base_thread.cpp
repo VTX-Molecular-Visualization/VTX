@@ -66,7 +66,7 @@ namespace VTX::Util::Thread
 		}
 	}
 
-	void BaseThread::setProgress( const float p_value )
+	void BaseThread::setProgress( const float p_value ) noexcept
 	{
 		const float clampedValue = Util::Math::clamp( p_value, 0.f, 1.f );
 		_progress.store( clampedValue, std::memory_order_relaxed );

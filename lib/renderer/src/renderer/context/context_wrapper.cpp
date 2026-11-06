@@ -548,7 +548,7 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	const CommandBuffer & ContextWrapper::commands() const { return _impl->commands; }
+	const CommandBuffer & ContextWrapper::commands() const noexcept { return _impl->commands; }
 
 	void ContextWrapper::clear()
 	{

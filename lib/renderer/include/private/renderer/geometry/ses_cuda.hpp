@@ -20,7 +20,7 @@ namespace VTX::Renderer::Geometry::SESDetail
 
 	struct CudaConstructionDeleter
 	{
-		void operator()( CudaConstruction * p_construction ) const;
+		void operator()( CudaConstruction * p_construction ) const noexcept;
 	};
 
 	using CudaConstructionPtr = std::unique_ptr<CudaConstruction, CudaConstructionDeleter>;

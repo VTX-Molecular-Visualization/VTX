@@ -67,7 +67,7 @@ namespace VTX::App
 			.store_into( _impl->args.noUpdates );
 	}
 
-	bool ArgumentParser::needHelp() const { return _impl->needHelp; }
+	bool ArgumentParser::needHelp() const noexcept { return _impl->needHelp; }
 
 	std::string ArgumentParser::help() const
 	{

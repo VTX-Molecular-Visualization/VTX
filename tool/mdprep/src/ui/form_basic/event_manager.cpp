@@ -58,7 +58,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		return *this;
 	}
 
-	void EventManager::setMinimizationSettings( QPushButton * p_ ) noexcept
+	void EventManager::setMinimizationSettings( QPushButton * p_ )
 	{
 		_uiObjects._buttonMinimizationSettings = p_;
 		_connectSettingsMinimization();
@@ -66,25 +66,25 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 	void EventManager::setInputCheck( QPushButton * p_ ) noexcept { _uiObjects._buttonInputCheck = p_; }
 
-	void EventManager::setNvtSettings( QPushButton * p_ ) noexcept
+	void EventManager::setNvtSettings( QPushButton * p_ )
 	{
 		_uiObjects._buttonEquilibrationNvtSettings = p_;
 		_connectSettingsNvt();
 	}
 
-	void EventManager::setNptSettings( QPushButton * p_ ) noexcept
+	void EventManager::setNptSettings( QPushButton * p_ )
 	{
 		_uiObjects._buttonEquilibrationNptSettings = p_;
 		_connectSettingsNpt();
 	}
 
-	void EventManager::setProductionSettings( QPushButton * p_ ) noexcept
+	void EventManager::setProductionSettings( QPushButton * p_ )
 	{
 		_uiObjects._buttonProductionSettings = p_;
 		_connectSettingsProd();
 	}
 
-	void EventManager::setSystemSettings( QPushButton * p_ ) noexcept
+	void EventManager::setSystemSettings( QPushButton * p_ )
 	{
 		_uiObjects._buttonSystemSettings = p_;
 		_connectSettingsManager();
@@ -122,44 +122,44 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		}
 	}
 
-	void EventManager::_connectSettingsMinimization() noexcept
+	void EventManager::_connectSettingsMinimization()
 	{
 		QPushButton::connect( _uiObjects._buttonMinimizationSettings,
 							  &QPushButton::clicked,
 							  [ & ]() { this->_openSettingsMinimization(); } );
 	}
 
-	void EventManager::_connectSettingsNvt() noexcept
+	void EventManager::_connectSettingsNvt()
 	{
 		QPushButton::connect(
 			_uiObjects._buttonEquilibrationNvtSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNvt(); } );
 	}
 
-	void EventManager::_connectSettingsNpt() noexcept
+	void EventManager::_connectSettingsNpt()
 	{
 		QPushButton::connect(
 			_uiObjects._buttonEquilibrationNptSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNpt(); } );
 	}
 
-	void EventManager::_connectSettingsProd() noexcept
+	void EventManager::_connectSettingsProd()
 	{
 		QPushButton::connect(
 			_uiObjects._buttonProductionSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsProd(); } );
 	}
 
-	void EventManager::_connectSettingsManager() noexcept
+	void EventManager::_connectSettingsManager()
 	{
 		QPushButton::connect(
 			_uiObjects._buttonSystemSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsManager(); } );
 	}
 
-	void EventManager::_connectInputCheck() noexcept
+	void EventManager::_connectInputCheck()
 	{
 		QPushButton::connect(
 			_uiObjects._buttonInputCheck, &QPushButton::clicked, [ & ]() { this->_startInputCheck(); } );
 	}
 
-	void EventManager::_openSettingsMinimization() noexcept
+	void EventManager::_openSettingsMinimization()
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
@@ -171,7 +171,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 								 ( *callback )( E_FIELD_SECTION::minimization ) );
 	}
 
-	void EventManager::_openSettingsNvt() noexcept
+	void EventManager::_openSettingsNvt()
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
@@ -183,7 +183,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 								 ( *callback )( E_FIELD_SECTION::equilibrationNvt ) );
 	}
 
-	void EventManager::_openSettingsNpt() noexcept
+	void EventManager::_openSettingsNpt()
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
@@ -195,7 +195,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 								 ( *callback )( E_FIELD_SECTION::equilibrationNpt ) );
 	}
 
-	void EventManager::_openSettingsProd() noexcept
+	void EventManager::_openSettingsProd()
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
@@ -221,7 +221,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		};
 	} // namespace
 
-	void EventManager::_openSettingsManager() noexcept
+	void EventManager::_openSettingsManager()
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );

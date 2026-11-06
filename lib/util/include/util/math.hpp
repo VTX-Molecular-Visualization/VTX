@@ -101,7 +101,7 @@ namespace VTX::Util::Math
 
 	inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
-	inline Quatf slerp( const Quatf & p_lhs, const Quatf & p_rhs, const float p_value )
+	inline Quatf slerp( const Quatf & p_lhs, const Quatf & p_rhs, const float p_value ) noexcept
 	{
 		Quatf rhs = p_rhs;
 		if ( dot( p_lhs, p_rhs ) < 0.f )
@@ -131,7 +131,7 @@ namespace VTX::Util::Math
 		return lerp( p_lhs, p_rhs, value );
 	}
 
-	inline Quatf easeInOutInterpolation( const Quatf & p_lhs, const Quatf & p_rhs, const float p_value )
+	inline Quatf easeInOutInterpolation( const Quatf & p_lhs, const Quatf & p_rhs, const float p_value ) noexcept
 	{
 		const float value = pow2( sin( PI_2f * p_value ) );
 		return slerp( p_lhs, p_rhs, value );
@@ -163,7 +163,7 @@ namespace VTX::Util::Math
 	}
 
 	// p_n (normal) must be normalized.
-	inline Mat3f createOrthonormalBasis( const Vec3f & p_n )
+	inline Mat3f createOrthonormalBasis( const Vec3f & p_n ) noexcept
 	{
 		const Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y )
 							? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
@@ -261,7 +261,7 @@ namespace VTX::Util::Math
 	}
 
 	// Uniform hemisphere sampling: z is up.
-	inline Vec3f uniformHemisphere( const float p_u, const float p_v )
+	inline Vec3f uniformHemisphere( const float p_u, const float p_v ) noexcept
 	{
 		const float cosTheta = p_u;
 		const float phi		 = TWO_PIf * p_v;
@@ -269,10 +269,10 @@ namespace VTX::Util::Math
 		return Vec3f( cosf( phi ) * sinTheta, sinf( phi ) * sinTheta, cosTheta );
 	}
 
-	constexpr float uniformHemispherePdf() { return INV_2PIf; }
+	constexpr float uniformHemispherePdf() noexcept { return INV_2PIf; }
 
 	// Cosine weighted hemisphere samping: z is up.
-	inline Vec3f cosineWeightedHemisphere( const float p_u = randomFloat(), const float p_v = randomFloat() )
+	inline Vec3f cosineWeightedHemisphere( const float p_u = randomFloat(), const float p_v = randomFloat() ) noexcept
 	{
 		const float cosTheta = sqrtf( p_u );
 		const float sinTheta = sqrtf( 1.f - p_u );
@@ -280,7 +280,7 @@ namespace VTX::Util::Math
 		return Vec3f( cosf( phi ) * sinTheta, sinf( phi ) * sinTheta, cosTheta );
 	}
 
-	constexpr float cosineWeightedHemispherePdf( const float p_cosTheta ) { return p_cosTheta * INV_PIf; }
+	constexpr float cosineWeightedHemispherePdf( const float p_cosTheta ) noexcept { return p_cosTheta * INV_PIf; }
 
 	// Compute alignment of p_v to p_a (must be power of two).
 	template<typename T>
@@ -307,7 +307,7 @@ namespace VTX::Util::Math
 	}
 
 	// TODO:  std::fabsf.
-	Vec3f orthogonalVector( const Vec3f & normal );
+	Vec3f orthogonalVector( const Vec3f & normal ) noexcept;
 
 } // namespace VTX::Util::Math
 

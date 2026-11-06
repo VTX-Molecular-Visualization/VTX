@@ -364,7 +364,7 @@ namespace VTX::IO::Writer
 	};
 
 	// Atom
-	Atom::Atom( AtomImpl & p_ ) : _data( &p_ ) {}
+	Atom::Atom( AtomImpl & p_ ) noexcept : _data( &p_ ) {}
 
 	void Atom::get( AtomInfo & p_out ) const noexcept { p_out = AtomInfo { .dataPtr = _data }; }
 
@@ -387,7 +387,7 @@ namespace VTX::IO::Writer
 	}
 
 	// Residue
-	Residue::Residue( ResidueImpl & p_ ) : _data( &p_ ) {}
+	Residue::Residue( ResidueImpl & p_ ) noexcept : _data( &p_ ) {}
 
 	void Residue::set( const Property & p_ )
 	{
@@ -440,7 +440,7 @@ namespace VTX::IO::Writer
 	}
 
 	// Chain
-	Chain::Chain( ChainImpl & p_ ) : _data( &p_ ) {}
+	Chain::Chain( ChainImpl & p_ ) noexcept : _data( &p_ ) {}
 
 	void Chain::setName( std::string p_ ) noexcept
 	{
@@ -472,7 +472,7 @@ namespace VTX::IO::Writer
 	}
 
 	// Frame
-	Frame::Frame( FrameImpl & p_ ) : _data( &p_ ) {}
+	Frame::Frame( FrameImpl & p_ ) noexcept : _data( &p_ ) {}
 
 	void Frame::set( const Atom & p_atom, AtomCoordinates p_atomCoordinates )
 	{
@@ -499,7 +499,7 @@ namespace VTX::IO::Writer
 	}
 
 	// System
-	System::System( SystemImpl & p_ ) : _data( &p_ ) {}
+	System::System( SystemImpl & p_ ) noexcept : _data( &p_ ) {}
 
 	void System::set( Property p_ ) const
 	{

@@ -373,7 +373,7 @@ namespace VTX::App
 		}
 	}
 
-	bool Session::hasManager() const { return _impl->manager.has_value(); }
+	bool Session::hasManager() const noexcept { return _impl->manager.has_value(); }
 
 	bool Session::isPortable() const
 	{

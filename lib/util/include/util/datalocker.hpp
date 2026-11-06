@@ -47,11 +47,14 @@ namespace VTX::Util
 
 		~DataLocker() = default;
 
-		DataLocker( DataLocker<DataType> && p_ ) noexcept : _data( std::move( p_._data ) ) {}
+		DataLocker( DataLocker<DataType> && p_ ) noexcept( std::is_nothrow_move_constructible_v<DataType> ) :
+			_data( std::move( p_._data ) )
+		{
+		}
 
 		DataLocker( const DataLocker<DataType> & p_ ) : _data( lock_and_copy( p_._data, p_._mutex ) ) {}
 
-		DataLocker & operator=( DataLocker<DataType> && p_ ) noexcept
+		DataLocker & operator=( DataLocker<DataType> && p_ ) noexcept( std::is_nothrow_move_assignable_v<DataType> )
 		{
 			if ( &p_ != this )
 			{
@@ -107,13 +110,13 @@ namespace VTX::Util
 	  public:
 		ReservedData() = delete;
 
-		ReservedDataType * operator->() { return _dataPtr; }
+		ReservedDataType * operator->() noexcept { return _dataPtr; }
 
-		const ReservedDataType * operator->() const { return _dataPtr; }
+		const ReservedDataType * operator->() const noexcept { return _dataPtr; }
 
-		ReservedDataType & operator*() { return *_dataPtr; }
+		ReservedDataType & operator*() noexcept { return *_dataPtr; }
 
-		const ReservedDataType & operator*() const { return *_dataPtr; }
+		const ReservedDataType & operator*() const noexcept { return *_dataPtr; }
 	};
 } // namespace VTX::Util
 

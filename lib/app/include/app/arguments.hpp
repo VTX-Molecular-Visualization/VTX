@@ -32,7 +32,7 @@ namespace VTX::App
 		ArgumentParser( int p_argc, const char * const * p_argv );
 
 		void		parse();
-		bool		needHelp() const;
+		bool		needHelp() const noexcept;
 		std::string help() const;
 		void		get( Arguments & ) noexcept;
 

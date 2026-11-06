@@ -78,7 +78,7 @@ namespace VTX::PythonBinding
 
 			void displayInfo() const;
 
-			const std::string & getModulePath() const { return _modulePath; }
+			const std::string & getModulePath() const noexcept { return _modulePath; }
 
 			static std::vector<std::string> getFunctionList();
 

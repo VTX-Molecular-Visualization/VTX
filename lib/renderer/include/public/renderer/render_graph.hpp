@@ -17,9 +17,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Accessors.
 		 */
-		const Desc::Resources & getResources() const { return _resources; }
+		const Desc::Resources & getResources() const noexcept { return _resources; }
 
-		const Desc::PassList & getPasses() const { return _passes; }
+		const Desc::PassList & getPasses() const noexcept { return _passes; }
 
 		/**
 		 * @brief Update the active physical chunks for a geometry resource.

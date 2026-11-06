@@ -133,7 +133,7 @@ namespace VTX
 			/**
 			 * @brief Convert a LOG_HINT to a spdlog hint string.
 			 */
-			static constexpr std::string_view _toSpdlogHint( const LOG_HINT p_hint )
+			static constexpr std::string_view _toSpdlogHint( const LOG_HINT p_hint ) noexcept
 			{ return Enum::enumName( p_hint ); }
 		};
 

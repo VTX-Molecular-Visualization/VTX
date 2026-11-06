@@ -157,7 +157,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Check if a value is contained.
 		 */
-		constexpr bool contains( const T p_v ) const
+		constexpr bool contains( const T p_v ) const noexcept
 		{
 			return std::ranges::any_of( _ranges, [ p_v ]( const auto & r ) { return r.contains( p_v ); } );
 		}
@@ -165,7 +165,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Check if multiple values are contained.
 		 */
-		constexpr bool contains( const std::initializer_list<T> & p_values ) const
+		constexpr bool contains( const std::initializer_list<T> & p_values ) const noexcept
 		{
 			for ( const T & value : p_values )
 			{
@@ -180,7 +180,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Check if a range is contained.
 		 */
-		constexpr bool contains( const RangeType & p_r ) const
+		constexpr bool contains( const RangeType & p_r ) const noexcept
 		{
 			return std::ranges::any_of(
 				_ranges, [ &p_r ]( const auto & r ) { return r.first <= p_r.first && r.last >= p_r.last; }
@@ -190,7 +190,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Check if multiple ranges are contained.
 		 */
-		constexpr bool contains( const std::initializer_list<RangeType> & p_ranges ) const
+		constexpr bool contains( const std::initializer_list<RangeType> & p_ranges ) const noexcept
 		{
 			for ( const RangeType & range : p_ranges )
 			{
@@ -205,7 +205,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Check if multiple ranges are contained.
 		 */
-		constexpr bool contains( const RangeList & p_ranges ) const
+		constexpr bool contains( const RangeList & p_ranges ) const noexcept
 		{
 			if ( p_ranges.isEmpty() )
 			{
@@ -225,7 +225,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Check if a range intersects.
 		 */
-		constexpr bool intersects( const RangeType & p_other ) const
+		constexpr bool intersects( const RangeType & p_other ) const noexcept
 		{
 			for ( const auto & r : _ranges )
 			{
@@ -240,22 +240,22 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Check emptiness.
 		 */
-		constexpr bool isEmpty() const { return _ranges.empty(); }
+		constexpr bool isEmpty() const noexcept { return _ranges.empty(); }
 
 		/**
 		 * @brief Clear all ranges.
 		 */
-		constexpr void clear() { _ranges.clear(); }
+		constexpr void clear() noexcept { _ranges.clear(); }
 
 		/**
 		 * @brief Get range count.
 		 */
-		constexpr size_t rangeCount() const { return _ranges.size(); }
+		constexpr size_t rangeCount() const noexcept { return _ranges.size(); }
 
 		/**
 		 * @brief Get all range total count.
 		 */
-		constexpr T count() const
+		constexpr T count() const noexcept
 		{
 			T s = 0;
 			for ( const auto & r : _ranges )
@@ -268,17 +268,17 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get first value.
 		 */
-		constexpr T getFirst() const { return _ranges.cbegin()->first; }
+		constexpr T getFirst() const noexcept { return _ranges.cbegin()->first; }
 
 		/**
 		 * @brief Get last value (exclusive).
 		 */
-		constexpr T getLast() const { return _ranges.crbegin()->last; }
+		constexpr T getLast() const noexcept { return _ranges.crbegin()->last; }
 
 		/**
 		 * @brief Equality operators.
 		 */
-		friend constexpr bool operator==( const RangeList & a, const RangeList & b )
+		friend constexpr bool operator==( const RangeList & a, const RangeList & b ) noexcept
 		{
 			if ( a._ranges.size() != b._ranges.size() )
 			{
@@ -299,12 +299,12 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Inequality operator.
 		 */
-		friend constexpr bool operator!=( const RangeList & a, const RangeList & b ) { return not( a == b ); }
+		friend constexpr bool operator!=( const RangeList & a, const RangeList & b ) noexcept { return not( a == b ); }
 
 		/**
 		 * @brief Check if a RangeList is equal to a single range.
 		 */
-		constexpr bool equals( const RangeType & p_r ) const
+		constexpr bool equals( const RangeType & p_r ) const noexcept
 		{ return sizeRange() == 1 && rangeBegin()->first == p_r.first && rangeBegin()->last == p_r.last; }
 
 		/**
@@ -462,9 +462,9 @@ namespace VTX::Util::Math
 		}
 		*/
 
-		constexpr size_t sizeRange() const { return _ranges.size(); }
+		constexpr size_t sizeRange() const noexcept { return _ranges.size(); }
 
-		constexpr size_t size() const
+		constexpr size_t size() const noexcept
 		{
 			size_t count = 0;
 			for ( const auto & r : _ranges )
@@ -477,7 +477,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Returns the size in bytes taken by this instance. Heap size and stack size are summed up.
 		 */
-		constexpr size_t currentSize() const
+		constexpr size_t currentSize() const noexcept
 		{
 			size_t totalSize = sizeof( RangeList<T> );
 			totalSize += _ranges.size() * sizeof( Range<T> );
@@ -524,13 +524,13 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Iterators.
 		 */
-		constexpr std::vector<RangeType>::iterator rangeBegin() { return _ranges.begin(); }
+		constexpr std::vector<RangeType>::iterator rangeBegin() noexcept { return _ranges.begin(); }
 
-		constexpr std::vector<RangeType>::iterator rangeEnd() { return _ranges.end(); }
+		constexpr std::vector<RangeType>::iterator rangeEnd() noexcept { return _ranges.end(); }
 
-		constexpr std::vector<RangeType>::const_iterator rangeBegin() const { return _ranges.begin(); }
+		constexpr std::vector<RangeType>::const_iterator rangeBegin() const noexcept { return _ranges.begin(); }
 
-		constexpr std::vector<RangeType>::const_iterator rangeEnd() const { return _ranges.end(); }
+		constexpr std::vector<RangeType>::const_iterator rangeEnd() const noexcept { return _ranges.end(); }
 
 		/**
 		 * @brief Iterate over all values in all ranges.

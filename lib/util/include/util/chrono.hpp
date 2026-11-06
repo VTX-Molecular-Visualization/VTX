@@ -70,7 +70,7 @@ namespace VTX::Util
 	 */
 	template<class F, class... Args>
 		requires std::invocable<F, Args...> && std::same_as<std::invoke_result_t<F, Args...>, void>
-	inline float CHRONO_CPU( F && p_f, Args &&... p_args )
+	inline float CHRONO_CPU( F && p_f, Args &&... p_args ) noexcept( std::is_nothrow_invocable_v<F, Args...> )
 	{
 		Chrono c;
 		c.start();

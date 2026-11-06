@@ -19,27 +19,27 @@ namespace VTX::Util::Math
 		 * @brief Constructors.
 		 */
 		constexpr AABB() = default;
-		AABB( const Vec3f & p_point );
-		AABB( const Vec3f & p_min, const Vec3f & p_max );
-		AABB( const Vec3f & p_center, float p_radius );
+		AABB( const Vec3f & p_point ) noexcept;
+		AABB( const Vec3f & p_min, const Vec3f & p_max ) noexcept;
+		AABB( const Vec3f & p_center, float p_radius ) noexcept;
 
 		/**
 		 * @brief Reset min and max points to invalid values.
 		 */
-		void invalidate();
+		void invalidate() noexcept;
 
 		/**
 		 * @brief Check if the AABB is valid.
 		 */
-		constexpr bool isValid() const
+		constexpr bool isValid() const noexcept
 		{ return ( ( _min.x <= _max.x ) && ( _min.y <= _max.y ) && ( _min.z <= _max.z ) ); }
 
 		/**
 		 * @brief Getters.
 		 */
-		constexpr const Vec3f & getMin() const { return _min; }
+		constexpr const Vec3f & getMin() const noexcept { return _min; }
 
-		constexpr const Vec3f & getMax() const { return _max; }
+		constexpr const Vec3f & getMax() const noexcept { return _max; }
 
 		/**
 		 * @brief Get all 8 summits of the AABB.
@@ -49,7 +49,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Extend to include the given point.
 		 */
-		void extend( const Vec3f & p_point )
+		void extend( const Vec3f & p_point ) noexcept
 		{
 			_min = Util::Math::min( p_point, _min );
 			_max = Util::Math::max( p_point, _max );
@@ -58,7 +58,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Extend to include the given AABB.
 		 */
-		void extend( const AABB & p_aabb )
+		void extend( const AABB & p_aabb ) noexcept
 		{
 			_min = Util::Math::min( _min, p_aabb._min );
 			_max = Util::Math::max( _max, p_aabb._max );
@@ -67,7 +67,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Extend to include the given sphere.
 		 */
-		void extend( const Vec3f & p_center, const float p_radius )
+		void extend( const Vec3f & p_center, const float p_radius ) noexcept
 		{
 			extend( p_center - p_radius );
 			extend( p_center + p_radius );
@@ -76,7 +76,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Translate the AABB by the given vector.
 		 */
-		constexpr void translate( const Vec3f & p_translation )
+		constexpr void translate( const Vec3f & p_translation ) noexcept
 		{
 			_min += p_translation;
 			_max += p_translation;
@@ -90,18 +90,18 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Compute properties of the AABB.
 		 */
-		constexpr Vec3f diagonal() const { return _max - _min; }
+		constexpr Vec3f diagonal() const noexcept { return _max - _min; }
 
-		float diameter() const { return isValid() ? Util::Math::length( diagonal() ) : 0.f; }
+		float diameter() const noexcept { return isValid() ? Util::Math::length( diagonal() ) : 0.f; }
 
-		float radius() const { return isValid() ? diameter() * 0.5f : 0.f; }
+		float radius() const noexcept { return isValid() ? diameter() * 0.5f : 0.f; }
 
-		constexpr Vec3f centroid() const { return ( _min + _max ) * 0.5f; }
+		constexpr Vec3f centroid() const noexcept { return ( _min + _max ) * 0.5f; }
 
-		uint  largestAxis() const;
-		float area() const;
-		Vec3f offset( const Vec3f & p_pt ) const;
-		float offset( const Vec3f & p_pt, uint p_dim ) const;
+		uint  largestAxis() const noexcept;
+		float area() const noexcept;
+		Vec3f offset( const Vec3f & p_pt ) const noexcept;
+		float offset( const Vec3f & p_pt, uint p_dim ) const noexcept;
 
 		/*
 		bool intersect(
@@ -116,7 +116,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Static join.
 		 */
-		static AABB join( const AABB & p_aabb1, const AABB & p_aabb2 );
+		static AABB join( const AABB & p_aabb1, const AABB & p_aabb2 ) noexcept;
 
 	  private:
 		/**

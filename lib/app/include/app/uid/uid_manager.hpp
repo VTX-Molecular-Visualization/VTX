@@ -12,7 +12,7 @@ namespace VTX::App::Uid
 	class UIDManager
 	{
 	  public:
-		Util::Uid::Pool<UID32> & getPickingPool() { return _pickingPool; }
+		Util::Uid::Pool<UID32> & getPickingPool() noexcept { return _pickingPool; }
 
 	  private:
 		/**

@@ -135,7 +135,7 @@ namespace VTX::PythonBinding
 			_binders.back().importHeaders();
 		}
 
-		Wrapper::Module & getVTXModule() { return _wrapper; }
+		Wrapper::Module & getVTXModule() noexcept { return _wrapper; }
 
 		void clearBinders()
 		{
@@ -143,7 +143,7 @@ namespace VTX::PythonBinding
 			_binders.shrink_to_fit();
 		}
 
-		void getPythonModule( pybind11::module_ ** p_modulePtr ) { *p_modulePtr = &_vtxModule; }
+		void getPythonModule( pybind11::module_ ** p_modulePtr ) noexcept { *p_modulePtr = &_vtxModule; }
 
 	  private:
 		const std::wstring _pythonBinDir { ( Util::Filesystem::getExecutableDir() / "external" / "python" ).wstring() };
@@ -248,15 +248,16 @@ namespace VTX::PythonBinding
 
 	} // namespace VTX::PythonBinding
 
-	const Wrapper::Module & Interpretor::getModule() const { return _impl->getVTXModule(); }
+	const Wrapper::Module & Interpretor::getModule() const noexcept { return _impl->getVTXModule(); }
 
-	Wrapper::Module & Interpretor::getModule() { return _impl->getVTXModule(); }
+	Wrapper::Module & Interpretor::getModule() noexcept { return _impl->getVTXModule(); }
 
 	void Interpretor::Del::operator()( Interpretor::Impl * const p_ptr ) const noexcept
 	{ std::default_delete<Interpretor::Impl> {}( p_ptr ); }
 
 	void Interpretor::print( const std::string & p_line ) { pybind11::print( p_line ); }
 
-	void Interpretor::getPythonModule( pybind11::module_ ** p_modulePtr ) { _impl->getPythonModule( p_modulePtr ); }
+	void Interpretor::getPythonModule( pybind11::module_ ** p_modulePtr ) noexcept
+	{ _impl->getPythonModule( p_modulePtr ); }
 
 } // namespace VTX::PythonBinding

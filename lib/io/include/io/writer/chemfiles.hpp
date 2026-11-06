@@ -52,7 +52,7 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Atom() = default;
-		Atom( AtomImpl & );
+		Atom( AtomImpl & ) noexcept;
 
 		/**
 		 * @brief You need to be the chosen one to wield this method to its full power.
@@ -76,7 +76,7 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Residue() = default;
-		Residue( ResidueImpl & );
+		Residue( ResidueImpl & ) noexcept;
 		/**
 		 * @brief Inform the chain that the input atom is a part of it.
 		 */
@@ -102,7 +102,7 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Chain() = default;
-		Chain( ChainImpl & );
+		Chain( ChainImpl & ) noexcept;
 
 		void setName( std::string ) noexcept;
 		void setId( std::string ) noexcept;
@@ -127,7 +127,7 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Frame() = default;
-		Frame( FrameImpl & );
+		Frame( FrameImpl & ) noexcept;
 
 		/**
 		 * @brief Give the coordinate of the atom for this frame.
@@ -147,7 +147,7 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		System() = default;
-		System( SystemImpl & );
+		System( SystemImpl & ) noexcept;
 
 		/**
 		 * @brief Set or replace a property for the frame.

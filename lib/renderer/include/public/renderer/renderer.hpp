@@ -39,11 +39,11 @@ namespace VTX::Renderer
 		/**
 		 * @brief Accessors.
 		 */
-		size_t width() const { return _width; }
+		size_t width() const noexcept { return _width; }
 
-		size_t height() const { return _height; }
+		size_t height() const noexcept { return _height; }
 
-		RenderGraph & graph() { return _graph; }
+		RenderGraph & graph() noexcept { return _graph; }
 
 		/**
 		 * @brief Set graphic context.
@@ -140,12 +140,12 @@ namespace VTX::Renderer
 		/**
 		 * @brief Ask for a render update.
 		 */
-		void setNeedUpdate( const bool ) { _dirtyRenderer |= Cache::E_RENDERER_DIRTY::NEED_UPDATE; }
+		void setNeedUpdate( const bool ) noexcept { _dirtyRenderer |= Cache::E_RENDERER_DIRTY::NEED_UPDATE; }
 
 		/**
 		 * @brief Force update each frame.
 		 */
-		void setForceUpdate( const bool p_value ) { _forceUpdate = p_value; }
+		void setForceUpdate( const bool p_value ) noexcept { _forceUpdate = p_value; }
 
 		/**
 		 * @brief Force update each frame.

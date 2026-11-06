@@ -127,38 +127,41 @@ namespace VTX::Core::Struct
 		/**
 		 * @brief All needed getters.
 		 */
-		Index getChainCount() const { return static_cast<Index>( chainNames.size() ); }
+		Index getChainCount() const noexcept { return static_cast<Index>( chainNames.size() ); }
 
-		Index getResidueCount() const { return static_cast<Index>( residueSymbols.size() ); }
+		Index getResidueCount() const noexcept { return static_cast<Index>( residueSymbols.size() ); }
 
-		Index getAtomCount() const { return static_cast<Index>( atomSymbols.size() ); }
+		Index getAtomCount() const noexcept { return static_cast<Index>( atomSymbols.size() ); }
 
-		Index getBondCount() const { return static_cast<Index>( bondOrders.size() ); }
+		Index getBondCount() const noexcept { return static_cast<Index>( bondOrders.size() ); }
 
-		IndexRange getAtomRange() const { return IndexRange::fromFirstCount( 0, getAtomCount() ); }
+		IndexRange getAtomRange() const noexcept { return IndexRange::fromFirstCount( 0, getAtomCount() ); }
 
-		const std::string & getChainName( const Index p_chainIndex ) const { return chainNames[ p_chainIndex ]; }
+		const std::string & getChainName( const Index p_chainIndex ) const noexcept
+		{ return chainNames[ p_chainIndex ]; }
 
-		IndexRange getChainRange() const { return IndexRange::fromFirstCount( 0, getChainCount() ); }
+		IndexRange getChainRange() const noexcept { return IndexRange::fromFirstCount( 0, getChainCount() ); }
 
-		Index getChainFirstResidue( const Index p_chainIndex ) const { return chainFirstResidues[ p_chainIndex ]; }
+		Index getChainFirstResidue( const Index p_chainIndex ) const noexcept
+		{ return chainFirstResidues[ p_chainIndex ]; }
 
-		Index getChainResidueCount( const Index p_chainIndex ) const { return chainResidueCounts[ p_chainIndex ]; }
+		Index getChainResidueCount( const Index p_chainIndex ) const noexcept
+		{ return chainResidueCounts[ p_chainIndex ]; }
 
-		IndexRange getChainResidueRange( const Index p_chainIndex ) const
+		IndexRange getChainResidueRange( const Index p_chainIndex ) const noexcept
 		{
 			const Index first = getChainFirstResidue( p_chainIndex );
 			const Index count = getChainResidueCount( p_chainIndex );
 			return IndexRange::fromFirstCount( first, count );
 		}
 
-		Index getChainFirstAtom( const Index p_chainIndex ) const
+		Index getChainFirstAtom( const Index p_chainIndex ) const noexcept
 		{
 			const Index firstResidue = getChainFirstResidue( p_chainIndex );
 			return residueFirstAtomIndexes[ firstResidue ];
 		}
 
-		Index getChainAtomCount( const Index p_chainIndex ) const
+		Index getChainAtomCount( const Index p_chainIndex ) const noexcept
 		{
 			const Index firstResidue = getChainFirstResidue( p_chainIndex );
 			const Index residueCount = getChainResidueCount( p_chainIndex );
@@ -172,39 +175,42 @@ namespace VTX::Core::Struct
 			return atomCount;
 		}
 
-		IndexRange getChainAtomRange( const Index p_chainIndex ) const
+		IndexRange getChainAtomRange( const Index p_chainIndex ) const noexcept
 		{
 			const Index firstAtom = getChainFirstAtom( p_chainIndex );
 			const Index count	  = getChainAtomCount( p_chainIndex );
 			return IndexRange::fromFirstCount( firstAtom, count );
 		}
 
-		ChemDB::Residue::SYMBOL getResidueSymbol( const Index p_residueIndex ) const
+		ChemDB::Residue::SYMBOL getResidueSymbol( const Index p_residueIndex ) const noexcept
 		{ return residueSymbols[ p_residueIndex ]; }
 
-		const std::string & getResidueName( const Index p_residueIndex ) const
+		const std::string & getResidueName( const Index p_residueIndex ) const noexcept
 		{ return residueNames[ p_residueIndex ]; }
 
-		Index getResidueChainIndex( const Index p_residueIndex ) const { return residueChainIndexes[ p_residueIndex ]; }
+		Index getResidueChainIndex( const Index p_residueIndex ) const noexcept
+		{ return residueChainIndexes[ p_residueIndex ]; }
 
-		Index getResidueOriginalId( const Index p_residueIndex ) const { return residueOriginalIds[ p_residueIndex ]; }
+		Index getResidueOriginalId( const Index p_residueIndex ) const noexcept
+		{ return residueOriginalIds[ p_residueIndex ]; }
 
-		Index getResidueFirstAtom( const Index p_residueIndex ) const
+		Index getResidueFirstAtom( const Index p_residueIndex ) const noexcept
 		{ return residueFirstAtomIndexes[ p_residueIndex ]; }
 
-		Index getResidueAtomCount( const Index p_residueIndex ) const { return residueAtomCounts[ p_residueIndex ]; }
+		Index getResidueAtomCount( const Index p_residueIndex ) const noexcept
+		{ return residueAtomCounts[ p_residueIndex ]; }
 
-		IndexRange getResidueAtomRange( const Index p_residueIndex ) const
+		IndexRange getResidueAtomRange( const Index p_residueIndex ) const noexcept
 		{
 			const Index first = getResidueFirstAtom( p_residueIndex );
 			const Index count = getResidueAtomCount( p_residueIndex );
 			return IndexRange::fromFirstCount( first, count );
 		}
 
-		const std::vector<Index> & getCategoryResidues( const ChemDB::Category::TYPE p_category ) const
+		const std::vector<Index> & getCategoryResidues( const ChemDB::Category::TYPE p_category ) const noexcept
 		{ return categoryResidues[ toUnderlying( p_category ) ]; }
 
-		ChemDB::Category::TYPE getResidueCategory( const Index p_residueIndex ) const
+		ChemDB::Category::TYPE getResidueCategory( const Index p_residueIndex ) const noexcept
 		{ return residueCategories[ p_residueIndex ]; }
 
 		IndexRangeList getCategoryAtomRangeList( const ChemDB::Category::TYPE p_category ) const
@@ -221,14 +227,15 @@ namespace VTX::Core::Struct
 		IndexRangeList getCategoryAtomRangeList( const Index p_category ) const
 		{ return getCategoryAtomRangeList( static_cast<ChemDB::Category::TYPE>( p_category ) ); }
 
-		ChemDB::SecondaryStructure::TYPE getResidueSecondaryStructureType( const Index p_residueIndex ) const
+		ChemDB::SecondaryStructure::TYPE getResidueSecondaryStructureType( const Index p_residueIndex ) const noexcept
 		{ return residueSecondaryStructureTypes[ p_residueIndex ]; }
 
-		ChemDB::Atom::SYMBOL getAtomSymbol( const Index p_atomIndex ) const { return atomSymbols[ p_atomIndex ]; }
+		ChemDB::Atom::SYMBOL getAtomSymbol( const Index p_atomIndex ) const noexcept
+		{ return atomSymbols[ p_atomIndex ]; }
 
-		const std::string & getAtomName( const Index p_atomIndex ) const { return atomNames[ p_atomIndex ]; }
+		const std::string & getAtomName( const Index p_atomIndex ) const noexcept { return atomNames[ p_atomIndex ]; }
 
-		std::optional<Index> getAtomOriginalIndex( const Index p_atomIndex ) const
+		std::optional<Index> getAtomOriginalIndex( const Index p_atomIndex ) const noexcept
 		{
 			if ( not atomOriginalIndexes )
 			{
@@ -237,23 +244,27 @@ namespace VTX::Core::Struct
 			return ( *atomOriginalIndexes )[ p_atomIndex ];
 		}
 
-		Index getAtomResidueIndex( const Index p_atomIndex ) const { return atomResidueIndexes[ p_atomIndex ]; }
+		Index getAtomResidueIndex( const Index p_atomIndex ) const noexcept
+		{ return atomResidueIndexes[ p_atomIndex ]; }
 
-		Index getAtomChainIndex( const Index p_atomIndex ) const
+		Index getAtomChainIndex( const Index p_atomIndex ) const noexcept
 		{
 			const Index residueIndex = getAtomResidueIndex( p_atomIndex );
 			return getResidueChainIndex( residueIndex );
 		}
 
-		ChemDB::Bond::ORDER getBondOrder( const Index p_bondIndex ) const { return bondOrders[ p_bondIndex ]; }
+		ChemDB::Bond::ORDER getBondOrder( const Index p_bondIndex ) const noexcept { return bondOrders[ p_bondIndex ]; }
 
-		Index getBondFirstAtom( const Index p_bondIndex ) const
+		Index getBondFirstAtom( const Index p_bondIndex ) const noexcept
 		{ return bondPairAtomIndexes[ static_cast<size_t>( p_bondIndex ) * 2 ]; }
 
-		Index getBondSecondAtom( const Index p_bondIndex ) const
+		Index getBondSecondAtom( const Index p_bondIndex ) const noexcept
 		{ return bondPairAtomIndexes[ static_cast<size_t>( p_bondIndex ) * 2 + 1 ]; }
 
-		std::optional<Index> findFirstAtomByName( const Index p_residueIndex, const std::string_view p_name ) const
+		std::optional<Index> findFirstAtomByName(
+			const Index			   p_residueIndex,
+			const std::string_view p_name
+		) const noexcept
 		{
 			for ( Index i : getResidueAtomRange( p_residueIndex ) )
 			{

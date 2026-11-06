@@ -25,7 +25,7 @@ namespace VTX::Util
 		bool has() const
 		{ return has( hash<T>() ); }
 
-		bool has( const Hash & p_hash ) const { return _map.contains( p_hash ); }
+		bool has( const Hash & p_hash ) const noexcept { return _map.contains( p_hash ); }
 
 		template<typename T>
 		T * get() const
@@ -147,16 +147,16 @@ namespace VTX::Util
 		void remove()
 		{ remove( hash<T>() ); }
 
-		void remove( const Hash & p_hash )
+		void remove( const Hash & p_hash ) noexcept
 		{
 			assert( _map.contains( p_hash ) );
 			// Removed if raw ptr (not proprietary), deleted if unique_ptr (proprietary).
 			_map.erase( p_hash );
 		}
 
-		bool empty() const { return _map.empty(); }
+		bool empty() const noexcept { return _map.empty(); }
 
-		void clear() { _map.clear(); }
+		void clear() noexcept { _map.clear(); }
 
 		template<typename T>
 		static Hash hash()
@@ -181,7 +181,7 @@ namespace VTX::Util
 
 		using iterator = std::unordered_map<Hash, C>::iterator;
 
-		auto erase( const iterator & p_it ) { return _map.erase( p_it ); }
+		auto erase( const iterator & p_it ) noexcept { return _map.erase( p_it ); }
 
 	  private:
 		mutable std::unordered_map<Hash, C> _map;

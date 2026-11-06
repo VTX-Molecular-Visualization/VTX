@@ -44,7 +44,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Handles exceptions in Qt event loop.
 		 */
-		bool notify( QObject *, QEvent * ) override;
+		bool notify( QObject *, QEvent * ) noexcept override;
 
 		/**
 		 * @brief Forward tool.

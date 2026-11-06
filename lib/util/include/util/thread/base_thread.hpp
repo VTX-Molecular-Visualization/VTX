@@ -56,7 +56,7 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Checks if the thread has ended.
 		 */
-		bool isFinished() const { return _finished.load( std::memory_order_acquire ); }
+		bool isFinished() const noexcept { return _finished.load( std::memory_order_acquire ); }
 
 		/**
 		 * @brief Checks if the thread has been manually stopped.
@@ -66,17 +66,17 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Returns the id.
 		 */
-		ID getId() const { return _id; }
+		ID getId() const noexcept { return _id; }
 
 		/**
 		 * @brief Returns the progress.
 		 */
-		float getProgress() const { return _progress.load( std::memory_order_relaxed ); }
+		float getProgress() const noexcept { return _progress.load( std::memory_order_relaxed ); }
 
 		/**
 		 * @brief Set the progress.
 		 */
-		void setProgress( float p_value );
+		void setProgress( float p_value ) noexcept;
 
 		/**
 		 * @brief Progress text accessors.

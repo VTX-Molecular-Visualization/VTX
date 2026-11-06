@@ -792,7 +792,7 @@ namespace VTX::Util::Math
 			using value_type		= size_t;
 			using difference_type	= std::ptrdiff_t;
 
-			Iterator( const std::vector<Word> & p_data, const size_t p_wordIndex ) :
+			Iterator( const std::vector<Word> & p_data, const size_t p_wordIndex ) noexcept :
 				_data( &p_data ), _wordIndex( p_wordIndex )
 			{
 				if ( _wordIndex < _data->size() )

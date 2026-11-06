@@ -159,7 +159,7 @@ namespace VTX::App::Action
 		 * main thread.
 		 * @return
 		 */
-		Waiter getWaiter();
+		Waiter getWaiter() noexcept;
 
 	  private:
 		struct _interface
@@ -276,7 +276,7 @@ namespace VTX::App::Action
 			}
 
 		  private:
-			Waiter( std::shared_ptr<_interface> ptr, std::shared_ptr<State> p_state ) :
+			Waiter( std::shared_ptr<_interface> ptr, std::shared_ptr<State> p_state ) noexcept :
 				_ptr( std::move( ptr ) ), _statePtr( std::move( p_state ) )
 			{
 			}

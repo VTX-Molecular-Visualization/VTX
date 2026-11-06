@@ -30,7 +30,7 @@ namespace VTX::App::Input
 		/**
 		 * @brief Constructor.
 		 */
-		InputManager()
+		InputManager() noexcept
 		{
 			clearActions();
 			consume();
@@ -39,9 +39,10 @@ namespace VTX::App::Input
 		/**
 		 * @brief Accessors and mutators.
 		 */
-		bool hasAction( const Action p_action ) const { return _actions[ static_cast<std::size_t>( p_action ) ]; }
+		bool hasAction( const Action p_action ) const noexcept
+		{ return _actions[ static_cast<std::size_t>( p_action ) ]; }
 
-		Vec3i translationAxis() const
+		Vec3i translationAxis() const noexcept
 		{
 			return Vec3i(
 				static_cast<int>( hasAction( Action::MoveRight ) ) - static_cast<int>( hasAction( Action::MoveLeft ) ),
@@ -50,44 +51,44 @@ namespace VTX::App::Input
 					- static_cast<int>( hasAction( Action::MoveFront ) ) );
 		}
 
-		int rotationAxis() const
+		int rotationAxis() const noexcept
 		{
 			return static_cast<int>( hasAction( Action::RotateRight ) )
 				   - static_cast<int>( hasAction( Action::RotateLeft ) );
 		}
 
-		bool accelerate() const { return hasAction( Action::Accelerate ); }
+		bool accelerate() const noexcept { return hasAction( Action::Accelerate ); }
 
-		bool decelerate() const { return hasAction( Action::Decelerate ); }
+		bool decelerate() const noexcept { return hasAction( Action::Decelerate ); }
 
-		const Vec2i & rotate() const { return _rotate; }
+		const Vec2i & rotate() const noexcept { return _rotate; }
 
-		const Vec2i & rotateAlt() const { return _rotateAlt; }
+		const Vec2i & rotateAlt() const noexcept { return _rotateAlt; }
 
-		const Vec2i & pan() const { return _pan; }
+		const Vec2i & pan() const noexcept { return _pan; }
 
-		int zoom() const { return _zoom; }
+		int zoom() const noexcept { return _zoom; }
 
 		/**
 		 * @brief Mutators.
 		 */
-		void setAction( const Action p_action, const bool p_value )
+		void setAction( const Action p_action, const bool p_value ) noexcept
 		{ _actions[ static_cast<std::size_t>( p_action ) ] = p_value; }
 
-		void clearActions() { _actions.fill( false ); }
+		void clearActions() noexcept { _actions.fill( false ); }
 
-		void rotateBy( const Vec2i & p_delta ) { _rotate += p_delta; }
+		void rotateBy( const Vec2i & p_delta ) noexcept { _rotate += p_delta; }
 
-		void rotateAltBy( const Vec2i & p_delta ) { _rotateAlt += p_delta; }
+		void rotateAltBy( const Vec2i & p_delta ) noexcept { _rotateAlt += p_delta; }
 
-		void panBy( const Vec2i & p_delta ) { _pan += p_delta; }
+		void panBy( const Vec2i & p_delta ) noexcept { _pan += p_delta; }
 
-		void zoomBy( const int p_delta ) { _zoom += p_delta; }
+		void zoomBy( const int p_delta ) noexcept { _zoom += p_delta; }
 
 		/**
 		 * @brief Consume data (reset to zero).
 		 */
-		void consume()
+		void consume() noexcept
 		{
 			_rotate	   = Vec2i( 0 );
 			_rotateAlt = Vec2i( 0 );

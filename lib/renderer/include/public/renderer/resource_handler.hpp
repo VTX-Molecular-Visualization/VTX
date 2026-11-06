@@ -124,7 +124,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Clear all resources.
 		 */
-		void clear()
+		void clear() noexcept
 		{
 			_resources.clear();
 			_availables.clear();
@@ -144,9 +144,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Get the number of valid resources.
 		 */
-		size_t size() const { return _resources.size() - _availables.size(); }
+		size_t size() const noexcept { return _resources.size() - _availables.size(); }
 
-		bool empty() const { return size() == 0; }
+		bool empty() const noexcept { return size() == 0; }
 
 		/**
 		 * @brief Access resource by handle.
@@ -217,21 +217,21 @@ namespace VTX::Renderer
 		  public:
 			using VecIter = std::vector<Slot>::iterator;
 
-			iterator( ResourcePool * p_pool, VecIter p_it ) : _pool( p_pool ), _it( p_it ) { skipInvalid(); }
+			iterator( ResourcePool * p_pool, VecIter p_it ) noexcept : _pool( p_pool ), _it( p_it ) { skipInvalid(); }
 
-			iterator & operator++()
+			iterator & operator++() noexcept
 			{
 				++_it;
 				skipInvalid();
 				return *this;
 			}
 
-			bool operator!=( const iterator & p_other ) const { return _it != p_other._it; }
+			bool operator!=( const iterator & p_other ) const noexcept { return _it != p_other._it; }
 
-			T & operator*() const { return _it->get(); }
+			T & operator*() const noexcept { return _it->get(); }
 
 		  private:
-			void skipInvalid()
+			void skipInvalid() noexcept
 			{
 				while ( _it != _pool->_resources.end() && not _it->alive )
 				{
@@ -248,22 +248,22 @@ namespace VTX::Renderer
 		  public:
 			using VecIter = std::vector<Slot>::const_iterator;
 
-			const_iterator( const ResourcePool * p_pool, VecIter p_it ) : _pool( p_pool ), _it( p_it )
+			const_iterator( const ResourcePool * p_pool, VecIter p_it ) noexcept : _pool( p_pool ), _it( p_it )
 			{ skipInvalid(); }
 
-			const_iterator & operator++()
+			const_iterator & operator++() noexcept
 			{
 				++_it;
 				skipInvalid();
 				return *this;
 			}
 
-			bool operator!=( const const_iterator & p_other ) const { return _it != p_other._it; }
+			bool operator!=( const const_iterator & p_other ) const noexcept { return _it != p_other._it; }
 
-			const T & operator*() const { return _it->get(); }
+			const T & operator*() const noexcept { return _it->get(); }
 
 		  private:
-			void skipInvalid()
+			void skipInvalid() noexcept
 			{
 				while ( _it != _pool->_resources.end() && not _it->alive )
 				{
@@ -275,13 +275,13 @@ namespace VTX::Renderer
 			VecIter				 _it;
 		};
 
-		iterator begin() { return iterator( this, _resources.begin() ); }
+		iterator begin() noexcept { return iterator( this, _resources.begin() ); }
 
-		iterator end() { return iterator( this, _resources.end() ); }
+		iterator end() noexcept { return iterator( this, _resources.end() ); }
 
-		const_iterator begin() const { return const_iterator( this, _resources.begin() ); }
+		const_iterator begin() const noexcept { return const_iterator( this, _resources.begin() ); }
 
-		const_iterator end() const { return const_iterator( this, _resources.end() ); }
+		const_iterator end() const noexcept { return const_iterator( this, _resources.end() ); }
 
 		struct EntryRef
 		{
@@ -298,22 +298,23 @@ namespace VTX::Renderer
 		class entry_iterator
 		{
 		  public:
-			entry_iterator( ResourcePool * p_pool, const Desc::Handle p_handle ) : _pool( p_pool ), _handle( p_handle )
+			entry_iterator( ResourcePool * p_pool, const Desc::Handle p_handle ) noexcept :
+				_pool( p_pool ), _handle( p_handle )
 			{ skipInvalid(); }
 
-			entry_iterator & operator++()
+			entry_iterator & operator++() noexcept
 			{
 				++_handle;
 				skipInvalid();
 				return *this;
 			}
 
-			bool operator!=( const entry_iterator & p_other ) const { return _handle != p_other._handle; }
+			bool operator!=( const entry_iterator & p_other ) const noexcept { return _handle != p_other._handle; }
 
-			EntryRef operator*() const { return EntryRef { _handle, _pool->get( _handle ) }; }
+			EntryRef operator*() const noexcept { return EntryRef { _handle, _pool->get( _handle ) }; }
 
 		  private:
-			void skipInvalid()
+			void skipInvalid() noexcept
 			{
 				while ( _handle < _pool->_resources.size() && not _pool->contains( _handle ) )
 				{
@@ -328,23 +329,24 @@ namespace VTX::Renderer
 		class const_entry_iterator
 		{
 		  public:
-			const_entry_iterator( const ResourcePool * p_pool, const Desc::Handle p_handle ) :
+			const_entry_iterator( const ResourcePool * p_pool, const Desc::Handle p_handle ) noexcept :
 				_pool( p_pool ), _handle( p_handle )
 			{ skipInvalid(); }
 
-			const_entry_iterator & operator++()
+			const_entry_iterator & operator++() noexcept
 			{
 				++_handle;
 				skipInvalid();
 				return *this;
 			}
 
-			bool operator!=( const const_entry_iterator & p_other ) const { return _handle != p_other._handle; }
+			bool operator!=( const const_entry_iterator & p_other ) const noexcept
+			{ return _handle != p_other._handle; }
 
-			ConstEntryRef operator*() const { return ConstEntryRef { _handle, _pool->get( _handle ) }; }
+			ConstEntryRef operator*() const noexcept { return ConstEntryRef { _handle, _pool->get( _handle ) }; }
 
 		  private:
-			void skipInvalid()
+			void skipInvalid() noexcept
 			{
 				while ( _handle < _pool->_resources.size() && not _pool->contains( _handle ) )
 				{
@@ -360,9 +362,9 @@ namespace VTX::Renderer
 		{
 			ResourcePool * pool;
 
-			entry_iterator begin() { return entry_iterator( pool, 0 ); }
+			entry_iterator begin() noexcept { return entry_iterator( pool, 0 ); }
 
-			entry_iterator end()
+			entry_iterator end() noexcept
 			{ return entry_iterator( pool, static_cast<Desc::Handle>( pool->_resources.size() ) ); }
 		};
 
@@ -370,15 +372,15 @@ namespace VTX::Renderer
 		{
 			const ResourcePool * pool;
 
-			const_entry_iterator begin() const { return const_entry_iterator( pool, 0 ); }
+			const_entry_iterator begin() const noexcept { return const_entry_iterator( pool, 0 ); }
 
-			const_entry_iterator end() const
+			const_entry_iterator end() const noexcept
 			{ return const_entry_iterator( pool, static_cast<Desc::Handle>( pool->_resources.size() ) ); }
 		};
 
-		Entries entries() { return Entries { this }; }
+		Entries entries() noexcept { return Entries { this }; }
 
-		ConstEntries entries() const { return ConstEntries { this }; }
+		ConstEntries entries() const noexcept { return ConstEntries { this }; }
 
 	  protected:
 		template<typename... Args>

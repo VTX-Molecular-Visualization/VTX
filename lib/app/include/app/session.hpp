@@ -54,7 +54,7 @@ namespace VTX::App
 		/**
 		 * @brief Does the application have an update manager available (not in dev mode).
 		 */
-		bool hasManager() const;
+		bool hasManager() const noexcept;
 
 		/**
 		 * @brief Is this version portable.
