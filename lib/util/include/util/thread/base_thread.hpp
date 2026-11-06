@@ -61,7 +61,11 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Checks if the thread has been manually stopped.
 		 */
-		bool isManuallyStopped() const { return _stopped.load(); }
+		bool isManuallyStopped() const noexcept { return _stopped.load(); }
+
+		bool hasFailed() const noexcept { return _failed.load( std::memory_order_acquire ); }
+
+		void setFailed() noexcept { _failed.store( true, std::memory_order_release ); }
 
 		/**
 		 * @brief Returns the id.
@@ -135,6 +139,7 @@ namespace VTX::Util::Thread
 		 * @brief Flag as stopped.
 		 */
 		std::atomic<bool> _stopped = false;
+		std::atomic<bool> _failed  = false;
 
 		/**
 		 * @brief Mutex for progress text.

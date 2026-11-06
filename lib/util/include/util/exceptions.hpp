@@ -4,7 +4,6 @@
 #include <fmt/format.h>
 #include <stdexcept>
 #include <string>
-#include <string_view>
 #include <utility>
 
 namespace VTX
@@ -13,9 +12,11 @@ namespace VTX
 	{
 	  protected:
 		template<typename... Args>
-		explicit Exception( const std::string & p_prepend, const std::string_view & p_fmt, Args &&... p_args ) :
-			std::runtime_error(
-				formatMessage( p_prepend, fmt::format( fmt::runtime( p_fmt ), std::forward<Args>( p_args )... ) ) )
+		explicit Exception(
+			const std::string &				  p_prepend,
+			const fmt::format_string<Args...> p_fmt,
+			Args &&... p_args
+		) : std::runtime_error( formatMessage( p_prepend, fmt::format( p_fmt, std::forward<Args>( p_args )... ) ) )
 		{
 		}
 
@@ -33,7 +34,7 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit VTXException( const std::string_view & p_fmt, Args &&... p_args ) :
+		explicit VTXException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
 			Exception( "VTX", p_fmt, std::forward<Args>( p_args )... )
 		{
 		}
@@ -45,7 +46,7 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit GraphicException( const std::string_view & p_fmt, Args &&... p_args ) :
+		explicit GraphicException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
 			Exception( "3D", p_fmt, std::forward<Args>( p_args )... )
 
 		{
@@ -58,7 +59,7 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit HTTPException( const std::string_view & p_fmt, Args &&... p_args ) :
+		explicit HTTPException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
 			Exception( "HTTP", p_fmt, std::forward<Args>( p_args )... )
 
 		{
@@ -71,7 +72,7 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit IOException( const std::string_view & p_fmt, Args &&... p_args ) :
+		explicit IOException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
 			Exception( "IO", p_fmt, std::forward<Args>( p_args )... )
 
 		{
@@ -84,7 +85,7 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit MathException( const std::string_view & p_fmt, Args &&... p_args ) :
+		explicit MathException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
 			Exception( "MATH", p_fmt, std::forward<Args>( p_args )... )
 
 		{
@@ -97,7 +98,7 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit LibException( const std::string_view & p_fmt, Args &&... p_args ) :
+		explicit LibException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
 			Exception( "LIB", p_fmt, std::forward<Args>( p_args )... )
 
 		{
@@ -110,7 +111,7 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit PythonWrapperException( const std::string_view & p_fmt, Args &&... p_args ) :
+		explicit PythonWrapperException( const fmt::format_string<Args...> p_fmt, Args &&... p_args ) :
 			Exception( "WRAPPER", p_fmt, std::forward<Args>( p_args )... )
 
 		{
@@ -123,10 +124,11 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit CommandException( const std::string & p_command, const std::string_view & p_fmt, Args &&... p_args ) :
-			Exception(
-				"COMMAND",
-				formatMessage( p_command, fmt::format( fmt::runtime( p_fmt ), std::forward<Args>( p_args )... ) ) )
+		explicit CommandException(
+			const std::string &				  p_command,
+			const fmt::format_string<Args...> p_fmt,
+			Args &&... p_args
+		) : Exception( "COMMAND", formatMessage( p_command, fmt::format( p_fmt, std::forward<Args>( p_args )... ) ) )
 
 		{
 		}
@@ -145,12 +147,11 @@ namespace VTX
 	{
 	  public:
 		template<typename... Args>
-		explicit ScriptException( const std::string &	   p_scriptPath,
-								  const std::string_view & p_fmt,
-								  Args &&... p_args ) :
-			Exception(
-				"SCRIPT",
-				formatMessage( p_scriptPath, fmt::format( fmt::runtime( p_fmt ), std::forward<Args>( p_args )... ) ) )
+		explicit ScriptException(
+			const std::string &				  p_scriptPath,
+			const fmt::format_string<Args...> p_fmt,
+			Args &&... p_args
+		) : Exception( "SCRIPT", formatMessage( p_scriptPath, fmt::format( p_fmt, std::forward<Args>( p_args )... ) ) )
 		{
 		}
 
@@ -167,7 +168,6 @@ namespace VTX
 	class NotImplementedException : public VTXException
 	{
 	  public:
-		template<typename... Args>
 		explicit NotImplementedException() : VTXException( "feature not implemented" )
 
 		{

@@ -141,7 +141,7 @@ namespace VTX::Util
 		class Forward
 		{
 		  public:
-			Forward( uint p_stepNum, uint p_startingStep = 0 );
+			Forward( uint p_stepNum, uint p_startingStep = 0 ) noexcept;
 			void jumpTo( const uint & p_step ) noexcept;
 			void next( uint & p_out ) const noexcept;
 			void next( const uint & p_incr, uint & p_out ) const noexcept;
@@ -158,7 +158,7 @@ namespace VTX::Util
 		class ForwardLoop
 		{
 		  public:
-			ForwardLoop( uint p_stepNum, uint p_startingStep = 0 );
+			ForwardLoop( uint p_stepNum, uint p_startingStep = 0 ) noexcept;
 			void jumpTo( const uint & p_step ) noexcept;
 			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;
@@ -175,7 +175,7 @@ namespace VTX::Util
 		class Backward
 		{
 		  public:
-			Backward( uint p_stepNum, uint p_startingStep = 0 );
+			Backward( uint p_stepNum, uint p_startingStep = 0 ) noexcept;
 			void jumpTo( const uint & p_step ) noexcept;
 			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;
@@ -192,7 +192,7 @@ namespace VTX::Util
 		class BackwardLoop
 		{
 		  public:
-			BackwardLoop( uint p_stepNum, uint p_startingStep = 0 );
+			BackwardLoop( uint p_stepNum, uint p_startingStep = 0 ) noexcept;
 			void jumpTo( const uint & p_step ) noexcept;
 			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;
@@ -209,7 +209,7 @@ namespace VTX::Util
 		class PingPong
 		{
 		  public:
-			PingPong( uint p_stepNum, uint p_startingStep = 0 );
+			PingPong( uint p_stepNum, uint p_startingStep = 0 ) noexcept;
 			void jumpTo( const uint & p_step ) noexcept;
 			void next( const uint & p_incr, uint & p_out ) const noexcept;
 			void next( uint & p_out ) const noexcept;

@@ -1,4 +1,5 @@
 #include "util/network.hpp"
+#include "util/logger.hpp"
 #include <cpr/cpr.h>
 
 namespace
@@ -17,22 +18,40 @@ namespace VTX::Util::Network
 {
 	void httpRequestGet( const std::string_view & p_url, std::string & p_text, const ProgressCallback & p_progress )
 	{
-		cpr::Response response = cpr::Get( cpr::Url { p_url },
-										   cpr::ProgressCallback(
-											   [ &p_progress ]( cpr::cpr_off_t p_downloadTotal,
-																cpr::cpr_off_t p_downloadNow,
-																cpr::cpr_off_t,
-																cpr::cpr_off_t,
-																intptr_t ) -> bool
-											   {
-												   if ( p_progress )
-												   {
-													   return p_progress( static_cast<size_t>( p_downloadNow ),
-																		  static_cast<size_t>( p_downloadTotal ) );
-												   }
-												   return true;
-											   } ),
-										   cpr::Ssl( cpr::ssl::MaxTLSVersion {} ) );
+		cpr::Response response = cpr::Get(
+			cpr::Url { p_url },
+			cpr::ProgressCallback(
+				[ &p_progress ](
+					cpr::cpr_off_t p_downloadTotal,
+					cpr::cpr_off_t p_downloadNow,
+					cpr::cpr_off_t,
+					cpr::cpr_off_t,
+					intptr_t
+				) noexcept -> bool
+				{
+					try
+					{
+						if ( p_progress )
+						{
+							return p_progress(
+								static_cast<size_t>( p_downloadNow ), static_cast<size_t>( p_downloadTotal )
+							);
+						}
+						return true;
+					}
+					catch ( const std::exception & p_e )
+					{
+						VTX_ERROR( "Download progress callback failed: {}", p_e.what() );
+					}
+					catch ( ... )
+					{
+						VTX_ERROR( "Download progress callback failed: unknown exception" );
+					}
+					return false;
+				}
+			),
+			cpr::Ssl( cpr::ssl::MaxTLSVersion {} )
+		);
 
 		checkResponse( response );
 		p_text = std::move( response.text );

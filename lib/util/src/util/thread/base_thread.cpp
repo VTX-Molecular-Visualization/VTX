@@ -17,7 +17,18 @@ namespace VTX::Util::Thread
 		if ( _thread.joinable() )
 		{
 			_thread.request_stop();
-			_thread.join();
+			try
+			{
+				_thread.join();
+			}
+			catch ( ... )
+			{
+				LOGGER::logException( "Failed to join thread" );
+				if ( _thread.joinable() )
+				{
+					_thread.detach();
+				}
+			}
 		}
 	}
 
@@ -38,10 +49,12 @@ namespace VTX::Util::Thread
 				catch ( const std::exception & p_e )
 				{
 					VTX_ERROR( "Unhandled exception in thread: {}", p_e.what() );
+					setFailed();
 				}
 				catch ( ... )
 				{
 					VTX_ERROR( "Unhandled unknown exception in thread" );
+					setFailed();
 				}
 				_finished.store( true, std::memory_order_release );
 			} );
@@ -59,7 +72,14 @@ namespace VTX::Util::Thread
 	void BaseThread::stop()
 	{
 		_stopped.store( true );
-		_manager._cancelSynchronizedCalls( _id );
+		try
+		{
+			_manager._cancelSynchronizedCalls( _id );
+		}
+		catch ( ... )
+		{
+			LOGGER::logException( "Failed to cancel thread synchronized calls" );
+		}
 		if ( _thread.joinable() )
 		{
 			_thread.request_stop();

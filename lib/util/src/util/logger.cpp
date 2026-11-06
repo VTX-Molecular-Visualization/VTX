@@ -120,6 +120,10 @@ namespace VTX::Util
 		{
 			throw LibException( "Logger initialization failed : " + std::string( p_e.what() ) );
 		}
+		catch ( const std::filesystem::filesystem_error & p_e )
+		{
+			throw LibException( "Logger initialization failed : " + std::string( p_e.what() ) );
+		}
 	}
 
 	void Logger::setCallback( std::function<void( const LogInfo & )> p_callback )
@@ -134,6 +138,40 @@ namespace VTX::Util
 		if ( auto logger = spdlog::get( std::string( NAME ) ) )
 		{
 			logger->flush();
+		}
+	}
+
+	bool Logger::isInitialized() noexcept
+	{
+		try
+		{
+			return spdlog::get( std::string( NAME ) ) != nullptr;
+		}
+		catch ( ... )
+		{
+			return false;
+		}
+	}
+
+	void Logger::logException( const std::string_view p_context, const std::exception_ptr & p_error ) noexcept
+	{
+		if ( not p_error )
+		{
+			VTX_ERROR( "{}: no active exception", p_context );
+			return;
+		}
+
+		try
+		{
+			std::rethrow_exception( p_error );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "{}: {}", p_context, p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "{}: unknown exception", p_context );
 		}
 	}
 

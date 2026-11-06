@@ -45,7 +45,7 @@ TEST_CASE( "Util::String", "[unit]" )
 	CHECK( VTX::Util::String::replaceFirst( "[token][token]", "[token]", "id" ) == "id[token]" );
 	CHECK( VTX::Util::String::replaceFirst( "abc", "b", "long" ) == "alongc" );
 	CHECK( VTX::Util::String::replaceFirst( "abc", "b", "" ) == "ac" );
-	CHECK_THROWS_AS( VTX::Util::String::replaceFirst( "abc", "missing", "id" ), std::out_of_range );
+	CHECK( VTX::Util::String::replaceFirst( "abc", "missing", "id" ) == "abc" );
 
 	const float f = 3.14159;
 	CHECK( VTX::Util::String::floatToStr( f, 0 ) == "3" );

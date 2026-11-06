@@ -4,8 +4,8 @@
 
 namespace VTX::Util::Players
 {
-	Forward::Forward( uint p_stepNum, uint p_startingStep ) :
-		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	Forward::Forward( uint p_stepNum, uint p_startingStep ) noexcept :
+		_lastIndex( p_stepNum > 0 ? p_stepNum - 1 : 0 ), _currentStep( p_startingStep )
 	{
 	}
 
@@ -28,8 +28,8 @@ namespace VTX::Util::Players
 		_currentStep = std::min( _currentStep, _lastIndex );
 	}
 
-	ForwardLoop::ForwardLoop( uint p_stepNum, uint p_startingStep ) :
-		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	ForwardLoop::ForwardLoop( uint p_stepNum, uint p_startingStep ) noexcept :
+		_lastIndex( p_stepNum > 0 ? p_stepNum - 1 : 0 ), _currentStep( p_startingStep )
 	{
 	}
 
@@ -53,8 +53,8 @@ namespace VTX::Util::Players
 		_currentStep = std::min( _currentStep, _lastIndex );
 	}
 
-	Backward::Backward( uint p_stepNum, uint p_startingStep ) :
-		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	Backward::Backward( uint p_stepNum, uint p_startingStep ) noexcept :
+		_lastIndex( p_stepNum > 0 ? p_stepNum - 1 : 0 ), _currentStep( p_startingStep )
 	{
 	}
 
@@ -78,8 +78,8 @@ namespace VTX::Util::Players
 		_currentStep = std::min( _currentStep, _lastIndex );
 	}
 
-	BackwardLoop::BackwardLoop( uint p_stepNum, uint p_startingStep ) :
-		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	BackwardLoop::BackwardLoop( uint p_stepNum, uint p_startingStep ) noexcept :
+		_lastIndex( p_stepNum > 0 ? p_stepNum - 1 : 0 ), _currentStep( p_startingStep )
 	{
 	}
 
@@ -110,8 +110,8 @@ namespace VTX::Util::Players
 		_currentStep = std::min( _currentStep, _lastIndex );
 	}
 
-	PingPong::PingPong( uint p_stepNum, uint p_startingStep ) :
-		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	PingPong::PingPong( uint p_stepNum, uint p_startingStep ) noexcept :
+		_lastIndex( p_stepNum > 0 ? p_stepNum - 1 : 0 ), _currentStep( p_startingStep )
 	{
 	}
 

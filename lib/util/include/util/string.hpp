@@ -38,8 +38,12 @@ namespace VTX::Util::String
 		const std::string & p_replacement
 	)
 	{
-		std::string result = p_str;
-		result.replace( result.find( p_toReplace ), p_toReplace.size(), p_replacement );
+		std::string	 result	  = p_str;
+		const size_t position = result.find( p_toReplace );
+		if ( position != std::string::npos )
+		{
+			result.replace( position, p_toReplace.size(), p_replacement );
+		}
 		return result;
 	}
 

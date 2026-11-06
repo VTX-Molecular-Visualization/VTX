@@ -2,6 +2,7 @@
 #define VTX_UTIL_LOGGER_HPP
 
 #include "util/enum.hpp"
+#include <exception>
 #include <functional>
 #include <memory>
 #include <spdlog/spdlog.h>
@@ -60,6 +61,11 @@ namespace VTX
 			static void init( const FilePath & p_logDir, bool p_debug = false );
 
 			/**
+			 * @brief Check init state.
+			 */
+			static bool isInitialized() noexcept;
+
+			/**
 			 * @brief Log a message with a specific log level and hint.
 			 */
 			static void log( const LOG_LEVEL p_lvl, const LOG_HINT p_hint, const std::string_view p_msg ) noexcept
@@ -91,6 +97,14 @@ namespace VTX
 					std::forward<Args>( p_args )...
 				);
 			}
+
+			/**
+			 * @brief Log current exception.
+			 */
+			static void logException(
+				std::string_view		   p_context,
+				const std::exception_ptr & p_error = std::current_exception()
+			) noexcept;
 
 			/**
 			 * @brief Flush the logger (async).

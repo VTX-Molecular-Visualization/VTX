@@ -119,16 +119,26 @@ namespace VTX::Util::Image
 		case E_FORMAT::PNG:
 			path += ".png";
 			stbi_write_png_compression_level = 0;
-			stbi_write_png(
-				path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 0 );
+			if ( stbi_write_png(
+					 path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 0
+				 )
+				 == 0 )
+			{
+				throw std::runtime_error( "Unable to write image '" + path.string() + "'" );
+			}
 			break;
 		case E_FORMAT::JPEG:
 			path += ".jpg";
-			stbi_write_jpg(
-				path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 100 );
+			if ( stbi_write_jpg(
+					 path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 100
+				 )
+				 == 0 )
+			{
+				throw std::runtime_error( "Unable to write image '" + path.string() + "'" );
+			}
 			break;
 
-		default: assert( 1 ); ;
+		default: throw std::runtime_error( "Unsupported image format" );
 		}
 
 		return path;

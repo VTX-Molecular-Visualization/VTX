@@ -4,6 +4,7 @@
 #include "concepts.hpp"
 #include <mutex>
 #include <optional>
+#include <type_traits>
 #include <util/exceptions.hpp>
 
 namespace VTX::Util

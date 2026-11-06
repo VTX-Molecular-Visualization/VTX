@@ -15,14 +15,35 @@ namespace VTX::Util::Thread
 
 	ThreadManager::~ThreadManager()
 	{
-		_cancelSynchronizedCalls();
-		for ( const std::shared_ptr<BaseThread> & thread : _threads )
+		try
 		{
-			thread->stop();
+			_cancelSynchronizedCalls();
+		}
+		catch ( ... )
+		{
+			LOGGER::logException( "Failed to cancel synchronized calls" );
 		}
 		for ( const std::shared_ptr<BaseThread> & thread : _threads )
 		{
-			thread->wait();
+			try
+			{
+				thread->stop();
+			}
+			catch ( ... )
+			{
+				LOGGER::logException( "Failed to stop thread" );
+			}
+		}
+		for ( const std::shared_ptr<BaseThread> & thread : _threads )
+		{
+			try
+			{
+				thread->wait();
+			}
+			catch ( ... )
+			{
+				LOGGER::logException( "Failed to wait for thread" );
+			}
 		}
 		_threads.clear();
 	}
@@ -51,7 +72,7 @@ namespace VTX::Util::Thread
 		};
 
 		std::list<SynchronizedCall> calls;
-		std::list<DispatchedCall>	 dispatchedCalls;
+		std::list<DispatchedCall>	dispatchedCalls;
 		{
 			const std::scoped_lock lock( _synchronizedCallsMutex );
 			calls.splice( calls.end(), _synchronizedCalls );
@@ -107,8 +128,10 @@ namespace VTX::Util::Thread
 		}
 	}
 
-	BaseThread & ThreadManager::createThread( const BaseThread::AsyncOp &	  p_asyncOp,
-											  const BaseThread::EndCallback & p_callback )
+	BaseThread & ThreadManager::createThread(
+		const BaseThread::AsyncOp &		p_asyncOp,
+		const BaseThread::EndCallback & p_callback
+	)
 	{
 		const std::shared_ptr<BaseThread> thread( new BaseThread( *this ) );
 		_threads.emplace_back( thread );
