@@ -24,18 +24,7 @@ namespace VTX::UI::QT
 			}
 		}
 		// const std::string str = input.toStdString();
-		try
-		{
-			// const uint64_t unused = std::stoull( str );
-		}
-		catch ( std::invalid_argument & )
-		{
-			return State::Invalid;
-		}
-		catch ( std::out_of_range & )
-		{
-			return State::Invalid;
-		}
+		// const uint64_t unused = std::stoull( str );
 		return State::Acceptable;
 	}
 } // namespace VTX::UI::QT

@@ -363,11 +363,11 @@ namespace VTX::UI::QT::Util
 		{
 			p_dest = std::stoull( p_src->text().toStdString() );
 		}
-		catch ( std::invalid_argument & )
+		catch ( const std::invalid_argument & )
 		{
 			p_dest = UINT64_MAX;
 		}
-		catch ( std::out_of_range & )
+		catch ( const std::out_of_range & )
 		{
 			p_dest = UINT64_MAX;
 		}

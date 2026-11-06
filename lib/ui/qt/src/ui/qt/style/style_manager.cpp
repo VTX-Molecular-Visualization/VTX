@@ -86,6 +86,7 @@ namespace VTX::UI::QT::Style
 		_themePalettes[ toUnderlying( E_THEME::DARK ) ]	  = _makeDarkPalette();
 
 		// Load theme from settings.
+		bool restored = false;
 		try
 		{
 			const QString themeName = SETTINGS().value( SETTING_KEY_THEME, "" ).toString();
@@ -101,10 +102,18 @@ namespace VTX::UI::QT::Style
 				setFontFamily( SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY.toString() ).toString() );
 			}
 			setTheme( theme );
+			restored = true;
 		}
 		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "Failed to restore style from settings: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Failed to restore style from settings: unknown exception" );
+		}
+		if ( not restored )
+		{
 			setFontFamily( DEFAULT_FONT_FAMILY );
 			setTheme( DEFAULT_THEME );
 		}

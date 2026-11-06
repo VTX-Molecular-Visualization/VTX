@@ -7,14 +7,23 @@
 
 namespace VTX::UI::QT::Widget
 {
+	/**
+	 * @brief Custom color picker.
+	 */
 	class ColorPicker : public QPushButton
 	{
 		Q_OBJECT
 
 	  public:
+		/**
+		 * @brief Constructors.
+		 */
 		ColorPicker( QWidget * );
 		ColorPicker( const QColor &, QWidget * );
 
+		/**
+		 * @brief Accessors.
+		 */
 		const QColor & getColor() const { return _color; }
 
 		QColor getColor() { return _color; }
@@ -22,9 +31,15 @@ namespace VTX::UI::QT::Widget
 		void setColor( const QColor & );
 
 	  signals:
+		/**
+		 * @brief Color changed.
+		 */
 		void colorChanged( const QColor & );
 
 	  private:
+		/**
+		 * @brief Actual color.
+		 */
 		QColor _color;
 	};
 } // namespace VTX::UI::QT::Widget

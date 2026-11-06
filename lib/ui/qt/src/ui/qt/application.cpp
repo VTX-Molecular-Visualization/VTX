@@ -12,6 +12,7 @@
 #include <app/ecs.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
+#include <cstdlib>
 #include <memory>
 #include <renderer/renderer.hpp>
 #include <ui/qt/actions.hpp>
@@ -50,7 +51,7 @@ namespace VTX::UI::QT
 		connect(
 			this,
 			&QCoreApplication::aboutToQuit,
-			[]
+			[]() noexcept
 			{
 				VTX_TRACE( "QCoreApplication::aboutToQuit" );
 				try
@@ -73,7 +74,7 @@ namespace VTX::UI::QT
 		connect(
 			&_timer,
 			&QTimer::timeout,
-			[ this ] { _app.update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
+			[ this ]() noexcept { _app.update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
 		);
 		LOGGER::setCallback( [ &hub = App::HUB() ]( const Util::LogInfo & p_logInfo )
 							 { hub.enqueue<Util::LogInfo>( p_logInfo ); } );
@@ -106,16 +107,21 @@ namespace VTX::UI::QT
 		{
 			VTX_ERROR( "Failed to save settings: {}", e.what() );
 		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Failed to save settings: unknown exception" );
+		}
 	}
 
-	void Application::start()
+	int Application::start()
 	{
 		QTimer::singleShot( 0, this, &Application::_postQtStartup );
 
 		// Run Qt main loop.
-		exec();
+		const int exitCode = exec();
 		VTX_TRACE( "Application::start(): Qt loop exited" );
 		_timer.stop();
+		return exitCode;
 	}
 
 	void Application::stop()
@@ -218,12 +224,12 @@ namespace VTX::UI::QT
 		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "Startup failed: {}", p_e.what() );
-			QCoreApplication::quit();
+			QCoreApplication::exit( EXIT_FAILURE );
 		}
 		catch ( ... )
 		{
 			VTX_ERROR( "Unknown exception during startup" );
-			QCoreApplication::quit();
+			QCoreApplication::exit( EXIT_FAILURE );
 		}
 	}
 } // namespace VTX::UI::QT

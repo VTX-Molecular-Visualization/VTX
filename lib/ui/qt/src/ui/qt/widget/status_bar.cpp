@@ -65,8 +65,7 @@ namespace VTX::UI::QT::Widget
 		addPermanentWidget( _python );
 
 		// Update vendor when renderer is available.
-		_rendererReadyConnection
-			= App::HUB().connect<App::Events::RendererReady, &StatusBar::_rendererReady>( this );
+		_rendererReadyConnection = App::HUB().connect<App::Events::RendererReady, &StatusBar::_rendererReady>( this );
 
 		// Update FPS each second.
 		auto * timer = Helper::makeQObject<QTimer>( this );

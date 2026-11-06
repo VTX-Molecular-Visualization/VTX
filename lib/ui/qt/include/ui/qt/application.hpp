@@ -34,7 +34,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Run the main loop.
 		 */
-		void start();
+		int start();
 
 		/**
 		 * @brief Exit the main loop.
