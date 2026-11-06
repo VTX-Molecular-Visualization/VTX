@@ -61,16 +61,6 @@ namespace VTX::App::Extractor
 	{
 		void deliver( Pending & p_data );
 
-		size_t _getCurrentAtomPositionCount( const Core::Struct::Trajectory & p_trajectory ) noexcept
-		{
-			if ( p_trajectory.frames.empty() )
-			{
-				return 0;
-			}
-
-			return p_trajectory.frames[ 0 ].size();
-		}
-
 		/**
 		 * @brief Event triggered with the end of the deliver free function.
 		 */
@@ -331,7 +321,7 @@ namespace VTX::App::Extractor
 				}
 
 				auto &		 topology		  = REG().get<Core::Struct::Topology>( p_data.entity.value() );
-				const size_t pendingAtomCount = _getCurrentAtomPositionCount( p_data.trajectory );
+				const size_t pendingAtomCount = p_data.trajectory.getAtomCount();
 
 				if ( topology.getAtomCount() == pendingAtomCount )
 				{

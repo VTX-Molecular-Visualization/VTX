@@ -32,6 +32,16 @@ namespace VTX::Core::Struct
 		 * @brief Storage.
 		 */
 		std::vector<Frame> frames;
+
+		size_t getAtomCount() const noexcept
+		{
+			if ( frames.empty() )
+			{
+				return 0;
+			}
+
+			return frames[ 0 ].size();
+		}
 	};
 
 } // namespace VTX::Core::Struct
