@@ -112,7 +112,9 @@ namespace VTX::App::Action::Selection
 			const bool						  p_selected = true,
 			const bool						  p_append	 = false
 		)
-		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_selected, p_append ); }
+		{
+			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_selected, p_append );
+		}
 
 		inline void execute(
 			const Entity					  p_ent,
@@ -121,7 +123,9 @@ namespace VTX::App::Action::Selection
 			const bool						  p_selected = true,
 			const bool						  p_append	 = false
 		)
-		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_selected, p_append ); }
+		{
+			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_selected, p_append );
+		}
 
 		inline void execute(
 			const Entity					  p_ent,
@@ -130,7 +134,9 @@ namespace VTX::App::Action::Selection
 			const bool						  p_selected = true,
 			const bool						  p_append	 = false
 		)
-		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_selected, p_append ); }
+		{
+			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_selected, p_append );
+		}
 	};
 
 	struct SelectAll
@@ -203,11 +209,6 @@ namespace VTX::App::Action::Selection
 	struct ExtendSelectionFromNonSelec
 	{
 		void execute( const float threshold );
-	};
-
-	struct Mapping
-	{
-		void execute( const Entity system );
 	};
 } // namespace VTX::App::Action::Selection
 
