@@ -11,6 +11,7 @@
 #include "renderer/builder/post_process/ssao.hpp"
 #include "renderer/builder/post_process/tone_mapping.hpp"
 #include "renderer/graphics_config.hpp"
+#include <utility>
 
 namespace VTX::Renderer::Builder
 {
@@ -582,9 +583,13 @@ namespace VTX::Renderer::Builder
 			return false;
 		}
 
+		RenderGraph graph;
+		graph.set( DefaultRenderGraph::build( config, p_layouts, p_geometries ) );
+		Desc::RenderQueue queue = graph.build();
+
+		p_graph			= std::move( graph );
+		p_queue			= std::move( queue );
 		p_currentConfig = config;
-		p_graph.set( DefaultRenderGraph::build( config, p_layouts, p_geometries ) );
-		p_queue = p_graph.build();
 
 		return true;
 	}

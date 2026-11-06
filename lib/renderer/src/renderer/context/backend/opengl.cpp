@@ -1429,6 +1429,10 @@ namespace VTX::Renderer::Context::Backend
 	{
 		auto refs	  = std::to_array<Desc::BufferRef>( { p_ref } );
 		auto mappings = mapInteropBuffers( p_api, refs );
+		if ( mappings.empty() )
+		{
+			throw GraphicException( "Could not map interop buffer '{}'", p_ref.key );
+		}
 		assert( mappings.size() == 1 );
 
 		return std::move( mappings.front() );
@@ -1471,13 +1475,20 @@ namespace VTX::Renderer::Context::Backend
 		}
 		catch ( ... )
 		{
-			for ( const Desc::InteropBufferMapping & mapping : result )
-			{
-				_cudaInterop.unmapBuffer( mapping.key );
-			}
 			for ( const Desc::Key & cleanupKey : p_keys )
 			{
-				_cudaInterop.unregisterBuffer( cleanupKey );
+				try
+				{
+					_cudaInterop.unregisterBuffer( cleanupKey );
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "Failed to unregister CUDA buffer '{}': {}", cleanupKey, p_e.what() );
+				}
+				catch ( ... )
+				{
+					VTX_ERROR( "Failed to unregister CUDA buffer '{}': unknown exception", cleanupKey );
+				}
 			}
 			throw;
 		}

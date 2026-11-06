@@ -87,10 +87,15 @@ namespace VTX::Renderer::Context
 
 			if constexpr ( std::is_empty_v<Payload> )
 			{
+				static_assert( noexcept( p_executor.execute( Payload {} ) ), "Executor commands must be noexcept." );
 				p_executor.execute( Payload {} );
 			}
 			else
 			{
+				static_assert(
+					noexcept( p_executor.execute( p_commands.getPayload<Payload>( p_command.payloadOffset ) ) ),
+					"Executor commands must be noexcept."
+				);
 				p_executor.execute( p_commands.getPayload<Payload>( p_command.payloadOffset ) );
 			}
 		}
@@ -372,6 +377,10 @@ namespace VTX::Renderer::Context
 	{
 		auto refs	  = std::to_array<Desc::BufferRef>( { p_ref } );
 		auto mappings = mapInteropBuffers( p_api, refs );
+		if ( mappings.empty() )
+		{
+			throw GraphicException( "Could not map interop buffer '{}'", p_ref.key );
+		}
 		assert( mappings.size() == 1 );
 		return std::move( mappings.front() );
 	}

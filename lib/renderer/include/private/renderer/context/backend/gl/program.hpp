@@ -55,18 +55,26 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			create( name );
 
-			for ( const FilePath & shader : paths )
+			try
 			{
-				const GLuint id = _createShader( p_rootPath / shader, p_toInject, p_suffix );
-				if ( id != GL_INVALID_INDEX )
+				for ( const FilePath & shader : paths )
 				{
-					attachShader( id );
+					const GLuint id = _createShader( p_rootPath / shader, p_toInject, p_suffix );
+					if ( id != GL_INVALID_INDEX )
+					{
+						attachShader( id );
+					}
 				}
+
+				assert( glIsProgram( _id ) );
+
+				link();
 			}
-
-			assert( glIsProgram( _id ) );
-
-			link();
+			catch ( ... )
+			{
+				destroy();
+				throw;
+			}
 
 			VTX_TRACE( "Program {} created: {}", _id, p_name );
 		}
@@ -137,7 +145,7 @@ namespace VTX::Renderer::Context::Backend::GL
 				error += _name;
 				error += "\n";
 				error += Debug::getProgramErrors( _id );
-				glDeleteProgram( _id );
+				destroy();
 				throw GraphicException( error );
 			}
 		}
@@ -214,24 +222,33 @@ namespace VTX::Renderer::Context::Backend::GL
 			VTX_TRACE( "Creating shader: {}", name );
 
 			GLuint		shaderId = glCreateShader( static_cast<GLenum>( type ) );
-			std::string src		 = Util::Filesystem::readPath( p_path );
-			if ( src.empty() )
+			std::string src;
+			try
+			{
+				src = Util::Filesystem::readPath( p_path );
+				if ( src.empty() )
+				{
+					glDeleteShader( shaderId );
+					return GL_INVALID_INDEX;
+				}
+
+				// Handle injection (after #version).
+				if ( not p_toInject.empty() )
+				{
+					const size_t startPosVersion = src.find( "#version" );
+					assert( startPosVersion != std::string::npos );
+					const size_t endPosVersion = src.find( '\n', startPosVersion );
+					src.insert( endPosVersion + 1, p_toInject );
+				}
+
+				// Handle #include.
+				_handleInclude( src, p_path.parent_path() );
+			}
+			catch ( ... )
 			{
 				glDeleteShader( shaderId );
-				return GL_INVALID_INDEX;
+				throw;
 			}
-
-			// Handle injection (after #version).
-			if ( not p_toInject.empty() )
-			{
-				const size_t startPosVersion = src.find( "#version" );
-				assert( startPosVersion != std::string::npos );
-				const size_t endPosVersion = src.find( '\n', startPosVersion );
-				src.insert( endPosVersion + 1, p_toInject );
-			}
-
-			// Handle #include.
-			_handleInclude( src, p_path.parent_path() );
 
 			// VTX_DEBUG( "{}", src );
 

@@ -232,6 +232,7 @@ namespace VTX::Renderer
 		Cache::E_RENDERER_DIRTY			 _dirtyRenderer = Cache::E_RENDERER_DIRTY::NONE;
 		std::vector<DirtySystem>		 _dirtySystems;
 		std::vector<DirtyRepresentation> _dirtyRepresentations;
+		bool							 _flushRetried = false;
 
 		/**
 		 * @brief Renderer infos.

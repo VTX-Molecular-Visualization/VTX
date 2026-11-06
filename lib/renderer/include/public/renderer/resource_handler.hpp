@@ -101,7 +101,15 @@ namespace VTX::Renderer
 				_resources.emplace_back();
 			}
 
-			_construct( handle, std::forward<Args>( p_args )... );
+			try
+			{
+				_construct( handle, std::forward<Args>( p_args )... );
+			}
+			catch ( ... )
+			{
+				_release( handle );
+				throw;
+			}
 			_validateStorage( handle );
 
 			return handle;
@@ -392,6 +400,8 @@ namespace VTX::Renderer
 
 		void _validateStorage( const Desc::Handle p_handle ) { std::erase( _invalids, p_handle ); }
 
+		void _release( const Desc::Handle p_handle ) { _availables.push_back( p_handle ); }
+
 	  private:
 		std::vector<Slot>		  _resources;
 		std::vector<Desc::Handle> _availables;
@@ -444,7 +454,16 @@ namespace VTX::Renderer
 			if ( _cache.contains( p_key ) )
 			{
 				handle = _cache[ p_key ].handle;
-				Pool::_construct( handle, std::forward<Args>( p_args )... );
+				try
+				{
+					Pool::_construct( handle, std::forward<Args>( p_args )... );
+				}
+				catch ( ... )
+				{
+					_cache.erase( p_key );
+					Pool::_release( handle );
+					throw;
+				}
 				Pool::_validateStorage( handle );
 			}
 			else
@@ -469,7 +488,16 @@ namespace VTX::Renderer
 			if ( _cache.contains( p_key ) )
 			{
 				handle = _cache[ p_key ].handle;
-				Pool::_construct( handle, std::forward<Args>( p_args )... );
+				try
+				{
+					Pool::_construct( handle, std::forward<Args>( p_args )... );
+				}
+				catch ( ... )
+				{
+					_cache.erase( p_key );
+					Pool::_release( handle );
+					throw;
+				}
 				Pool::_validateStorage( handle );
 			}
 			else

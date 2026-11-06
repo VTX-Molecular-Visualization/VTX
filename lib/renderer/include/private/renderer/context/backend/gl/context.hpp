@@ -129,7 +129,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			{
 				pixelFormat = _choosePixelFormat( wglChoosePixelFormatARB, pfd );
 			}
-			catch ( const std::exception & )
+			catch ( ... )
 			{
 				wglDeleteContext( tempContext );
 				ReleaseDC( bootstrapWindow, bootstrapDc );

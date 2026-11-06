@@ -572,9 +572,9 @@ namespace VTX::Renderer::Context
 		/**
 		 * @brief Debug output operator.
 		 */
-		friend std::ostream & operator<<( std::ostream &, const CommandBuffer & p_cb )
+		friend std::ostream & operator<<( std::ostream & p_os, const CommandBuffer & p_cb )
 		{
-			std::ostream & os = std::cout;
+			std::ostream & os = p_os;
 			os << "CommandBuffer: " << '\n';
 			for ( const Command & cmd : p_cb.commands )
 			{
