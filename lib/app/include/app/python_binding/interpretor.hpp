@@ -30,6 +30,11 @@ namespace VTX::App::PythonBinding
 		};
 
 		Interpretor();
+		Interpretor( const Interpretor & )			   = delete;
+		Interpretor & operator=( const Interpretor & ) = delete;
+		Interpretor( Interpretor && )				   = delete;
+		Interpretor & operator=( Interpretor && )	   = delete;
+		~Interpretor()								   = default;
 
 		/**
 		 * @brief Run input python command asynchronously.

@@ -12,6 +12,13 @@ namespace VTX::App::Uid
 	class UIDManager
 	{
 	  public:
+		UIDManager()								 = default;
+		UIDManager( const UIDManager & )			 = delete;
+		UIDManager & operator=( const UIDManager & ) = delete;
+		UIDManager( UIDManager && )					 = delete;
+		UIDManager & operator=( UIDManager && )		 = delete;
+		~UIDManager()								 = default;
+
 		Util::Uid::Pool<UID32> & getPickingPool() noexcept { return _pickingPool; }
 
 	  private:

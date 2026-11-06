@@ -43,10 +43,12 @@ namespace VTX::App::Pass
 	  public:
 		using UpdateDelegate = Util::EventHub::Delegate<void( const float, const float )>;
 
-		PassManager()									   = default;
-		PassManager( PassManager && ) noexcept			   = default;
-		PassManager & operator=( PassManager && ) noexcept = default;
-		~PassManager()									   = default;
+		PassManager()								   = default;
+		PassManager( const PassManager & )			   = delete;
+		PassManager & operator=( const PassManager & ) = delete;
+		PassManager( PassManager && )				   = delete;
+		PassManager & operator=( PassManager && )	   = delete;
+		~PassManager()								   = default;
 
 		/**
 		 * @brief Instantiates a pass.

@@ -31,6 +31,8 @@ namespace VTX::Util::Thread
 		ThreadManager();
 		ThreadManager( const ThreadManager & )			   = delete;
 		ThreadManager & operator=( const ThreadManager & ) = delete;
+		ThreadManager( ThreadManager && )				   = delete;
+		ThreadManager & operator=( ThreadManager && )	   = delete;
 		~ThreadManager();
 
 		/**

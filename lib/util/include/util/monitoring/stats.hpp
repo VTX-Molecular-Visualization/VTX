@@ -19,6 +19,13 @@ namespace VTX::Util::Monitoring
 	class Stats
 	{
 	  public:
+		Stats()							   = default;
+		Stats( const Stats & )			   = delete;
+		Stats & operator=( const Stats & ) = delete;
+		Stats( Stats && )				   = delete;
+		Stats & operator=( Stats && )	   = delete;
+		~Stats()						   = default;
+
 		/**
 		 * @brief Creates and returns a reference to a new FrameInfo object.
 		 */

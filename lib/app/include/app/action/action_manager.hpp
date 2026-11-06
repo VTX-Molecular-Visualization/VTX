@@ -43,6 +43,11 @@ namespace VTX::App::Action
 		 * @brief Constructor.
 		 */
 		ActionManager();
+		ActionManager( const ActionManager & )			   = delete;
+		ActionManager & operator=( const ActionManager & ) = delete;
+		ActionManager( ActionManager && )				   = delete;
+		ActionManager & operator=( ActionManager && )	   = delete;
+		~ActionManager()								   = default;
 
 		/**
 		 * @brief Handle queued actions.

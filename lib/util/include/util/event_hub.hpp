@@ -21,6 +21,13 @@ namespace VTX::Util
 		template<typename... Args>
 		using Delegate = entt::delegate<Args...>;
 
+		EventHub()								 = default;
+		EventHub( const EventHub & )			 = delete;
+		EventHub & operator=( const EventHub & ) = delete;
+		EventHub( EventHub && )					 = delete;
+		EventHub & operator=( EventHub && )		 = delete;
+		~EventHub()								 = default;
+
 		/**
 		 * @brief Connect a function to an event.
 		 */

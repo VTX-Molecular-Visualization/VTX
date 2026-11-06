@@ -36,6 +36,12 @@ namespace VTX::App::Input
 			consume();
 		}
 
+		InputManager( const InputManager & )			 = delete;
+		InputManager & operator=( const InputManager & ) = delete;
+		InputManager( InputManager && )					 = delete;
+		InputManager & operator=( InputManager && )		 = delete;
+		~InputManager()									 = default;
+
 		/**
 		 * @brief Accessors and mutators.
 		 */

@@ -21,6 +21,11 @@ namespace VTX::App::Network
 		using DownloadId = uint64_t;
 
 		NetworkManager();
+		NetworkManager( const NetworkManager & )			 = delete;
+		NetworkManager & operator=( const NetworkManager & ) = delete;
+		NetworkManager( NetworkManager && )					 = delete;
+		NetworkManager & operator=( NetworkManager && )		 = delete;
+		~NetworkManager()									 = default;
 
 		/**
 		 * @brief Download a file from a URL and save it to a specified filename.

@@ -34,6 +34,8 @@ namespace VTX::Renderer
 		Renderer( size_t p_width = 0, size_t p_height = 0 );
 		Renderer( const Renderer & )			 = delete;
 		Renderer & operator=( const Renderer & ) = delete;
+		Renderer( Renderer && )					 = delete;
+		Renderer & operator=( Renderer && )		 = delete;
 		~Renderer()								 = default;
 
 		/**
