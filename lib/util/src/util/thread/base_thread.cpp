@@ -1,5 +1,6 @@
 #include "util/thread/base_thread.hpp"
 #include "util/thread/thread_manager.hpp"
+#include <exception>
 #include <util/logger.hpp>
 #include <util/math.hpp>
 #include <utility>
@@ -24,10 +25,6 @@ namespace VTX::Util::Thread
 			catch ( ... )
 			{
 				LOGGER::logException( "Failed to join thread" );
-				if ( _thread.joinable() )
-				{
-					_thread.detach();
-				}
 			}
 		}
 	}
@@ -35,8 +32,11 @@ namespace VTX::Util::Thread
 	void BaseThread::_start( const AsyncOp & p_function, const EndCallback & p_callback )
 	{
 		_thread = std::jthread(
-			[ this, p_function, p_callback ]( const std::stop_token & p_stopToken )
+			[ this, p_function, p_callback, terminateHandler = std::get_terminate() ](
+				const std::stop_token & p_stopToken
+			)
 			{
+				std::set_terminate( terminateHandler );
 				uint res = 0;
 				try
 				{
@@ -57,7 +57,8 @@ namespace VTX::Util::Thread
 					setFailed();
 				}
 				_finished.store( true, std::memory_order_release );
-			} );
+			}
+		);
 		_id = _thread.get_id();
 	}
 

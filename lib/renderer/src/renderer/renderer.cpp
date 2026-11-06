@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <util/chrono.hpp>
 #include <util/enum.hpp>
+#include <vector>
 
 namespace VTX::Renderer
 {
@@ -93,6 +94,7 @@ namespace VTX::Renderer
 		_dirtyRenderer = Cache::E_RENDERER_DIRTY::NONE;
 		_dirtySystems.clear();
 		_dirtyRepresentations.clear();
+		_flushRetried = false;
 	}
 
 	bool Renderer::render( const float p_deltaTime, const float p_elapsedTime ) noexcept
@@ -323,6 +325,10 @@ namespace VTX::Renderer
 				_systems.erase( system );
 				dirtySystems.erase( system );
 			}
+			std::erase_if(
+				_dirtySystems,
+				[ this ]( const DirtySystem & p_dirty ) { return not _systems.contains( p_dirty.handle ); }
+			);
 
 			_dirtyRenderer |= RendererDirty::ALL;
 		}
@@ -666,6 +672,7 @@ namespace VTX::Renderer
 		_dirtyRenderer = RendererDirty::NONE;
 		_dirtySystems.clear();
 		_dirtyRepresentations.clear();
+		_flushRetried = false;
 	}
 
 	void Renderer::_executeSESExternalPass( const uintptr_t p_context )

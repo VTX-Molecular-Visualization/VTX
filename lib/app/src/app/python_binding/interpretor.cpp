@@ -1,12 +1,15 @@
 #include "app/python_binding/interpretor.hpp"
 #include "app/services.hpp"
 #include <atomic>
+#include <memory>
 #include <optional>
 #include <python_binding/interpretor.hpp>
 #include <queue>
+#include <thread>
 #include <util/datalocker.hpp>
 #include <util/logger.hpp>
 #include <util/thread/thread_manager.hpp>
+#include <utility>
 
 namespace VTX::App::PythonBinding
 {
@@ -38,6 +41,10 @@ namespace VTX::App::PythonBinding
 			{
 				std::this_thread::sleep_for( _inactivitySleepTime.load() );
 			}
+			if ( _threadFinished )
+			{
+				return;
+			}
 			try
 			{
 				_thread->stop();
@@ -50,7 +57,14 @@ namespace VTX::App::PythonBinding
 			{
 				VTX_ERROR( "Failed to stop python thread: unknown exception" );
 			}
-			_thread->wait();
+			try
+			{
+				_thread->wait();
+			}
+			catch ( ... )
+			{
+				LOGGER::logException( "Failed to wait for python thread" );
+			}
 		}
 
 		void runCommand( const std::string & p_command )
@@ -84,15 +98,16 @@ namespace VTX::App::PythonBinding
 		{
 			// This method can be called from python thread directly. In this specific scenario, we don't need to use
 			// the subscription/callback infrastructure.
-			if ( std::this_thread::get_id() != _thread->getId() )
+			if ( std::this_thread::get_id() != _threadId.load() )
 			{
 				{
 					auto instructions = _lockedInstructions.open();
 					if ( not _failed )
 					{
 						instructions->push(
-							[ this, path = p_path, promise = p_promise ]( VTX::PythonBinding::Interpretor & )
-							{ _actuallyRunScript( path, promise ); }
+							[ this, path = p_path, guard = std::make_shared<ScriptPromiseGuard>( p_promise ) ](
+								VTX::PythonBinding::Interpretor &
+							) { _actuallyRunScript( path, std::exchange( guard->promise, nullptr ) ); }
 						);
 						return;
 					}
@@ -126,10 +141,11 @@ namespace VTX::App::PythonBinding
 			instructions->push( std::move( p_instruction ) );
 		}
 
-		int runPythonThread( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & _ )
+		int runPythonThread( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & )
 		{
+			const FinishedGuard finishedGuard( _threadFinished );
+			_threadId  = std::this_thread::get_id();
 			_stopToken = std::move( p_stopToken );
-			_thread	   = &_;
 			try
 			{
 				_interpretor.emplace();
@@ -324,11 +340,54 @@ namespace VTX::App::PythonBinding
 			_interpretor; // Optional because it will be created and destroyed in the python thread
 		Util::DataLocker<std::queue<InterpretorInstructionsOneShot>> _lockedInstructions;
 		Util::DataLocker<std::queue<WaitingPythonCommand>>			 _lockedCmdQueue;
-		Util::Thread::BaseThread *									 _thread = nullptr;
+		std::atomic_bool											 _threadFinished = false;
+		std::atomic<std::thread::id>								 _threadId;
 		Util::Thread::StopToken										 _stopToken;
+		Util::Thread::BaseThread *									 _thread = nullptr;
 
 		static AsyncJobResult _unavailableResult()
 		{ return AsyncJobResult { .success = false, .resultStr = "Python interpretor is not available." }; }
+
+		struct FinishedGuard
+		{
+			explicit FinishedGuard( std::atomic_bool & p_finished ) noexcept : finished( p_finished ) {}
+
+			FinishedGuard( const FinishedGuard & )			   = delete;
+			FinishedGuard & operator=( const FinishedGuard & ) = delete;
+
+			~FinishedGuard() { finished = true; }
+
+			std::atomic_bool & finished;
+		};
+
+		struct ScriptPromiseGuard
+		{
+			explicit ScriptPromiseGuard( std::shared_ptr<std::promise<AsyncJobResult>> p_promise ) noexcept :
+				promise( std::move( p_promise ) )
+			{
+			}
+
+			ScriptPromiseGuard( const ScriptPromiseGuard & )			 = delete;
+			ScriptPromiseGuard & operator=( const ScriptPromiseGuard & ) = delete;
+
+			~ScriptPromiseGuard()
+			{
+				if ( not promise )
+				{
+					return;
+				}
+				try
+				{
+					promise->set_value( _unavailableResult() );
+				}
+				catch ( ... )
+				{
+					LOGGER::logException( "Failed to fulfil python script promise" );
+				}
+			}
+
+			std::shared_ptr<std::promise<AsyncJobResult>> promise;
+		};
 
 		void _failPendingJobs()
 		{

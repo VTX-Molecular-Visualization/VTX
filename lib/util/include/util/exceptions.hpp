@@ -1,9 +1,11 @@
 #ifndef VTX_UTIL_EXCEPTIONS_HPP
 #define VTX_UTIL_EXCEPTIONS_HPP
 
+#include <exception>
 #include <fmt/format.h>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <utility>
 
 namespace VTX
@@ -174,5 +176,38 @@ namespace VTX
 		}
 	};
 } // namespace VTX
+
+namespace VTX::Util
+{
+	class ExceptionCollector
+	{
+	  public:
+		template<typename F>
+		void run( const std::string_view p_context, F && p_function ) noexcept
+		{
+			try
+			{
+				std::forward<F>( p_function )();
+			}
+			catch ( ... )
+			{
+				collect( p_context );
+			}
+		}
+
+		void collect( std::string_view p_context ) noexcept;
+
+		void rethrow() const
+		{
+			if ( _error )
+			{
+				std::rethrow_exception( _error );
+			}
+		}
+
+	  private:
+		std::exception_ptr _error;
+	};
+} // namespace VTX::Util
 
 #endif

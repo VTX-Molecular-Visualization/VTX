@@ -6,8 +6,8 @@
 #include "app/trajectory/player.hpp"
 #include <cmath>
 #include <core/struct/trajectory.hpp>
-#include <exception>
 #include <optional>
+#include <util/exceptions.hpp>
 #include <util/logger.hpp>
 #include <utility>
 
@@ -185,7 +185,7 @@ namespace VTX::App::Pass
 		//
 		// Paused time is never accumulated, so resuming cannot skip frames to catch up with the pause duration.
 
-		std::exception_ptr error;
+		Util::ExceptionCollector errors;
 		for ( const Entity entity : REG().view<Core::Struct::Trajectory, Trajectory::Player, Trajectory::Loader>() )
 		{
 			try
@@ -259,34 +259,13 @@ namespace VTX::App::Pass
 					loader.thread->cancelFrameRequest();
 				}
 			}
-			catch ( const std::exception & p_e )
-			{
-				if ( error )
-				{
-					VTX_ERROR( "Trajectory update failed: {}", p_e.what() );
-				}
-				else
-				{
-					error = std::current_exception();
-				}
-			}
 			catch ( ... )
 			{
-				if ( error )
-				{
-					VTX_ERROR( "Trajectory update failed: unknown exception" );
-				}
-				else
-				{
-					error = std::current_exception();
-				}
+				errors.collect( "Trajectory update failed" );
 			}
 		}
 
-		if ( error )
-		{
-			std::rethrow_exception( error );
-		}
+		errors.rethrow();
 	}
 
 } // namespace VTX::App::Pass
