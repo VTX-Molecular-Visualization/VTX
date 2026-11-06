@@ -7,7 +7,6 @@
 #include <imnodes/imnodes.h>
 #include <renderer/color.hpp>
 #include <util/image.hpp>
-#include <util/logger.hpp>
 
 namespace VTX::Bench
 {

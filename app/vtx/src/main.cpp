@@ -78,6 +78,7 @@ namespace
 			}
 			catch ( ... )
 			{
+				std::ignore = std::fputs( "Failed to stop logger\n", stderr );
 			}
 		}
 		std::abort();

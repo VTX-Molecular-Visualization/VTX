@@ -111,7 +111,7 @@ namespace VTX::UI::QT::Model
 			case E_SYSTEM_ITEM::SYSTEM:
 			{
 				const auto &  metadata	 = App::REG().get<IO::Metadata>( _system );
-				const QString systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
+				QString		  systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
 											   ? QString::fromStdString( metadata.path.stem().string() )
 											   : QString::fromStdString( metadata.pdbIDCode );
 

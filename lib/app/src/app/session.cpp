@@ -5,7 +5,9 @@
 #include "app/constants.hpp"
 #include "app/services.hpp"
 #include <atomic>
+#include <cstdio>
 #include <iostream>
+#include <tuple>
 #include <util/event_hub.hpp>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
@@ -121,7 +123,7 @@ namespace VTX::App
 						}
 						catch ( ... )
 						{
-							std::cerr << "Velopack uninstall hook: unknown exception" << '\n';
+							std::ignore = std::fputs( "Velopack uninstall hook: unknown exception\n", stderr );
 						}
 					}
 				)

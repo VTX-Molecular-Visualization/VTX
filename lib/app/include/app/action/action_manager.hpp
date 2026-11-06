@@ -261,7 +261,18 @@ namespace VTX::App::Action
 
 			void execute() override
 			{
-				std::exception_ptr error;
+				const std::exception_ptr error = _execute();
+
+				{
+					const std::scoped_lock<std::mutex> lock( _state->mutex );
+					_state->error	 = error;
+					_state->executed = true;
+				}
+				_state->conditionVariable.notify_all();
+			}
+
+			std::exception_ptr _execute() noexcept
+			{
 				if constexpr ( not std::same_as<SomeAction, _dummy> )
 				{
 					try
@@ -272,17 +283,11 @@ namespace VTX::App::Action
 					}
 					catch ( ... )
 					{
-						error = std::current_exception();
-						ActionManager::_logFailure( Util::typeName<SomeAction>(), error );
+						ActionManager::_logFailure( Util::typeName<SomeAction>(), std::current_exception() );
+						return std::current_exception();
 					}
 				}
-
-				{
-					const std::scoped_lock<std::mutex> lock( _state->mutex );
-					_state->error	 = std::move( error );
-					_state->executed = true;
-				}
-				_state->conditionVariable.notify_all();
+				return {};
 			}
 
 			void wait() override

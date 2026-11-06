@@ -24,13 +24,13 @@ namespace VTX::UI::QT::Menu
 	  public:
 		struct Selected
 		{
-			Renderer::E_COLOR_SCHEME			scheme;
+			Renderer::E_COLOR_SCHEME			scheme {};
 			std::optional<Renderer::ColorIndex> index = std::nullopt;
 		};
 
 		struct SecondaryStructureSelected
 		{
-			Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE scheme;
+			Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE scheme {};
 			std::optional<Renderer::ColorIndex>			 index = std::nullopt;
 		};
 

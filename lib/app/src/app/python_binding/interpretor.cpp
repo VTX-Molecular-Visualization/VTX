@@ -104,7 +104,7 @@ namespace VTX::App::PythonBinding
 					auto instructions = _lockedInstructions.open();
 					if ( not _failed )
 					{
-						instructions->push(
+						instructions->emplace(
 							[ this, path = p_path, guard = std::make_shared<ScriptPromiseGuard>( p_promise ) ](
 								VTX::PythonBinding::Interpretor &
 							) { _actuallyRunScript( path, std::exchange( guard->promise, nullptr ) ); }
