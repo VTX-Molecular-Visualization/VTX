@@ -1,9 +1,12 @@
 #include <app/arguments.hpp>
 #include <app/session.hpp>
 #include <cstdio>
+#include <cstdlib>
+#include <exception>
 #include <iostream>
 #include <string>
 #include <tuple>
+#include <util/logger.hpp>
 
 // Conditional includes.
 #if VTX_UI_QT
@@ -36,7 +39,59 @@ extern "C"
 
 namespace
 {
+	[[noreturn]] void onTerminate() noexcept
+	{
+		const auto report = []( const char * const p_reason ) noexcept
+		{
+			std::ignore = std::fputs( "Fatal error: std::terminate called (", stderr );
+			std::ignore = std::fputs( p_reason, stderr );
+			std::ignore = std::fputs( ")\n", stderr );
+			std::ignore = std::fflush( stderr );
+			if ( VTX::Util::Logger::isInitialized() )
+			{
+				VTX::VTX_CRITICAL( "Fatal error: std::terminate called ({})", p_reason );
+			}
+		};
+
+		try
+		{
+			if ( const std::exception_ptr error = std::current_exception() )
+			{
+				std::rethrow_exception( error );
+			}
+			report( "no active exception" );
+		}
+		catch ( const std::exception & p_e )
+		{
+			report( p_e.what() );
+		}
+		catch ( ... )
+		{
+			report( "unknown exception" );
+		}
+
+		if ( VTX::Util::Logger::isInitialized() )
+		{
+			try
+			{
+				VTX::Util::Logger::stop();
+			}
+			catch ( ... )
+			{
+			}
+		}
+		std::abort();
+	}
+
 #ifdef _WIN32
+	void redirectStdStreams() noexcept
+	{
+		FILE * stream = nullptr;
+		std::ignore	  = freopen_s( &stream, "CONOUT$", "w", stdout );
+		std::ignore	  = freopen_s( &stream, "CONOUT$", "w", stderr );
+		std::ignore	  = freopen_s( &stream, "CONIN$", "r", stdin );
+	}
+
 	/**
 	 * @brief On windows, the console returns before the text is returned. The behavior is tight to the Windows OS : a
 
@@ -72,6 +127,19 @@ int main( int p_argc, char * p_argv[] )
 {
 	using namespace VTX;
 
+	std::set_terminate( &onTerminate );
+
+#ifdef _WIN32
+#pragma comment( linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup" )
+	// Attach to parent console if launched from CLI (cmd/PowerShell).
+	// Falls through silently if launched from Explorer (no parent console).
+	const bool hasParentConsole = AttachConsole( ATTACH_PARENT_PROCESS );
+	if ( hasParentConsole )
+	{
+		redirectStdStreams();
+	}
+#endif
+
 	try
 	{
 		App::Session::handleStartupActivation();
@@ -93,20 +161,10 @@ int main( int p_argc, char * p_argv[] )
 #endif
 
 #ifdef _WIN32
-#pragma comment( linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup" )
-		// Attach to parent console if launched from CLI (cmd/PowerShell).
-		// Falls through silently if launched from Explorer (no parent console).
-		const bool hasParentConsole = AttachConsole( ATTACH_PARENT_PROCESS );
 		if ( not hasParentConsole && argss.debug )
 		{
 			AllocConsole();
-		}
-		if ( hasParentConsole || argss.debug )
-		{
-			FILE * stream = nullptr;
-			std::ignore	  = freopen_s( &stream, "CONOUT$", "w", stdout );
-			std::ignore	  = freopen_s( &stream, "CONOUT$", "w", stderr );
-			std::ignore	  = freopen_s( &stream, "CONIN$", "r", stdin );
+			redirectStdStreams();
 		}
 #endif
 
@@ -141,8 +199,7 @@ int main( int p_argc, char * p_argv[] )
 #if VTX_TOOL_TOPOLOGY_EDITOR
 			app.addTool<Tool::TopologyEditor::TopologyEditor>();
 #endif
-			app.start();
-			return EXIT_SUCCESS;
+			return app.start();
 		}
 #endif
 
@@ -164,11 +221,12 @@ int main( int p_argc, char * p_argv[] )
 	{
 		std::ignore = std::fputs( "Unhandled exception: ", stderr );
 		std::ignore = std::fputs( p_e.what(), stderr );
+		std::ignore = std::fputs( "\n", stderr );
 		return EXIT_FAILURE;
 	}
 	catch ( ... )
 	{
-		std::ignore = std::fputs( "Unhandled unknown exception", stderr );
+		std::ignore = std::fputs( "Unhandled unknown exception\n", stderr );
 		return EXIT_FAILURE;
 	}
 }
