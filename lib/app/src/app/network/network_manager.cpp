@@ -53,6 +53,11 @@ namespace VTX::App::Network
 					VTX_ERROR( "Download error ({}): {}", url, p_e.what() );
 					success = false;
 				}
+				catch ( ... )
+				{
+					VTX_ERROR( "Download error ({}): unknown exception", url );
+					success = false;
+				}
 
 				{
 					const std::scoped_lock lock( _mutex );
@@ -108,9 +113,22 @@ namespace VTX::App::Network
 
 		for ( auto & result : completed )
 		{
-			if ( result.success )
+			if ( not result.success )
+			{
+				continue;
+			}
+
+			try
 			{
 				result.callback( std::move( result.data ) );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Download callback failed ({}): {}", result.url, p_e.what() );
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "Download callback failed ({}): unknown exception", result.url );
 			}
 		}
 	}

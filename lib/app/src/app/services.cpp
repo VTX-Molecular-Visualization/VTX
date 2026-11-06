@@ -1,5 +1,7 @@
 #include "app/services.hpp"
 #include "app/ecs.hpp"
+#include <string>
+#include <util/exceptions.hpp>
 
 namespace VTX::App
 {
@@ -25,5 +27,12 @@ namespace VTX::App
 
 	Pass::PassManager & PASS() { return ECS::getCtx<Pass::PassManager>(); }
 
-	PythonBinding::Interpretor & INTERPRETOR() { return ECS::getCtx<PythonBinding::Interpretor>(); }
+	PythonBinding::Interpretor & INTERPRETOR()
+	{
+		if ( not ECS::hasCtx<PythonBinding::Interpretor>() )
+		{
+			throw VTXException( std::string( "Python interpretor is not available." ) );
+		}
+		return ECS::getCtx<PythonBinding::Interpretor>();
+	}
 } // namespace VTX::App

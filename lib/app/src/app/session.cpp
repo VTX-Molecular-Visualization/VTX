@@ -107,8 +107,24 @@ namespace VTX::App
 				//.OnAfterUpdate(  )
 				//.OnFirstRun(  )
 				//.OnRestarted(  )
-				.OnBeforeUninstall( []( void *, const char * )
-									{ std::filesystem::remove_all( Filesystem::getDataHome() / APP_FOLDER_NAME ); } )
+				.OnBeforeUninstall(
+					[]( void *, const char * ) noexcept
+					{
+						try
+						{
+							std::error_code error;
+							std::filesystem::remove_all( Filesystem::getDataHome() / APP_FOLDER_NAME, error );
+							if ( error )
+							{
+								std::cerr << "Velopack uninstall hook: " << error.message() << '\n';
+							}
+						}
+						catch ( ... )
+						{
+							std::cerr << "Velopack uninstall hook: unknown exception" << '\n';
+						}
+					}
+				)
 				.Run();
 		}
 		catch ( const std::exception & p_e )
@@ -168,6 +184,11 @@ namespace VTX::App
 				{
 					_impl->updateCheckFailed = true;
 					VTX_ERROR( "Updater error: {}", p_e.what() );
+				}
+				catch ( ... )
+				{
+					_impl->updateCheckFailed = true;
+					VTX_ERROR( "Updater error: unknown exception" );
 				}
 				_impl->updateCheckReady = true;
 				return 0;
@@ -270,6 +291,12 @@ namespace VTX::App
 						_impl->updateDownloadSucceeded = false;
 						_impl->updateDownloadError	   = p_e.what();
 						VTX_ERROR( "Update download error: {}", p_e.what() );
+					}
+					catch ( ... )
+					{
+						_impl->updateDownloadSucceeded = false;
+						_impl->updateDownloadError	   = "Unknown error.";
+						VTX_ERROR( "Update download error: unknown exception" );
 					}
 
 					_impl->updateDownloadReady = true;

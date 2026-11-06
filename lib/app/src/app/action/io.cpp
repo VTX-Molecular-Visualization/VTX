@@ -242,19 +242,12 @@ namespace VTX::App::Action::IO
 		const std::optional<float>	p_backgroundOpacity
 	)
 	{
-		try
-		{
-			const Util::Resolution resolution = { "Export", p_width, p_height };
-			std::vector<std::byte> image	  = RENDERER().snapshot( resolution, p_backgroundOpacity );
-			const FilePath		   path		  = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
-			_writeSnapshotMetadata( path );
+		const Util::Resolution resolution = { "Export", p_width, p_height };
+		std::vector<std::byte> image	  = RENDERER().snapshot( resolution, p_backgroundOpacity );
+		const FilePath		   path		  = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
+		_writeSnapshotMetadata( path );
 
-			VTX_INFO( "Image saved: {}", fmt::format( fmt::runtime( std::string( LOG_LINK_FORMAT ) ), path.string() ) );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Snapshot failed: {}", p_e.what() );
-		}
+		VTX_INFO( "Image saved: {}", fmt::format( fmt::runtime( std::string( LOG_LINK_FORMAT ) ), path.string() ) );
 	}
 
 } // namespace VTX::App::Action::IO

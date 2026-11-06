@@ -23,8 +23,9 @@ namespace VTX::App::Pass
 		const bool meshChanged = not _meshAdded.empty() || not _meshRemoved.empty();
 
 		// Add pending.
-		for ( const Entity meshEntity : _meshAdded )
+		while ( not _meshAdded.empty() )
 		{
+			const Entity meshEntity = _meshAdded.front();
 			assert( not _meshes.contains( meshEntity ) );
 
 			const auto & mesh	   = reg.get<Core::Struct::Mesh>( meshEntity );
@@ -34,12 +35,14 @@ namespace VTX::App::Pass
 				= RENDERER().addMesh( Renderer::Cache::Mesh { transform.computeMatrix(), &mesh } );
 
 			_meshes.emplace( meshEntity, meshHandle );
+			_meshAdded.erase( _meshAdded.begin() );
 		}
 
 		// Remove pending.
-		for ( const Renderer::Desc::Handle mesh : _meshRemoved )
+		while ( not _meshRemoved.empty() )
 		{
-			RENDERER().removeMesh( mesh );
+			RENDERER().removeMesh( _meshRemoved.front() );
+			_meshRemoved.erase( _meshRemoved.begin() );
 		}
 
 		// Patch because renderer use views to raw data.

@@ -5,9 +5,11 @@
 #include <atomic>
 #include <concepts>
 #include <condition_variable>
+#include <exception>
 #include <latch>
 #include <memory>
 #include <mutex>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
 #include <util/chrono.hpp>
@@ -63,10 +65,16 @@ namespace VTX::App::Action
 		 */
 		template<typename A, typename... Args>
 			requires( not ThreadableAction<A, Args...> )
-		void execute( Args &&... p_args ) const
+		void execute( Args &&... p_args ) const noexcept
 		{
-			A a;
-			execute( a, std::forward<Args>( p_args )... );
+			_guard(
+				Util::typeName<A>(),
+				[ & ]()
+				{
+					A a;
+					_run( a, std::forward<Args>( p_args )... );
+				}
+			);
 		}
 
 		/**
@@ -74,23 +82,45 @@ namespace VTX::App::Action
 		 */
 		template<typename A, typename... Args>
 			requires ThreadableAction<A, Args...>
-		void execute( Args &&... p_args ) const
+		void execute( Args &&... p_args ) const noexcept
 		{
 			if ( _noThread() )
 			{
-				A a;
-				execute( a, std::forward<Args>( p_args )... );
+				_guard(
+					Util::typeName<A>(),
+					[ & ]()
+					{
+						A a;
+						_run( a, std::forward<Args>( p_args )... );
+					}
+				);
 			}
 			else
 			{
-				THREAD().createThread(
-					[... args = std::forward<Args>( p_args ) ](
-						Util::Thread::StopToken p_token, Util::Thread::BaseThread & p_thr
-					) mutable
+				_guard(
+					Util::typeName<A>(),
+					[ & ]()
 					{
-						A action( Util::Thread::ThreadData { std::move( p_token ), p_thr } );
-						action.execute( std::move( args )... );
-						return 0;
+						THREAD().createThread(
+							[... args = std::forward<Args>( p_args ) ](
+								Util::Thread::StopToken p_token, Util::Thread::BaseThread & p_thr
+							) mutable
+							{
+								const bool succeeded = _guard(
+									Util::typeName<A>(),
+									[ & ]()
+									{
+										A action( Util::Thread::ThreadData { std::move( p_token ), p_thr } );
+										action.execute( std::move( args )... );
+									}
+								);
+								if ( not succeeded )
+								{
+									p_thr.setFailed();
+								}
+								return 0;
+							}
+						);
 					}
 				);
 			}
@@ -100,25 +130,13 @@ namespace VTX::App::Action
 		 * @brief Execute the given action right away.
 		 */
 		template<typename A, typename... Args>
-		void execute( A & p_action, Args &&... p_args ) const
+		void execute( A & p_action, Args &&... p_args ) const noexcept
 		{
-			const auto actionName = Util::typeName<A>();
-			VTX_TRACE( "ActionSystem::execute( {} )", actionName );
-			try
-			{
-				auto duration = Util::CHRONO_CPU( [ & ]() { p_action.execute( std::forward<Args>( p_args )... ); } );
-				VTX_TRACE(
-					"ActionSystem::execute( {} ) - done ({})", actionName, Util::String::FormattedDuration { duration }
-				);
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( "{}", p_e.what() );
-				return;
-			}
+			_guard( Util::typeName<A>(), [ & ]() { _run( p_action, std::forward<Args>( p_args )... ); } );
 		}
 
 	  private:
+		friend class QueuedAction;
 		struct Data;
 
 		struct Del
@@ -130,6 +148,48 @@ namespace VTX::App::Action
 		float					   _skipTime = 0.f;
 
 		bool _noThread() const noexcept;
+
+		template<typename A, typename... Args>
+		static void _run( A & p_action, Args &&... p_args )
+		{
+			const auto actionName = Util::typeName<A>();
+			VTX_TRACE( "ActionSystem::execute( {} )", actionName );
+			auto duration = Util::CHRONO_CPU( [ & ]() { p_action.execute( std::forward<Args>( p_args )... ); } );
+			VTX_TRACE(
+				"ActionSystem::execute( {} ) - done ({})", actionName, Util::String::FormattedDuration { duration }
+			);
+		}
+
+		template<typename F>
+		static bool _guard( const std::string_view p_actionName, F && p_function ) noexcept
+		{
+			try
+			{
+				std::forward<F>( p_function )();
+				return true;
+			}
+			catch ( ... )
+			{
+				_logFailure( p_actionName, std::current_exception() );
+			}
+			return false;
+		}
+
+		static void _logFailure( const std::string_view p_actionName, const std::exception_ptr & p_error ) noexcept
+		{
+			try
+			{
+				std::rethrow_exception( p_error );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Action {} failed: {}", p_actionName, p_e.what() );
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "Action {} failed: unknown exception", p_actionName );
+			}
+		}
 	};
 
 	/**
@@ -175,6 +235,7 @@ namespace VTX::App::Action
 			std::condition_variable conditionVariable;
 			bool					executed  = false;
 			bool					cancelled = false;
+			std::exception_ptr		error;
 		};
 
 		struct _dummy
@@ -200,15 +261,25 @@ namespace VTX::App::Action
 
 			void execute() override
 			{
+				std::exception_ptr error;
 				if constexpr ( not std::same_as<SomeAction, _dummy> )
 				{
-					auto exec = [ this ]( auto &&... args ) mutable
-					{ ACTION().execute<SomeAction>( _obj, std::forward<decltype( args )>( args )... ); };
-					std::apply( exec, std::move( _args ) );
+					try
+					{
+						auto exec = [ this ]( auto &&... args ) mutable
+						{ ActionManager::_run( _obj, std::forward<decltype( args )>( args )... ); };
+						std::apply( exec, std::move( _args ) );
+					}
+					catch ( ... )
+					{
+						error = std::current_exception();
+						ActionManager::_logFailure( Util::typeName<SomeAction>(), error );
+					}
 				}
 
 				{
 					const std::scoped_lock<std::mutex> lock( _state->mutex );
+					_state->error	 = std::move( error );
 					_state->executed = true;
 				}
 				_state->conditionVariable.notify_all();
@@ -262,12 +333,18 @@ namespace VTX::App::Action
 			 */
 			void wait()
 			{
-				bool executed = false;
+				bool			   executed = false;
+				std::exception_ptr error;
 				{
 					State *						 state = _statePtr.get();
 					std::unique_lock<std::mutex> lock( state->mutex );
 					state->conditionVariable.wait( lock, [ state ]() { return state->executed || state->cancelled; } );
 					executed = state->executed;
+					error	 = state->error;
+				}
+				if ( error )
+				{
+					std::rethrow_exception( error );
 				}
 				if ( executed )
 				{

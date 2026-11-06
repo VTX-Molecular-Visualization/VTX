@@ -151,6 +151,7 @@ namespace VTX::App::Events
 	{
 		std::jthread::id id;
 		bool			 manuallyStopped {};
+		bool			 failed {};
 	};
 
 	struct PythonInitialized

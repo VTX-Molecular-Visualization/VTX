@@ -25,7 +25,9 @@
 #include "app/setting/accessibility.hpp"
 #include "app/setting/controller.hpp"
 #include "app/uid/uid_manager.hpp"
+#include <cstdio>
 #include <exception>
+#include <tuple>
 #include <util/thread/thread_manager.hpp>
 #if VTX_PYTHON_BINDING
 #include <python_binding/interpretor.hpp>
@@ -65,25 +67,25 @@ namespace VTX::App
 
 	VTXApp::~VTXApp()
 	{
-		if ( ECS::hasCtx<Action::ActionManager>() )
-		{
-			ACTION().shutdown();
-		}
-#if VTX_PYTHON_BINDING
 		try
 		{
-			if ( ECS::hasCtx<PythonBinding::Interpretor>() )
+			if ( ECS::hasCtx<Action::ActionManager>() )
 			{
-				ECS::removeCtx<PythonBinding::Interpretor>();
+				ACTION().shutdown();
 			}
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( "Exception during interpretor cleanup: {}", p_e.what() );
+			VTX_ERROR( "Exception during action manager shutdown: {}", p_e.what() );
 		}
 		catch ( ... )
 		{
-			VTX_ERROR( "Unknown exception during interpretor cleanup" );
+			VTX_ERROR( "Unknown exception during action manager shutdown" );
+		}
+#if VTX_PYTHON_BINDING
+		if ( ECS::hasCtx<PythonBinding::Interpretor>() )
+		{
+			ECS::removeCtx<PythonBinding::Interpretor>();
 		}
 #endif
 		// Destroy component users before entt registry destruction.
@@ -91,20 +93,9 @@ namespace VTX::App
 		{
 			ECS::removeCtx<Pass::PassManager>();
 		}
-		try
+		if ( ECS::hasCtx<Util::Thread::ThreadManager>() )
 		{
-			if ( ECS::hasCtx<Util::Thread::ThreadManager>() )
-			{
-				ECS::removeCtx<Util::Thread::ThreadManager>();
-			}
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Exception during thread manager cleanup: {}", p_e.what() );
-		}
-		catch ( ... )
-		{
-			VTX_ERROR( "Unknown exception during thread manager cleanup" );
+			ECS::removeCtx<Util::Thread::ThreadManager>();
 		}
 
 		if ( ECS::hasCtx<Network::NetworkManager>() )
@@ -117,7 +108,14 @@ namespace VTX::App
 			ECS::removeCtx<Session>();
 		}
 
-		LOGGER::stop();
+		try
+		{
+			LOGGER::stop();
+		}
+		catch ( ... )
+		{
+			std::ignore = std::fputs( "Failed to stop logger\n", stderr );
+		}
 	}
 
 	void VTXApp::start()
@@ -159,11 +157,18 @@ namespace VTX::App
 			[]( const Util::Thread::BaseThread & p_thread )
 			{
 				HUB().trigger<Events::ThreadProgress>(
-					p_thread.getId(), p_thread.getProgress(), p_thread.getProgressText() );
-			} );
+					p_thread.getId(), p_thread.getProgress(), p_thread.getProgressText()
+				);
+			}
+		);
 		THREAD().setDefaultTerminatedCallback(
 			[]( const Util::Thread::BaseThread & p_thread )
-			{ HUB().trigger<Events::ThreadTerminated>( p_thread.getId(), p_thread.isManuallyStopped() ); } );
+			{
+				HUB().trigger<Events::ThreadTerminated>(
+					p_thread.getId(), p_thread.isManuallyStopped(), p_thread.hasFailed()
+				);
+			}
+		);
 		ECS::setCtx<Uid::UIDManager>();
 		ECS::setCtx<Pass::PassManager>();
 		ECS::setCtx<Core::ChemDB::Category::Dictionary>( Core::ChemDB::Category::createDefaultDictionary() );
@@ -182,11 +187,16 @@ namespace VTX::App
 					{
 						p_interpretor.add( VTX::App::PythonBinding::AppBinder() );
 						p_interpretor.add( VTX::App::PythonBinding::RunScript() );
-					} );
+					}
+				);
 			}
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Failed to initialize python interpretor: {}", p_e.what() );
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "Failed to initialize python interpretor: unknown exception" );
 			}
 		}
 		else
@@ -229,7 +239,7 @@ namespace VTX::App
 	void VTXApp::finishStartup()
 	{
 #if VTX_PYTHON_BINDING
-		if ( not ARGS().noPython )
+		if ( not ARGS().noPython && ECS::hasCtx<PythonBinding::Interpretor>() )
 		{
 			const std::string runtimePythonVersion = INTERPRETOR().getRuntimePythonVersion();
 			if ( not runtimePythonVersion.empty() )
@@ -246,7 +256,8 @@ namespace VTX::App
 		ACTION().execute<Action::Scene::SetGraphicsConfig>( defaultGraphicsConfig );
 
 		const Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" ).value_or(
-			ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Color::Layout>() );
+			ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Color::Layout>()
+		);
 		ACTION().execute<Action::Scene::SetColorLayout>( defaultColorLayout );
 
 		HUB().trigger<Events::ApplicationStart>();

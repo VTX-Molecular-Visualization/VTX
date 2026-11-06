@@ -38,20 +38,46 @@ namespace VTX::App::PythonBinding
 			{
 				std::this_thread::sleep_for( _inactivitySleepTime.load() );
 			}
-			_thread->stop();
+			try
+			{
+				_thread->stop();
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Failed to stop python thread: {}", p_e.what() );
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "Failed to stop python thread: unknown exception" );
+			}
 			_thread->wait();
 		}
 
 		void runCommand( const std::string & p_command )
 		{
 			auto queue = _lockedCmdQueue.open();
+			if ( _failed )
+			{
+				VTX_ERROR( "Python interpretor is not available, command ignored: {}", p_command );
+				return;
+			}
 			queue->push( { p_command } );
 		}
 
 		void runCommand( const std::string & p_command, std::shared_ptr<std::promise<AsyncJobResult>> p_ret )
 		{
-			auto queue = _lockedCmdQueue.open();
-			queue->push( { p_command, std::move( p_ret ) } );
+			{
+				auto queue = _lockedCmdQueue.open();
+				if ( not _failed )
+				{
+					queue->push( { p_command, std::move( p_ret ) } );
+					return;
+				}
+			}
+			if ( p_ret )
+			{
+				p_ret->set_value( _unavailableResult() );
+			}
 		}
 
 		void runScript( const FilePath & p_path, const std::shared_ptr<std::promise<AsyncJobResult>> & p_promise )
@@ -60,8 +86,22 @@ namespace VTX::App::PythonBinding
 			// the subscription/callback infrastructure.
 			if ( std::this_thread::get_id() != _thread->getId() )
 			{
-				subscribe( [ this, path = p_path, promise = p_promise ]( VTX::PythonBinding::Interpretor & )
-						   { _actuallyRunScript( path, promise ); } );
+				{
+					auto instructions = _lockedInstructions.open();
+					if ( not _failed )
+					{
+						instructions->push(
+							[ this, path = p_path, promise = p_promise ]( VTX::PythonBinding::Interpretor & )
+							{ _actuallyRunScript( path, promise ); }
+						);
+						return;
+					}
+				}
+				VTX_ERROR( "Python interpretor is not available, script ignored: {}", p_path.string() );
+				if ( p_promise )
+				{
+					p_promise->set_value( _unavailableResult() );
+				}
 			}
 			else
 			{
@@ -78,6 +118,11 @@ namespace VTX::App::PythonBinding
 		void subscribe( InterpretorInstructionsOneShot p_instruction )
 		{
 			auto instructions = _lockedInstructions.open();
+			if ( _failed )
+			{
+				VTX_ERROR( "Python interpretor is not available, instruction ignored" );
+				return;
+			}
 			instructions->push( std::move( p_instruction ) );
 		}
 
@@ -88,20 +133,37 @@ namespace VTX::App::PythonBinding
 			try
 			{
 				_interpretor.emplace();
-				_threadedLoopStarted = true;
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Python interpretor initialization failed: {}", p_e.what() );
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "Python interpretor initialization failed: unknown exception" );
+			}
+			_threadedLoopStarted = true;
+
+			if ( not _interpretor.has_value() )
+			{
+				_failPendingJobs();
+				return 0;
+			}
+
+			try
+			{
 				this->_listenQueue();
-				_interpretor.reset();
 			}
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Unhandled exception in python thread: {}", p_e.what() );
-				_threadedLoopStarted = true;
 			}
 			catch ( ... )
 			{
 				VTX_ERROR( "Unhandled unknown exception in python thread" );
-				_threadedLoopStarted = true;
 			}
+			_failPendingJobs();
+			_interpretor.reset();
 			return 0;
 		}
 
@@ -125,7 +187,18 @@ namespace VTX::App::PythonBinding
 				}
 				if ( instruction )
 				{
-					instruction( *_interpretor );
+					try
+					{
+						instruction( *_interpretor );
+					}
+					catch ( const std::exception & p_e )
+					{
+						VTX_ERROR( "Python instruction failed: {}", p_e.what() );
+					}
+					catch ( ... )
+					{
+						VTX_ERROR( "Python instruction failed: unknown exception" );
+					}
 					goto loop_beginning;
 				}
 				{
@@ -169,15 +242,25 @@ namespace VTX::App::PythonBinding
 					VTX_PYTHON_OUT( "{}", jobResult.resultStr );
 				}
 			}
-			catch ( CommandException & p_e )
+			catch ( const CommandException & p_e )
 			{
 				VTX_PYTHON_OUT( "Command exception raised in python command : {}", p_e.what() );
 				jobResult.resultStr = p_e.what();
 			}
-			catch ( ScriptException & p_e )
+			catch ( const ScriptException & p_e )
 			{
 				VTX_PYTHON_OUT( "Script exception raised in python command : {}", p_e.what() );
 				jobResult.resultStr = p_e.what();
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_PYTHON_OUT( "Exception raised in python command : {}", p_e.what() );
+				jobResult.resultStr = p_e.what();
+			}
+			catch ( ... )
+			{
+				VTX_PYTHON_OUT( "Unknown exception raised in python command" );
+				jobResult.resultStr = "Unknown exception";
 			}
 
 			if ( p_command.promise )
@@ -201,13 +284,31 @@ namespace VTX::App::PythonBinding
 				_interpretor->runScript( p_path );
 				jobResult.success = true;
 			}
-			catch ( VTX::ScriptException & e )
+			catch ( const VTX::ScriptException & e )
 			{
 				jobResult.success	= false;
 				jobResult.resultStr = e.what();
 				if ( not p_promise )
 				{
 					VTX_ERROR( "Error while running script : {}", e.what() );
+				}
+			}
+			catch ( const std::exception & e )
+			{
+				jobResult.success	= false;
+				jobResult.resultStr = e.what();
+				if ( not p_promise )
+				{
+					VTX_ERROR( "Error while running script : {}", e.what() );
+				}
+			}
+			catch ( ... )
+			{
+				jobResult.success	= false;
+				jobResult.resultStr = "Unknown exception";
+				if ( not p_promise )
+				{
+					VTX_ERROR( "Error while running script : unknown exception" );
 				}
 			}
 			if ( p_promise )
@@ -218,12 +319,34 @@ namespace VTX::App::PythonBinding
 
 		std::atomic<std::chrono::milliseconds> _inactivitySleepTime { std::chrono::milliseconds( 100 ) };
 		std::atomic_bool					   _threadedLoopStarted = false;
+		std::atomic_bool					   _failed				= false;
 		std::optional<VTX::PythonBinding::Interpretor>
 			_interpretor; // Optional because it will be created and destroyed in the python thread
 		Util::DataLocker<std::queue<InterpretorInstructionsOneShot>> _lockedInstructions;
 		Util::DataLocker<std::queue<WaitingPythonCommand>>			 _lockedCmdQueue;
 		Util::Thread::BaseThread *									 _thread = nullptr;
 		Util::Thread::StopToken										 _stopToken;
+
+		static AsyncJobResult _unavailableResult()
+		{ return AsyncJobResult { .success = false, .resultStr = "Python interpretor is not available." }; }
+
+		void _failPendingJobs()
+		{
+			_failed = true;
+			{
+				auto instructions = _lockedInstructions.open();
+				*instructions	  = {};
+			}
+			auto queue = _lockedCmdQueue.open();
+			while ( not queue->empty() )
+			{
+				if ( queue->front().promise )
+				{
+					queue->front().promise->set_value( _unavailableResult() );
+				}
+				queue->pop();
+			}
+		}
 	};
 
 	Interpretor::Interpretor() : _impl( new Impl() ) {}
@@ -247,6 +370,10 @@ namespace VTX::App::PythonBinding
 		auto future	 = promise->get_future();
 		_impl->runCommand( "'{}.{}.{}'.format(*__import__(\"sys\").version_info[:3])", promise );
 		const AsyncJobResult result = future.get();
+		if ( not result.success || result.resultStr.size() < 2 )
+		{
+			return {};
+		}
 		return result.resultStr.substr( 1, result.resultStr.size() - 2 );
 	}
 

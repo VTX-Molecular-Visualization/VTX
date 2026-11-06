@@ -57,12 +57,12 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 		{
 			VTX::App::INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", promise );
 		}
-		catch ( CommandException & e )
+		catch ( const CommandException & e )
 		{
 			VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 			CHECK( false );
 		}
-		catch ( std::exception & e )
+		catch ( const std::exception & e )
 		{
 			VTX_ERROR( "Anonymous exception raised in python command and catched in the UT : {}", e.what() );
 			CHECK( false );
@@ -82,7 +82,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 			if ( _future.valid() )
 				rslt = _future.get();
 		}
-		catch ( std::exception & e )
+		catch ( const std::exception & e )
 		{
 			VTX_ERROR( "Anonymous exception raised in the future get in the UT : {}", e.what() );
 			CHECK( false );
@@ -116,7 +116,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionAtom" ) != rslt.resultStr.npos );
 	}
-	catch ( CommandException & e )
+	catch ( const CommandException & e )
 	{
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
@@ -140,7 +140,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionResidue" ) != rslt.resultStr.npos );
 	}
-	catch ( CommandException & e )
+	catch ( const CommandException & e )
 	{
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
@@ -164,7 +164,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionChain" ) != rslt.resultStr.npos );
 	}
-	catch ( CommandException & e )
+	catch ( const CommandException & e )
 	{
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
@@ -188,7 +188,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionSystem" ) != rslt.resultStr.npos );
 	}
-	catch ( CommandException & e )
+	catch ( const CommandException & e )
 	{
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );

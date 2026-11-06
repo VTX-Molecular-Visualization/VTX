@@ -2,9 +2,11 @@
 #define VTX_APP_PASS_PASS_MANAGER_HPP
 
 #include <concepts>
+#include <exception>
 #include <forward_list>
 #include <util/collection.hpp>
 #include <util/event_hub.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::App::Pass
 {
@@ -124,6 +126,8 @@ namespace VTX::App::Pass
 		 */
 		void update( const float p_delta, const float p_elapsed )
 		{
+			std::exception_ptr error;
+
 			// Update delegates.
 			for ( const auto & delegate : _delegates )
 			{
@@ -134,7 +138,32 @@ namespace VTX::App::Pass
 					continue;
 				}
 
-				delegate( p_delta, p_elapsed );
+				try
+				{
+					delegate( p_delta, p_elapsed );
+				}
+				catch ( const std::exception & p_e )
+				{
+					if ( error )
+					{
+						VTX_ERROR( "Pass update failed: {}", p_e.what() );
+					}
+					else
+					{
+						error = std::current_exception();
+					}
+				}
+				catch ( ... )
+				{
+					if ( error )
+					{
+						VTX_ERROR( "Pass update failed: unknown exception" );
+					}
+					else
+					{
+						error = std::current_exception();
+					}
+				}
 			}
 
 			// Remove passes flagged for deletion.
@@ -152,6 +181,11 @@ namespace VTX::App::Pass
 				{
 					++it;
 				}
+			}
+
+			if ( error )
+			{
+				std::rethrow_exception( error );
 			}
 		}
 

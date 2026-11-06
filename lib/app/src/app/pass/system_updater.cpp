@@ -92,8 +92,9 @@ namespace VTX::App::Pass
 		const bool representationChanged = not _representationAdded.empty() || not _representationRemoved.empty();
 
 		// Add pending.
-		for ( const auto system : _systemAdded )
+		while ( not _systemAdded.empty() )
 		{
+			const Entity system = _systemAdded.front();
 			assert( not _systems.contains( system ) );
 
 			const auto & transform = reg.get<Util::Math::Transform>( system );
@@ -109,23 +110,28 @@ namespace VTX::App::Pass
 				}
 			);
 			assert( currentFrameVisited );
+			_systemAdded.erase( _systemAdded.begin() );
 		}
-		for ( const auto representation : _representationAdded )
+		while ( not _representationAdded.empty() )
 		{
+			const Entity representation = _representationAdded.front();
 			assert( not _representations.contains( representation ) );
 
 			const auto & rep = REG().get<Renderer::Representation>( representation );
 			_representations.emplace( representation, RENDERER().addRepresentation( rep ) );
+			_representationAdded.erase( _representationAdded.begin() );
 		}
 
 		// Remove pending.
-		for ( const auto system : _systemRemoved )
+		while ( not _systemRemoved.empty() )
 		{
-			RENDERER().removeSystem( system );
+			RENDERER().removeSystem( _systemRemoved.front() );
+			_systemRemoved.erase( _systemRemoved.begin() );
 		}
-		for ( const auto representation : _representationRemoved )
+		while ( not _representationRemoved.empty() )
 		{
-			RENDERER().removeRepresentation( representation );
+			RENDERER().removeRepresentation( _representationRemoved.front() );
+			_representationRemoved.erase( _representationRemoved.begin() );
 		}
 
 		// Patch because renderer use views to raw data.

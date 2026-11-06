@@ -42,17 +42,17 @@ namespace VTX::App::Action
 			// TODO: why not?
 			return;
 		}
-		const std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
-		if ( _attributesPtr->actions.empty() )
+		std::queue<QueuedAction> actions;
 		{
-			return;
+			const std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
+			std::swap( actions, _attributesPtr->actions );
 		}
 
-		while ( not _attributesPtr->actions.empty() )
+		while ( not actions.empty() )
 		{
-			QueuedAction & action = _attributesPtr->actions.front();
+			QueuedAction action = std::move( actions.front() );
+			actions.pop();
 			action.execute();
-			_attributesPtr->actions.pop();
 		}
 	};
 
