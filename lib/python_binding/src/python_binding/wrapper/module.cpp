@@ -62,6 +62,10 @@ namespace VTX::PythonBinding::Wrapper
 		{
 			VTX_ERROR( "getFunctionList fail : {}", e.what() );
 		}
+		catch ( const pybind11::cast_error & e )
+		{
+			VTX_ERROR( "getFunctionList fail : {}", e.what() );
+		}
 
 		return res;
 	}

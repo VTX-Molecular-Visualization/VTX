@@ -56,9 +56,9 @@ namespace VTX::PythonBinding
 				}
 				catch ( const pybind11::error_already_set & e )
 				{
-					throw PythonWrapperException( "Error when setting member "
-												  + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
-												  + " - " + e.what() );
+					throw PythonWrapperException(
+						"Error when setting member " + _toString( _pyObject ) + "::" + p_memberName + " - " + e.what()
+					);
 				}
 			}
 
@@ -67,13 +67,13 @@ namespace VTX::PythonBinding
 			{
 				try
 				{
-					return _pyObject.attr( p_memberName.c_str() ) = p_value;
+					_pyObject.attr( p_memberName.c_str() ) = p_value;
 				}
 				catch ( const pybind11::error_already_set & e )
 				{
-					throw PythonWrapperException( "Error when setting member "
-												  + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
-												  + " - " + e.what() );
+					throw PythonWrapperException(
+						"Error when setting member " + _toString( _pyObject ) + "::" + p_memberName + " - " + e.what()
+					);
 				}
 			}
 
@@ -81,6 +81,18 @@ namespace VTX::PythonBinding
 
 		  private:
 			Object( pybind11::object & p_object ) : _pyObject( p_object ) {}
+
+			static std::string _toString( const pybind11::object & p_object )
+			{
+				try
+				{
+					return std::string( pybind11::str( p_object ) );
+				}
+				catch ( const pybind11::error_already_set & )
+				{
+					return "<unprintable object>";
+				}
+			}
 
 			pybind11::object _pyObject;
 		};

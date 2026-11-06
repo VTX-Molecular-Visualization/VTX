@@ -92,7 +92,7 @@ namespace VTX::PythonBinding
 			{
 				interpetor.emplace( &config );
 			}
-			catch ( std::exception & e )
+			catch ( const std::exception & e )
 			{
 				VTX_ERROR( "Interpetor failed to initialize with message : <{}>", e.what() );
 				throw VTX::LibException( "Error in python lib : <{}>", e.what() );
@@ -171,33 +171,43 @@ namespace VTX::PythonBinding
 			return isHarmful.why();
 		}
 
+		VTX_DEBUG( "Run Python Command : {}", p_line );
+
+		const pybind11::module_ builtins = pybind11::module_::import( "builtins" );
+		pybind11::object		expression;
 		try
 		{
-			VTX_DEBUG( "Run Python Command : {}", p_line );
-			auto result = pybind11::eval<pybind11::eval_expr>( p_line );
+			expression = builtins.attr( "compile" )( p_line, "<input>", "eval" );
+		}
+		catch ( const pybind11::error_already_set & e )
+		{
+			if ( not e.matches( PyExc_SyntaxError ) )
+			{
+				throw( VTX::CommandException( p_line, e.what() ) );
+			}
+		}
+
+		try
+		{
+			if ( not expression )
+			{
+				pybind11::exec( p_line );
+				return {};
+			}
+
+			const pybind11::object result = builtins.attr( "eval" )( expression, pybind11::globals() );
 			if ( not result.is_none() )
 			{
 				return result.attr( "__repr__" )().cast<std::string>();
 			}
 		}
-		catch ( const pybind11::error_already_set & )
+		catch ( const pybind11::error_already_set & e )
 		{
-			try
-			{
-				pybind11::exec( p_line );
-			}
-			catch ( const pybind11::error_already_set & ee )
-			{
-				throw( VTX::CommandException( p_line, ee.what() ) );
-			}
-			catch ( VTX::CommandException & p_e )
-			{
-				VTX_PYTHON_OUT( "{}", p_e.what() );
-			}
+			throw( VTX::CommandException( p_line, e.what() ) );
 		}
-		catch ( VTX::CommandException & p_e )
+		catch ( const pybind11::cast_error & e )
 		{
-			VTX_PYTHON_OUT( "{}", p_e.what() );
+			throw( VTX::CommandException( p_line, e.what() ) );
 		}
 		return {};
 	}
@@ -223,6 +233,10 @@ namespace VTX::PythonBinding
 		{
 			throw( VTX::ScriptException( p_path.filename().string(), e.what() ) );
 		}
+		catch ( ... )
+		{
+			throw( VTX::ScriptException( p_path.filename().string(), "unknown exception" ) );
+		}
 	}
 
 	Wrapper::Module Interpretor::loadModule( const FilePath & p_path ) const
@@ -241,7 +255,7 @@ namespace VTX::PythonBinding
 		catch ( const pybind11::error_already_set & e )
 		{
 			VTX_ERROR( "{}", e.what() );
-			throw e;
+			throw;
 		}
 
 		return Wrapper::Module( loadedModule, filename );

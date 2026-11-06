@@ -30,8 +30,13 @@ namespace VTX::PythonBinding::Wrapper
 			}
 			catch ( const pybind11::error_already_set & e )
 			{
-				throw( PythonWrapperException( "Function " + _functionPath + " not found with given args (" + e.what()
-											   + ")." ) );
+				throw( PythonWrapperException( "Function " + _functionPath + " failed (" + e.what() + ")." ) );
+			}
+			catch ( const pybind11::cast_error & e )
+			{
+				throw( PythonWrapperException(
+					"Unable to convert arguments of function " + _functionPath + " (" + e.what() + ")."
+				) );
 			}
 		}
 
@@ -71,6 +76,12 @@ namespace VTX::PythonBinding::Wrapper
 			{
 				throw( PythonWrapperException( "Unable to cast return value of function " + _functionPath + " ("
 											   + e.what() + ")." ) );
+			}
+			catch ( const pybind11::cast_error & e )
+			{
+				throw( PythonWrapperException(
+					"Unable to cast return value of function " + _functionPath + " (" + e.what() + ")."
+				) );
 			}
 		}
 	};
