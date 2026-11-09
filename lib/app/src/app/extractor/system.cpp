@@ -1,7 +1,6 @@
 #include "app/extractor/system.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
-#include "app/action/selection.hpp"
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/generic/name.hpp"
@@ -25,7 +24,6 @@
 #include <limits>
 #include <memory>
 #include <optional>
-#include <renderer/graphics_config.hpp>
 #include <renderer/representation.hpp>
 #include <stdexcept>
 #include <util/event_hub.hpp>
@@ -114,11 +112,13 @@ namespace VTX::App::Extractor
 		_attributesPtr->data.trajectoryBufferSettings = p_bufferSettings;
 	}
 
-	System::System( FilePath p_path, std::string && p_buffer, IO::READER_OPTION p_options ) :
-		System( std::move( p_path ), p_options )
-	{
-		_attributesPtr->data.buffer = std::move( p_buffer );
-	}
+	System::System(
+		FilePath					   p_path,
+		std::string &&				   p_buffer,
+		IO::READER_OPTION			   p_options,
+		const TrajectoryBufferSettings p_bufferSettings
+	) : System( std::move( p_path ), p_options, p_bufferSettings )
+	{ _attributesPtr->data.buffer = std::move( p_buffer ); }
 
 	System::System(
 		const Entity				   p_entity,
@@ -214,8 +214,9 @@ namespace VTX::App::Extractor
 			if ( pendingData.trajectory.frameCount > 1 )
 			{
 				pendingData.trajectoryPlayer.emplace();
-				pendingData.trajectoryPlayer->player.setStepCount( static_cast<uint>( pendingData.trajectory.frameCount
-				) );
+				pendingData.trajectoryPlayer->player.setStepCount(
+					static_cast<uint>( pendingData.trajectory.frameCount )
+				);
 			}
 
 			if ( p_stopToken.stop_requested() )
