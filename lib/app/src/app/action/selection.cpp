@@ -2,6 +2,7 @@
 #include "app/action/action_manager.hpp"
 #include "app/helper/scene.hpp"
 #include "app/helper/system.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/services.hpp"
 #include "app/system/uid.hpp"
@@ -350,12 +351,20 @@ namespace VTX::App::Action::Selection
 		// strategy : for each unselected atom, look through neighbor voxels for a selected atom
 
 		// storing systems info
+
 		std::vector<SystemData> systems;
 		for ( const Entity system : REG().view<Core::Struct::Topology>() )
 		{
+			std::span<const Vec3f> positions;
+			if ( not Helper::Trajectory::visitCurrentFrame(
+					 system, [ &positions ]( const Core::Struct::FrameView p_frame ) { positions = p_frame; }
+				 ) )
+			{
+				return;
+			}
 			systems.emplace_back(
 				system,
-				VTX::App::System::getCurrentAtomPositions( system ),
+				positions,
 				REG().get<App::System::Selection>( system ),
 				REG().get<Util::Math::Grid<Index>>( system ),
 				REG().get<App::System::Visibility>( system )
@@ -444,12 +453,20 @@ namespace VTX::App::Action::Selection
 		// strategy : for each selected atom, look through neighbor voxels for an unselected atom
 
 		// storing systems info
+
 		std::vector<SystemData> systems;
 		for ( const Entity system : REG().view<Core::Struct::Topology>() )
 		{
+			std::span<const Vec3f> positions;
+			if ( not Helper::Trajectory::visitCurrentFrame(
+					 system, [ &positions ]( const Core::Struct::FrameView p_frame ) { positions = p_frame; }
+				 ) )
+			{
+				return;
+			}
 			systems.emplace_back(
 				system,
-				VTX::App::System::getCurrentAtomPositions( system ),
+				positions,
 				REG().get<App::System::Selection>( system ),
 				REG().get<Util::Math::Grid<Index>>( system ),
 				REG().get<App::System::Visibility>( system ),

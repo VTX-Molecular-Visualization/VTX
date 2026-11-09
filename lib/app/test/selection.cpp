@@ -7,7 +7,6 @@
 #include <app/fixture.hpp>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory.hpp>
 #include <bitset>
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/topology.hpp>
@@ -25,9 +24,11 @@ namespace
 	using namespace App::Helper::Scene;
 	using namespace App::System;
 
-	void _checkAtomRangeSelection( const VTX::Util::Math::BitSet & p_selection,
-								   const IndexRange &			   p_range,
-								   const bool					   p_selected )
+	void _checkAtomRangeSelection(
+		const VTX::Util::Math::BitSet & p_selection,
+		const IndexRange &				p_range,
+		const bool						p_selected
+	)
 	{
 		for ( const VTX::Index atom : p_range )
 		{
@@ -35,8 +36,10 @@ namespace
 		}
 	}
 
-	std::optional<VTX::Index> _findResidueWithMinimumAtomCount( const Topology & p_topology,
-																const VTX::Index p_minCount )
+	std::optional<VTX::Index> _findResidueWithMinimumAtomCount(
+		const Topology & p_topology,
+		const VTX::Index p_minCount
+	)
 	{
 		for ( VTX::Index residue = 0; residue < p_topology.getResidueCount(); ++residue )
 		{
