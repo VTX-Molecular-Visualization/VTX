@@ -11,16 +11,13 @@
 #include "renderer/builder/post_process/ssao.hpp"
 #include "renderer/builder/post_process/tone_mapping.hpp"
 #include "renderer/graphics_config.hpp"
-#include "renderer/representation.hpp"
-#include <util/chrono.hpp>
+#include <utility>
 
 namespace VTX::Renderer::Builder
 {
-	GraphBuilder DefaultRenderGraph::build(
-		const PipelineConfig & p_config,
-		const Layouts &		   p_layouts,
-		const Geometries &	   p_geometries
-	)
+	GraphBuilder DefaultRenderGraph::build( const PipelineConfig & p_config,
+											const Layouts &		   p_layouts,
+											const Geometries &	   p_geometries )
 	{
 		// Util::ScopedChrono timer( "[BUILDER] DefaultRenderGraph::build" );
 
@@ -35,312 +32,254 @@ namespace VTX::Renderer::Builder
 		GraphBuilder g;
 
 		// Buffers.
-		g.buffer(
-			"Camera",
-			E_BUFFER_USAGE::UNIFORM,
-			E_UPDATE_FREQUENCY::STREAM,
-			E_BUFFER_ALLOCATION::SINGLE,
-			E_BUFFER_MUTABILITY::IMMUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			15,
-			{ makeUniform( "MatrixView", Mat4f( MAT4F_ID ) ),
-			  makeUniform( "MatrixProjection", Mat4f( MAT4F_ID ) ),
-			  makeUniform( "MatrixViewInv", Mat4f( MAT4F_ID ) ),
-			  makeUniform( "MatrixViewInvTrans", Mat4f( MAT4F_ID ) ),
-			  makeUniform( "Position", Vec3f( VEC3F_ZERO ) ),
-			  makeUniform( "ClipInfos", Vec4f( VEC4F_ZERO ) ),
-			  makeUniform( "Resolution", Vec2i { 0, 0 } ),
-			  makeUniform( "MousePosition", Vec2i { 0, 0 } ),
-			  makeUniform( "IsPerspective", uint32_t( 1 ) ),
-			  makeUniform( "TanHalfFov", 1.f ) }
-		);
+		g.buffer( "Camera",
+				  E_BUFFER_USAGE::UNIFORM,
+				  E_UPDATE_FREQUENCY::STREAM,
+				  E_BUFFER_ALLOCATION::SINGLE,
+				  E_BUFFER_MUTABILITY::IMMUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  15,
+				  { makeUniform( "MatrixView", Mat4f( MAT4F_ID ) ),
+					makeUniform( "MatrixProjection", Mat4f( MAT4F_ID ) ),
+					makeUniform( "MatrixViewInv", Mat4f( MAT4F_ID ) ),
+					makeUniform( "MatrixViewInvTrans", Mat4f( MAT4F_ID ) ),
+					makeUniform( "Position", Vec3f( VEC3F_ZERO ) ),
+					makeUniform( "ClipInfos", Vec4f( VEC4F_ZERO ) ),
+					makeUniform( "Resolution", Vec2i { 0, 0 } ),
+					makeUniform( "MousePosition", Vec2i { 0, 0 } ),
+					makeUniform( "IsPerspective", static_cast<uint32_t>( 1 ) ),
+					makeUniform( "TanHalfFov", 1.f ) } );
 
-		g.buffer(
-			"ColorLayout",
-			E_BUFFER_USAGE::UNIFORM,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::SINGLE,
-			E_BUFFER_MUTABILITY::IMMUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			14,
-			{ makeUniformArray( "Colors", Util::Color::Rgba {}, 256 ) }
-		);
+		g.buffer( "ColorLayout",
+				  E_BUFFER_USAGE::UNIFORM,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::SINGLE,
+				  E_BUFFER_MUTABILITY::IMMUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  14,
+				  { makeUniformArray( "Colors", Util::Color::Rgba {}, 256 ) } );
 
-		g.buffer(
-			"Models",
-			E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::STREAM,
-			E_BUFFER_ALLOCATION::SINGLE,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			13,
-			{ makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
-			  makeUniform( "MatrixModelViewInv", Mat4f( MAT4F_ID ) ),
-			  makeUniform( "MatrixNormal", Mat4f( MAT4F_ID ) ) }
-		);
+		g.buffer( "Models",
+				  E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::STREAM,
+				  E_BUFFER_ALLOCATION::SINGLE,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  13,
+				  { makeUniform( "MatrixModelView", Mat4f( MAT4F_ID ) ),
+					makeUniform( "MatrixModelViewInv", Mat4f( MAT4F_ID ) ),
+					makeUniform( "MatrixNormal", Mat4f( MAT4F_ID ) ) } );
 
-		g.buffer(
-			"Representations",
-			E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::SINGLE,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			12,
-			{ makeUniform( "SphereRadiusFixed", 0.0f ),
-			  makeUniform( "SphereRadiusAdd", 0.0f ),
-			  makeUniform( "IsSphereRadiusFixed", uint32_t( 0 ) ),
-			  makeUniform( "CylinderRadius", 0.0f ),
-			  makeUniform( "CylinderColorBlending", uint32_t( 0 ) ),
-			  makeUniform( "RibbonColorBlending", uint32_t( 0 ) ),
-			  makeUniform( "SESProbeRadius", 0.0f ),
-			  makeUniform( "SESMaxProbeNeighborNb", SESGeometry::MAX_PROBE_NEIGHBOR_NB ) }
-		);
+		g.buffer( "Representations",
+				  E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::SINGLE,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  12,
+				  { makeUniform( "SphereRadiusFixed", 0.0f ),
+					makeUniform( "SphereRadiusAdd", 0.0f ),
+					makeUniform( "IsSphereRadiusFixed", static_cast<uint32_t>( 0 ) ),
+					makeUniform( "CylinderRadius", 0.0f ),
+					makeUniform( "CylinderColorBlending", static_cast<uint32_t>( 0 ) ),
+					makeUniform( "RibbonColorBlending", static_cast<uint32_t>( 0 ) ),
+					makeUniform( "SESProbeRadius", 0.0f ),
+					makeUniform( "SESMaxProbeNeighborNb", SESGeometry::MAX_PROBE_NEIGHBOR_NB ) } );
 
 		// Vertex streams.
-		g.vertexLayout( SphereGeometry::VERTEX_LAYOUT_ATOMS, p_layouts.atoms );
-		g.buffer( Layout::Atoms::ATOMS_POSITIONS, E_BUFFER_USAGE::CUDA_READ, E_UPDATE_FREQUENCY::DYNAMIC );
-		g.buffer( Layout::Atoms::ATOMS_SYMBOLS, E_BUFFER_USAGE::CUDA_READ, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.vertexLayout( Desc::Key { SphereGeometry::VERTEX_LAYOUT_ATOMS }, p_layouts.atoms );
 		g.buffer(
-			Layout::Atoms::ATOMS_COLORS,
-			E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::SINGLE,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			Layout::Atoms::BINDING_ATOMS_COLORS
-		);
-		g.buffer(
-			Layout::Atoms::ATOMS_FLAGS,
-			E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::SINGLE,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			Layout::Atoms::BINDING_ATOMS_FLAGS
-		);
-		g.vertexLayout( RibbonGeometry::VERTEX_LAYOUT_RESIDUES, p_layouts.residues );
-		g.vertexLayout( GridGeometry::VERTEX_LAYOUT_VOXELS, p_layouts.voxels );
-		g.vertexLayout( TriangleGeometry::VERTEX_LAYOUT_MESHES, p_layouts.meshes );
-		g.buffer(
-			SphereGeometry::INDIRECT_SPHERES,
-			E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::SINGLE,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			SphereGeometry::BINDING_INDIRECT_SPHERES
-		);
-		g.buffer(
-			CylinderGeometry::INDIRECT_CYLINDERS,
-			E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::SINGLE,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			CylinderGeometry::BINDING_INDIRECT_CYLINDERS
-		);
-		g.buffer(
-			RibbonGeometry::INDIRECT_RIBBONS,
-			E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::SINGLE,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			RibbonGeometry::BINDING_INDIRECT_RIBBONS
-		);
-		g.buffer(
-			GridGeometry::INDIRECT_GRID,
-			E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::SINGLE,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			GridGeometry::BINDING_INDIRECT_GRID
-		);
-		g.buffer(
-			TriangleGeometry::INDIRECT_TRIANGLES,
-			E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::SINGLE,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			TriangleGeometry::BINDING_INDIRECT_TRIANGLES
-		);
-		g.buffer(
-			SESGeometry::BUFFER_ATOMS,
-			E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			1
-		);
-		g.buffer(
-			SESGeometry::BUFFER_ATOM_IDS,
-			E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			7
-		);
-		g.buffer(
-			SESGeometry::BUFFER_PROBES,
-			E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			3
-		);
-		g.buffer(
-			SESGeometry::BUFFER_PROBE_ATOM_INDICES,
-			E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			4
-		);
-		g.buffer(
-			SESGeometry::BUFFER_PROBE_NEIGHBORS,
-			E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			5
-		);
-		g.buffer(
-			SESGeometry::BUFFER_SECTORS,
-			E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			6
-		);
-		g.buffer(
-			SESGeometry::BUFFER_CONVEX_PATCH_ELEMENTS,
-			E_BUFFER_USAGE::VERTEX | E_BUFFER_USAGE::CUDA_WRITE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			std::nullopt
-		);
-		g.buffer(
-			SESGeometry::BUFFER_CIRCLE_PATCH_ATOMS,
-			E_BUFFER_USAGE::VERTEX | E_BUFFER_USAGE::CUDA_WRITE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			std::nullopt
-		);
-		g.buffer(
-			SESGeometry::BUFFER_SEGMENT_PATCH_IDS,
-			E_BUFFER_USAGE::VERTEX | E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			2
-		);
-		g.buffer(
-			SESGeometry::INDEX_CONVEX_PATCHES,
-			E_BUFFER_USAGE::INDEX,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			std::nullopt
-		);
-		g.buffer(
-			SESGeometry::INDEX_CIRCLE_PATCHES,
-			E_BUFFER_USAGE::INDEX,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			std::nullopt
-		);
-		g.buffer(
-			SESGeometry::INDEX_SEGMENT_PATCHES,
-			E_BUFFER_USAGE::INDEX,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			std::nullopt
-		);
-		g.buffer(
-			SESGeometry::INDEX_CONCAVE_PATCHES,
-			E_BUFFER_USAGE::INDEX,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			std::nullopt
-		);
-		g.buffer(
-			SESGeometry::INDIRECT_CONVEX_PATCHES,
-			E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			SESGeometry::BINDING_INDIRECT_CONVEX_PATCHES
-		);
-		g.buffer(
-			SESGeometry::INDIRECT_CIRCLE_PATCHES,
-			E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			SESGeometry::BINDING_INDIRECT_CIRCLE_PATCHES
-		);
-		g.buffer(
-			SESGeometry::INDIRECT_SEGMENT_PATCHES,
-			E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			SESGeometry::BINDING_INDIRECT_SEGMENT_PATCHES
-		);
-		g.buffer(
-			SESGeometry::INDIRECT_CONCAVE_PATCHES,
-			E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
-			E_UPDATE_FREQUENCY::DYNAMIC,
-			E_BUFFER_ALLOCATION::CHUNKED,
-			E_BUFFER_MUTABILITY::MUTABLE,
-			E_BUFFER_ACCESS::NONE,
-			SESGeometry::BINDING_INDIRECT_CONCAVE_PATCHES
-		);
-		g.vertexLayout(
-			SESGeometry::GEOMETRY_CONVEX_PATCHES, { { SESGeometry::BUFFER_CONVEX_PATCH_ELEMENTS, E_TYPE::VEC2U } }
-		);
-		g.vertexLayout(
-			SESGeometry::GEOMETRY_CIRCLE_PATCHES, { { SESGeometry::BUFFER_CIRCLE_PATCH_ATOMS, E_TYPE::VEC2U } }
-		);
-		g.vertexLayout(
-			SESGeometry::GEOMETRY_SEGMENT_PATCHES, { { SESGeometry::BUFFER_SEGMENT_PATCH_IDS, E_TYPE::VEC4U } }
-		);
-		g.vertexLayout( SESGeometry::GEOMETRY_CONCAVE_PATCHES, VertexLayout {} );
+			Desc::Key { Layout::Atoms::ATOMS_POSITIONS }, E_BUFFER_USAGE::CUDA_READ, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( Desc::Key { Layout::Atoms::ATOMS_SYMBOLS }, E_BUFFER_USAGE::CUDA_READ, E_UPDATE_FREQUENCY::DYNAMIC );
+		g.buffer( Desc::Key { Layout::Atoms::ATOMS_COLORS },
+				  E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::SINGLE,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  Layout::Atoms::BINDING_ATOMS_COLORS );
+		g.buffer( Desc::Key { Layout::Atoms::ATOMS_FLAGS },
+				  E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::SINGLE,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  Layout::Atoms::BINDING_ATOMS_FLAGS );
+		g.vertexLayout( Desc::Key { RibbonGeometry::VERTEX_LAYOUT_RESIDUES }, p_layouts.residues );
+		g.vertexLayout( Desc::Key { GridGeometry::VERTEX_LAYOUT_VOXELS }, p_layouts.voxels );
+		g.vertexLayout( Desc::Key { TriangleGeometry::VERTEX_LAYOUT_MESHES }, p_layouts.meshes );
+		g.buffer( Desc::Key { SphereGeometry::INDIRECT_SPHERES },
+				  E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::SINGLE,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  SphereGeometry::BINDING_INDIRECT_SPHERES );
+		g.buffer( Desc::Key { CylinderGeometry::INDIRECT_CYLINDERS },
+				  E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::SINGLE,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  CylinderGeometry::BINDING_INDIRECT_CYLINDERS );
+		g.buffer( Desc::Key { RibbonGeometry::INDIRECT_RIBBONS },
+				  E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::SINGLE,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  RibbonGeometry::BINDING_INDIRECT_RIBBONS );
+		g.buffer( Desc::Key { GridGeometry::INDIRECT_GRID },
+				  E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::SINGLE,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  GridGeometry::BINDING_INDIRECT_GRID );
+		g.buffer( Desc::Key { TriangleGeometry::INDIRECT_TRIANGLES },
+				  E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::SINGLE,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  TriangleGeometry::BINDING_INDIRECT_TRIANGLES );
+		g.buffer( Desc::Key { SESGeometry::BUFFER_ATOMS },
+				  E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  1 );
+		g.buffer( Desc::Key { SESGeometry::BUFFER_ATOM_IDS },
+				  E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  7 );
+		g.buffer( Desc::Key { SESGeometry::BUFFER_PROBES },
+				  E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  3 );
+		g.buffer( Desc::Key { SESGeometry::BUFFER_PROBE_ATOM_INDICES },
+				  E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  4 );
+		g.buffer( Desc::Key { SESGeometry::BUFFER_PROBE_NEIGHBORS },
+				  E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  5 );
+		g.buffer( Desc::Key { SESGeometry::BUFFER_SECTORS },
+				  E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  6 );
+		g.buffer( Desc::Key { SESGeometry::BUFFER_CONVEX_PATCH_ELEMENTS },
+				  E_BUFFER_USAGE::VERTEX | E_BUFFER_USAGE::CUDA_WRITE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  std::nullopt );
+		g.buffer( Desc::Key { SESGeometry::BUFFER_CIRCLE_PATCH_ATOMS },
+				  E_BUFFER_USAGE::VERTEX | E_BUFFER_USAGE::CUDA_WRITE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  std::nullopt );
+		g.buffer( Desc::Key { SESGeometry::BUFFER_SEGMENT_PATCH_IDS },
+				  E_BUFFER_USAGE::VERTEX | E_BUFFER_USAGE::STORAGE | E_BUFFER_USAGE::CUDA_WRITE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  2 );
+		g.buffer( Desc::Key { SESGeometry::INDEX_CONVEX_PATCHES },
+				  E_BUFFER_USAGE::INDEX,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  std::nullopt );
+		g.buffer( Desc::Key { SESGeometry::INDEX_CIRCLE_PATCHES },
+				  E_BUFFER_USAGE::INDEX,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  std::nullopt );
+		g.buffer( Desc::Key { SESGeometry::INDEX_SEGMENT_PATCHES },
+				  E_BUFFER_USAGE::INDEX,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  std::nullopt );
+		g.buffer( Desc::Key { SESGeometry::INDEX_CONCAVE_PATCHES },
+				  E_BUFFER_USAGE::INDEX,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  std::nullopt );
+		g.buffer( Desc::Key { SESGeometry::INDIRECT_CONVEX_PATCHES },
+				  E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  SESGeometry::BINDING_INDIRECT_CONVEX_PATCHES );
+		g.buffer( Desc::Key { SESGeometry::INDIRECT_CIRCLE_PATCHES },
+				  E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  SESGeometry::BINDING_INDIRECT_CIRCLE_PATCHES );
+		g.buffer( Desc::Key { SESGeometry::INDIRECT_SEGMENT_PATCHES },
+				  E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  SESGeometry::BINDING_INDIRECT_SEGMENT_PATCHES );
+		g.buffer( Desc::Key { SESGeometry::INDIRECT_CONCAVE_PATCHES },
+				  E_BUFFER_USAGE::INDIRECT | E_BUFFER_USAGE::STORAGE,
+				  E_UPDATE_FREQUENCY::DYNAMIC,
+				  E_BUFFER_ALLOCATION::CHUNKED,
+				  E_BUFFER_MUTABILITY::MUTABLE,
+				  E_BUFFER_ACCESS::NONE,
+				  SESGeometry::BINDING_INDIRECT_CONCAVE_PATCHES );
+		g.vertexLayout( Desc::Key { SESGeometry::GEOMETRY_CONVEX_PATCHES },
+						{ { Desc::Key { SESGeometry::BUFFER_CONVEX_PATCH_ELEMENTS }, E_TYPE::VEC2U } } );
+		g.vertexLayout( Desc::Key { SESGeometry::GEOMETRY_CIRCLE_PATCHES },
+						{ { Desc::Key { SESGeometry::BUFFER_CIRCLE_PATCH_ATOMS }, E_TYPE::VEC2U } } );
+		g.vertexLayout( Desc::Key { SESGeometry::GEOMETRY_SEGMENT_PATCHES },
+						{ { Desc::Key { SESGeometry::BUFFER_SEGMENT_PATCH_IDS }, E_TYPE::VEC4U } } );
+		g.vertexLayout( Desc::Key { SESGeometry::GEOMETRY_CONCAVE_PATCHES }, VertexLayout {} );
 
 		// Geometries.
-		g.geometry( SphereGeometry::GEOMETRY_SPHERES, p_geometries.spheres );
-		g.geometry( CylinderGeometry::GEOMETRY_CYLINDERS, p_geometries.cylinders );
-		g.geometry( RibbonGeometry::GEOMETRY_RIBBONS, p_geometries.ribbons );
-		g.geometry( GridGeometry::GEOMETRY_GRID, p_geometries.grid );
-		g.geometry( TriangleGeometry::GEOMETRY_TRIANGLES, p_geometries.triangles );
-		g.geometry( SESGeometry::GEOMETRY_CONVEX_PATCHES, p_geometries.ses.convexPatches );
-		g.geometry( SESGeometry::GEOMETRY_CIRCLE_PATCHES, p_geometries.ses.circlePatches );
-		g.geometry( SESGeometry::GEOMETRY_SEGMENT_PATCHES, p_geometries.ses.segmentPatches );
-		g.geometry( SESGeometry::GEOMETRY_CONCAVE_PATCHES, p_geometries.ses.concavePatches );
+		g.geometry( Desc::Key { SphereGeometry::GEOMETRY_SPHERES }, p_geometries.spheres );
+		g.geometry( Desc::Key { CylinderGeometry::GEOMETRY_CYLINDERS }, p_geometries.cylinders );
+		g.geometry( Desc::Key { RibbonGeometry::GEOMETRY_RIBBONS }, p_geometries.ribbons );
+		g.geometry( Desc::Key { GridGeometry::GEOMETRY_GRID }, p_geometries.grid );
+		g.geometry( Desc::Key { TriangleGeometry::GEOMETRY_TRIANGLES }, p_geometries.triangles );
+		g.geometry( Desc::Key { SESGeometry::GEOMETRY_CONVEX_PATCHES }, p_geometries.ses.convexPatches );
+		g.geometry( Desc::Key { SESGeometry::GEOMETRY_CIRCLE_PATCHES }, p_geometries.ses.circlePatches );
+		g.geometry( Desc::Key { SESGeometry::GEOMETRY_SEGMENT_PATCHES }, p_geometries.ses.segmentPatches );
+		g.geometry( Desc::Key { SESGeometry::GEOMETRY_CONCAVE_PATCHES }, p_geometries.ses.concavePatches );
 
 		// Textures.
 		g.texture( "Geometry", E_FORMAT::RGBA32UI )
@@ -352,9 +291,9 @@ namespace VTX::Renderer::Builder
 
 		if ( p_config.enableSSAO )
 		{
-			constexpr size_t   noiseTextureSize = 64;
-			std::vector<Vec3f> noiseData		= Util::Math::randomUniVectors( noiseTextureSize * noiseTextureSize );
-			const float		   ssaoSize			= 1.f / p_config.ssaoScale;
+			constexpr size_t		 noiseTextureSize = 64;
+			const std::vector<Vec3f> noiseData = Util::Math::randomUniVectors( noiseTextureSize * noiseTextureSize );
+			const float				 ssaoSize  = 1.f / p_config.ssaoScale;
 
 			g.texture( "SSAO", E_FORMAT::R8UI, Size2DRelative { ssaoSize, ssaoSize } );
 			g.texture( "Noise", E_FORMAT::RGB16F, noiseData, Size2DAbsolute { noiseTextureSize, noiseTextureSize } );
@@ -365,66 +304,52 @@ namespace VTX::Renderer::Builder
 		{
 			// Used by shading pass even if SSAO disabled.
 			// HALF_FLOAT value.
-			std::vector<std::byte> emptyData = { std::byte { 0x00 }, std::byte { 0x3C } };
+			const std::vector<std::byte> emptyData = { std::byte { 0x00 }, std::byte { 0x3C } };
 			g.texture( "BlurY", E_FORMAT::R16F, emptyData, Size2DAbsolute { 1, 1 } );
 		}
 
 		g.texture( "Shaded", E_FORMAT::RGBA16F );
 
 		const uint environmentFaceSize = p_config.enableEnvironment ? p_config.environmentFaceSize : 1;
-		g.texture(
-			PostProcess::Shading::ENVIRONMENT_TEXTURE,
-			E_FORMAT::RGBA16F,
-			Size2DAbsolute { environmentFaceSize, environmentFaceSize },
-			E_TEXTURE_TARGET::CUBEMAP,
-			true
-		);
-		g.texture(
-			 PostProcess::Shading::MATERIAL_ALBEDO_TEXTURE,
-			 E_FORMAT::SRGB8_ALPHA8,
-			 Size2DAbsolute { 1, 1 },
-			 E_TEXTURE_TARGET::TEXTURE_2D,
-			 true
-		)
-			.texture(
-				PostProcess::Shading::MATERIAL_NORMAL_TEXTURE,
-				E_FORMAT::RGBA8UI,
-				Size2DAbsolute { 1, 1 },
-				E_TEXTURE_TARGET::TEXTURE_2D,
-				true
-			)
-			.texture(
-				PostProcess::Shading::MATERIAL_METALLIC_TEXTURE,
-				E_FORMAT::R8UI,
-				Size2DAbsolute { 1, 1 },
-				E_TEXTURE_TARGET::TEXTURE_2D,
-				true
-			)
-			.texture(
-				PostProcess::Shading::MATERIAL_ROUGHNESS_TEXTURE,
-				E_FORMAT::R8UI,
-				Size2DAbsolute { 1, 1 },
-				E_TEXTURE_TARGET::TEXTURE_2D,
-				true
-			)
-			.texture(
-				PostProcess::Shading::MATERIAL_AO_TEXTURE,
-				E_FORMAT::R8UI,
-				Size2DAbsolute { 1, 1 },
-				E_TEXTURE_TARGET::TEXTURE_2D,
-				true
-			)
-			.texture(
-				PostProcess::Shading::MATERIAL_EMISSIVE_TEXTURE,
-				E_FORMAT::SRGB8_ALPHA8,
-				Size2DAbsolute { 1, 1 },
-				E_TEXTURE_TARGET::TEXTURE_2D,
-				true
-			);
+		g.texture( Desc::Key { PostProcess::Shading::ENVIRONMENT_TEXTURE },
+				   E_FORMAT::RGBA16F,
+				   Size2DAbsolute { environmentFaceSize, environmentFaceSize },
+				   E_TEXTURE_TARGET::CUBEMAP,
+				   true );
+		g.texture( Desc::Key { PostProcess::Shading::MATERIAL_ALBEDO_TEXTURE },
+				   E_FORMAT::SRGB8_ALPHA8,
+				   Size2DAbsolute { 1, 1 },
+				   E_TEXTURE_TARGET::TEXTURE_2D,
+				   true )
+			.texture( Desc::Key { PostProcess::Shading::MATERIAL_NORMAL_TEXTURE },
+					  E_FORMAT::RGBA8UI,
+					  Size2DAbsolute { 1, 1 },
+					  E_TEXTURE_TARGET::TEXTURE_2D,
+					  true )
+			.texture( Desc::Key { PostProcess::Shading::MATERIAL_METALLIC_TEXTURE },
+					  E_FORMAT::R8UI,
+					  Size2DAbsolute { 1, 1 },
+					  E_TEXTURE_TARGET::TEXTURE_2D,
+					  true )
+			.texture( Desc::Key { PostProcess::Shading::MATERIAL_ROUGHNESS_TEXTURE },
+					  E_FORMAT::R8UI,
+					  Size2DAbsolute { 1, 1 },
+					  E_TEXTURE_TARGET::TEXTURE_2D,
+					  true )
+			.texture( Desc::Key { PostProcess::Shading::MATERIAL_AO_TEXTURE },
+					  E_FORMAT::R8UI,
+					  Size2DAbsolute { 1, 1 },
+					  E_TEXTURE_TARGET::TEXTURE_2D,
+					  true )
+			.texture( Desc::Key { PostProcess::Shading::MATERIAL_EMISSIVE_TEXTURE },
+					  E_FORMAT::SRGB8_ALPHA8,
+					  Size2DAbsolute { 1, 1 },
+					  E_TEXTURE_TARGET::TEXTURE_2D,
+					  true );
 
 		if ( p_config.shadingMode == E_SHADING::PBR )
 		{
-			g.texture( PostProcess::ToneMapping::PASS, E_FORMAT::RGBA16F );
+			g.texture( Desc::Key { PostProcess::ToneMapping::PASS }, E_FORMAT::RGBA16F );
 		}
 
 		if ( p_config.enableOutline )
@@ -457,104 +382,95 @@ namespace VTX::Renderer::Builder
 		// Samplers.
 		g.defaultSampler();
 
-		g.sampler(
-			"NearestClamp",
-			E_WRAPPING::CLAMP_TO_EDGE,
-			E_WRAPPING::CLAMP_TO_EDGE,
-			E_FILTERING::NEAREST,
-			E_FILTERING::NEAREST
-		);
+		g.sampler( "NearestClamp",
+				   E_WRAPPING::CLAMP_TO_EDGE,
+				   E_WRAPPING::CLAMP_TO_EDGE,
+				   E_FILTERING::NEAREST,
+				   E_FILTERING::NEAREST );
 
 		g.sampler(
-			"NearestRepeat", E_WRAPPING::REPEAT, E_WRAPPING::REPEAT, E_FILTERING::NEAREST, E_FILTERING::NEAREST
-		);
+			"NearestRepeat", E_WRAPPING::REPEAT, E_WRAPPING::REPEAT, E_FILTERING::NEAREST, E_FILTERING::NEAREST );
 
-		g.sampler(
-			"LinearClamp",
-			E_WRAPPING::CLAMP_TO_EDGE,
-			E_WRAPPING::CLAMP_TO_EDGE,
-			E_FILTERING::LINEAR,
-			E_FILTERING::LINEAR
-		);
+		g.sampler( "LinearClamp",
+				   E_WRAPPING::CLAMP_TO_EDGE,
+				   E_WRAPPING::CLAMP_TO_EDGE,
+				   E_FILTERING::LINEAR,
+				   E_FILTERING::LINEAR );
 
-		g.sampler(
-			PostProcess::Shading::ENVIRONMENT_SAMPLER,
-			E_WRAPPING::CLAMP_TO_EDGE,
-			E_WRAPPING::CLAMP_TO_EDGE,
-			E_FILTERING::LINEAR_MIPMAP_LINEAR,
-			E_FILTERING::LINEAR
-		);
-		g.sampler(
-			PostProcess::Shading::MATERIAL_TEXTURE_SAMPLER,
-			E_WRAPPING::REPEAT,
-			E_WRAPPING::REPEAT,
-			E_FILTERING::LINEAR_MIPMAP_LINEAR,
-			E_FILTERING::LINEAR
-		);
+		g.sampler( Desc::Key { PostProcess::Shading::ENVIRONMENT_SAMPLER },
+				   E_WRAPPING::CLAMP_TO_EDGE,
+				   E_WRAPPING::CLAMP_TO_EDGE,
+				   E_FILTERING::LINEAR_MIPMAP_LINEAR,
+				   E_FILTERING::LINEAR );
+		g.sampler( Desc::Key { PostProcess::Shading::MATERIAL_TEXTURE_SAMPLER },
+				   E_WRAPPING::REPEAT,
+				   E_WRAPPING::REPEAT,
+				   E_FILTERING::LINEAR_MIPMAP_LINEAR,
+				   E_FILTERING::LINEAR );
 
 		// Passes.
-		g.externalPass( SESGeometry::PASS_COMPUTE ).endPass();
+		g.externalPass( Desc::Key { SESGeometry::PASS_COMPUTE } ).endPass();
 
 		// Geometric.
 		g.pass( "Geometric" )
 			.settings( { E_SETTING::CLEAR_COLOR, E_SETTING::CLEAR_DEPTH, E_SETTING::ENABLE_DEPTH } )
-			.in( E_RESOURCE_TYPE::GEOMETRY, SphereGeometry::GEOMETRY_SPHERES )
-			.in( E_RESOURCE_TYPE::GEOMETRY, CylinderGeometry::GEOMETRY_CYLINDERS )
-			.in( E_RESOURCE_TYPE::GEOMETRY, RibbonGeometry::GEOMETRY_RIBBONS )
-			.in( E_RESOURCE_TYPE::GEOMETRY, GridGeometry::GEOMETRY_GRID )
-			.in( E_RESOURCE_TYPE::GEOMETRY, TriangleGeometry::GEOMETRY_TRIANGLES )
-			.in( E_RESOURCE_TYPE::GEOMETRY, SESGeometry::GEOMETRY_CONVEX_PATCHES )
-			.in( E_RESOURCE_TYPE::GEOMETRY, SESGeometry::GEOMETRY_CIRCLE_PATCHES )
-			.in( E_RESOURCE_TYPE::GEOMETRY, SESGeometry::GEOMETRY_SEGMENT_PATCHES )
-			.in( E_RESOURCE_TYPE::GEOMETRY, SESGeometry::GEOMETRY_CONCAVE_PATCHES )
-			.in( E_RESOURCE_TYPE::BUFFER, SphereGeometry::INDIRECT_SPHERES )
-			.in( E_RESOURCE_TYPE::BUFFER, CylinderGeometry::INDIRECT_CYLINDERS )
-			.in( E_RESOURCE_TYPE::BUFFER, RibbonGeometry::INDIRECT_RIBBONS )
-			.in( E_RESOURCE_TYPE::BUFFER, GridGeometry::INDIRECT_GRID )
-			.in( E_RESOURCE_TYPE::BUFFER, TriangleGeometry::INDIRECT_TRIANGLES )
-			.in( E_RESOURCE_TYPE::BUFFER, SESGeometry::INDIRECT_CONVEX_PATCHES )
-			.in( E_RESOURCE_TYPE::BUFFER, SESGeometry::INDIRECT_CIRCLE_PATCHES )
-			.in( E_RESOURCE_TYPE::BUFFER, SESGeometry::INDIRECT_SEGMENT_PATCHES )
-			.in( E_RESOURCE_TYPE::BUFFER, SESGeometry::INDIRECT_CONCAVE_PATCHES )
+			.in( E_RESOURCE_TYPE::GEOMETRY, Desc::Key { SphereGeometry::GEOMETRY_SPHERES } )
+			.in( E_RESOURCE_TYPE::GEOMETRY, Desc::Key { CylinderGeometry::GEOMETRY_CYLINDERS } )
+			.in( E_RESOURCE_TYPE::GEOMETRY, Desc::Key { RibbonGeometry::GEOMETRY_RIBBONS } )
+			.in( E_RESOURCE_TYPE::GEOMETRY, Desc::Key { GridGeometry::GEOMETRY_GRID } )
+			.in( E_RESOURCE_TYPE::GEOMETRY, Desc::Key { TriangleGeometry::GEOMETRY_TRIANGLES } )
+			.in( E_RESOURCE_TYPE::GEOMETRY, Desc::Key { SESGeometry::GEOMETRY_CONVEX_PATCHES } )
+			.in( E_RESOURCE_TYPE::GEOMETRY, Desc::Key { SESGeometry::GEOMETRY_CIRCLE_PATCHES } )
+			.in( E_RESOURCE_TYPE::GEOMETRY, Desc::Key { SESGeometry::GEOMETRY_SEGMENT_PATCHES } )
+			.in( E_RESOURCE_TYPE::GEOMETRY, Desc::Key { SESGeometry::GEOMETRY_CONCAVE_PATCHES } )
+			.in( E_RESOURCE_TYPE::BUFFER, Desc::Key { SphereGeometry::INDIRECT_SPHERES } )
+			.in( E_RESOURCE_TYPE::BUFFER, Desc::Key { CylinderGeometry::INDIRECT_CYLINDERS } )
+			.in( E_RESOURCE_TYPE::BUFFER, Desc::Key { RibbonGeometry::INDIRECT_RIBBONS } )
+			.in( E_RESOURCE_TYPE::BUFFER, Desc::Key { GridGeometry::INDIRECT_GRID } )
+			.in( E_RESOURCE_TYPE::BUFFER, Desc::Key { TriangleGeometry::INDIRECT_TRIANGLES } )
+			.in( E_RESOURCE_TYPE::BUFFER, Desc::Key { SESGeometry::INDIRECT_CONVEX_PATCHES } )
+			.in( E_RESOURCE_TYPE::BUFFER, Desc::Key { SESGeometry::INDIRECT_CIRCLE_PATCHES } )
+			.in( E_RESOURCE_TYPE::BUFFER, Desc::Key { SESGeometry::INDIRECT_SEGMENT_PATCHES } )
+			.in( E_RESOURCE_TYPE::BUFFER, Desc::Key { SESGeometry::INDIRECT_CONCAVE_PATCHES } )
 			.out( "Geometry" )
 			.out( "Color" )
 			.out( "Picking" )
 			.out( "DepthRaw" )
 			.program( "Sphere" )
 			.shadersDir( "sphere" )
-			.draw( SphereGeometry::GEOMETRY_SPHERES, E_PRIMITIVE::POINTS )
+			.draw( Desc::Key { SphereGeometry::GEOMETRY_SPHERES }, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "Cylinder" )
 			.shadersDir( "cylinder" )
-			.draw( CylinderGeometry::GEOMETRY_CYLINDERS, E_PRIMITIVE::LINES )
+			.draw( Desc::Key { CylinderGeometry::GEOMETRY_CYLINDERS }, E_PRIMITIVE::LINES )
 			.endProgram()
 			.program( "Ribbon" )
 			.shadersDir( "ribbon" )
-			.draw( RibbonGeometry::GEOMETRY_RIBBONS, E_PRIMITIVE::PATCHES )
+			.draw( Desc::Key { RibbonGeometry::GEOMETRY_RIBBONS }, E_PRIMITIVE::PATCHES )
 			.endProgram()
 			.program( "Voxel" )
 			.shadersDir( "voxel" )
-			.draw( GridGeometry::GEOMETRY_GRID, E_PRIMITIVE::POINTS )
+			.draw( Desc::Key { GridGeometry::GEOMETRY_GRID }, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "Triangle" )
 			.shadersDir( "triangle" )
-			.draw( TriangleGeometry::GEOMETRY_TRIANGLES, E_PRIMITIVE::TRIANGLES )
+			.draw( Desc::Key { TriangleGeometry::GEOMETRY_TRIANGLES }, E_PRIMITIVE::TRIANGLES )
 			.endProgram()
 			.program( "SES.ConvexPatch" )
 			.shadersDir( "ses/sesdf/convex" )
-			.draw( SESGeometry::GEOMETRY_CONVEX_PATCHES, E_PRIMITIVE::POINTS )
+			.draw( Desc::Key { SESGeometry::GEOMETRY_CONVEX_PATCHES }, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "SES.CirclePatch" )
 			.shadersDir( "ses/sesdf/circle" )
-			.draw( SESGeometry::GEOMETRY_CIRCLE_PATCHES, E_PRIMITIVE::POINTS )
+			.draw( Desc::Key { SESGeometry::GEOMETRY_CIRCLE_PATCHES }, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "SES.SegmentPatch" )
 			.shadersDir( "ses/sesdf/segment" )
-			.draw( SESGeometry::GEOMETRY_SEGMENT_PATCHES, E_PRIMITIVE::POINTS )
+			.draw( Desc::Key { SESGeometry::GEOMETRY_SEGMENT_PATCHES }, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.program( "SES.ConcavePatch" )
 			.shadersDir( "ses/sesdf/concave" )
-			.draw( SESGeometry::GEOMETRY_CONCAVE_PATCHES, E_PRIMITIVE::POINTS )
+			.draw( Desc::Key { SESGeometry::GEOMETRY_CONCAVE_PATCHES }, E_PRIMITIVE::POINTS )
 			.endProgram()
 			.endPass();
 
@@ -563,21 +479,23 @@ namespace VTX::Renderer::Builder
 		if ( p_config.enableSSAO )
 		{
 			PostProcess::SSAO::build( g, p_config.ssaoMethod );
-			PostProcess::BlurX::build( g, PostProcess::SSAO::PASS );
-			PostProcess::BlurY::build( g, PostProcess::BlurX::PASS );
+			PostProcess::BlurX::build( g, Desc::Key { PostProcess::SSAO::PASS } );
+			PostProcess::BlurY::build( g, Desc::Key { PostProcess::BlurX::PASS } );
 		}
 
 		PostProcess::Shading::build( g, p_config.enableSSAO, p_config.shadingMode );
 
-		const Desc::Key postChromatic = p_config.enableChromaticAberration ? PostProcess::ChromaticAberration::PASS
-																		   : PostProcess::Shading::OUTPUT;
+		const Desc::Key postChromatic = p_config.enableChromaticAberration
+											? Desc::Key { PostProcess::ChromaticAberration::PASS }
+											: Desc::Key { PostProcess::Shading::OUTPUT };
 
 		if ( p_config.enableChromaticAberration )
 		{
-			PostProcess::ChromaticAberration::build( g, PostProcess::Shading::OUTPUT );
+			PostProcess::ChromaticAberration::build( g, Desc::Key { PostProcess::Shading::OUTPUT } );
 		}
 
-		const Desc::Key postEffects = p_config.enablePixelize ? PostProcess::Pixelize::PASS : postChromatic;
+		const Desc::Key postEffects
+			= p_config.enablePixelize ? Desc::Key { PostProcess::Pixelize::PASS } : postChromatic;
 
 		if ( p_config.enablePixelize )
 		{
@@ -591,11 +509,12 @@ namespace VTX::Renderer::Builder
 
 		if ( p_config.enableSelection )
 		{
-			PostProcess::Selection::build( g, p_config.enableOutline ? PostProcess::Outline::PASS : postEffects );
+			PostProcess::Selection::build(
+				g, p_config.enableOutline ? Desc::Key { PostProcess::Outline::PASS } : postEffects );
 		}
 
-		const Desc::Key postSelection = p_config.enableSelection ? PostProcess::Selection::PASS
-										: p_config.enableOutline ? PostProcess::Outline::PASS
+		const Desc::Key postSelection = p_config.enableSelection ? Desc::Key { PostProcess::Selection::PASS }
+										: p_config.enableOutline ? Desc::Key { PostProcess::Outline::PASS }
 																 : postEffects;
 
 		if ( p_config.enableCRT )
@@ -603,14 +522,13 @@ namespace VTX::Renderer::Builder
 			PostProcess::CRT::build( g, postSelection );
 		}
 
-		const Desc::Key postCRT = p_config.enableCRT ? PostProcess::CRT::PASS : postSelection;
+		const Desc::Key postCRT = p_config.enableCRT ? Desc::Key { PostProcess::CRT::PASS } : postSelection;
 		if ( p_config.shadingMode == E_SHADING::PBR )
 		{
 			PostProcess::ToneMapping::build( g, postCRT );
 		}
 		PostProcess::FXAA::build(
-			g, p_config.shadingMode == E_SHADING::PBR ? PostProcess::ToneMapping::PASS : postCRT
-		);
+			g, p_config.shadingMode == E_SHADING::PBR ? Desc::Key { PostProcess::ToneMapping::PASS } : postCRT );
 
 		// Debug
 		/*
@@ -649,14 +567,12 @@ namespace VTX::Renderer::Builder
 		return config;
 	}
 
-	bool RenderGraphRuntime::refreshGraph(
-		const GraphicsConfig &			p_config,
-		std::optional<PipelineConfig> & p_currentConfig,
-		RenderGraph &					p_graph,
-		Desc::RenderQueue &				p_queue,
-		const Layouts &					p_layouts,
-		const Geometries &				p_geometries
-	)
+	bool RenderGraphRuntime::refreshGraph( const GraphicsConfig &		   p_config,
+										   std::optional<PipelineConfig> & p_currentConfig,
+										   RenderGraph &				   p_graph,
+										   Desc::RenderQueue &			   p_queue,
+										   const Layouts &				   p_layouts,
+										   const Geometries &			   p_geometries )
 	{
 		// Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::refreshGraph" );
 
@@ -667,9 +583,13 @@ namespace VTX::Renderer::Builder
 			return false;
 		}
 
+		RenderGraph graph;
+		graph.set( DefaultRenderGraph::build( config, p_layouts, p_geometries ) );
+		Desc::RenderQueue queue = graph.build();
+
+		p_graph			= std::move( graph );
+		p_queue			= std::move( queue );
 		p_currentConfig = config;
-		p_graph.set( DefaultRenderGraph::build( config, p_layouts, p_geometries ) );
-		p_queue = p_graph.build();
 
 		return true;
 	}
@@ -690,47 +610,44 @@ namespace VTX::Renderer::Builder
 			changed = p_graph.setGeometryChunks( p_geometry, p_source.chunks ) || changed;
 		};
 
-		sync( Geometry::SES::GEOMETRY_CONVEX_PATCHES, p_geometries.ses.convexPatches );
-		sync( Geometry::SES::GEOMETRY_CIRCLE_PATCHES, p_geometries.ses.circlePatches );
-		sync( Geometry::SES::GEOMETRY_SEGMENT_PATCHES, p_geometries.ses.segmentPatches );
-		sync( Geometry::SES::GEOMETRY_CONCAVE_PATCHES, p_geometries.ses.concavePatches );
+		sync( Desc::Key { Geometry::SES::GEOMETRY_CONVEX_PATCHES }, p_geometries.ses.convexPatches );
+		sync( Desc::Key { Geometry::SES::GEOMETRY_CIRCLE_PATCHES }, p_geometries.ses.circlePatches );
+		sync( Desc::Key { Geometry::SES::GEOMETRY_SEGMENT_PATCHES }, p_geometries.ses.segmentPatches );
+		sync( Desc::Key { Geometry::SES::GEOMETRY_CONCAVE_PATCHES }, p_geometries.ses.concavePatches );
 
 		return changed;
 	}
 
-	void RenderGraphRuntime::bindExternalPasses(
-		Context::ContextWrapper & p_context,
-		const uintptr_t			  p_function,
-		const uintptr_t			  p_contextPtr
-	)
+	void RenderGraphRuntime::bindExternalPasses( Context::ContextWrapper & p_context,
+												 const uintptr_t		   p_function,
+												 const uintptr_t		   p_contextPtr )
 	{
 		// Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::bindExternalPasses" );
 
-		if ( not p_context.containsPass( Geometry::SES::PASS_COMPUTE ) )
+		if ( not p_context.containsPass( Desc::Key { Geometry::SES::PASS_COMPUTE } ) )
 		{
 			return;
 		}
 
-		p_context.setExternalPass( Geometry::SES::PASS_COMPUTE, p_function, p_contextPtr );
+		p_context.setExternalPass( Desc::Key { Geometry::SES::PASS_COMPUTE }, p_function, p_contextPtr );
 	}
 
 	void RenderGraphRuntime::markSESDirty( Context::ContextWrapper & p_context, const Geometries & p_geometries )
 	{
 		// Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::markSESDirty" );
 
-		if ( p_context.containsPass( Geometry::SES::PASS_COMPUTE ) && p_geometries.ses.hasPendingCompute() )
+		if ( p_context.containsPass( Desc::Key { Geometry::SES::PASS_COMPUTE } )
+			 && p_geometries.ses.hasPendingCompute() )
 		{
-			p_context.markPassDirty( Geometry::SES::PASS_COMPUTE );
+			p_context.markPassDirty( Desc::Key { Geometry::SES::PASS_COMPUTE } );
 		}
 	}
 
-	void RenderGraphRuntime::rebuildCommandBuffer(
-		Context::ContextWrapper & p_context,
-		const Desc::RenderQueue & p_queue,
-		const Desc::Resources &	  p_resources,
-		const uintptr_t			  p_externalFunction,
-		const uintptr_t			  p_externalContext
-	)
+	void RenderGraphRuntime::rebuildCommandBuffer( Context::ContextWrapper & p_context,
+												   const Desc::RenderQueue & p_queue,
+												   const Desc::Resources &	 p_resources,
+												   const uintptr_t			 p_externalFunction,
+												   const uintptr_t			 p_externalContext )
 	{
 		// Util::ScopedChrono timer( "[BUILDER] RenderGraphRuntime::rebuildCommandBuffer" );
 

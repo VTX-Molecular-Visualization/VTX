@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_ACTION_COLOR_LAYOUT__
-#define __VTX_UI_ACTION_COLOR_LAYOUT__
+#ifndef VTX_APP_ACTION_COLOR_LAYOUT_HPP
+#define VTX_APP_ACTION_COLOR_LAYOUT_HPP
 
 #include "app/ecs.hpp"
 #include <renderer/color.hpp>
@@ -13,7 +13,7 @@ namespace VTX::App::Action::ColorLayout
 	 */
 	struct Change
 	{
-		void execute( const Entity, const Index, const Util::Color::Rgba & );
+		void execute( Entity, Index, const Util::Color::Rgba & );
 	};
 
 	/**
@@ -21,7 +21,7 @@ namespace VTX::App::Action::ColorLayout
 	 */
 	struct ChangeAll
 	{
-		void execute( const Entity, const Renderer::Color::LayoutArray & );
+		void execute( Entity, const Renderer::Color::LayoutArray & );
 	};
 
 	/**
@@ -29,7 +29,7 @@ namespace VTX::App::Action::ColorLayout
 	 */
 	struct Randomize
 	{
-		void execute( const Entity );
+		void execute( Entity );
 	};
 
 } // namespace VTX::App::Action::ColorLayout

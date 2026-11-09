@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_THREAD_TRAJECTORY_LOADER__
-#define __VTX_APP_THREAD_TRAJECTORY_LOADER__
+#ifndef VTX_APP_THREAD_TRAJECTORY_LOADER_HPP
+#define VTX_APP_THREAD_TRAJECTORY_LOADER_HPP
 
 #include "app/trajectory/types.hpp"
 #include <condition_variable>
@@ -31,11 +31,9 @@ namespace VTX::App::Thread
 		/**
 		 * @brief Update frame request.
 		 */
-		void requestFrameWindow(
-			const Trajectory::FrameRange,
-			const Trajectory::TRAJECTORY_READ_DIRECTION,
-			const Trajectory::FrameRange
-		);
+		void requestFrameWindow( Trajectory::FrameRange,
+								 Trajectory::TRAJECTORY_READ_DIRECTION,
+								 Trajectory::FrameRange );
 
 		/**
 		 * @brief Cancel request.
@@ -55,24 +53,20 @@ namespace VTX::App::Thread
 		/**
 		 * @brief Read a specific frame (sync!).
 		 */
-		Core::Struct::Frame readFrame( const uint );
+		Core::Struct::Frame readFrame( uint );
 
 	  private:
 		/**
 		 * @brief Constructor.
 		 */
-		TrajectoryLoader(
-			Util::Thread::ThreadManager &,
-			IO::SystemReader &&,
-			const Trajectory::TRAJECTORY_BUFFER_MODE
-		);
+		TrajectoryLoader( Util::Thread::ThreadManager &, IO::SystemReader &&, Trajectory::TRAJECTORY_BUFFER_MODE );
 
 		/**
 		 * @brief Threaded work.
 		 */
-		uint _run( Util::Thread::StopToken, Util::Thread::BaseThread & );
-		uint _loadFullBuffer( Util::Thread::StopToken, Util::Thread::BaseThread & );
-		uint _loadCircularBuffer( Util::Thread::StopToken, Util::Thread::BaseThread & );
+		uint _run( const Util::Thread::StopToken &, Util::Thread::BaseThread & );
+		uint _loadFullBuffer( const Util::Thread::StopToken &, Util::Thread::BaseThread & );
+		uint _loadCircularBuffer( const Util::Thread::StopToken &, Util::Thread::BaseThread & );
 
 		/**
 		 * @brief Reader.

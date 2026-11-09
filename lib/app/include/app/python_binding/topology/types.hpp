@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHON_BINDING_TOPOLOGY_TYPES__
-#define __VTX_APP_PYTHON_BINDING_TOPOLOGY_TYPES__
+#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_TYPES_HPP
+#define VTX_APP_PYTHON_BINDING_TOPOLOGY_TYPES_HPP
 
 #include "app/ecs.hpp"
 #include <core/struct/topology.hpp>
@@ -49,11 +49,11 @@ namespace VTX::App::PythonBinding::Topology
 	{
 		Entity entity = InvalidEntity;
 
-		Chain	 getChain( const Index p_index ) const;
-		Residue	 getResidue( const Index p_index ) const;
-		Atom	 getAtom( const Index p_index ) const;
-		Bond	 getBond( const Index p_index ) const;
-		Category getCategory( const Index p_index ) const;
+		Chain	 getChain( Index p_index ) const;
+		Residue	 getResidue( Index p_index ) const;
+		Atom	 getAtom( Index p_index ) const;
+		Bond	 getBond( Index p_index ) const;
+		Category getCategory( Index p_index ) const;
 	};
 
 	/**
@@ -67,8 +67,8 @@ namespace VTX::App::PythonBinding::Topology
 		System			  getSystem() const;
 		ResidueCollection getResidues() const;
 		AtomCollection	  getAtoms() const;
-		Residue			  getResidue( const Index p_index ) const;
-		Atom			  getAtom( const Index p_index ) const;
+		Residue			  getResidue( Index p_index ) const;
+		Atom			  getAtom( Index p_index ) const;
 	};
 
 	/**
@@ -83,7 +83,7 @@ namespace VTX::App::PythonBinding::Topology
 		Chain		   getChain() const;
 		Category	   getCategory() const;
 		AtomCollection getAtoms() const;
-		Atom		   getAtom( const Index p_index ) const;
+		Atom		   getAtom( Index p_index ) const;
 	};
 
 	/**

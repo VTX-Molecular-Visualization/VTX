@@ -2,20 +2,16 @@
 #include <qpushbutton.h>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
-#include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
-#include "tool/mdprep/ui/md_engine_field_placer.hpp"
 #include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
 #include "tool/mdprep/ui/report.hpp"
 //
 #include "tool/mdprep/ui/form_basic/data.hpp"
 #include "tool/mdprep/ui/shared.hpp"
-#include <app/vtx_app.hpp>
-#include <ui/qt/util.hpp>
+#include <util/logger.hpp>
 #include <util/sentry.hpp>
 //
 #include "tool/mdprep/ui/form_basic/settings_dialog.hpp"
-#include "tool/mdprep/ui/report.hpp"
 //
 #include "tool/mdprep/ui/form_basic/event_manager.hpp"
 
@@ -30,18 +26,27 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	{
 		_disconnectAll( p_._uiObjects );
 		std::swap( p_._uiObjects, _uiObjects );
-		_connectSettingsMinimization();
-		_connectSettingsNvt();
-		_connectSettingsNpt();
-		_connectSettingsProd();
-		_connectSettingsManager();
-		_connectInputCheck();
+		try
+		{
+			_connectSettingsMinimization();
+			_connectSettingsNvt();
+			_connectSettingsNpt();
+			_connectSettingsProd();
+			_connectSettingsManager();
+			_connectInputCheck();
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "[MDPREP] Failed to reconnect EventManager signals after move." );
+		}
 	}
 
 	EventManager & EventManager::operator=( EventManager && p_ ) noexcept
 	{
 		if ( &p_ == this )
+		{
 			return *this;
+		}
 
 		_data			= p_._data;
 		_settingsDialog = std::move( p_._settingsDialog );
@@ -51,17 +56,24 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_uiObjects = std::move( p_._uiObjects );
 
 		p_._uiObjects = UiObjects();
-		_connectSettingsMinimization();
-		_connectSettingsNvt();
-		_connectSettingsNpt();
-		_connectSettingsProd();
-		_connectSettingsManager();
-		_connectInputCheck();
+		try
+		{
+			_connectSettingsMinimization();
+			_connectSettingsNvt();
+			_connectSettingsNpt();
+			_connectSettingsProd();
+			_connectSettingsManager();
+			_connectInputCheck();
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "[MDPREP] Failed to reconnect EventManager signals after move." );
+		}
 
 		return *this;
 	}
 
-	void EventManager::setMinimizationSettings( QPushButton * p_ ) noexcept
+	void EventManager::setMinimizationSettings( QPushButton * p_ )
 	{
 		_uiObjects._buttonMinimizationSettings = p_;
 		_connectSettingsMinimization();
@@ -69,31 +81,31 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 	void EventManager::setInputCheck( QPushButton * p_ ) noexcept { _uiObjects._buttonInputCheck = p_; }
 
-	void EventManager::setNvtSettings( QPushButton * p_ ) noexcept
+	void EventManager::setNvtSettings( QPushButton * p_ )
 	{
 		_uiObjects._buttonEquilibrationNvtSettings = p_;
 		_connectSettingsNvt();
 	}
 
-	void EventManager::setNptSettings( QPushButton * p_ ) noexcept
+	void EventManager::setNptSettings( QPushButton * p_ )
 	{
 		_uiObjects._buttonEquilibrationNptSettings = p_;
 		_connectSettingsNpt();
 	}
 
-	void EventManager::setProductionSettings( QPushButton * p_ ) noexcept
+	void EventManager::setProductionSettings( QPushButton * p_ )
 	{
 		_uiObjects._buttonProductionSettings = p_;
 		_connectSettingsProd();
 	}
 
-	void EventManager::setSystemSettings( QPushButton * p_ ) noexcept
+	void EventManager::setSystemSettings( QPushButton * p_ )
 	{
 		_uiObjects._buttonSystemSettings = p_;
 		_connectSettingsManager();
 	}
 
-	void EventManager::setSystemMsg( QVBoxLayout * p_ ) noexcept
+	void EventManager::setSystemMsg( QVBoxLayout * p_ )
 	{
 		_uiObjects._layoutSystemCheckMsg = p_;
 		ReportManager * report			 = nullptr;
@@ -104,119 +116,131 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	void EventManager::_disconnectAll( UiObjects & p_uiObjects ) noexcept
 	{
 		if ( p_uiObjects._buttonMinimizationSettings )
+		{
 			p_uiObjects._buttonMinimizationSettings->disconnect( p_uiObjects._buttonMinimizationSettings );
+		}
 		if ( p_uiObjects._buttonEquilibrationNvtSettings )
+		{
 			p_uiObjects._buttonEquilibrationNvtSettings->disconnect( p_uiObjects._buttonEquilibrationNvtSettings );
+		}
 		if ( p_uiObjects._buttonEquilibrationNptSettings )
+		{
 			p_uiObjects._buttonEquilibrationNptSettings->disconnect( p_uiObjects._buttonEquilibrationNptSettings );
+		}
 		if ( p_uiObjects._buttonProductionSettings )
+		{
 			p_uiObjects._buttonProductionSettings->disconnect( p_uiObjects._buttonProductionSettings );
+		}
 		if ( p_uiObjects._buttonSystemSettings )
+		{
 			p_uiObjects._buttonSystemSettings->disconnect( p_uiObjects._buttonSystemSettings );
+		}
+		if ( p_uiObjects._buttonInputCheck )
+		{
+			p_uiObjects._buttonInputCheck->disconnect( p_uiObjects._buttonInputCheck );
+		}
 	}
-	void EventManager::_connectSettingsMinimization() noexcept
+
+	void EventManager::_connectSettingsMinimization()
+	{
+		QPushButton::connect( _uiObjects._buttonMinimizationSettings,
+							  &QPushButton::clicked,
+							  [ & ]() { this->_openSettingsMinimization(); } );
+	}
+
+	void EventManager::_connectSettingsNvt()
 	{
 		QPushButton::connect(
-			_uiObjects._buttonMinimizationSettings,
-			&QPushButton::clicked,
-			[ & ]() { this->_openSettingsMinimization(); }
-		);
+			_uiObjects._buttonEquilibrationNvtSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNvt(); } );
 	}
-	void EventManager::_connectSettingsNvt() noexcept
+
+	void EventManager::_connectSettingsNpt()
 	{
 		QPushButton::connect(
-			_uiObjects._buttonEquilibrationNvtSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNvt(); }
-		);
+			_uiObjects._buttonEquilibrationNptSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNpt(); } );
 	}
-	void EventManager::_connectSettingsNpt() noexcept
+
+	void EventManager::_connectSettingsProd()
 	{
 		QPushButton::connect(
-			_uiObjects._buttonEquilibrationNptSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsNpt(); }
-		);
+			_uiObjects._buttonProductionSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsProd(); } );
 	}
-	void EventManager::_connectSettingsProd() noexcept
+
+	void EventManager::_connectSettingsManager()
 	{
 		QPushButton::connect(
-			_uiObjects._buttonProductionSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsProd(); }
-		);
+			_uiObjects._buttonSystemSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsManager(); } );
 	}
-	void EventManager::_connectSettingsManager() noexcept
+
+	void EventManager::_connectInputCheck()
 	{
 		QPushButton::connect(
-			_uiObjects._buttonSystemSettings, &QPushButton::clicked, [ & ]() { this->_openSettingsManager(); }
-		);
+			_uiObjects._buttonInputCheck, &QPushButton::clicked, [ & ]() { this->_startInputCheck(); } );
 	}
-	void EventManager::_connectInputCheck() noexcept
-	{
-		QPushButton::connect(
-			_uiObjects._buttonInputCheck, &QPushButton::clicked, [ & ]() { this->_startInputCheck(); }
-		);
-	}
-	void EventManager::_openSettingsMinimization() noexcept
+
+	void EventManager::_openSettingsMinimization()
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
 		SpecificFieldsPlacerCallback * callback = nullptr;
 		_data->get( callback );
-		_settingsDialog.emplace(
-			_uiObjects._buttonMinimizationSettings,
-			"Minimization Settings",
-			&params->minimization,
-			( *callback )( E_FIELD_SECTION::minimization )
-		);
+		_settingsDialog.emplace( _uiObjects._buttonMinimizationSettings,
+								 "Minimization Settings",
+								 &params->minimization,
+								 ( *callback )( E_FIELD_SECTION::minimization ) );
 	}
-	void EventManager::_openSettingsNvt() noexcept
+
+	void EventManager::_openSettingsNvt()
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
 		SpecificFieldsPlacerCallback * callback = nullptr;
 		_data->get( callback );
-		_settingsDialog.emplace(
-			_uiObjects._buttonEquilibrationNvtSettings,
-			"Nvt Equilibration Settings",
-			&params->nvt,
-			( *callback )( E_FIELD_SECTION::equilibrationNvt )
-		);
+		_settingsDialog.emplace( _uiObjects._buttonEquilibrationNvtSettings,
+								 "Nvt Equilibration Settings",
+								 &params->nvt,
+								 ( *callback )( E_FIELD_SECTION::equilibrationNvt ) );
 	}
-	void EventManager::_openSettingsNpt() noexcept
+
+	void EventManager::_openSettingsNpt()
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
 		SpecificFieldsPlacerCallback * callback = nullptr;
 		_data->get( callback );
-		_settingsDialog.emplace(
-			_uiObjects._buttonEquilibrationNptSettings,
-			"Npt Equilibration Settings",
-			&params->npt,
-			( *callback )( E_FIELD_SECTION::equilibrationNpt )
-		);
+		_settingsDialog.emplace( _uiObjects._buttonEquilibrationNptSettings,
+								 "Npt Equilibration Settings",
+								 &params->npt,
+								 ( *callback )( E_FIELD_SECTION::equilibrationNpt ) );
 	}
-	void EventManager::_openSettingsProd() noexcept
+
+	void EventManager::_openSettingsProd()
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
 		SpecificFieldsPlacerCallback * callback = nullptr;
 		_data->get( callback );
-		_settingsDialog.emplace(
-			_uiObjects._buttonProductionSettings,
-			"Production run Settings",
-			&params->prod,
-			( *callback )( E_FIELD_SECTION::production )
-		);
+		_settingsDialog.emplace( _uiObjects._buttonProductionSettings,
+								 "Production run Settings",
+								 &params->prod,
+								 ( *callback )( E_FIELD_SECTION::production ) );
 	}
+
 	namespace
 	{
 		class ApplyVisitorBasic
 		{
 		  public:
 			ApplyVisitorBasic( std::function<void()> p_callback ) : _callback( std::move( p_callback ) ) {}
-			void applied() noexcept { _callback(); }
+
+			void applied() { _callback(); }
 
 		  private:
 			std::function<void()> _callback;
 		};
 	} // namespace
-	void EventManager::_openSettingsManager() noexcept
+
+	void EventManager::_openSettingsManager()
 	{
 		Gateway::MdParameters * params = nullptr;
 		_data->get( params );
@@ -224,25 +248,27 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		_data->get( callback );
 		Gateway::EngineSpecificCommonInformation * info = nullptr;
 		_data->get( info );
-		_settingsDialog.emplace(
-			_uiObjects._buttonSystemSettings,
-			"System Settings",
-			&params->system,
-			( *callback )( E_FIELD_SECTION::system ),
-			*info,
-			ApplyVisitorBasic( [ & ]() { this->_startInputCheck(); } )
-		);
+		_settingsDialog.emplace( _uiObjects._buttonSystemSettings,
+								 "System Settings",
+								 &params->system,
+								 ( *callback )( E_FIELD_SECTION::system ),
+								 *info,
+								 ApplyVisitorBasic( [ & ]() { this->_startInputCheck(); } ) );
 	}
-	void EventManager::performFirstInputCheck() noexcept
+
+	void EventManager::performFirstInputCheck()
 	{
 		ReportManager * reportManager = nullptr;
 		_data->get( reportManager );
 		if ( reportManager->hasFirstCheckBeenDone() )
+		{
 			return;
+		}
 
 		_startInputCheck();
 	}
-	void EventManager::_startInputCheck() noexcept
+
+	void EventManager::_startInputCheck()
 	{
 		ReportManager * reportManager = nullptr;
 		_data->get( reportManager );
@@ -252,5 +278,6 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 		reportManager->checkInputs( *params );
 	}
+
 	void EventManager::_systemSettingsApplied() noexcept {}
 } // namespace VTX::Tool::Mdprep::ui::form_basic

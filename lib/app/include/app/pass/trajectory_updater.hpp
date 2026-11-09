@@ -1,8 +1,9 @@
-#ifndef __VTX_APP_PASS_TRAJECTORY_UPDATER__
-#define __VTX_APP_PASS_TRAJECTORY_UPDATER__
+#ifndef VTX_APP_PASS_TRAJECTORY_UPDATER_HPP
+#define VTX_APP_PASS_TRAJECTORY_UPDATER_HPP
 
 #include "app/ecs.hpp"
 #include "app/pass/pass_manager.hpp"
+#include <util/event_hub.hpp>
 
 namespace VTX::App::Pass
 {
@@ -18,18 +19,20 @@ namespace VTX::App::Pass
 		TrajectoryUpdater();
 		~TrajectoryUpdater() override;
 
-		void update( const float, const float );
+		void update( float, float );
 
 	  private:
 		/**
 		 * @brief On loader destroyed.
 		 */
-		void _onDestroyLoader( Registry &, const Entity );
+		void _onDestroyLoader( Registry &, Entity );
 
 		/**
 		 * @brief Stop threaded loader.
 		 */
-		void _stopLoader( const Entity );
+		void _stopLoader( Entity );
+
+		Util::EventHub::ScopedConnection _loaderDestroyedConnection;
 	};
 } // namespace VTX::App::Pass
 #endif

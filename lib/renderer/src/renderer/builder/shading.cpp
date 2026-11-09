@@ -18,10 +18,8 @@ namespace VTX::Renderer::Builder::PostProcess
 			return Baker::loadEnvironmentCubemapKtx( *p_config.environmentPath, p_config.environmentFaceSize );
 		}
 
-		const std::optional<MaterialTexture> & _materialTexture(
-			const Material &		  p_material,
-			const Material::E_TEXTURE p_texture
-		)
+		const std::optional<MaterialTexture> & _materialTexture( const Material &		   p_material,
+																 const Material::E_TEXTURE p_texture )
 		{
 			switch ( p_texture )
 			{
@@ -37,16 +35,16 @@ namespace VTX::Renderer::Builder::PostProcess
 			throw std::runtime_error( "Invalid material texture" );
 		}
 
-		const Desc::Key & _materialTextureKey( const Material::E_TEXTURE p_texture )
+		Desc::Key _materialTextureKey( const Material::E_TEXTURE p_texture )
 		{
 			switch ( p_texture )
 			{
-			case Material::E_TEXTURE::ALBEDO: return Shading::MATERIAL_ALBEDO_TEXTURE;
-			case Material::E_TEXTURE::NORMAL: return Shading::MATERIAL_NORMAL_TEXTURE;
-			case Material::E_TEXTURE::METALLIC: return Shading::MATERIAL_METALLIC_TEXTURE;
-			case Material::E_TEXTURE::ROUGHNESS: return Shading::MATERIAL_ROUGHNESS_TEXTURE;
-			case Material::E_TEXTURE::AMBIENT_OCCLUSION: return Shading::MATERIAL_AO_TEXTURE;
-			case Material::E_TEXTURE::EMISSIVE: return Shading::MATERIAL_EMISSIVE_TEXTURE;
+			case Material::E_TEXTURE::ALBEDO: return Desc::Key { Shading::MATERIAL_ALBEDO_TEXTURE };
+			case Material::E_TEXTURE::NORMAL: return Desc::Key { Shading::MATERIAL_NORMAL_TEXTURE };
+			case Material::E_TEXTURE::METALLIC: return Desc::Key { Shading::MATERIAL_METALLIC_TEXTURE };
+			case Material::E_TEXTURE::ROUGHNESS: return Desc::Key { Shading::MATERIAL_ROUGHNESS_TEXTURE };
+			case Material::E_TEXTURE::AMBIENT_OCCLUSION: return Desc::Key { Shading::MATERIAL_AO_TEXTURE };
+			case Material::E_TEXTURE::EMISSIVE: return Desc::Key { Shading::MATERIAL_EMISSIVE_TEXTURE };
 			case Material::E_TEXTURE::COUNT: break;
 			}
 
@@ -65,15 +63,14 @@ namespace VTX::Renderer::Builder::PostProcess
 		const std::vector<Baker::EnvironmentTexel> pixels = _buildCubemap( p_config );
 		if ( not pixels.empty() )
 		{
-			p_context.setTextureData<Baker::EnvironmentTexel>(
-				ENVIRONMENT_TEXTURE, std::span<const Baker::EnvironmentTexel> { pixels }
-			);
+			p_context.setTextureData<Baker::EnvironmentTexel>( Desc::Key { ENVIRONMENT_TEXTURE },
+															   std::span<const Baker::EnvironmentTexel> { pixels } );
 		}
 	}
 
 	void Shading::loadMaterialTextures( Context::ContextWrapper & p_context, const ShadingConfig & p_config )
 	{
-		for ( uint8_t index = 0; index < uint8_t( Material::E_TEXTURE::COUNT ); ++index )
+		for ( uint8_t index = 0; index < static_cast<uint8_t>( Material::E_TEXTURE::COUNT ); ++index )
 		{
 			const Material::E_TEXTURE textureType = Material::E_TEXTURE( index );
 			const auto &			  texture	  = _materialTexture( p_config.material, textureType );
@@ -84,9 +81,10 @@ namespace VTX::Renderer::Builder::PostProcess
 
 			const uint8_t				 channels = _isScalarTexture( textureType ) ? 1 : 4;
 			const Util::Image::ByteImage image	  = Util::Image::readByteImage( FilePath( texture->path ), channels );
-			p_context.setTextureData<uint8_t>(
-				_materialTextureKey( textureType ), std::span<const uint8_t> { image.pixels }, image.width, image.height
-			);
+			p_context.setTextureData<uint8_t>( _materialTextureKey( textureType ),
+											   std::span<const uint8_t> { image.pixels },
+											   image.width,
+											   image.height );
 		}
 	}
 } // namespace VTX::Renderer::Builder::PostProcess

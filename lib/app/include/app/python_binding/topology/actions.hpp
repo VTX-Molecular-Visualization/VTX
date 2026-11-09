@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHON_BINDING_TOPOLOGY_ACTIONS__
-#define __VTX_APP_PYTHON_BINDING_TOPOLOGY_ACTIONS__
+#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_ACTIONS_HPP
+#define VTX_APP_PYTHON_BINDING_TOPOLOGY_ACTIONS_HPP
 
 #include "app/action/selection.hpp"
 #include "app/action/visibility.hpp"
@@ -20,12 +20,10 @@ namespace VTX::App::PythonBinding::Topology
 		executeAction<App::Action::Visibility::SetVisible<ITEM>>( p_entity, p_ranges, p_visible );
 	}
 
-	inline void setVisible(
-		const Entity	  p_entity,
-		const SystemItem  p_item,
-		const RangeList & p_ranges,
-		const bool		  p_visible
-	)
+	inline void setVisible( const Entity	  p_entity,
+							const SystemItem  p_item,
+							const RangeList & p_ranges,
+							const bool		  p_visible )
 	{
 		getTopology( p_entity );
 
@@ -36,25 +34,21 @@ namespace VTX::App::PythonBinding::Topology
 	 * @brief Set selected from App::Action.
 	 */
 	template<SystemItem ITEM>
-	inline void setSelected(
-		const Entity	  p_entity,
-		const RangeList & p_ranges,
-		const bool		  p_selected,
-		const bool		  p_append
-	)
+	inline void setSelected( const Entity	   p_entity,
+							 const RangeList & p_ranges,
+							 const bool		   p_selected,
+							 const bool		   p_append )
 	{
 		getTopology( p_entity );
 
 		executeAction<App::Action::Selection::SetSelected<ITEM>>( p_entity, p_ranges, p_selected, p_append );
 	}
 
-	inline void setSelected(
-		const Entity	  p_entity,
-		const SystemItem  p_item,
-		const RangeList & p_ranges,
-		const bool		  p_selected,
-		const bool		  p_append
-	)
+	inline void setSelected( const Entity	   p_entity,
+							 const SystemItem  p_item,
+							 const RangeList & p_ranges,
+							 const bool		   p_selected,
+							 const bool		   p_append )
 	{
 		getTopology( p_entity );
 

@@ -6,7 +6,7 @@ namespace VTX::Util::Monitoring
 
 	FrameInfo & Stats::newFrame()
 	{
-		_frames.emplace_back( FrameInfo() );
+		_frames.emplace_back();
 
 		// Remove old frames
 		while ( _frames.size() > ACTIVE_FRAME_COUNT )
@@ -24,8 +24,8 @@ namespace VTX::Util::Monitoring
 			return 0;
 		}
 
-		float res = Util::Chrono::elapsedTime( _frames.front().getTimepoint(), _frames.back().getTimepoint() );
+		const float res = Util::Chrono::elapsedTime( _frames.front().getTimepoint(), _frames.back().getTimepoint() );
 
-		return res / float( _frames.size() - 1 );
+		return res / static_cast<float>( _frames.size() - 1 );
 	}
 } // namespace VTX::Util::Monitoring

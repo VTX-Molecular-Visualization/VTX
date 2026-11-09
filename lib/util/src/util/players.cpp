@@ -1,10 +1,11 @@
 #include "util/players.hpp"
-#include <math.h>
+#include <cmath>
+#include <utility>
 
 namespace VTX::Util::Players
 {
-	Forward::Forward( uint p_stepNum, uint p_startingStep ) :
-		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	Forward::Forward( uint p_stepNum, uint p_startingStep ) noexcept :
+		_lastIndex( p_stepNum > 0 ? p_stepNum - 1 : 0 ), _currentStep( p_startingStep )
 	{
 	}
 
@@ -27,8 +28,8 @@ namespace VTX::Util::Players
 		_currentStep = std::min( _currentStep, _lastIndex );
 	}
 
-	ForwardLoop::ForwardLoop( uint p_stepNum, uint p_startingStep ) :
-		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	ForwardLoop::ForwardLoop( uint p_stepNum, uint p_startingStep ) noexcept :
+		_lastIndex( p_stepNum > 0 ? p_stepNum - 1 : 0 ), _currentStep( p_startingStep )
 	{
 	}
 
@@ -52,8 +53,8 @@ namespace VTX::Util::Players
 		_currentStep = std::min( _currentStep, _lastIndex );
 	}
 
-	Backward::Backward( uint p_stepNum, uint p_startingStep ) :
-		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	Backward::Backward( uint p_stepNum, uint p_startingStep ) noexcept :
+		_lastIndex( p_stepNum > 0 ? p_stepNum - 1 : 0 ), _currentStep( p_startingStep )
 	{
 	}
 
@@ -77,8 +78,8 @@ namespace VTX::Util::Players
 		_currentStep = std::min( _currentStep, _lastIndex );
 	}
 
-	BackwardLoop::BackwardLoop( uint p_stepNum, uint p_startingStep ) :
-		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	BackwardLoop::BackwardLoop( uint p_stepNum, uint p_startingStep ) noexcept :
+		_lastIndex( p_stepNum > 0 ? p_stepNum - 1 : 0 ), _currentStep( p_startingStep )
 	{
 	}
 
@@ -109,8 +110,8 @@ namespace VTX::Util::Players
 		_currentStep = std::min( _currentStep, _lastIndex );
 	}
 
-	PingPong::PingPong( uint p_stepNum, uint p_startingStep ) :
-		_lastIndex( p_stepNum - 1 ), _currentStep( p_startingStep )
+	PingPong::PingPong( uint p_stepNum, uint p_startingStep ) noexcept :
+		_lastIndex( p_stepNum > 0 ? p_stepNum - 1 : 0 ), _currentStep( p_startingStep )
 	{
 	}
 
@@ -181,13 +182,11 @@ namespace VTX::Util::Players
 
 	namespace
 	{
-		uint pingpongNstepfurther(
-			const bool & p_forward,
-			const uint & p_lastIndex,
-			const uint & p_currentStep,
-			const uint & p_N,
-			int64_t &	 p_outOfBoundNewStep
-		)
+		uint pingpongNstepfurther( const bool & p_forward,
+								   const uint & p_lastIndex,
+								   const uint & p_currentStep,
+								   const uint & p_N,
+								   int64_t &	p_outOfBoundNewStep )
 		{
 			/*
 			The idea is that for a pingpong of 0..M, adding N is equivalent to adding N + 2M.
@@ -198,16 +197,12 @@ namespace VTX::Util::Players
 			*/
 			const int64_t valueToAdd
 				= ( p_forward * 2 - 1 )
-				  * static_cast<int64_t>(
-					  static_cast<uint64_t>( p_N ) % ( static_cast<uint64_t>( p_lastIndex ) << 1 /*Multiply by 2*/ )
-				  );
+				  * static_cast<int64_t>( static_cast<uint64_t>( p_N )
+										  % ( static_cast<uint64_t>( p_lastIndex ) << 1 /*Multiply by 2*/ ) );
 			p_outOfBoundNewStep = p_currentStep + valueToAdd;
-			return static_cast<uint>( std::abs(
-				static_cast<int64_t>( p_lastIndex ) * p_forward
-				- std::abs(
-					valueToAdd + static_cast<int64_t>( p_currentStep ) - static_cast<int64_t>( p_lastIndex ) * p_forward
-				)
-			) );
+			return static_cast<uint>( std::abs( static_cast<int64_t>( p_lastIndex ) * p_forward
+												- std::abs( valueToAdd + static_cast<int64_t>( p_currentStep )
+															- static_cast<int64_t>( p_lastIndex ) * p_forward ) ) );
 		}
 	} // namespace
 
@@ -233,7 +228,7 @@ namespace VTX::Util::Players
 
 		int64_t outOfBoundNewStep = 0;
 		_currentStep			  = pingpongNstepfurther( _forward, _lastIndex, _currentStep, p_N, outOfBoundNewStep );
-		_forward				  = outOfBoundNewStep < 0 || outOfBoundNewStep > _lastIndex ? not _forward : _forward;
+		_forward = outOfBoundNewStep < 0 || std::cmp_greater( outOfBoundNewStep, _lastIndex ) ? not _forward : _forward;
 	}
 
 	void PingPong::current( uint & p_out ) const noexcept { p_out = _currentStep; }

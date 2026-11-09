@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_INPUT_INPUT_MANAGER__
-#define __VTX_APP_INPUT_INPUT_MANAGER__
+#ifndef VTX_APP_INPUT_INPUT_MANAGER_HPP
+#define VTX_APP_INPUT_INPUT_MANAGER_HPP
 
 #include <array>
 #include <util/types.hpp>
@@ -12,7 +12,7 @@ namespace VTX::App::Input
 		/**
 		 * @brief Available input actions.
 		 */
-		enum struct Action : int
+		enum struct Action : uint8_t
 		{
 			MoveFront = 0,
 			MoveBack,
@@ -30,62 +30,71 @@ namespace VTX::App::Input
 		/**
 		 * @brief Constructor.
 		 */
-		InputManager()
+		InputManager() noexcept
 		{
 			clearActions();
 			consume();
 		}
 
+		InputManager( const InputManager & )			 = delete;
+		InputManager & operator=( const InputManager & ) = delete;
+		InputManager( InputManager && )					 = delete;
+		InputManager & operator=( InputManager && )		 = delete;
+		~InputManager()									 = default;
+
 		/**
 		 * @brief Accessors and mutators.
 		 */
-		inline bool hasAction( const Action p_action ) const
-		{
-			return _actions[ static_cast<std::size_t>( p_action ) ];
-		}
+		bool hasAction( const Action p_action ) const noexcept
+		{ return _actions[ static_cast<std::size_t>( p_action ) ]; }
 
-		inline Vec3i translationAxis() const
+		Vec3i translationAxis() const noexcept
 		{
 			return Vec3i(
 				static_cast<int>( hasAction( Action::MoveRight ) ) - static_cast<int>( hasAction( Action::MoveLeft ) ),
 				static_cast<int>( hasAction( Action::MoveUp ) ) - static_cast<int>( hasAction( Action::MoveDown ) ),
-				static_cast<int>( hasAction( Action::MoveBack ) ) - static_cast<int>( hasAction( Action::MoveFront ) )
-			);
+				static_cast<int>( hasAction( Action::MoveBack ) )
+					- static_cast<int>( hasAction( Action::MoveFront ) ) );
 		}
 
-		inline int rotationAxis() const
+		int rotationAxis() const noexcept
 		{
 			return static_cast<int>( hasAction( Action::RotateRight ) )
 				   - static_cast<int>( hasAction( Action::RotateLeft ) );
 		}
 
-		inline bool accelerate() const { return hasAction( Action::Accelerate ); }
-		inline bool decelerate() const { return hasAction( Action::Decelerate ); }
+		bool accelerate() const noexcept { return hasAction( Action::Accelerate ); }
 
-		inline const Vec2i & rotate() const { return _rotate; }
-		inline const Vec2i & rotateAlt() const { return _rotateAlt; }
-		inline const Vec2i & pan() const { return _pan; }
-		inline int			 zoom() const { return _zoom; }
+		bool decelerate() const noexcept { return hasAction( Action::Decelerate ); }
+
+		const Vec2i & rotate() const noexcept { return _rotate; }
+
+		const Vec2i & rotateAlt() const noexcept { return _rotateAlt; }
+
+		const Vec2i & pan() const noexcept { return _pan; }
+
+		int zoom() const noexcept { return _zoom; }
 
 		/**
 		 * @brief Mutators.
 		 */
-		inline void setAction( const Action p_action, const bool p_value )
-		{
-			_actions[ static_cast<std::size_t>( p_action ) ] = p_value;
-		}
+		void setAction( const Action p_action, const bool p_value ) noexcept
+		{ _actions[ static_cast<std::size_t>( p_action ) ] = p_value; }
 
-		inline void clearActions() { _actions.fill( false ); }
+		void clearActions() noexcept { _actions.fill( false ); }
 
-		inline void rotateBy( const Vec2i & p_delta ) { _rotate += p_delta; }
-		inline void rotateAltBy( const Vec2i & p_delta ) { _rotateAlt += p_delta; }
-		inline void panBy( const Vec2i & p_delta ) { _pan += p_delta; }
-		inline void zoomBy( const int p_delta ) { _zoom += p_delta; }
+		void rotateBy( const Vec2i & p_delta ) noexcept { _rotate += p_delta; }
+
+		void rotateAltBy( const Vec2i & p_delta ) noexcept { _rotateAlt += p_delta; }
+
+		void panBy( const Vec2i & p_delta ) noexcept { _pan += p_delta; }
+
+		void zoomBy( const int p_delta ) noexcept { _zoom += p_delta; }
 
 		/**
 		 * @brief Consume data (reset to zero).
 		 */
-		void consume()
+		void consume() noexcept
 		{
 			_rotate	   = Vec2i( 0 );
 			_rotateAlt = Vec2i( 0 );
@@ -102,23 +111,23 @@ namespace VTX::App::Input
 		/**
 		 * @brief Mouse left drag action.
 		 */
-		Vec2i _rotate;
+		Vec2i _rotate = Vec2i( 0 );
 
 		/**
 		 * @brief Mouse right drag action.
 		 */
-		Vec2i _rotateAlt;
+		Vec2i _rotateAlt = Vec2i( 0 );
 
 		/**
 		 * @brief Mouse middle drag action.
 		 */
-		Vec2i _pan;
+		Vec2i _pan = Vec2i( 0 );
 
 		/**
 		 * @brief Wheel action.
 		 *
 		 */
-		int _zoom;
+		int _zoom {};
 	};
 } // namespace VTX::App::Input
 

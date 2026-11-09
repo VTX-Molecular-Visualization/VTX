@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_JOBS__
-#define __VTX_TOOL_TOOLS_MDPREP_JOBS__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_JOB_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_JOB_HPP
 
 #include <filesystem>
 #include <functional>
@@ -43,7 +43,6 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		JobReport																		  report;
 		std::function<void( const FilePath &, GromacsJobData &, CumulativeOuputFiles & )> postJobRoutine
 			= []( const FilePath &, GromacsJobData &, CumulativeOuputFiles & ) {};
-		bool operator==( const GromacsJobData & ) const noexcept = default;
 	};
 
 	/**

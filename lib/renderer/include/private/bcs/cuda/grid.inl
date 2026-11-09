@@ -15,9 +15,7 @@ namespace bcs
 	}
 
 	__host__ __device__ inline uint32_t GridInfo::getHash( const float3 & position ) const
-	{
-		return getHash( getGridPosition( position ) );
-	}
+	{ return getHash( getGridPosition( position ) ); }
 
 	__host__ __device__ inline uint32_t GridInfo::getHash( int3 gridPos ) const
 	{
@@ -28,10 +26,16 @@ namespace bcs
 	}
 
 	inline const GridInfo & AccelerationGrid::getConfiguration() const { return m_configuration; }
+
 	inline const uint32_t * AccelerationGrid::getCellsStart() const { return m_dCellsStart.get<uint32_t>(); }
+
 	inline const uint32_t * AccelerationGrid::getCellsEnd() const { return m_dCellsEnd.get<uint32_t>(); }
+
 	inline const uint32_t * AccelerationGrid::getSortedIndices() const { return m_dIndices.get<uint32_t>(); }
+
 	inline const uint32_t * AccelerationGrid::getSortedIndices() { return m_dIndices.get<uint32_t>(); }
-	inline const float4 *	AccelerationGrid::getSortedPosition() const { return m_dSortedPositions.get<float4>(); }
+
+	inline const float4 * AccelerationGrid::getSortedPosition() const { return m_dSortedPositions.get<float4>(); }
+
 	inline AccelerationGrid::Cells AccelerationGrid::getCells() const { return { getCellsStart(), getCellsEnd() }; }
 } // namespace bcs

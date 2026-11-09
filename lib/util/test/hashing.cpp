@@ -70,6 +70,7 @@ TEST_CASE( "Util::Hashing", "[unit]" )
 		class Base
 		{
 		};
+
 		class Derived : public Base
 		{
 		};

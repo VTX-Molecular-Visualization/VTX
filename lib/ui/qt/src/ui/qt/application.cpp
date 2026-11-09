@@ -1,7 +1,5 @@
 #include "ui/qt/application.hpp"
 #include "ui/qt/action_registry.hpp"
-#include "ui/qt/dialog/trajectory_association.hpp"
-#include "ui/qt/menu/file.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
@@ -14,9 +12,12 @@
 #include <app/ecs.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
+#include <cstdlib>
+#include <memory>
 #include <renderer/renderer.hpp>
 #include <ui/qt/actions.hpp>
 #include <util/event_hub.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::UI::QT
 {
@@ -27,30 +28,30 @@ namespace VTX::UI::QT
 		using namespace Resources;
 		using namespace App;
 
-		_splashScreen = new QSplashScreen( QPixmap( Resources::SPRITE_SPLASH.data() ) );
+		_splashScreen = std::make_unique<QSplashScreen>( QPixmap( QString::fromUtf8( Resources::SPRITE_SPLASH ) ) );
 		_splashScreen->show();
 
 		// Application info.
 		const std::string version	  = std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
 										+ std::to_string( VERSION_PATCH );
-		std::string		  displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " " ) + version + ( "-beta" );
+		std::string		  displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " " ) + version + "-beta";
 		if ( ARGS().debug )
 		{
 			displayName += " (Debug)";
 		}
 
-		setWindowIcon( QIcon( QPixmap( SPRITE_LOGO.data() ) ) );
+		setWindowIcon( QIcon( QPixmap( QString::fromUtf8( SPRITE_LOGO ) ) ) );
 		setApplicationDisplayName( QString::fromStdString( displayName ) );
-		setApplicationName( QString::fromStdString( APPLICATION_NAME.data() ) );
+		setApplicationName( QString::fromUtf8( APPLICATION_NAME ) );
 		setApplicationVersion( QString::fromStdString( version ) );
-		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME.data() ) );
-		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
+		setOrganizationName( QString::fromUtf8( ORGANIZATION_NAME ) );
+		setOrganizationDomain( QString::fromUtf8( ORGANIZATION_DOMAIN ) );
 
 		// Connect quit.
 		connect(
 			this,
 			&QCoreApplication::aboutToQuit,
-			[ this ]
+			[]() noexcept
 			{
 				VTX_TRACE( "QCoreApplication::aboutToQuit" );
 				try
@@ -73,8 +74,10 @@ namespace VTX::UI::QT
 		connect(
 			&_timer,
 			&QTimer::timeout,
-			[ this ] { _app.update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
+			[ this ]() noexcept { _app.update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
 		);
+		LOGGER::setCallback( [ &hub = App::HUB() ]( const Util::LogInfo & p_logInfo )
+							 { hub.enqueue<Util::LogInfo>( p_logInfo ); } );
 	}
 
 	Application::~Application()
@@ -104,16 +107,21 @@ namespace VTX::UI::QT
 		{
 			VTX_ERROR( "Failed to save settings: {}", e.what() );
 		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Failed to save settings: unknown exception" );
+		}
 	}
 
-	void Application::start()
+	int Application::start()
 	{
 		QTimer::singleShot( 0, this, &Application::_postQtStartup );
 
 		// Run Qt main loop.
-		exec();
+		const int exitCode = exec();
 		VTX_TRACE( "Application::start(): Qt loop exited" );
 		_timer.stop();
+		return exitCode;
 	}
 
 	void Application::stop()
@@ -123,7 +131,7 @@ namespace VTX::UI::QT
 		QTimer::singleShot( 0, this, &QCoreApplication::quit );
 	}
 
-	bool Application::notify( QObject * const p_receiver, QEvent * const p_event )
+	bool Application::notify( QObject * const p_receiver, QEvent * const p_event ) noexcept
 	{
 		try
 		{
@@ -179,7 +187,7 @@ namespace VTX::UI::QT
 
 			MAIN_WINDOW().restoreLayout();
 
-			App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
+			_applicationStopConnection = App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
 			_app.createInitialEntities();
 
 			// Show the native window before creating the OpenGL context.
@@ -216,12 +224,12 @@ namespace VTX::UI::QT
 		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "Startup failed: {}", p_e.what() );
-			QCoreApplication::quit();
+			QCoreApplication::exit( EXIT_FAILURE );
 		}
 		catch ( ... )
 		{
 			VTX_ERROR( "Unknown exception during startup" );
-			QCoreApplication::quit();
+			QCoreApplication::exit( EXIT_FAILURE );
 		}
 	}
 } // namespace VTX::UI::QT

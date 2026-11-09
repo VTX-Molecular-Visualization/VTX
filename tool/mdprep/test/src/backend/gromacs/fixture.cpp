@@ -15,10 +15,8 @@ namespace VTX::test
 		}
 	}
 
-	void fill(
-		const std::vector<std::string> &							 p_in,
-		VTX::Tool::Mdprep::backends::Gromacs::CumulativeOuputFiles & p_out
-	) noexcept
+	void fill( const std::vector<std::string> &								p_in,
+			   VTX::Tool::Mdprep::backends::Gromacs::CumulativeOuputFiles & p_out ) noexcept
 	{
 		p_out.fileStringPtrs.reserve( p_out.fileStringPtrs.size() + p_in.size() );
 		for ( auto & it : p_in )

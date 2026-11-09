@@ -16,8 +16,7 @@ namespace VTX::App::Action::Visibility
 		}
 
 		reg.patch<System::Visibility>(
-			p_ent, [ &p_atoms ]( System::Visibility & p_visibility ) { p_visibility.atoms = std::move( p_atoms ); }
-		);
+			p_ent, [ &p_atoms ]( System::Visibility & p_visibility ) { p_visibility.atoms = std::move( p_atoms ); } );
 	}
 
 	void SetVisibleAll::execute( const bool p_visible )
@@ -33,8 +32,7 @@ namespace VTX::App::Action::Visibility
 	{
 		REG().view<System::Selection, System::Visibility>().each(
 			[ p_visible ](
-				const Entity p_ent, const System::Selection & p_selection, const System::Visibility & p_visibility
-			)
+				const Entity p_ent, const System::Selection & p_selection, const System::Visibility & p_visibility )
 			{
 				if ( p_selection.atoms.any() )
 				{
@@ -50,16 +48,13 @@ namespace VTX::App::Action::Visibility
 
 					patchVisibility( p_ent, std::move( current ) );
 				}
-			}
-		);
+			} );
 	}
 
-	void SetVisibleItem::execute(
-		const Entity						 p_ent,
-		const Core::Struct::E_SYSTEM_ITEM	 p_item,
-		const Core::Struct::IndexRangeList & p_ranges,
-		const bool							 p_visible
-	)
+	void SetVisibleItem::execute( const Entity						   p_ent,
+								  const Core::Struct::E_SYSTEM_ITEM	   p_item,
+								  const Core::Struct::IndexRangeList & p_ranges,
+								  const bool						   p_visible )
 	{
 		switch ( p_item )
 		{

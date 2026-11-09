@@ -1,5 +1,9 @@
+#ifndef VTX_PYTHON_BINDING_BINDING_HELPER_HPP
+#define VTX_PYTHON_BINDING_BINDING_HELPER_HPP
+
 #include <pybind11/native_enum.h>
 #include <pybind11/pybind11.h>
+#include <string>
 #include <util/enum.hpp>
 
 namespace VTX::PythonBinding
@@ -16,10 +20,13 @@ namespace VTX::PythonBinding
 
 			for ( const EnumType enumValue : magic_enum::enum_values<EnumType>() )
 			{
-				pyEnum.value( Util::Enum::enumName<EnumType>( enumValue ).data(), enumValue );
+				const std::string enumName( Util::Enum::enumName<EnumType>( enumValue ) );
+				pyEnum.value( enumName.c_str(), enumValue );
 			}
 
 			pyEnum.finalize();
 		}
 	};
 } // namespace VTX::PythonBinding
+
+#endif

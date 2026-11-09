@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_NETWORK_NETWORK_SYSTEM__
-#define __VTX_APP_CORE_NETWORK_NETWORK_SYSTEM__
+#ifndef VTX_APP_NETWORK_NETWORK_MANAGER_HPP
+#define VTX_APP_NETWORK_NETWORK_MANAGER_HPP
 
 #include "app/events.hpp"
 #include <atomic>
@@ -21,16 +21,18 @@ namespace VTX::App::Network
 		using DownloadId = uint64_t;
 
 		NetworkManager();
-		~NetworkManager();
+		NetworkManager( const NetworkManager & )			 = delete;
+		NetworkManager & operator=( const NetworkManager & ) = delete;
+		NetworkManager( NetworkManager && )					 = delete;
+		NetworkManager & operator=( NetworkManager && )		 = delete;
+		~NetworkManager()									 = default;
 
 		/**
 		 * @brief Download a file from a URL and save it to a specified filename.
 		 */
-		DownloadId downloadFile(
-			const std::string_view				   p_url,
-			const std::string_view				   p_filename,
-			const Util::Network::CallbackHttpGet & p_callback
-		);
+		DownloadId downloadFile( std::string_view						p_url,
+								 std::string_view						p_filename,
+								 const Util::Network::CallbackHttpGet & p_callback );
 
 		/**
 		 * @brief Stop a download by ID.
@@ -74,6 +76,8 @@ namespace VTX::App::Network
 		 * @brief Connection for update events to dispatch completed downloads.
 		 */
 		void _onUpdate( const Events::Update & );
+
+		Util::EventHub::ScopedConnection _updateConnection;
 	};
 
 } // namespace VTX::App::Network

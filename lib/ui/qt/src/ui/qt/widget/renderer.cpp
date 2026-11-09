@@ -16,22 +16,23 @@
 #include <algorithm>
 #include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
+#include <memory>
 #include <qpa/qplatformnativeinterface.h>
-#include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
-	Renderer::Renderer( QWidget * p_parent ) : BaseWidget( p_parent )
+	Renderer::Renderer( QWidget * const p_parent ) : BaseWidget( p_parent )
 	{
 		setAcceptDrops( true );
-		_backgroundLogo = QPixmap( Resources::SPRITE_LOGO.data() );
+		_backgroundLogo = QPixmap( Resources::SPRITE_LOGO.toString() );
 
-		_window = new Window::Renderer();
+		auto window = std::make_unique<Window::Renderer>();
+		_window		= window.get();
 		_window->setFlags( Qt::FramelessWindowHint );
 		_window->create();
 
-		_container = createWindowContainer( _window, this );
+		_container = createWindowContainer( window.release(), this );
 		_container->installEventFilter( this );
 		_container->setFocusPolicy( Qt::StrongFocus );
 		setFocusPolicy( Qt::NoFocus );
@@ -64,15 +65,9 @@ namespace VTX::UI::QT::Widget
 		_resizeTimer.setSingleShot( true );
 		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
 
-		App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
-		App::RENDERER().onReady += [ this ]( const VTX::Renderer::StructInfos & )
-		{
-			_rendererReady = true;
-			App::ACTION().execute<App::Action::Application::SetVSync>(
-				SETTINGS().value( SETTING_KEY_VSYNC, VSYNC_DEFAULT ).toBool()
-			);
-			QTimer::singleShot( 0, this, &Renderer::onResizeFinished );
-		};
+		_rendererResizeConnection
+			= App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
+		_rendererReadyConnection = App::HUB().connect<App::Events::RendererReady, &Renderer::_onRendererReady>( this );
 	}
 
 	Renderer::~Renderer()
@@ -95,7 +90,7 @@ namespace VTX::UI::QT::Widget
 				throw std::runtime_error( "Qt: no platform native interface" );
 			}
 
-			void * const surface = nif->nativeResourceForWindow( "surface", _window );
+			const void * const surface = nif->nativeResourceForWindow( "surface", _window );
 			if ( not surface )
 			{
 				throw std::runtime_error( "Qt: native surface is null" );
@@ -115,7 +110,7 @@ namespace VTX::UI::QT::Widget
 			return 0;
 		}
 
-		if ( void * const display = nif->nativeResourceForIntegration( "display" ) )
+		if ( const void * const display = nif->nativeResourceForIntegration( "display" ) )
 		{
 			return reinterpret_cast<uintptr_t>( display );
 		}
@@ -146,9 +141,8 @@ namespace VTX::UI::QT::Widget
 		{
 			if ( p_event->type() == QEvent::DragEnter || p_event->type() == QEvent::Drop )
 			{
-				auto * const clonedEvent = p_event->clone();
-				QCoreApplication::sendEvent( &MAIN_WINDOW(), clonedEvent );
-				delete clonedEvent;
+				const std::unique_ptr<QEvent> clonedEvent { p_event->clone() };
+				QCoreApplication::sendEvent( &MAIN_WINDOW(), clonedEvent.get() );
 				return true;
 			}
 		}
@@ -263,6 +257,15 @@ namespace VTX::UI::QT::Widget
 		_window->requestActivate();
 	}
 
+	void Renderer::_onRendererReady( const App::Events::RendererReady & )
+	{
+		_rendererReady = true;
+		App::ACTION().execute<App::Action::Application::SetVSync>(
+			SETTINGS().value( SETTING_KEY_VSYNC, VSYNC_DEFAULT ).toBool()
+		);
+		QTimer::singleShot( 0, this, &Renderer::onResizeFinished );
+	}
+
 	void Renderer::_onRendererResize( const App::Events::RendererResize & p_e )
 	{
 		if ( _window == nullptr || _container == nullptr )
@@ -306,7 +309,7 @@ namespace VTX::UI::QT::Widget
 		}
 
 		_resizeTimer.stop();
-		QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
+		const QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
 
 		if ( widgetSizeChanged )
 		{
@@ -334,7 +337,7 @@ namespace VTX::UI::QT::Widget
 				}
 
 				_resizeTimer.stop();
-				QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
+				const QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
 
 				const QSize size = this->size();
 				if ( _window->size() != size )

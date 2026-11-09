@@ -21,12 +21,12 @@ TEST_CASE( "VTX_IO - Benchmark", "[.] [integration]" )
 
 	BENCHMARK( "Open systems" )
 	{
-		VTX::Core::Struct::Topology				topology;
-		IO::Metadata							metadata;
-		std::vector<VTX::Vec3f>					pos;
-		Util::Thread::StopToken					t;
-		IO::SystemReader						systemReader( systemPath, IO::READER_OPTION::ALL, t );
-		VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
+		VTX::Core::Struct::Topology					  topology;
+		IO::Metadata								  metadata;
+		std::vector<VTX::Vec3f>						  pos;
+		const Util::Thread::StopToken				  t;
+		IO::SystemReader							  systemReader( systemPath, IO::READER_OPTION::ALL, t );
+		const VTX::Core::ChemDB::Category::Dictionary dict = VTX::Core::ChemDB::Category::createDefaultDictionary();
 
 		systemReader.get( dict, topology, metadata );
 		systemReader.get( pos );

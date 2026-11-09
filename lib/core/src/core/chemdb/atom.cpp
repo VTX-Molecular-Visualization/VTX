@@ -1,7 +1,6 @@
 #include "core/chemdb/atom.hpp"
-#include <algorithm>
+#include <magic_enum/magic_enum.hpp>
 #include <optional>
-#include <util/enum.hpp>
 
 namespace VTX::Core::ChemDB::Atom
 {

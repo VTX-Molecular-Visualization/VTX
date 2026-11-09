@@ -64,13 +64,13 @@ class VTXRecipe(ConanFile):
         tc = CMakeToolchain(self)
         versionMajor, versionMinor, versionPatch = map(int, str(self.dependencies["vtx_app"].options.version).split('.'))
         app_conf = self.dependencies["vtx_app"].conf_info
-        tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
-        tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
-        tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
-        tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
-        tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
-        tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = 1 if self.options.tool_topology_editor else 0
-        tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
+        tc.cache_variables["VTX_VERSION_MAJOR"] = str(versionMajor)
+        tc.cache_variables["VTX_VERSION_MINOR"] = str(versionMinor)
+        tc.cache_variables["VTX_VERSION_PATCH"] = str(versionPatch) 
+        tc.cache_variables["VTX_TOOL_EXAMPLE"] = "1" if self.options.tool_example else "0"
+        tc.cache_variables["VTX_TOOL_MDPREP"] = "1" if self.options.tool_mdprep else "0"
+        tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = "1" if self.options.tool_topology_editor else "0"
+        tc.cache_variables["VTX_UI_QT"] = "1" if self.options.ui_qt else "0"
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
         tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")
         if self.options.python_binding:

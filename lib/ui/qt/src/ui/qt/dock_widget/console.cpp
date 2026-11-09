@@ -6,6 +6,7 @@
 #include <QToolBar>
 #include <QUrl>
 #include <app/constants.hpp>
+#include <app/services.hpp>
 #include <filesystem>
 #include <string>
 #include <system_error>
@@ -48,7 +49,7 @@ namespace VTX::UI::QT::DockWidget
 		// Print log and insert links.
 		void _insertLogText( QTextCursor & p_cursor, const QString & p_text, const QTextCharFormat & p_format )
 		{
-			static const QRegularExpression linkRegex( Helper::toQString( ::VTX::App::LOG_LINK_REGEX ) );
+			static const QRegularExpression linkRegex( QString::fromUtf8( VTX::App::LOG_LINK_REGEX ) );
 
 			qsizetype						current = 0;
 			QRegularExpressionMatchIterator matches = linkRegex.globalMatch( p_text );
@@ -109,12 +110,12 @@ namespace VTX::UI::QT::DockWidget
 		}
 	} // namespace
 
-	Console::Console( QWidget * p_parent ) : BaseDockWidget( p_parent, "Console" )
+	Console::Console( QWidget * const p_parent ) :
+		BaseDockWidget( p_parent, "Console" ), _textEdit( Helper::makeQObject<QTextBrowser>( _root ) )
 	{
 		setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
 
 		// Log area.
-		_textEdit = new QTextBrowser( _root );
 		_textEdit->setReadOnly( true );
 		_textEdit->setWordWrapMode( QTextOption::WrapAnywhere );
 		_textEdit->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAsNeeded );
@@ -123,36 +124,30 @@ namespace VTX::UI::QT::DockWidget
 		_textEdit->setOpenExternalLinks( false );
 
 		connect(
-			_textEdit, &QTextBrowser::anchorClicked, this, []( const QUrl & p_url ) { _openConsoleLink( p_url ); }
-		);
+			_textEdit, &QTextBrowser::anchorClicked, this, []( const QUrl & p_url ) { _openConsoleLink( p_url ); } );
 
 		// Context menu.
-		connect(
-			_textEdit,
-			&QTextBrowser::customContextMenuRequested,
-			this,
-			[ & ]( const QPoint & p_pos )
-			{
-				QMenu			menu( this );
-				QAction * const clearAction = new QAction( "Clear", &menu );
-				connect( clearAction, &QAction::triggered, this, &Console::clear );
-				menu.addAction( clearAction );
-				menu.exec( _textEdit->mapToGlobal( p_pos ) );
-			}
-		);
+		connect( _textEdit,
+				 &QTextBrowser::customContextMenuRequested,
+				 this,
+				 [ & ]( const QPoint & p_pos )
+				 {
+					 QMenu			 menu( this );
+					 QAction * const clearAction = Helper::makeQObject<QAction>( "Clear", &menu );
+					 connect( clearAction, &QAction::triggered, this, &Console::clear );
+					 menu.addAction( clearAction );
+					 menu.exec( _textEdit->mapToGlobal( p_pos ) );
+				 } );
 
 		// Get logs and push to main thread.
-		_callbackId = LOGGER::onLog += [ this ]( const ::VTX::Util::LogInfo & p_logInfo )
-		{ QMetaObject::invokeMethod( this, [ this, p_logInfo ]() { log( p_logInfo ); }, Qt::QueuedConnection ); };
+		_logConnection = App::HUB().connect<Util::LogInfo, &Console::log>( this );
 
 		// Command launcher.
-		_commandLauncher = new UI::QT::Widget::CommandLauncher( this );
+		_commandLauncher = Helper::makeQObject<UI::QT::Widget::CommandLauncher>( this );
 
 		_layout->addWidget( _textEdit );
 		_layout->addWidget( _commandLauncher );
 	}
-
-	Console::~Console() { LOGGER::onLog -= _callbackId; }
 
 	void Console::log( const VTX::Util::LogInfo & p_logInfo )
 	{

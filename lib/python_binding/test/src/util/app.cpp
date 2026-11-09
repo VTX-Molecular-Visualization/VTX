@@ -28,7 +28,7 @@ namespace VTX::App::Test::Util
 
 			VTX::PythonBinding::Binding::applyVtxApiBinding( *modul );
 		}
-		catch ( std::exception & e )
+		catch ( const std::exception & e )
 		{
 			VTX_ERROR( "Exception caught in python fixture : <{}>", e.what() );
 		}
@@ -38,11 +38,13 @@ namespace VTX::App::Test::Util
 
 		// SCENE().reset();
 	}
+
 	PythonFixture::~PythonFixture()
 	{
 		resetInterpretor();
 		//  SCENE().reset();
 	}
+
 	void PythonFixture::resetInterpretor()
 	{
 		interpretor.clearBinders();

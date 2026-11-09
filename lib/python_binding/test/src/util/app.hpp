@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_TEST_UTIL_APP__
-#define __VTX_APP_TEST_UTIL_APP__
+#ifndef VTX_PYTHON_BINDING_TEST_UTIL_APP_HPP
+#define VTX_PYTHON_BINDING_TEST_UTIL_APP_HPP
 
 #include <memory>
 #include <python_binding/interpretor.hpp>

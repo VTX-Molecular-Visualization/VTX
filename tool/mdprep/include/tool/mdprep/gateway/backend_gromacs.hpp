@@ -1,6 +1,7 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_GATEWAY_BACKEND_GROMACS__
-#define __VTX_TOOL_TOOLS_MDPREP_GATEWAY_BACKEND_GROMACS__
+#ifndef VTX_TOOL_MDPREP_GATEWAY_BACKEND_GROMACS_HPP
+#define VTX_TOOL_MDPREP_GATEWAY_BACKEND_GROMACS_HPP
 
+#include "tool/mdprep/gateway/shared.hpp"
 #include <array>
 #include <optional>
 #include <stack>
@@ -10,19 +11,15 @@
 #include <util/thread/base_thread.hpp>
 #include <vector>
 
-namespace std
-{
-	class thread;
-}
-
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct EngineSpecificCommonInformation;
+	struct MdParameters;
 }
 
 namespace VTX::Tool::Mdprep::Gateway::Gromacs
 {
-	enum class E_BOX_SHAPE
+	enum class E_BOX_SHAPE : uint8_t
 	{
 		dodecahedron,
 		octahedron,
@@ -30,7 +27,7 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		triclinic,
 		COUNT
 	};
-	enum class E_BOX_DIMENSION_MODE
+	enum class E_BOX_DIMENSION_MODE : uint8_t
 	{
 		distance // uses the distance from the solute to the box to determine box's size
 		,
@@ -69,11 +66,11 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		MdStep		   prod { .nstxout_compressed = 100 };
 	};
 
-	void boxShapeCollection( std::vector<std::string> & ) noexcept;
-	void boxDimensionModeCollection( std::vector<std::string> & ) noexcept;
-	void waterModelCollection( std::vector<std::string> & ) noexcept;
+	void boxShapeCollection( std::vector<std::string> & );
+	void boxDimensionModeCollection( std::vector<std::string> & );
+	void waterModelCollection( std::vector<std::string> & );
 
-	void get( EngineSpecificCommonInformation & ) noexcept;
+	void get( EngineSpecificCommonInformation & );
 
 	class JobManager
 	{
@@ -81,11 +78,11 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		JobManager() = delete;
 		JobManager( MdSettings & );
 
-		void checkInputs( const MdParameters & ) noexcept;
-		void startPreparation( const MdParameters & ) noexcept;
+		void checkInputs( const MdParameters & );
+		void startPreparation( const MdParameters & );
 
 		bool		isResultAvailable() const noexcept;
-		CheckReport lastResult() const noexcept;
+		CheckReport lastResult() const;
 
 	  private:
 		CheckReport				_report;

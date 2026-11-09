@@ -7,7 +7,7 @@
 
 TEST_CASE( "VTX_PYTHON_BINDING - Interpretor runCommand test", "[python][binding][interpretor]" )
 {
-	VTX::App::Test::Util::PythonFixture f;
+	const VTX::App::Test::Util::PythonFixture f;
 
 	CHECK( f.interpretor.runCommand( "l = (1,2,3)" ).empty() );
 	CHECK( f.interpretor.runCommand( "l" ) == "(1, 2, 3)" );
@@ -23,12 +23,12 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor runCommand test", "[python][binding
 
 TEST_CASE( "VTX_PYTHON_BINDING - Python version", "[python][binding][version]" )
 {
-	VTX::App::Test::Util::PythonFixture f;
+	const VTX::App::Test::Util::PythonFixture f;
 
 	CHECK( f.interpretor.runCommand( "import sys" ).empty() );
 	std::string v = f.interpretor.runCommand( "sys.version" );
 
-	bool rightVersion
+	const bool rightVersion
 		= v.find( CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR "." CPYTHON_VERSION_PATCH ) != std::string::npos;
 	if ( not rightVersion )
 	{

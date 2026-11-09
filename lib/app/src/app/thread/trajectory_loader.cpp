@@ -5,18 +5,17 @@
 
 namespace VTX::App::Thread
 {
-	TrajectoryLoader::TrajectoryLoader(
-		Util::Thread::ThreadManager &			 p_manager,
-		IO::SystemReader &&						 p_reader,
-		const Trajectory::TRAJECTORY_BUFFER_MODE p_mode
-	) : BaseThread( p_manager ), _reader( std::move( p_reader ) ), _mode( p_mode )
+	TrajectoryLoader::TrajectoryLoader( Util::Thread::ThreadManager &			 p_manager,
+										IO::SystemReader &&						 p_reader,
+										const Trajectory::TRAJECTORY_BUFFER_MODE p_mode ) :
+		BaseThread( p_manager ), _reader( std::move( p_reader ) ), _mode( p_mode )
 	{
 	}
 
 	void TrajectoryLoader::start()
 	{
-		BaseThread::_start( [ this ]( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread )
-							{ return _run( std::move( p_stopToken ), p_thread ); } );
+		BaseThread::_start( [ this ]( const Util::Thread::StopToken & p_stopToken, Util::Thread::BaseThread & p_thread )
+							{ return _run( p_stopToken, p_thread ); } );
 	}
 
 	void TrajectoryLoader::stop()
@@ -25,11 +24,9 @@ namespace VTX::App::Thread
 		_frameRequestCondition.notify_all();
 	}
 
-	void TrajectoryLoader::requestFrameWindow(
-		const Trajectory::FrameRange				p_frames,
-		const Trajectory::TRAJECTORY_READ_DIRECTION p_direction,
-		const Trajectory::FrameRange				p_availableFrames
-	)
+	void TrajectoryLoader::requestFrameWindow( const Trajectory::FrameRange				   p_frames,
+											   const Trajectory::TRAJECTORY_READ_DIRECTION p_direction,
+											   const Trajectory::FrameRange				   p_availableFrames )
 	{
 		if ( p_frames.isEmpty() )
 		{
@@ -102,16 +99,16 @@ namespace VTX::App::Thread
 		return frame;
 	}
 
-	uint TrajectoryLoader::_run( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread )
+	uint TrajectoryLoader::_run( const Util::Thread::StopToken & p_stopToken, Util::Thread::BaseThread & p_thread )
 	{
 		_reader.set( p_stopToken );
 
-		return _mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR
-				   ? _loadCircularBuffer( std::move( p_stopToken ), p_thread )
-				   : _loadFullBuffer( std::move( p_stopToken ), p_thread );
+		return _mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR ? _loadCircularBuffer( p_stopToken, p_thread )
+																	 : _loadFullBuffer( p_stopToken, p_thread );
 	}
 
-	uint TrajectoryLoader::_loadFullBuffer( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread )
+	uint TrajectoryLoader::_loadFullBuffer( const Util::Thread::StopToken & p_stopToken,
+											Util::Thread::BaseThread &		p_thread )
 	{
 		p_thread.setProgressText( "Reading trajectory ..." );
 		const size_t frameCount = _reader.frameCount();
@@ -145,10 +142,8 @@ namespace VTX::App::Thread
 		return 0;
 	}
 
-	uint TrajectoryLoader::_loadCircularBuffer(
-		Util::Thread::StopToken	   p_stopToken,
-		Util::Thread::BaseThread & p_thread
-	)
+	uint TrajectoryLoader::_loadCircularBuffer( const Util::Thread::StopToken & p_stopToken,
+												Util::Thread::BaseThread &		p_thread )
 	{
 		p_thread.setProgressText( "Reading trajectory ..." );
 
@@ -156,7 +151,7 @@ namespace VTX::App::Thread
 		{
 			Trajectory::FrameRange				  requestedFrameWindow;
 			Trajectory::FrameRange				  availableFrames;
-			Trajectory::TRAJECTORY_READ_DIRECTION direction;
+			Trajectory::TRAJECTORY_READ_DIRECTION direction = Trajectory::TRAJECTORY_READ_DIRECTION::FORWARD;
 			uint64_t							  currentRequestVersion = 0;
 			{
 				std::unique_lock lock( _frameMutex );
@@ -176,13 +171,9 @@ namespace VTX::App::Thread
 				availableFrames		  = _requestedAvailableFrames;
 			}
 
-			p_thread.setProgressText(
-				fmt::format(
-					"Reading trajectory frames [{}-{}] ...",
-					requestedFrameWindow.getFirst(),
-					requestedFrameWindow.getLast() - 1
-				)
-			);
+			p_thread.setProgressText( fmt::format( "Reading trajectory frames [{}-{}] ...",
+												   requestedFrameWindow.getFirst(),
+												   requestedFrameWindow.getLast() - 1 ) );
 			p_thread.setProgress( 0.f );
 
 			Trajectory::LoadedFrameBatch loadedBatch;
@@ -198,10 +189,8 @@ namespace VTX::App::Thread
 				if ( availableFrames.contains( frameIndex ) )
 				{
 					processedFrameCount++;
-					p_thread.setProgress(
-						static_cast<float>( processedFrameCount )
-						/ static_cast<float>( requestedFrameWindow.getCount() )
-					);
+					p_thread.setProgress( static_cast<float>( processedFrameCount )
+										  / static_cast<float>( requestedFrameWindow.getCount() ) );
 					continue;
 				}
 
@@ -224,9 +213,8 @@ namespace VTX::App::Thread
 				}
 				loadedBatch.frames.emplace_back( frameIndex, std::move( frame ) );
 				processedFrameCount++;
-				p_thread.setProgress(
-					static_cast<float>( processedFrameCount ) / static_cast<float>( requestedFrameWindow.getCount() )
-				);
+				p_thread.setProgress( static_cast<float>( processedFrameCount )
+									  / static_cast<float>( requestedFrameWindow.getCount() ) );
 			}
 
 			{

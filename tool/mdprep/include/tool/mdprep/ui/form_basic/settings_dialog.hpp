@@ -1,14 +1,21 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG__
+#ifndef VTX_TOOL_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG_HPP
+#define VTX_TOOL_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG_HPP
 
+#include "tool/mdprep/gateway/form_data.hpp"
+#include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
+#include <memory>
 #include <optional>
 #include <util/concepts.hpp>
+#include <utility>
 #include <variant>
 
 class QWidget;
+class QDialog;
+class QComboBox;
 class QLineEdit;
 class QDoubleSpinBox;
 class QPushButton;
+class QVBoxLayout;
 
 namespace VTX::Tool::Mdprep::Gateway
 {
@@ -16,7 +23,6 @@ namespace VTX::Tool::Mdprep::Gateway
 	struct EngineSpecificCommonInformation;
 	struct MinimizationData;
 	struct SystemData;
-	class MdEngineFieldPlacer;
 } // namespace VTX::Tool::Mdprep::Gateway
 
 namespace VTX::Tool::Mdprep::ui::form_basic
@@ -28,6 +34,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	{
 	  public:
 		ApplyVisitor() = default;
+
 		template<typename T>
 			requires( not VTX::SameUnalteredType<T, ApplyVisitor> )
 		ApplyVisitor( T && p_ ) : _ptr( new _wrapper<T>( std::forward<T>( p_ ) ) )
@@ -35,14 +42,15 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 			static_assert(
 				requires( T t ) {
 					{ t.applied() };
-				}, "You need to implement 'void applied() noexcept' class method"
-			);
+				}, "You need to implement 'void applied()' class method" );
 		}
 
-		inline void applied() noexcept
+		void applied()
 		{
 			if ( _ptr )
+			{
 				_ptr->applied();
+			}
 		}
 
 	  private:
@@ -50,8 +58,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		{
 			virtual ~_interface() = default;
 
-			virtual void applied() noexcept = 0;
+			virtual void applied() = 0;
 		};
+
 		std::unique_ptr<_interface> _ptr = nullptr;
 
 		template<typename T>
@@ -59,7 +68,7 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		{
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
 
-			virtual void applied() noexcept { _obj.applied(); }
+			void applied() override { _obj.applied(); }
 
 		  private:
 			T _obj;
@@ -72,14 +81,12 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	  public:
 		using SupportedData = std::variant<MdParametersStepData *, MinimizationData *, SystemData *>;
 		SettingsDialog()	= default;
-		SettingsDialog(
-			QWidget *												p_parent,
-			const char *											p_title,
-			SupportedData											p_dataFields,
-			MdEngineSpecificFieldPlacer								p_engineFieldPlacer,
-			std::optional<Gateway::EngineSpecificCommonInformation> p_engineInfo   = std::nullopt,
-			ApplyVisitor											p_applyVisitor = ApplyVisitor()
-		);
+		SettingsDialog( QWidget *												p_parent,
+						const char *											p_title,
+						SupportedData											p_dataFields,
+						MdEngineSpecificFieldPlacer								p_engineFieldPlacer,
+						std::optional<Gateway::EngineSpecificCommonInformation> p_engineInfo   = std::nullopt,
+						ApplyVisitor											p_applyVisitor = ApplyVisitor() );
 
 		SettingsDialog( const SettingsDialog & )			 = delete;
 		SettingsDialog & operator=( const SettingsDialog & ) = delete;
@@ -106,14 +113,23 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 
 			std::optional<Gateway::EngineSpecificCommonInformation> engineInfo;
 		};
+
 		UiData						_uiObjects;
 		MdEngineSpecificFieldPlacer _engineFieldPlacer;
 		ApplyVisitor				_applyVisitor;
 
-		void _setupUi( QWidget * p_parent, const char * p_title );
-		void _setupSlots() noexcept;
-		void _applyChanges() noexcept;
-		void _cancelChanges() noexcept;
+		void		_setupUi( QWidget * p_parent, const char * p_title );
+		static void _setupDataUi( QVBoxLayout *				   p_qMainLayout,
+								  UiData &					   p_uiObjects,
+								  const MdParametersStepData * p_data );
+		static void _setupDataUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const MinimizationData * p_data );
+		static void _setupDataUi( QVBoxLayout * p_qMainLayout, UiData & p_uiObjects, const SystemData * p_data );
+		static void _applyDataChange( const UiData & p_uiObjects, MinimizationData * p_data );
+		static void _applyDataChange( const UiData & p_uiObjects, MdParametersStepData * p_data );
+		static void _applyDataChange( const UiData & p_uiObjects, SystemData * p_data );
+		void		_setupSlots();
+		void		_applyChanges();
+		void		_cancelChanges() const;
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
 

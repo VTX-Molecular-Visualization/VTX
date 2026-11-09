@@ -3,13 +3,16 @@
 namespace VTX::Util::Math
 {
 
-	Vec3f orthogonalVector( const Vec3f & normal )
+	Vec3f orthogonalVector( const Vec3f & normal ) noexcept
 	{
 		// Solve a*x + b*y + c*z = 0
 		const float a = normal.x;
 		const float b = normal.y;
 		const float c = normal.z;
-		float		x = 0.f, y = 0.f, z = 0.f;
+		float		x = 0.f;
+		float		y = 0.f;
+		float		z = 0.f;
+
 		if ( std::abs( a ) > VTX::EPSILON && std::abs( b ) > VTX::EPSILON )
 		{
 			x = -glm::sign( a ) * b;
@@ -52,4 +55,4 @@ namespace VTX::Util::Math
 		return glm::normalize( Vec3f( x, y, z ) );
 	}
 
-}
+} // namespace VTX::Util::Math

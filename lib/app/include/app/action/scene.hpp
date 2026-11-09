@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_SCENE__
-#define __VTX_APP_ACTION_SCENE__
+#ifndef VTX_APP_ACTION_SCENE_HPP
+#define VTX_APP_ACTION_SCENE_HPP
 
 #include "app/ecs.hpp"
 #include <util/types.hpp>
@@ -12,7 +12,7 @@ namespace VTX::App::Action::Scene
 	 */
 	struct DeleteSystem
 	{
-		void execute( const Entity );
+		void execute( Entity );
 	};
 
 	/**
@@ -36,7 +36,7 @@ namespace VTX::App::Action::Scene
 	 */
 	struct SetColorLayout
 	{
-		void execute( const Entity p_e );
+		void execute( Entity p_e );
 	};
 
 	/**
@@ -44,7 +44,7 @@ namespace VTX::App::Action::Scene
 	 */
 	struct SetGraphicsConfig
 	{
-		void execute( const Entity p_e );
+		void execute( Entity p_e );
 	};
 } // namespace VTX::App::Action::Scene
 #endif

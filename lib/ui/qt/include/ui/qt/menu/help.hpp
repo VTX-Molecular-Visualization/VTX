@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_MENU_HELP__
-#define __VTX_UI_QT_MENU_HELP__
+#ifndef VTX_UI_QT_MENU_HELP_HPP
+#define VTX_UI_QT_MENU_HELP_HPP
 
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
@@ -14,7 +14,7 @@ namespace VTX::UI::QT::Menu
 	class Help : public Widget::BaseWidget<Help, QMenu>
 	{
 	  public:
-		Help( QWidget * p_parent ) : BaseWidget( p_parent )
+		Help( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setTitle( "Help" );
 

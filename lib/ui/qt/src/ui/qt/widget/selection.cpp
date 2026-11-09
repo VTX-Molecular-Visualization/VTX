@@ -6,6 +6,7 @@
 #include <QMenu>
 #include <QPoint>
 #include <QUrl>
+#include <algorithm>
 #include <app/action/action_manager.hpp>
 #include <app/action/system.hpp>
 #include <app/helper/system.hpp>
@@ -20,7 +21,7 @@ namespace VTX::UI::QT::Widget
 {
 	namespace
 	{
-		constexpr Index MAX_SELECTION_LIST_LINE_NB = 100;
+		constexpr int MAX_SELECTION_LIST_LINE_NB = 100;
 
 		void _addSelectionLine( QListWidget & p_list, const QString & p_text )
 		{
@@ -37,16 +38,16 @@ namespace VTX::UI::QT::Widget
 
 	Selection::Selection( QWidget * const p_parent ) : QWidget( p_parent )
 	{
-		Util::ScopedChrono timer( "QT::Widget::Selection::Selection" );
+		const Util::ScopedChrono timer( "QT::Widget::Selection::Selection" );
 
 		using namespace App;
 		using namespace Core::Struct;
 
-		_layout = new QVBoxLayout( this );
+		_layout = Helper::makeQObject<QVBoxLayout>( this );
 		_layout->setContentsMargins( 0, 0, 0, 0 );
 		setLayout( _layout );
 
-		_list = new QListWidget( this );
+		_list = Helper::makeQObject<QListWidget>( this );
 		_layout->addWidget( _list );
 
 		auto &	   reg					= REG();
@@ -78,83 +79,69 @@ namespace VTX::UI::QT::Widget
 			const auto & transform = reg.get<Util::Math::Transform>( editableSystemEntity );
 
 			// Name.
-			_textName = new QPlainTextEdit( QString::fromStdString( metadata.name ), this );
+			_textName = Helper::makeQObject<QPlainTextEdit>( QString::fromStdString( metadata.name ), this );
 			_textName->setPlaceholderText( "No name" );
 			_textName->setLineWrapMode( QPlainTextEdit::WidgetWidth );
 			_textName->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed );
 			_textName->setFixedHeight( _textName->fontMetrics().lineSpacing() * 4 );
 			_layout->addWidget( _textName );
 
-			connect(
-				_textName,
-				&QPlainTextEdit::textChanged,
-				this,
-				[ this, editableSystemEntity ]()
-				{
-					App::ACTION().execute<App::Action::System::SetName>(
-						editableSystemEntity, _textName->toPlainText().toStdString()
-					);
-				}
-			);
+			connect( _textName,
+					 &QPlainTextEdit::textChanged,
+					 this,
+					 [ this, editableSystemEntity ]()
+					 {
+						 App::ACTION().execute<App::Action::System::SetName>( editableSystemEntity,
+																			  _textName->toPlainText().toStdString() );
+					 } );
 
 			// PDB.
-			_layout->addWidget(
-				new QLabel( QString( "PDB: %1" ).arg( QString::fromStdString( metadata.pdbIDCode ) ), this )
-			);
+			_layout->addWidget( Helper::makeQObject<QLabel>(
+				QString( "PDB: %1" ).arg( QString::fromStdString( metadata.pdbIDCode ) ), this ) );
 
 			// Path.
 			const QUrl parentFolderUrl
 				= QUrl::fromLocalFile( QString::fromStdString( metadata.path.parent_path().string() ) );
-			auto * labelFile = new QLabel(
-				QString( "File: %1" ).arg( QString::fromStdString( metadata.path.filename().string() ) ), this
-			);
+			auto * labelFile = Helper::makeQObject<QLabel>(
+				QString( "File: %1" ).arg( QString::fromStdString( metadata.path.filename().string() ) ), this );
 			labelFile->setWordWrap( true );
 			labelFile->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 			labelFile->setToolTip( QString::fromStdString( metadata.path.generic_string() ) );
 			labelFile->setCursor( Qt::WhatsThisCursor );
 			labelFile->setContextMenuPolicy( Qt::CustomContextMenu );
-			connect(
-				labelFile,
-				&QLabel::customContextMenuRequested,
-				this,
-				[ labelFile, parentFolderUrl ]( const QPoint & p_pos )
-				{
-					QMenu menu( labelFile );
-					menu.addAction(
-						"Show in explorer",
-						labelFile,
-						[ parentFolderUrl ]() { QDesktopServices::openUrl( parentFolderUrl ); }
-					);
-					menu.exec( labelFile->mapToGlobal( p_pos ) );
-				}
-			);
+			connect( labelFile,
+					 &QLabel::customContextMenuRequested,
+					 this,
+					 [ labelFile, parentFolderUrl ]( const QPoint & p_pos )
+					 {
+						 QMenu menu( labelFile );
+						 menu.addAction( "Show in explorer",
+										 labelFile,
+										 [ parentFolderUrl ]() { QDesktopServices::openUrl( parentFolderUrl ); } );
+						 menu.exec( labelFile->mapToGlobal( p_pos ) );
+					 } );
 			_layout->addWidget( labelFile );
 
 			// Transform.
-			auto * groupBoxTransform = new QGroupBox( "Transform", this );
-			auto * layout			 = new QVBoxLayout( groupBoxTransform );
+			auto * groupBoxTransform = Helper::makeQObject<QGroupBox>( "Transform", this );
+			auto * layout			 = Helper::makeQObject<QVBoxLayout>( groupBoxTransform );
 
-			_transform = new Transform( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
+			_transform
+				= Helper::makeQObject<Transform>( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
 			_transform->setTransform( transform );
 
-			connect(
-				_transform,
-				&Transform::positionChanged,
-				[ editableSystemEntity ]( const Vec3f & p_position )
-				{ App::ACTION().execute<App::Action::System::SetPosition>( editableSystemEntity, p_position ); }
-			);
-			connect(
-				_transform,
-				&Transform::rotationChanged,
-				[ editableSystemEntity ]( const Quatf & p_rotation )
-				{ App::ACTION().execute<App::Action::System::SetRotation>( editableSystemEntity, p_rotation ); }
-			);
-			connect(
-				_transform,
-				&Transform::scaleChanged,
-				[ editableSystemEntity ]( const Vec3f & p_scale )
-				{ App::ACTION().execute<App::Action::System::SetScale>( editableSystemEntity, p_scale ); }
-			);
+			connect( _transform,
+					 &Transform::positionChanged,
+					 [ editableSystemEntity ]( const Vec3f & p_position )
+					 { App::ACTION().execute<App::Action::System::SetPosition>( editableSystemEntity, p_position ); } );
+			connect( _transform,
+					 &Transform::rotationChanged,
+					 [ editableSystemEntity ]( const Quatf & p_rotation )
+					 { App::ACTION().execute<App::Action::System::SetRotation>( editableSystemEntity, p_rotation ); } );
+			connect( _transform,
+					 &Transform::scaleChanged,
+					 [ editableSystemEntity ]( const Vec3f & p_scale )
+					 { App::ACTION().execute<App::Action::System::SetScale>( editableSystemEntity, p_scale ); } );
 
 			layout->addWidget( _transform );
 			_layout->addWidget( groupBoxTransform );
@@ -180,9 +167,9 @@ namespace VTX::UI::QT::Widget
 
 			const auto & metadata = reg.get<IO::Metadata>( entity );
 
-			QString systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
-									 ? QString::fromStdString( metadata.path.stem().string() )
-									 : QString::fromStdString( metadata.pdbIDCode );
+			const QString systemName = ( metadata.pdbIDCode == IO::PDB_ID_CODE_DEFAULT )
+										   ? QString::fromStdString( metadata.path.stem().string() )
+										   : QString::fromStdString( metadata.pdbIDCode );
 
 			const auto systemState = App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )
@@ -205,8 +192,8 @@ namespace VTX::UI::QT::Widget
 			// Chains.
 			for ( Index chain = 0; chain < topology.getChainCount(); ++chain )
 			{
-				QString	   chainName = QString::fromStdString( topology.getChainName( chain ) );
-				const auto chainState
+				const QString chainName = QString::fromStdString( topology.getChainName( chain ) );
+				const auto	  chainState
 					= App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::CHAIN, chain } );
 				if ( chainState == App::System::E_SELECTION_STATE::FULL )
 				{
@@ -225,10 +212,10 @@ namespace VTX::UI::QT::Widget
 				// Residues.
 				for ( Index residue : topology.getChainResidueRange( chain ) )
 				{
-					Index	   originalResidueId = topology.getResidueOriginalId( residue );
-					QString	   residueName		 = QString::fromStdString( topology.getResidueName( residue ) )
-												   + QString::asprintf( "%i", originalResidueId );
-					const auto residueState
+					const Index	  originalResidueId = topology.getResidueOriginalId( residue );
+					const QString residueName		= QString::fromStdString( topology.getResidueName( residue ) )
+													  + QString::number( originalResidueId );
+					const auto	  residueState
 						= App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::RESIDUE, residue } );
 					if ( residueState == App::System::E_SELECTION_STATE::FULL )
 					{
@@ -255,8 +242,7 @@ namespace VTX::UI::QT::Widget
 								*_list,
 								systemName + "/" + chainName + "/" + residueName + "/"
 									+ QString::fromStdString( topology.getAtomName( atom ) )
-									+ ( originalIndex ? QString::asprintf( ":%i", originalIndex.value() ) : "" )
-							);
+									+ ( originalIndex ? QString( ":%1" ).arg( originalIndex.value() ) : "" ) );
 						}
 					}
 				}
@@ -266,19 +252,15 @@ namespace VTX::UI::QT::Widget
 		// Display counters.
 		if ( countSystem > 1 )
 		{
-			_layout->addWidget(
-				new QLabel( QString( "Systems: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countSystem ) ), this )
-			);
+			_layout->addWidget( Helper::makeQObject<QLabel>(
+				QString( "Systems: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countSystem ) ), this ) );
 		}
-		_layout->addWidget(
-			new QLabel( QString( "Chains: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countChain ) ), this )
-		);
-		_layout->addWidget(
-			new QLabel( QString( "Residues: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countResidue ) ), this )
-		);
-		_layout->addWidget(
-			new QLabel( QString( "Atoms: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countAtom ) ), this )
-		);
+		_layout->addWidget( Helper::makeQObject<QLabel>(
+			QString( "Chains: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countChain ) ), this ) );
+		_layout->addWidget( Helper::makeQObject<QLabel>(
+			QString( "Residues: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countResidue ) ), this ) );
+		_layout->addWidget( Helper::makeQObject<QLabel>(
+			QString( "Atoms: %1" ).arg( VTX::UI::QT::Helper::formatNumber( countAtom ) ), this ) );
 
 		// Connect.
 		_connTransformChanged
@@ -286,27 +268,21 @@ namespace VTX::UI::QT::Widget
 		_connMetadataChanged = App::REG().on_update<IO::Metadata>().connect<&Selection::_metadataUpdated>( this );
 	}
 
-	Selection::~Selection()
+	void Selection::_transformUpdated( Registry & p_reg, const Entity p_entity )
 	{
-		_connTransformChanged.release();
-		_connMetadataChanged.release();
-	}
-
-	void Selection::_transformUpdated( Registry & p_reg, Entity p_entity )
-	{
-		if ( !_transform || std::find( _entities.begin(), _entities.end(), p_entity ) == _entities.end() )
+		if ( not _transform || std::ranges::find( _entities, p_entity ) == _entities.end() )
 		{
 			return;
 		}
 
-		QSignalBlocker blocker( _transform );
-		const auto &   transform = p_reg.get<Util::Math::Transform>( p_entity );
+		const QSignalBlocker blocker( _transform );
+		const auto &		 transform = p_reg.get<Util::Math::Transform>( p_entity );
 		_transform->setTransform( transform );
 	}
 
-	void Selection::_metadataUpdated( Registry & p_reg, Entity p_entity )
+	void Selection::_metadataUpdated( Registry & p_reg, const Entity p_entity )
 	{
-		if ( !_textName || std::find( _entities.begin(), _entities.end(), p_entity ) == _entities.end() )
+		if ( not _textName || std::ranges::find( _entities, p_entity ) == _entities.end() )
 		{
 			return;
 		}
@@ -318,7 +294,7 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		QSignalBlocker blocker( _textName );
+		const QSignalBlocker blocker( _textName );
 		_textName->setPlainText( name );
 	}
 } // namespace VTX::UI::QT::Widget

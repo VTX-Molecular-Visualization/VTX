@@ -1,7 +1,5 @@
 #include <algorithm>
 #include <string>
-#include <thread>
-#include <util/logger.hpp>
 #include <vector>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
@@ -16,20 +14,23 @@
 
 namespace VTX::Tool::Mdprep::Gateway::Gromacs
 {
-	backends::Gromacs::E_EDITCONF_BOX_SHAPE translate( const E_BOX_SHAPE & p_ ) noexcept
+	namespace
 	{
-		switch ( p_ )
+		constexpr backends::Gromacs::E_EDITCONF_BOX_SHAPE translate( const E_BOX_SHAPE & p_ ) noexcept
 		{
-		case E_BOX_SHAPE::dodecahedron: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::dodecahedron;
-		case E_BOX_SHAPE::cubic: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::cubic;
-		case E_BOX_SHAPE::octahedron: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::octahedron;
-		case E_BOX_SHAPE::triclinic: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::triclinic;
-		case E_BOX_SHAPE::COUNT: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::COUNT;
-		default: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::dodecahedron;
+			switch ( p_ )
+			{
+			case E_BOX_SHAPE::dodecahedron: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::dodecahedron;
+			case E_BOX_SHAPE::cubic: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::cubic;
+			case E_BOX_SHAPE::octahedron: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::octahedron;
+			case E_BOX_SHAPE::triclinic: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::triclinic;
+			case E_BOX_SHAPE::COUNT: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::COUNT;
+			default: return backends::Gromacs::E_EDITCONF_BOX_SHAPE ::dodecahedron;
+			}
 		}
-	}
+	} // namespace
 
-	void boxShapeCollection( std::vector<std::string> & p_out ) noexcept
+	void boxShapeCollection( std::vector<std::string> & p_out )
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		for ( int it_idx = 0; it_idx < static_cast<int>( E_BOX_SHAPE::COUNT ); it_idx++ )
@@ -38,17 +39,20 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		}
 	}
 
-	backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE translate( const E_BOX_DIMENSION_MODE & p_ ) noexcept
+	namespace
 	{
-		switch ( p_ )
+		constexpr backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE translate( const E_BOX_DIMENSION_MODE & p_ ) noexcept
 		{
-		case E_BOX_DIMENSION_MODE::distance: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::distance;
-		case E_BOX_DIMENSION_MODE::size: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::size;
-		default: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::distance;
+			switch ( p_ )
+			{
+			case E_BOX_DIMENSION_MODE::distance: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::distance;
+			case E_BOX_DIMENSION_MODE::size: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::size;
+			default: return backends::Gromacs::E_EDITCONF_BOX_DIMENSION_MODE ::distance;
+			}
 		}
-	}
+	} // namespace
 
-	void boxDimensionModeCollection( std::vector<std::string> & p_ ) noexcept
+	void boxDimensionModeCollection( std::vector<std::string> & p_ )
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		for ( int it_idx = 0; it_idx < static_cast<int>( E_BOX_DIMENSION_MODE::COUNT ); it_idx++ )
@@ -57,33 +61,30 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		}
 	}
 
-	void waterModelCollection( std::vector<std::string> & p_out ) noexcept
+	void waterModelCollection( std::vector<std::string> & p_out )
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		for ( int it_idx = 0; it_idx < static_cast<int>( E_WATER_MODEL::COUNT ); it_idx++ )
 		{
-			p_out.push_back( string( static_cast<E_WATER_MODEL>( it_idx ) ) );
+			p_out.emplace_back( string( static_cast<E_WATER_MODEL>( it_idx ) ) );
 		}
 	}
 
 	namespace
 	{
-		void convert(
-			const std::vector<backends::Gromacs::forcefield> & p_in,
-			std::vector<std::string> &						   p_out
-		) noexcept
+		void convert( const std::vector<backends::Gromacs::forcefield> & p_in, std::vector<std::string> & p_out )
 		{
 			using namespace VTX::Tool::Mdprep::backends::Gromacs;
 			p_out.clear();
-			for ( auto & it_ff : p_in )
+			for ( const auto & it_ff : p_in )
 			{
 				auto ffName = it_ff.getName();
-				p_out.push_back( { ffName.begin(), ffName.end() } );
+				p_out.emplace_back( ffName.begin(), ffName.end() );
 			}
 		}
 	} // namespace
 
-	void get( EngineSpecificCommonInformation & p_out ) noexcept
+	void get( EngineSpecificCommonInformation & p_out )
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		auto ffs = listForcefields( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
@@ -101,7 +102,7 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 			using namespace backends::Gromacs;
 			for ( int idx = 0; idx < static_cast<int>( E_WATER_MODEL::COUNT ); idx++ )
 			{
-				E_WATER_MODEL it = static_cast<E_WATER_MODEL>( idx );
+				const E_WATER_MODEL it = static_cast<E_WATER_MODEL>( idx );
 				if ( string( it ) == p_in )
 				{
 					out = it;
@@ -110,11 +111,9 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 			}
 		}
 
-		void convert(
-			const MdParameters &				p_param,
-			const Gromacs::MdSettings &			p_gmxParam,
-			backends::Gromacs::MdInstructions & p_out
-		) noexcept
+		void convert( const MdParameters &				  p_param,
+					  const Gromacs::MdSettings &		  p_gmxParam,
+					  backends::Gromacs::MdInstructions & p_out )
 		{
 			p_out.nvt.nsteps	= p_param.nvt.nsteps;
 			p_out.nvt.dt		= p_param.nvt.dt;
@@ -143,18 +142,16 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 			p_out.fileStem = "your_system"; // TODO bad design
 		}
 
-		void convert(
-			const MdParameters &										p_inGeneric,
-			const Gromacs::MdSettings &									p_inGromacs,
-			VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions & p_out
-		) noexcept
+		void convert( const MdParameters &										  p_inGeneric,
+					  const Gromacs::MdSettings &								  p_inGromacs,
+					  VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions & p_out )
 		{
 			convert( p_inGeneric.system.waterModel, p_out.pdb2gmx.water );
 			p_out.pdb2gmx.forcefields
 				= backends::Gromacs::listForcefields( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
 			std::vector<std::string> strFfs;
 			convert( p_out.pdb2gmx.forcefields, strFfs );
-			auto hit = std::find( strFfs.begin(), strFfs.end(), p_inGeneric.system.forcefieldBio );
+			auto hit = std::ranges::find( strFfs, p_inGeneric.system.forcefieldBio );
 			if ( hit != strFfs.end() )
 			{
 				p_out.pdb2gmx.forcefieldIndex = std::distance( strFfs.begin(), hit );
@@ -167,7 +164,7 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 		}
 	} // namespace
 
-	void JobManager::startPreparation( const MdParameters & p_1 ) noexcept
+	void JobManager::startPreparation( const MdParameters & p_1 )
 	{
 		VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions gmxInstructions;
 		convert( p_1, *_data, gmxInstructions );
@@ -176,9 +173,9 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 
 	bool JobManager::isResultAvailable() const noexcept { return _report != CheckReport(); }
 
-	CheckReport JobManager::lastResult() const noexcept { return _report; }
+	CheckReport JobManager::lastResult() const { return _report; }
 
-	void JobManager::checkInputs( const MdParameters & p_1 ) noexcept
+	void JobManager::checkInputs( const MdParameters & p_1 )
 	{
 		VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions gmxInstructions;
 		convert( p_1, *_data, gmxInstructions );

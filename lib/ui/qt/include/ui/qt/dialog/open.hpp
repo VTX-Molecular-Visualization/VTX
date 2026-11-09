@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DIALOG_OPEN__
-#define __VTX_UI_QT_DIALOG_OPEN__
+#ifndef VTX_UI_QT_DIALOG_OPEN_HPP
+#define VTX_UI_QT_DIALOG_OPEN_HPP
 
 #include "ui/qt/dialog/base_dialog.hpp"
 #include <QFileDialog>

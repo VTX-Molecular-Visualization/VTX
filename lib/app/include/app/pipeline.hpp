@@ -1,7 +1,11 @@
-#ifndef __VTX_APP_PIPELINE__
-#define __VTX_APP_PIPELINE__
+#ifndef VTX_APP_PIPELINE_HPP
+#define VTX_APP_PIPELINE_HPP
 
+#include <exception>
+#include <string>
+#include <string_view>
 #include <util/hashing.hpp>
+#include <utility>
 
 namespace VTX::Util::Monitoring
 {
@@ -25,7 +29,33 @@ namespace VTX::App
 		/**
 		 * @brief Process each step and log their duration.
 		 */
-		void process( Util::Monitoring::Stats &, const float p_delta, const float p_elapsed );
+		void process( Util::Monitoring::Stats &, float p_delta, float p_elapsed );
+
+	  private:
+		std::string _lastError;
+		size_t		_lastErrorRepeatCount = 0;
+
+		template<typename F>
+		bool _step( const std::string_view p_step, F && p_function ) noexcept
+		{
+			try
+			{
+				std::forward<F>( p_function )();
+				return true;
+			}
+			catch ( const std::exception & p_e )
+			{
+				_logError( p_step, p_e.what() );
+			}
+			catch ( ... )
+			{
+				_logError( p_step, "unknown exception" );
+			}
+			return false;
+		}
+
+		void _logError( std::string_view p_step, std::string_view p_error ) noexcept;
+		void _flushRepeatedError() noexcept;
 	};
 
 } // namespace VTX::App

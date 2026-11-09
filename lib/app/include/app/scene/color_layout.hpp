@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SCENE_COLOR_LAYOUT__
-#define __VTX_APP_SCENE_COLOR_LAYOUT__
+#ifndef VTX_APP_SCENE_COLOR_LAYOUT_HPP
+#define VTX_APP_SCENE_COLOR_LAYOUT_HPP
 
 #include "app/ecs.hpp"
 

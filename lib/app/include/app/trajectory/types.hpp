@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_TRAJECTORY_TYPES__
-#define __VTX_APP_TRAJECTORY_TYPES__
+#ifndef VTX_APP_TRAJECTORY_TYPES_HPP
+#define VTX_APP_TRAJECTORY_TYPES_HPP
 
 #include <core/struct/trajectory.hpp>
 #include <cstdint>

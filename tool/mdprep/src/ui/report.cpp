@@ -1,23 +1,17 @@
-#include <latch>
-//
-#include <QPointer>
-#include <QTimer>
-//
-#include <util/event_hub.hpp>
-#include <util/sentry.hpp>
-//
-#include <app/action/action_manager.hpp>
-#include <app/services.hpp>
-#include <app/system/visibility.hpp>
-#include <ui/qt/util.hpp>
-#include <util/thread/base_thread.hpp>
-//
+#include "tool/mdprep/ui/report.hpp"
 #include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
 #include "tool/mdprep/ui/shared.hpp"
+#include <QPointer>
+#include <QTimer>
+#include <app/ecs.hpp>
+#include <app/services.hpp>
+#include <app/system/visibility.hpp>
 #include <tool/mdprep/gateway/form_data.hpp>
-//
-#include "tool/mdprep/ui/report.hpp"
+#include <ui/qt/helper.hpp>
+#include <ui/qt/util.hpp>
+#include <util/event_hub.hpp>
+#include <utility>
 
 namespace VTX::Tool::Mdprep::ui
 {
@@ -57,8 +51,7 @@ namespace VTX::Tool::Mdprep::ui
 				content = VTX::UI::QT::Util::LabelWithHelper(
 					getReportLabel( report ),
 					report.message.c_str(),
-					VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-				);
+					VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left );
 
 				content.label->setWordWrap( true );
 			}
@@ -67,142 +60,140 @@ namespace VTX::Tool::Mdprep::ui
 			Gateway::CheckReport			   report;
 		};
 
+		/**
+		 * @brief Internal class used for UiReport related things
+		 */
+		class FramedReportManager
+		{
+		  public:
+			void relocate( FramedReportManager & p_other )
+			{
+				_removeContainerFromLayout();
+				_deleteContainer();
+				_deleteLayout();
+
+				p_other._removeContainerFromLayout();
+				p_other._deleteContainer();
+				_currentLayout = std::exchange( p_other._currentLayout, nullptr );
+
+				if ( not _currentLayout.isNull() )
+				{
+					_createContainer();
+				}
+				_lastUiReport = ReportUi( _lastUiReport.report );
+				_recreateUi();
+			}
+
+			void relocate( QPointer<QVBoxLayout> p_ )
+			{
+				_removeContainerFromLayout();
+				_deleteContainer();
+				_currentLayout = std::move( p_ );
+
+				if ( not _lastUiReport.content.container.isNull() )
+				{
+					delete _lastUiReport.content.container;
+				}
+
+				if ( _currentLayout.isNull() )
+				{
+					return;
+				}
+
+				_lastUiReport = ReportUi( _lastUiReport.report );
+				_recreateUi();
+			}
+
+			void postReport( ReportUi p_uiReport )
+			{
+				if ( not _lastUiReport.content.container.isNull() )
+				{
+					delete _lastUiReport.content.container;
+				}
+
+				_lastUiReport = std::move( p_uiReport );
+
+				_recreateUi();
+			}
+
+		  private:
+			QPointer<QVBoxLayout> _currentLayout = nullptr;
+			QPointer<QWidget>	  _container	 = nullptr;
+			ReportUi			  _lastUiReport;
+
+			void _recreateUi()
+			{
+				if ( _currentLayout.isNull() )
+				{
+					return;
+				}
+				_createContainer();
+
+				if ( not _lastUiReport.content.container.isNull() )
+				{
+					_container->layout()->addWidget( _lastUiReport.content );
+				}
+			}
+
+			void _removeContainerFromLayout()
+			{
+				if ( not _currentLayout.isNull() && not _container.isNull() )
+				{
+					_currentLayout->removeWidget( _container );
+				}
+			}
+
+			void _deleteLayout() noexcept
+			{
+				if ( not _currentLayout.isNull() )
+				{
+					delete _currentLayout.data();
+				}
+			}
+
+			void _deleteContainer() noexcept
+			{
+				if ( not _container.isNull() )
+				{
+					delete _container.data();
+				}
+			}
+
+			void _createContainer()
+			{
+				if ( _container.isNull() )
+				{
+					_container = VTX::UI::QT::Helper::makeQObject<QWidget>( _currentLayout->parentWidget() );
+					_currentLayout->addWidget( _container );
+					_container->setLayout( VTX::UI::QT::Helper::makeQObject<QVBoxLayout>( _container.data() ) );
+				}
+			}
+		};
+
 	} // namespace
 
-	/**
-	 * @brief Internal class used for UiReport related things
-	 */
-	class FramedReportManager
-	{
-	  public:
-		void relocate( FramedReportManager & p_other ) noexcept
-		{
-			_removeContainerFromLayout();
-			_deleteContainer();
-			_deleteLayout();
-
-			_currentLayout = p_other._currentLayout;
-
-			p_other._removeContainerFromLayout();
-			p_other._deleteContainer();
-			p_other._currentLayout = nullptr;
-
-			if ( not _currentLayout.isNull() )
-			{
-				_createContainer();
-			}
-			_lastUiReport = ReportUi( _lastUiReport.report );
-			_recreateUi();
-		}
-
-		void relocate( QPointer<QVBoxLayout> p_ ) noexcept
-		{
-			_removeContainerFromLayout();
-			_deleteContainer();
-			_currentLayout = p_;
-
-			if ( not _lastUiReport.content.container.isNull() )
-			{
-				delete _lastUiReport.content.container;
-			}
-
-			if ( _currentLayout.isNull() )
-			{
-				return;
-			}
-
-			_lastUiReport = ReportUi( _lastUiReport.report );
-			_recreateUi();
-		}
-
-		void postReport( ReportUi p_uiReport ) noexcept
-		{
-			if ( not _lastUiReport.content.container.isNull() )
-			{
-				delete _lastUiReport.content.container;
-			}
-
-			_lastUiReport = std::move( p_uiReport );
-
-			_recreateUi();
-		}
-
-	  private:
-		QPointer<QVBoxLayout> _currentLayout = nullptr;
-		QPointer<QWidget>	  _container	 = nullptr;
-		ReportUi			  _lastUiReport;
-
-		void _recreateUi() noexcept
-		{
-			if ( _currentLayout.isNull() )
-			{
-				return;
-			}
-			_createContainer();
-
-			if ( not _lastUiReport.content.container.isNull() )
-			{
-				_container->layout()->addWidget( _lastUiReport.content );
-			}
-		}
-
-		inline void _removeContainerFromLayout() noexcept
-		{
-			if ( not _currentLayout.isNull() && not _container.isNull() )
-			{
-				_currentLayout->removeWidget( _container );
-			}
-		}
-
-		inline void _deleteLayout() noexcept
-		{
-			if ( not _currentLayout.isNull() )
-			{
-				delete _currentLayout.data();
-			}
-		}
-
-		inline void _deleteContainer() noexcept
-		{
-			if ( not _container.isNull() )
-			{
-				delete _container.data();
-			}
-		}
-
-		inline void _createContainer() noexcept
-		{
-			if ( _container.isNull() )
-			{
-				_container = new QWidget;
-				_currentLayout->addWidget( _container );
-				_container->setLayout( new QVBoxLayout );
-			}
-		}
-	};
-
-	struct ReportManager::_Impl
+	struct ReportManager::Impl
 	{
 		InputChecker					 _inputChecker;
 		Util::EventHub::ScopedConnection _visibilityChanged {
-			App::REG().on_update<App::System::Visibility>().connect<&ReportManager::_Impl::visibilityChanged>( this )
+			App::REG().on_update<App::System::Visibility>().connect<&ReportManager::Impl::visibilityChanged>( this )
 		};
 		Util::EventHub::ScopedConnection _visibilityNew {
-			App::REG().on_construct<App::System::Visibility>().connect<&ReportManager::_Impl::visibilityChanged>( this )
+			App::REG().on_construct<App::System::Visibility>().connect<&ReportManager::Impl::visibilityChanged>( this )
 		};
 		Util::EventHub::ScopedConnection _visibilityDel {
-			App::REG().on_destroy<App::System::Visibility>().connect<&ReportManager::_Impl::visibilityChanged>( this )
+			App::REG().on_destroy<App::System::Visibility>().connect<&ReportManager::Impl::visibilityChanged>( this )
 		};
 		Util::EventHub::ScopedConnection _reportReception {
-			App::HUB().connect<Gateway::CheckReport, &ReportManager::_Impl::_receiveReport>( this )
+			App::HUB().connect<Gateway::CheckReport, &ReportManager::Impl::_receiveReport>( this )
 		};
 		FramedReportManager _manager;
 		Data				_reportData;
 		bool				firstCheckStarted = false;
 
-		inline bool hasFirstCheckBeenDone() const noexcept { return firstCheckStarted; }
+		bool hasFirstCheckBeenDone() const noexcept { return firstCheckStarted; }
 
-		inline void checkInputs( const Gateway::MdParameters & p_params ) noexcept
+		void checkInputs( const Gateway::MdParameters & p_params )
 		{
 			if ( _reportData.checkInProgress )
 			{
@@ -217,47 +208,47 @@ namespace VTX::Tool::Mdprep::ui
 			_inputChecker.checkInputs( p_params );
 		}
 
-		inline void relocate( QPointer<QVBoxLayout> p_ ) noexcept { _manager.relocate( p_ ); }
+		void relocate( QPointer<QVBoxLayout> p_ ) { _manager.relocate( std::move( p_ ) ); }
 
-		inline void relocate( ReportManager & p_ ) noexcept { _manager.relocate( p_._impl->_manager ); }
+		void relocate( ReportManager & p_ ) { _manager.relocate( p_._impl->_manager ); }
 
-		inline void _receiveReport( Gateway::CheckReport p_report ) noexcept
+		void _receiveReport( Gateway::CheckReport p_report )
 		{
 			_reportData.checkInProgress = false;
 			_reportData.report			= p_report;
 			_manager.postReport( ReportUi( std::move( p_report ) ) );
 		}
 
-		inline void visibilityChanged( Entity ) noexcept
+		void visibilityChanged( const Entity )
 		{
 			_reportData.report.dirty = true;
 			QTimer::singleShot( 0, nullptr, [ & ] { _manager.postReport( ReportUi( _reportData.report ) ); } );
 		}
 	};
 
-	ReportManager::ReportManager( InputChecker p_inputChecker ) : _impl( new _Impl( std::move( p_inputChecker ) ) ) {}
+	ReportManager::ReportManager( InputChecker p_inputChecker ) : _impl( new Impl( std::move( p_inputChecker ) ) ) {}
 
 	bool ReportManager::hasFirstCheckBeenDone() const noexcept { return _impl->hasFirstCheckBeenDone(); }
 
-	void ReportManager::checkInputs( const Gateway::MdParameters & p_params ) noexcept
+	void ReportManager::checkInputs( const Gateway::MdParameters & p_params )
 	{
 		assert( _impl );
 		_impl->checkInputs( p_params );
 	}
 
-	void ReportManager::relocate( QPointer<QVBoxLayout> p_ ) noexcept
+	void ReportManager::relocate( QPointer<QVBoxLayout> p_ )
 	{
 		assert( _impl );
 		_impl->relocate( std::move( p_ ) );
 	}
 
-	void ReportManager::relocate( ReportManager & p_ ) noexcept
+	void ReportManager::relocate( ReportManager & p_ )
 	{
 		assert( _impl );
 		_impl->relocate( p_ );
 	}
 
-	void ReportManager::_receiveReport( Gateway::CheckReport p_report ) noexcept
+	void ReportManager::_receiveReport( Gateway::CheckReport p_report )
 	{
 		assert( _impl );
 		_impl->_receiveReport( std::move( p_report ) );

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_REPRESENTATION__
-#define __VTX_APP_ACTION_REPRESENTATION__
+#ifndef VTX_APP_ACTION_REPRESENTATION_HPP
+#define VTX_APP_ACTION_REPRESENTATION_HPP
 
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
@@ -20,13 +20,13 @@ namespace VTX::App::Action::Representation
 	{
 		void execute( const Entity p_ent, const Entity p_preset, const Core::Struct::IndexRangeList & p_ranges = {} )
 		{
-			auto &						 reg	  = REG();
-			const auto &				 topology = reg.get<Core::Struct::Topology>( p_ent );
-			Core::Struct::IndexRangeList atoms	  = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+			auto &						  reg	   = REG();
+			[[maybe_unused]] const auto & topology = reg.get<Core::Struct::Topology>( p_ent );
+			Core::Struct::IndexRangeList  atoms	   = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 
 			reg.patch<System::Representation>(
 				p_ent,
-				[ &atoms, &topology, p_preset ]( System::Representation & p_representation )
+				[ & ]( System::Representation & p_representation )
 				{
 					// Merges ranges.
 					if ( not p_representation.presetAtoms.contains( p_preset ) )
@@ -34,7 +34,7 @@ namespace VTX::App::Action::Representation
 						p_representation.presetAtoms.emplace( p_preset, Core::Struct::IndexRangeList() );
 					}
 
-					size_t count = 0;
+					[[maybe_unused]] size_t count = 0;
 					for ( auto & [ entity, rangeList ] : p_representation.presetAtoms )
 					{
 						if ( entity == p_preset )

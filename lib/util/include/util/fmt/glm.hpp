@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_FMT_GLM__
-#define __VTX_UTIL_FMT_GLM__
+#ifndef VTX_UTIL_FMT_GLM_HPP
+#define VTX_UTIL_FMT_GLM_HPP
 
 #include "util/types.hpp"
 #include <fmt/format.h>
@@ -46,7 +46,9 @@ struct fmt::formatter<glm::mat<R, C, T>> : fmt::formatter<T>
 			out = formatter<T>::format( p_mat[ r ][ C - 1 ], p_ctx );
 
 			if ( r < R - 1 )
+			{
 				std::copy_n( " | ", 3, out );
+			}
 		}
 
 		return std::copy_n( " ]", 2, out );

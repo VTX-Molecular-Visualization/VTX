@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_SEQUENCE__
-#define __VTX_UI_QT_WIDGET_SEQUENCE__
+#ifndef VTX_UI_QT_WIDGET_SEQUENCE_HPP
+#define VTX_UI_QT_WIDGET_SEQUENCE_HPP
 
 #include <QAbstractScrollArea>
 #include <QContextMenuEvent>
@@ -19,9 +19,9 @@ namespace VTX::UI::QT::Widget
 	class Sequence : public QAbstractScrollArea
 	{
 	  public:
-		Sequence( const Entity, QWidget * );
+		Sequence( Entity, QWidget * );
 
-		enum struct Mode : int
+		enum struct Mode : uint8_t
 		{
 			OriginalResId	= 0,
 			contiguousResId = 1,
@@ -59,7 +59,7 @@ namespace VTX::UI::QT::Widget
 		};
 
 		std::unique_ptr<ResidueSequencer, Del> _sequencer;
-		Util::EventHub::ScopedConnection	   _modeChange;
+		VTX::Util::EventHub::ScopedConnection  _modeChange;
 
 		void _sequenceModeChange( const Events::SequenceResIdChanged & );
 

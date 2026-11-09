@@ -6,13 +6,14 @@
 #include <app/services.hpp>
 #include <array>
 #include <util/event_hub.hpp>
+#include <utility>
 
 namespace
 {
 	using Action	   = VTX::App::Input::InputManager::Action;
 	using BindingTable = std::array<std::optional<Action>, 256>;
 
-	const BindingTable _QWERTY_BINDINGS = []()
+	constexpr BindingTable QWERTY_BINDINGS = []()
 	{
 		BindingTable bindings;
 		bindings[ Qt::Key_W ] = Action::MoveFront;
@@ -26,7 +27,7 @@ namespace
 		return bindings;
 	}();
 
-	const BindingTable _AZERTY_BINDINGS = []()
+	constexpr BindingTable AZERTY_BINDINGS = []()
 	{
 		BindingTable bindings;
 		bindings[ Qt::Key_Z ] = Action::MoveFront;
@@ -43,8 +44,11 @@ namespace
 
 namespace VTX::UI::QT::Window
 {
-	Renderer::Renderer() : QWindow(), _inputManager( App::INPUT() )
-	{ App::HUB().connect<Events::KeyboardLayoutChanged, &Renderer::_onKBLayoutChange>( this ); }
+	Renderer::Renderer() : _inputManager( App::INPUT() )
+	{
+		_keyboardLayoutChangedConnection
+			= App::HUB().connect<Events::KeyboardLayoutChanged, &Renderer::_onKBLayoutChange>( this );
+	}
 
 	void Renderer::keyPressEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, true ); }
 
@@ -154,19 +158,19 @@ namespace VTX::UI::QT::Window
 
 	std::optional<App::Input::InputManager::Action> Renderer::_getKeyboardAction( const int p_key ) const
 	{
-		if ( p_key < 0 || p_key >= int( _QWERTY_BINDINGS.size() ) )
+		if ( p_key < 0 || std::cmp_greater_equal( p_key, QWERTY_BINDINGS.size() ) )
 		{
 			return std::nullopt;
 		}
 
-		const BindingTable & bindings = _layout == KB_LAYOUT::AZERTY ? _AZERTY_BINDINGS : _QWERTY_BINDINGS;
+		const BindingTable & bindings = _layout == KB_LAYOUT::AZERTY ? AZERTY_BINDINGS : QWERTY_BINDINGS;
 		return bindings[ p_key ];
 	}
 
 	QPoint Renderer::_toDevicePixels( const QPointF & p_logicalPos ) const
 	{
 		const qreal dpr = devicePixelRatio();
-		return { int( p_logicalPos.x() * dpr ), int( p_logicalPos.y() * dpr ) };
+		return { static_cast<int>( p_logicalPos.x() * dpr ), static_cast<int>( p_logicalPos.y() * dpr ) };
 	}
 
 	void Renderer::_onKBLayoutChange( const Events::KeyboardLayoutChanged & p_e )

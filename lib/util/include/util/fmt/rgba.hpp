@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_FMT_COLOR_RGBA__
-#define __VTX_UTIL_FMT_COLOR_RGBA__
+#ifndef VTX_UTIL_FMT_RGBA_HPP
+#define VTX_UTIL_FMT_RGBA_HPP
 
 #include "util/color/rgba.hpp"
 #include "util/fmt/glm.hpp"
@@ -12,9 +12,7 @@ template<>
 struct fmt::formatter<VTX::Util::Color::Rgba> : fmt::formatter<VTX::Vec4f>
 {
 	auto format( const VTX::Util::Color::Rgba & p_color, fmt::format_context & p_ctx ) const
-	{
-		return formatter<VTX::Vec4f>::format( p_color, p_ctx );
-	}
+	{ return formatter<VTX::Vec4f>::format( p_color.vec(), p_ctx ); }
 };
 
 #endif

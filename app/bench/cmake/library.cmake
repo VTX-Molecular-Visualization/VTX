@@ -9,7 +9,7 @@ file(GLOB_RECURSE VENDORS_DYNAMIC ./vendor/*)
 add_executable(vtx_renderer_bench ${SOURCES} ${VENDORS_STATIC} ${VENDORS_DYNAMIC})
 vtx_configure_target(vtx_renderer_bench)
 
-target_include_directories(vtx_renderer_bench PRIVATE "${_VTX_RENDERER_BENCH_VENDOR_DIR}" vendor)
+target_include_directories(vtx_renderer_bench SYSTEM PRIVATE "${_VTX_RENDERER_BENCH_VENDOR_DIR}" vendor)
 
 target_link_libraries(vtx_renderer_bench PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_renderer_bench PRIVATE vtx_renderer::vtx_renderer)

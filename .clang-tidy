@@ -1,0 +1,84 @@
+WarningsAsErrors: ''
+ExcludeHeaderFilterRegex: '.*[/\\]\.conan2[/\\].*'
+
+Checks:
+  - '*'
+  - '-abseil-*'                                                      # Google Abseil library conventions.
+  - '-altera-*'                                                      # Intel FPGA OpenCL guidelines.
+  - '-boost-use-ranges'                                              # Suggests boost::range algorithms.
+  - '-bugprone-branch-clone'                                         # Identical branches in if/else or switch.
+  - '-bugprone-crtp-constructor-accessibility'                       # CRTP base constructors should be private.
+  - '-bugprone-easily-swappable-parameters'                          # Adjacent parameters of convertible types.
+  - '-bugprone-narrowing-conversions'                                # Implicit narrowing conversions.
+  - '-bugprone-random-generator-seed'                                # Random engines seeded with constants.
+  - '-cert-dcl16-c'                                                  # Uppercase literal suffixes (alias).
+  - '-cert-int09-c'                                                  # Enum initial value consistency (alias).
+  - '-cert-msc32-c'                                                  # Random engines seeded with constants (alias).
+  - '-cert-msc51-cpp'                                                # Random engines seeded with constants (alias).
+  - '-clang-analyzer-optin.core.EnumCastOutOfRange'                  # Enum casts of out-of-range values.
+  - '-clang-analyzer-security.ArrayBound'                            # Out-of-bounds array access (analyzer).
+  - '-clang-diagnostic-unused-function'                              # Unused functions.
+  - '-cppcoreguidelines-avoid-c-arrays'                              # C-style arrays (alias).
+  - '-cppcoreguidelines-avoid-goto'                                  # goto statements.
+  - '-cppcoreguidelines-avoid-const-or-ref-data-members'             # const or reference data members.
+  - '-cppcoreguidelines-avoid-magic-numbers'                         # Magic numbers (alias).
+  - '-cppcoreguidelines-narrowing-conversions'                       # Implicit narrowing conversions (alias).
+  - '-cppcoreguidelines-non-private-member-variables-in-classes'     # Public/protected data members (alias).
+  - '-cppcoreguidelines-pro-bounds-array-to-pointer-decay'           # Array to pointer decay.
+  - '-cppcoreguidelines-pro-bounds-avoid-unchecked-container-access' # Unchecked operator[] on containers.
+  - '-cppcoreguidelines-pro-bounds-constant-array-index'             # Non-constant array indexing.
+  - '-cppcoreguidelines-pro-bounds-pointer-arithmetic'               # Pointer arithmetic.
+  - '-cppcoreguidelines-pro-type-reinterpret-cast'                   # reinterpret_cast.
+  - '-fuchsia-*'                                                     # Fuchsia OS guidelines.
+  - '-google-build-using-namespace'                                  # using namespace directives.
+  - '-google-explicit-constructor'                                   # Non-explicit single-argument constructors.
+  - '-google-readability-namespace-comments'                         # Closing namespace comments (alias).
+  - '-google-readability-todo'                                       # TODO comment format.
+  - '-hicpp-avoid-c-arrays'                                          # C-style arrays (alias).
+  - '-hicpp-avoid-goto'                                              # goto statements (alias).
+  - '-hicpp-explicit-conversions'                                    # Non-explicit constructors/conversions (alias).
+  - '-hicpp-named-parameter'                                         # Unnamed parameters (alias).
+  - '-hicpp-no-array-decay'                                          # Array to pointer decay (alias).
+  - '-hicpp-signed-bitwise'                                          # Bitwise operations on signed integers.
+  - '-hicpp-special-member-functions'                                # Rule of five (alias).
+  - '-hicpp-uppercase-literal-suffix'                                # Uppercase literal suffixes (alias).
+  - '-hicpp-use-auto'                                                # Suggests auto (alias).
+  - '-llvm-else-after-return'                                        # else after return (alias).
+  - '-llvm-header-guard'                                             # LLVM header guard style.
+  - '-llvm-namespace-comment'                                        # Closing namespace comments.
+  - '-llvm-prefer-static-over-anonymous-namespace'                   # Prefers static over anonymous namespaces.
+  - '-llvm-use-ranges'                                               # Suggests llvm::ranges algorithms.
+  - '-llvmlibc-*'                                                    # LLVM libc conventions.
+  - '-misc-no-recursion'                                             # Recursive functions.
+  - '-misc-non-private-member-variables-in-classes'                  # Public/protected data members.
+  - '-misc-unused-parameters'                                        # Unused parameters.
+  - '-modernize-avoid-c-arrays'                                      # C-style arrays.
+  - '-modernize-return-braced-init-list'                             # Suggests braced init list in return.
+  - '-modernize-use-auto'                                            # Suggests auto.
+  - '-modernize-use-designated-initializers'                         # Suggests designated initializers.
+  - '-modernize-use-nodiscard'                                       # Suggests [[nodiscard]].
+  - '-modernize-use-trailing-return-type'                            # Suggests trailing return types.
+  - '-performance-no-int-to-ptr'                                     # Integer to pointer casts.
+  - '-portability-template-virtual-member-function'                  # Virtual members in class templates.
+  - '-readability-avoid-nested-conditional-operator'                 # Nested ternary operators.
+  - '-readability-convert-member-functions-to-static'                # Suggests static member functions.
+  - '-readability-else-after-return'                                 # else after return.
+  - '-readability-enum-initial-value'                                # Enum initial value consistency.
+  - '-readability-function-cognitive-complexity'                     # Function cognitive complexity.
+  - '-readability-identifier-length'                                 # Short identifier names.
+  - '-readability-implicit-bool-conversion'                          # Implicit conversions to bool.
+  - '-readability-magic-numbers'                                     # Magic numbers.
+  - '-readability-math-missing-parentheses'                          # Missing parentheses in math expressions.
+  - '-readability-named-parameter'                                   # Unnamed parameters.
+  - '-readability-static-accessed-through-instance'                  # Static members accessed through instances.
+  - '-readability-uppercase-literal-suffix'                          # Uppercase literal suffixes.
+
+CheckOptions:
+  bugprone-exception-escape.CheckMoveMemberFunctions: false                                   # Do not analyze move constructors/assignments. (because std containers can throw during move)
+  cppcoreguidelines-rvalue-reference-param-not-moved.AllowPartialMove: true                   # Accept moving only part of the parameter.
+  cppcoreguidelines-rvalue-reference-param-not-moved.IgnoreNonDeducedTemplateTypes: true      # Ignore T&& where T is not deduced.
+  cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor: true                       # Allow a lone '~T() = default' (interfaces).
+  cppcoreguidelines-special-member-functions.AllowMissingMoveFunctionsWhenCopyIsDeleted: true # Deleted copy already suppresses move.
+  cppcoreguidelines-special-member-functions.AllowImplicitlyDeletedCopyOrMove: true           # Skip operations already deleted by members/bases.
+  misc-include-cleaner.MissingIncludes: false                                                 # Report unused includes only, not missing ones.
+  misc-include-cleaner.IgnoreHeaders: '[Ww]indows\.h;exiv2[/\\]exiv2\.hpp;cpr[/\\]cpr\.h;fmt[/\\](chrono|ranges|std|ostream)\.h;pybind11[/\\].*;_caster\.hpp;util[/\\]fmt[/\\].*' # Headers excluded from include analysis.

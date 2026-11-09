@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS_TRJCONV__
-#define __VTX_TOOL_TOOLS_MDPREP_GROMACS_TRJCONV__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_TRJCONV_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_TRJCONV_HPP
 
 #include <filesystem>
 #include <util/filesystem.hpp>
@@ -19,17 +19,15 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	};
 
 	// Setup job folder and place input files as the job need them
-	void prepareJob(
-		const CumulativeOuputFiles &,
-		const FilePath &		 p_root,
-		const std::string_view & p_folderName,
-		TrjconvInstructions &
-	) noexcept;
+	void prepareJob( const CumulativeOuputFiles &,
+					 const FilePath &		  p_root,
+					 const std::string_view & p_folderName,
+					 TrjconvInstructions & );
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.
 	//    Does not perform filesystem check on input gro
-	void convert( const TrjconvInstructions &, GromacsJobData & ) noexcept;
+	void convert( const TrjconvInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

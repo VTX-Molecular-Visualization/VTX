@@ -3,12 +3,9 @@
 #include "python_binding/binding/vtx_api.hpp"
 #include "python_binding/binding/vtx_module.hpp"
 #include "python_binding/command_filter.hpp"
-#include "python_binding/log_redirection.hpp"
 #include "python_binding/wrapper/module.hpp"
-#include <algorithm>
 #include <pybind11/embed.h>
 #include <pybind11/eval.h>
-#include <source_location>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
@@ -47,55 +44,55 @@ namespace VTX::PythonBinding
 			config.module_search_paths.length = 0;
 			config.module_search_paths.items  = nullptr;
 #ifdef _WIN32
-			std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
-			std::wstring platlibdir	 = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
-			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "python"
-#ifdef _DEBUG
-			"_d"
-#endif // _DEBUG
-				".exe" ).wstring();
-			std::wstring pythonExecDir = p_pythonHomePath;
+			const std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
+			const std::wstring platlibdir  = ( VTX::FilePath( p_pythonHomePath ) / "DLLs" ).wstring();
+
+			// const std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "python"
+			// #ifdef _DEBUG
+			// "_d"
+			// #endif // _DEBUG
+			// ".exe" ).wstring();
+			// const std::wstring pythonExecDir = p_pythonHomePath;
 #else
-			std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "lib"
-										 / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR )
-										   .wstring();
-			std::wstring platlibdir		  = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
-			std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin"
-											  / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR )
-												.wstring();
-			std::wstring pythonExecDir = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
+			const std::wstring pyScriptDir = ( VTX::FilePath( p_pythonHomePath ) / "lib"
+											   / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR )
+												 .wstring();
+			const std::wstring platlibdir  = ( VTX::FilePath( p_pythonHomePath ) / "lib" ).wstring();
+			// std::wstring pythonExecutable = ( VTX::FilePath( p_pythonHomePath ) / "bin"
+			// / "python" CPYTHON_VERSION_MAJOR "." CPYTHON_VERSION_MINOR ).wstring();
+			// std::wstring pythonExecDir = ( VTX::FilePath( p_pythonHomePath ) / "bin" ).wstring();
 
 #endif
 			PyConfig_SetString( &config, &config.platlibdir, platlibdir.c_str() );
 			PyConfig_SetString( &config, &config.home, p_pythonHomePath.c_str() );
 			PyConfig_SetString( &config, &config.prefix, p_pythonHomePath.c_str() );
-			std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
+			const std::wstring execDirPath = VTX::Util::Filesystem::getExecutableDir().wstring();
 
 			PyConfig_SetString( &config, &config.exec_prefix, p_pythonHomePath.c_str() );
 
-			VTX::FilePath pythonArchivePath
+			const VTX::FilePath pythonArchivePath
 				= VTX::FilePath( p_pythonHomePath ) / "python" CPYTHON_VERSION_MAJOR CPYTHON_VERSION_MINOR ".zip";
-			std::wstring pythonArchivePathStr( pythonArchivePath.wstring() );
+			const std::wstring pythonArchivePathStr( pythonArchivePath.wstring() );
 
-			std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
+			// const std::string execDirPath_string = VTX::Util::Filesystem::getExecutableDir().string();
 
 			PyWideStringList_Append( &config.module_search_paths, pyScriptDir.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, pythonArchivePathStr.c_str() );
 #ifndef _WIN32
-			std::wstring dynloadDir = ( VTX::FilePath( pyScriptDir ) / "lib-dynload" ).wstring();
+			const std::wstring dynloadDir = ( VTX::FilePath( pyScriptDir ) / "lib-dynload" ).wstring();
 			PyWideStringList_Append( &config.module_search_paths, dynloadDir.c_str() );
 #endif // !_WIN32
 			PyWideStringList_Append( &config.module_search_paths, platlibdir.c_str() );
 			PyWideStringList_Append( &config.module_search_paths, execDirPath.c_str() );
 
-			auto pythonExecutable_string = std::filesystem::path( pythonExecutable ).string();
+			// auto pythonExecutable_string = std::filesystem::path( pythonExecutable ).string();
 
 			std::optional<pybind11::scoped_interpreter> interpetor;
 			try
 			{
 				interpetor.emplace( &config );
 			}
-			catch ( std::exception & e )
+			catch ( const std::exception & e )
 			{
 				VTX_ERROR( "Interpetor failed to initialize with message : <{}>", e.what() );
 				throw VTX::LibException( "Error in python lib : <{}>", e.what() );
@@ -120,8 +117,8 @@ namespace VTX::PythonBinding
 			// Allow the python "print" function to be funneled into our log system
 			_vtxModule.import( "sys" ).attr( "stdout" ) = _vtxModule.attr( "LogRedirection" );
 
-			FilePath initScriptDir	  = Util::Filesystem::getExecutableDir() / "python_script";
-			FilePath initCommandsFile = initScriptDir / vtx_initialization_script_name();
+			const FilePath initScriptDir	= Util::Filesystem::getExecutableDir() / "python_script";
+			const FilePath initCommandsFile = initScriptDir / vtx_initialization_script_name();
 
 			// The file should be at the right place but users always find a way ...
 			if ( not std::filesystem::exists( initCommandsFile ) )
@@ -138,7 +135,7 @@ namespace VTX::PythonBinding
 			_binders.back().importHeaders();
 		}
 
-		Wrapper::Module & getVTXModule() { return _wrapper; }
+		Wrapper::Module & getVTXModule() noexcept { return _wrapper; }
 
 		void clearBinders()
 		{
@@ -146,11 +143,10 @@ namespace VTX::PythonBinding
 			_binders.shrink_to_fit();
 		}
 
-		void getPythonModule( pybind11::module_ ** p_modulePtr ) { *p_modulePtr = &_vtxModule; }
+		void getPythonModule( pybind11::module_ ** p_modulePtr ) noexcept { *p_modulePtr = &_vtxModule; }
 
 	  private:
 		const std::wstring _pythonBinDir { ( Util::Filesystem::getExecutableDir() / "external" / "python" ).wstring() };
-		LogRedirection	   _logger;
 		pybind11::scoped_interpreter _interpretor { createInterpretor( _pythonBinDir ) };
 		pybind11::module_			 _vtxModule { pybind11::module_::import( vtx_module_name() ) };
 		Wrapper::Module				 _wrapper { _vtxModule, vtx_module_name() };
@@ -164,49 +160,59 @@ namespace VTX::PythonBinding
 
 	void Interpretor::clearBinders() { _impl->clearBinders(); }
 
-	std::string Interpretor::runCommand( const std::string & p_line ) const
+	std::string Interpretor::runCommand( const std::string & p_line )
 	{
 		// The idea is to try to execute the command as if we expected a return value. If an exception is thrown, then
 		// it might mean that we shouldn't expect a return value. So we execute it as is. If it crashes again, it means
 		// that the command isn't viable at all.
 
-		if ( FilterResult isHarmful = filter( p_line ) )
+		if ( const FilterResult isHarmful = filter( p_line ) )
 		{
 			return isHarmful.why();
 		}
 
+		VTX_DEBUG( "Run Python Command : {}", p_line );
+
+		const pybind11::module_ builtins = pybind11::module_::import( "builtins" );
+		pybind11::object		expression;
 		try
 		{
-			VTX_DEBUG( "Run Python Command : {}", p_line );
-			auto result = pybind11::eval<pybind11::eval_expr>( p_line );
+			expression = builtins.attr( "compile" )( p_line, "<input>", "eval" );
+		}
+		catch ( const pybind11::error_already_set & e )
+		{
+			if ( not e.matches( PyExc_SyntaxError ) )
+			{
+				throw( VTX::CommandException( p_line, e.what() ) );
+			}
+		}
+
+		try
+		{
+			if ( not expression )
+			{
+				pybind11::exec( p_line );
+				return {};
+			}
+
+			const pybind11::object result = builtins.attr( "eval" )( expression, pybind11::globals() );
 			if ( not result.is_none() )
 			{
 				return result.attr( "__repr__" )().cast<std::string>();
 			}
 		}
-		catch ( const pybind11::error_already_set & )
+		catch ( const pybind11::error_already_set & e )
 		{
-			try
-			{
-				pybind11::exec( p_line );
-			}
-			catch ( const pybind11::error_already_set & ee )
-			{
-				throw( VTX::CommandException( p_line, ee.what() ) );
-			}
-			catch ( VTX::CommandException & p_e )
-			{
-				VTX_PYTHON_OUT( "{}", p_e.what() );
-			}
+			throw( VTX::CommandException( p_line, e.what() ) );
 		}
-		catch ( VTX::CommandException & p_e )
+		catch ( const pybind11::cast_error & e )
 		{
-			VTX_PYTHON_OUT( "{}", p_e.what() );
+			throw( VTX::CommandException( p_line, e.what() ) );
 		}
 		return {};
 	}
 
-	void Interpretor::runScript( const FilePath & p_path ) const
+	void Interpretor::runScript( const FilePath & p_path )
 	{
 		try
 		{
@@ -227,6 +233,10 @@ namespace VTX::PythonBinding
 		{
 			throw( VTX::ScriptException( p_path.filename().string(), e.what() ) );
 		}
+		catch ( ... )
+		{
+			throw( VTX::ScriptException( p_path.filename().string(), "unknown exception" ) );
+		}
 	}
 
 	Wrapper::Module Interpretor::loadModule( const FilePath & p_path ) const
@@ -245,21 +255,23 @@ namespace VTX::PythonBinding
 		catch ( const pybind11::error_already_set & e )
 		{
 			VTX_ERROR( "{}", e.what() );
-			throw( e );
+			throw;
 		}
 
 		return Wrapper::Module( loadedModule, filename );
 
 	} // namespace VTX::PythonBinding
 
-	const Wrapper::Module & Interpretor::getModule() const { return _impl->getVTXModule(); }
+	const Wrapper::Module & Interpretor::getModule() const noexcept { return _impl->getVTXModule(); }
 
-	Wrapper::Module & Interpretor::getModule() { return _impl->getVTXModule(); }
+	Wrapper::Module & Interpretor::getModule() noexcept { return _impl->getVTXModule(); }
 
-	void Interpretor::Del::operator()( Interpretor::Impl * p_ptr ) const noexcept { delete p_ptr; }
+	void Interpretor::Del::operator()( Interpretor::Impl * const p_ptr ) const noexcept
+	{ std::default_delete<Interpretor::Impl> {}( p_ptr ); }
 
-	void Interpretor::print( const std::string & p_line ) const { pybind11::print( p_line ); }
+	void Interpretor::print( const std::string & p_line ) { pybind11::print( p_line ); }
 
-	void Interpretor::getPythonModule( pybind11::module_ ** p_modulePtr ) { _impl->getPythonModule( p_modulePtr ); }
+	void Interpretor::getPythonModule( pybind11::module_ ** p_modulePtr ) noexcept
+	{ _impl->getPythonModule( p_modulePtr ); }
 
 } // namespace VTX::PythonBinding

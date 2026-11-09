@@ -1,6 +1,7 @@
-#ifndef __VTX_UI_QT_WIDGET_VECTOR__
-#define __VTX_UI_QT_WIDGET_VECTOR__
+#ifndef VTX_UI_QT_WIDGET_VECTOR_HPP
+#define VTX_UI_QT_WIDGET_VECTOR_HPP
 
+#include "ui/qt/helper.hpp"
 #include <QDoubleSpinBox>
 #include <QEvent>
 #include <QHBoxLayout>
@@ -14,8 +15,9 @@ namespace VTX::UI::QT::Widget
 		Q_OBJECT
 
 	  public:
-		IVector( QWidget * p_parent ) : QWidget( p_parent ) {}
-		virtual ~IVector() = default;
+		IVector( QWidget * const p_parent ) : QWidget( p_parent ) {}
+
+		~IVector() override = default;
 
 	  signals:
 		void valueEdited();
@@ -25,7 +27,7 @@ namespace VTX::UI::QT::Widget
 	class Vector : public IVector
 	{
 	  public:
-		using Scalar							 = typename V::value_type;
+		using Scalar							 = V::value_type;
 		static constexpr int			  N		 = V::length();
 		static constexpr std::string_view PREFIX = "xyzw";
 
@@ -33,16 +35,16 @@ namespace VTX::UI::QT::Widget
 		static_assert( std::is_arithmetic_v<Scalar>, "Vector widget requires numeric scalar" );
 		static_assert( not std::is_unsigned_v<Scalar>, "Unsigned glm::uvec* not supported" );
 
-		Vector( QWidget * p_parent ) : IVector( p_parent )
+		Vector( QWidget * const p_parent ) : IVector( p_parent )
 		{
-			auto * lay = new QHBoxLayout( this );
+			auto * lay = Helper::makeQObject<QHBoxLayout>( this );
 			lay->setContentsMargins( 0, 0, 0, 0 );
 
 			for ( int i = 0; i < N; i++ )
 			{
 				if constexpr ( std::is_integral_v<Scalar> )
 				{
-					auto * sb = new QSpinBox( this );
+					auto * sb = Helper::makeQObject<QSpinBox>( this );
 					sb->setRange( TypeLowest<Scalar>, TypeMax<Scalar> );
 					sb->setPrefix( QString( PREFIX[ i ] ) + ": " );
 
@@ -50,7 +52,7 @@ namespace VTX::UI::QT::Widget
 				}
 				else
 				{
-					auto * sb = new QDoubleSpinBox( this );
+					auto * sb = Helper::makeQObject<QDoubleSpinBox>( this );
 					sb->setRange( TypeLowest<Scalar>, TypeMax<Scalar> );
 					sb->setPrefix( QString( PREFIX[ i ] ) + ": " );
 					sb->setDecimals( 2 );
@@ -98,7 +100,7 @@ namespace VTX::UI::QT::Widget
 		{
 			for ( int i = 0; i < N; i++ )
 			{
-				QSignalBlocker blocker( _spinBoxes[ i ] );
+				const QSignalBlocker blocker( _spinBoxes[ i ] );
 				if constexpr ( std::is_integral_v<Scalar> )
 				{
 					static_cast<QSpinBox *>( _spinBoxes[ i ] )->setValue( p_v[ i ] );
@@ -112,7 +114,7 @@ namespace VTX::UI::QT::Widget
 
 		V value() const
 		{
-			V v;
+			V v {};
 			for ( int i = 0; i < N; i++ )
 			{
 				if constexpr ( std::is_integral_v<Scalar> )
@@ -197,14 +199,6 @@ namespace VTX::UI::QT::Widget
 			for ( int i = 0; i < N; i++ )
 			{
 				_spinBoxes[ i ]->setAccelerated( p_enable );
-			}
-		}
-
-		void setEnabled( const bool p_enable )
-		{
-			for ( int i = 0; i < N; i++ )
-			{
-				_spinBoxes[ i ]->setEnabled( p_enable );
 			}
 		}
 

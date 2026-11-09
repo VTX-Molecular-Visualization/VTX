@@ -16,7 +16,7 @@ target_sources(vtx_tool_topology_editor
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_tool_topology_editor_test ${SOURCES_TEST})
 set_property(TARGET vtx_tool_topology_editor_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_tool_topology_editor_test)
+vtx_configure_target(vtx_tool_topology_editor_test NO_LINTER)
 
 # Link internal dependencies.
 target_link_libraries(vtx_tool_topology_editor PUBLIC vtx_util::vtx_util)

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_TREE_BASE_TREE__
-#define __VTX_UI_QT_DOCK_WIDGET_TREE_BASE_TREE__
+#ifndef VTX_UI_QT_WIDGET_TREE_BASE_TREE_HPP
+#define VTX_UI_QT_WIDGET_TREE_BASE_TREE_HPP
 
 #include "ui/qt/widget/base_widget.hpp"
 #include <QTreeWidget>
@@ -13,10 +13,20 @@ namespace VTX::UI::QT::Widget::Tree
 	class BaseTree : public Widget::BaseWidget<T, W>
 	{
 	  public:
+		~BaseTree() override = default;
+
+		/**
+		 * @brief Override size hints to adapt height to content.
+		 */
+		QSize minimumSizeHint() const override { return QSize( 0, 0 ); }
+
+		QSize sizeHint() const override { return QSize( QAbstractScrollArea::sizeHint().width(), _contentHeight() ); }
+
+	  protected:
 		/**
 		 * @brief Default UI settings.
 		 */
-		BaseTree( QWidget * p_parent ) : Widget::BaseWidget<T, W>( p_parent )
+		BaseTree( QWidget * const p_parent ) : Widget::BaseWidget<T, W>( p_parent )
 		{
 			W::setHeaderHidden( true );
 			W::setItemsExpandable( true );
@@ -33,14 +43,6 @@ namespace VTX::UI::QT::Widget::Tree
 			W::connect( this, &QTreeView::expanded, this, [ this ]( const QModelIndex & ) { W::updateGeometry(); } );
 			W::connect( this, &QTreeView::collapsed, this, [ this ]( const QModelIndex & ) { W::updateGeometry(); } );
 		}
-
-		virtual ~BaseTree() = default;
-
-		/**
-		 * @brief Override size hints to adapt height to content.
-		 */
-		inline QSize minimumSizeHint() const override { return QSize( 0, 0 ); }
-		inline QSize sizeHint() const override { return QSize( QWidget::sizeHint().width(), _contentHeight() ); }
 
 	  private:
 		/**

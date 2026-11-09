@@ -1,4 +1,5 @@
 #include "ui/qt/dialog/updater.hpp"
+#include "ui/qt/helper.hpp"
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QProgressBar>
@@ -19,7 +20,7 @@ namespace VTX::UI::QT::Dialog
 		setFixedSize( 800, 600 );
 
 		// Layout.
-		auto * layout = new QVBoxLayout( this );
+		auto * layout = Helper::makeQObject<QVBoxLayout>( this );
 		setLayout( layout );
 
 		// Title.
@@ -32,7 +33,7 @@ namespace VTX::UI::QT::Dialog
 		layout->addWidget( labelTitle );
 
 		// Changelog.
-		auto * browser = new QTextBrowser( this );
+		auto * browser = Helper::makeQObject<QTextBrowser>( this );
 		browser->document()->setDocumentMargin( 10 );
 		browser->setHtml( QString::fromStdString( p_e.changelog ) );
 		layout->addWidget( browser );
@@ -50,59 +51,55 @@ namespace VTX::UI::QT::Dialog
 		labelSize->setAlignment( Qt::AlignRight );
 		layout->addWidget( labelSize );
 
-		_progressBar = new QProgressBar( this );
+		_progressBar = Helper::makeQObject<QProgressBar>( this );
 		_progressBar->setRange( 0, 100 );
 		_progressBar->setValue( 0 );
 		_progressBar->setTextVisible( true );
 		_progressBar->setFormat( "Downloading update... %p%" );
 		layout->addWidget( _progressBar );
 
-		_buttonBox = new QDialogButtonBox(
-			QDialogButtonBox::StandardButton::Close | QDialogButtonBox::StandardButton::Apply, this
-		);
+		_buttonBox = Helper::makeQObject<QDialogButtonBox>(
+			QDialogButtonBox::StandardButton::Close | QDialogButtonBox::StandardButton::Apply, this );
 		layout->addWidget( _buttonBox );
 		QPushButton * const applyButton = _buttonBox->button( QDialogButtonBox::Apply );
 
-		_restartButton = new QPushButton( "Restart", this );
+		_restartButton = Helper::makeQObject<QPushButton>( "Restart", this );
 		layout->addWidget( _restartButton );
 
 		connect( _buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject );
 		applyButton->setDefault( true );
-		connect(
-			applyButton,
-			&QPushButton::clicked,
-			this,
-			[ this ]()
-			{
-				_setDownloadingState();
-				App::ACTION().execute<App::Action::Application::Update>();
-			}
-		);
-		connect(
-			_restartButton,
-			&QPushButton::clicked,
-			this,
-			[ this ]()
-			{
-				accept();
-				App::ACTION().execute<App::Action::Application::RestartAfterUpdate>();
-			}
-		);
+		connect( applyButton,
+				 &QPushButton::clicked,
+				 this,
+				 [ this ]()
+				 {
+					 _setDownloadingState();
+					 App::ACTION().execute<App::Action::Application::Update>();
+				 } );
+		connect( _restartButton,
+				 &QPushButton::clicked,
+				 this,
+				 [ this ]()
+				 {
+					 accept();
+					 App::ACTION().execute<App::Action::Application::RestartAfterUpdate>();
+				 } );
 
-		App::HUB().connect<App::Events::UpdateDownloadProgress, &Updater::_onUpdateDownloadProgress>( this );
-		App::HUB().connect<App::Events::UpdateReadyToRestart, &Updater::_onUpdateReadyToRestart>( this );
-		App::HUB().connect<App::Events::UpdateDownloadFailed, &Updater::_onUpdateDownloadFailed>( this );
+		_downloadProgressConnection
+			= App::HUB().connect<App::Events::UpdateDownloadProgress, &Updater::_onUpdateDownloadProgress>( this );
+		_readyToRestartConnection
+			= App::HUB().connect<App::Events::UpdateReadyToRestart, &Updater::_onUpdateReadyToRestart>( this );
+		_downloadFailedConnection
+			= App::HUB().connect<App::Events::UpdateDownloadFailed, &Updater::_onUpdateDownloadFailed>( this );
 
 		_setIdleState();
 	}
-
-	Updater::~Updater() { App::HUB().disconnectAllOf( *this ); }
 
 	void Updater::_onUpdateDownloadProgress( const App::Events::UpdateDownloadProgress & p_e )
 	{
 		if ( _progressBar )
 		{
-			_progressBar->setValue( int( p_e.progress ) );
+			_progressBar->setValue( static_cast<int>( p_e.progress ) );
 		}
 	}
 

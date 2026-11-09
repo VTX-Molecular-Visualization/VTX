@@ -3,13 +3,11 @@
 //  pybind MUST be included before any QT because of macro shenanigans
 #include "ui/qt/widget/command_launcher.hpp"
 #include <qevent.h>
-#include <util/logger.hpp>
-#include <util/thread/thread_manager.hpp>
 
 namespace VTX::UI::QT::Widget
 {
 
-	CommandLauncher::CommandLauncher( QWidget * p_parent ) : BaseWidget( p_parent )
+	CommandLauncher::CommandLauncher( QWidget * const p_parent ) : BaseWidget( p_parent )
 	{
 		setPlaceholderText( "help()" );
 		_setupCompleter();
@@ -43,7 +41,6 @@ namespace VTX::UI::QT::Widget
 		}
 
 		BaseWidget::keyPressEvent( event );
-		return;
 	}
 
 	void CommandLauncher::_launchCommand()
@@ -55,7 +52,7 @@ namespace VTX::UI::QT::Widget
 
 		// We do not want to register the same command over and over as it give the impression that the browsing doesn't
 		// work from the user perspective.
-		std::string command = text().toStdString();
+		const std::string command = text().toStdString();
 		if ( _history.empty() || command != _history.last() )
 		{
 			_history.add( text().toStdString() );

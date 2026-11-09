@@ -4,8 +4,10 @@
 #include <array>
 #include <numeric>
 #include <string>
+#include <util/constants.hpp>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
+#include <utility>
 
 namespace
 {
@@ -227,9 +229,9 @@ namespace VTX::Renderer::Context::Backend
 		const size_t					p_width,
 		const size_t					p_height,
 		const Desc::NativeContextInfo & p_contextInfo,
-		const FilePath &				p_shaderDir
+		FilePath						p_shaderDir
 
-	) : _shaderPath( p_shaderDir )
+	) : _shaderPath( std::move( p_shaderDir ) )
 	{
 		VTX_INFO( "Initializing OpenGL {}.{} context", VTX_OPENGL_MAJOR_VERSION, VTX_OPENGL_MINOR_VERSION );
 
@@ -247,25 +249,33 @@ namespace VTX::Renderer::Context::Backend
 
 		// Load OpenGL 4.6 functions.
 		// With external loader.
-		if ( gladLoadGL( (GLADloadfunc)_glContext.getProcAddress() ) == 0 )
+		if ( gladLoadGL( reinterpret_cast<GLADloadfunc>( _glContext.getProcAddress() ) ) == 0 )
 		{
 			throw GraphicException( "Failed to load OpenGL functions" );
 		}
 
 		// Check version.
-#if VTX_OPENGL_MINOR_VERSION == 6
-		if ( not GLAD_GL_VERSION_4_6 )
+		if constexpr ( VTX_OPENGL_MINOR_VERSION == 6 )
 		{
-			throw GraphicException( "OpenGL 4.6 or higher is required" );
+			if ( not GLAD_GL_VERSION_4_6 )
+			{
+				throw GraphicException( "OpenGL 4.6 or higher is required" );
+			}
 		}
-#elif VTX_OPENGL_MINOR_VERSION == 5
-		if ( not GLAD_GL_VERSION_4_5 )
+		else if constexpr ( VTX_OPENGL_MINOR_VERSION == 5 )
 		{
-			throw GraphicException( "OpenGL 4.5 or higher is required" );
+			if ( not GLAD_GL_VERSION_4_5 )
+			{
+				throw GraphicException( "OpenGL 4.5 or higher is required" );
+			}
 		}
-#else
-#error "Unsupported VTX_OPENGL_MINOR_VERSION"
-#endif
+		else
+		{
+			static_assert(
+				VTX_OPENGL_MAJOR_VERSION == 4 && ( VTX_OPENGL_MINOR_VERSION == 5 || VTX_OPENGL_MINOR_VERSION == 6 ),
+				"Unsupported OpenGL version"
+			);
+		}
 
 		_getOpenglInfos();
 		_openglInfos.print();
@@ -288,7 +298,7 @@ namespace VTX::Renderer::Context::Backend
 		_cudaInterop.refreshAvailability( cudaInteropProbeBuffer );
 		glDeleteBuffers( 1, &cudaInteropProbeBuffer );
 
-		glViewport( 0, 0, int32_t( p_width ), int32_t( p_height ) );
+		glViewport( 0, 0, static_cast<GLsizei>( p_width ), static_cast<GLsizei>( p_height ) );
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
 		glEnable( GL_TEXTURE_CUBE_MAP_SEAMLESS );
 
@@ -372,7 +382,7 @@ namespace VTX::Renderer::Context::Backend
 			// Create programs.
 			for ( const Program & program : pass.programs )
 			{
-				const Handle hProgram = _getOrCreateProgram( program );
+				_getOrCreateProgram( program );
 			}
 
 			if ( pass.type == E_PASS_TYPE::GRAPHICS )
@@ -405,11 +415,11 @@ namespace VTX::Renderer::Context::Backend
 				const uint32_t targetWidth		 = isLastPass ? _width : passWidth;
 				const uint32_t targetHeight		 = isLastPass ? _height : passHeight;
 
-				PayloadBeginPass pBeginPass { targetFramebuffer, flags, targetWidth, targetHeight };
+				const PayloadBeginPass pBeginPass { targetFramebuffer, flags, targetWidth, targetHeight };
 				p_commands.push<E_COMMAND::BEGIN_PASS>( pBeginPass );
 
 				// Push BIND_RESOURCES.
-				PayloadBindResources pBindResources { hResourceTable };
+				const PayloadBindResources pBindResources { hResourceTable };
 				p_commands.push<E_COMMAND::BIND_RESOURCES>( pBindResources );
 
 				const auto bindChunkResources = [ & ]( const BufferChunk p_chunk )
@@ -423,7 +433,7 @@ namespace VTX::Renderer::Context::Backend
 						return;
 					}
 
-					PayloadBindResources pBindChunkResources { hChunkResourceTable };
+					const PayloadBindResources pBindChunkResources { hChunkResourceTable };
 					p_commands.push<E_COMMAND::BIND_RESOURCES>( pBindChunkResources );
 				};
 
@@ -455,7 +465,7 @@ namespace VTX::Renderer::Context::Backend
 
 								if ( indexed )
 								{
-									PayloadDrawIndexed pDraw { hProgram, hVao };
+									PayloadDrawIndexed pDraw { { .program = hProgram, .pipeline = hVao } };
 									pDraw.primitive = toUnderlying( drawCall.primitive );
 									pDraw.indexBuffer
 										= _bufferHandle( geometry.indiceBuffer.value(), p_resources, chunk );
@@ -465,7 +475,7 @@ namespace VTX::Renderer::Context::Backend
 								}
 								else
 								{
-									PayloadDraw pDraw { hProgram, hVao };
+									PayloadDraw pDraw { { .program = hProgram, .pipeline = hVao } };
 									pDraw.primitive = toUnderlying( drawCall.primitive );
 									pDraw.first		= rangePtr->first;
 									pDraw.count		= rangePtr->count;
@@ -507,7 +517,7 @@ namespace VTX::Renderer::Context::Backend
 									}
 									else
 									{
-										PayloadDrawIndexedIndirect pDraw { hProgram, hVao };
+										PayloadDrawIndexedIndirect pDraw { { .program = hProgram, .pipeline = hVao } };
 										pDraw.primitive = toUnderlying( drawCall.primitive );
 										pDraw.indirectBuffer
 											= _bufferHandle( geometry.indirectBuffer.value(), p_resources, chunk );
@@ -538,7 +548,7 @@ namespace VTX::Renderer::Context::Backend
 									}
 									else
 									{
-										PayloadDrawIndirect pDraw { hProgram, hVao };
+										PayloadDrawIndirect pDraw { { .program = hProgram, .pipeline = hVao } };
 										pDraw.primitive = toUnderlying( drawCall.primitive );
 										pDraw.indirectBuffer
 											= _bufferHandle( geometry.indirectBuffer.value(), p_resources, chunk );
@@ -554,7 +564,8 @@ namespace VTX::Renderer::Context::Backend
 					else
 					{
 						// Fullscreen quad draw.
-						PayloadDraw pDraw { hProgram, _vertexArrays.handle( _QUAD ) };
+						PayloadDraw pDraw { { .program	= hProgram,
+											  .pipeline = _vertexArrays.handle( Desc::Key { QUAD } ) } };
 						pDraw.primitive = static_cast<uint32_t>( toUnderlying( E_PRIMITIVE::TRIANGLES ) );
 						pDraw.first		= 0;
 						pDraw.count		= 4;
@@ -563,7 +574,7 @@ namespace VTX::Renderer::Context::Backend
 				}
 
 				// Push END_PASS.
-				PayloadEndPass pEndPass { hFramebuffer, flags };
+				const PayloadEndPass pEndPass { hFramebuffer, flags };
 				p_commands.push<E_COMMAND::END_PASS>( pEndPass );
 
 				if ( isLastPass )
@@ -578,7 +589,7 @@ namespace VTX::Renderer::Context::Backend
 				ResourceTable & resourceTable  = _resourceTables.get( hResourceTable );
 				resourceTable				   = _buildResourceTableForPass( pass, p_resources );
 
-				PayloadBindResources pBindResources { hResourceTable };
+				const PayloadBindResources pBindResources { hResourceTable };
 				p_commands.push<E_COMMAND::BIND_RESOURCES>( pBindResources );
 
 				for ( const Program & program : pass.programs )
@@ -587,7 +598,7 @@ namespace VTX::Renderer::Context::Backend
 
 					if ( program.dispatch )
 					{
-						PayloadDispatch pDispatch { hProgram };
+						PayloadDispatch pDispatch { { .program = hProgram } };
 						pDispatch.barriers = toUnderlying( program.dispatch->barriers );
 						pDispatch.groupX   = program.dispatch->groupX;
 						pDispatch.groupY   = program.dispatch->groupY;
@@ -596,7 +607,7 @@ namespace VTX::Renderer::Context::Backend
 					}
 					else if ( program.dispatchIndirect )
 					{
-						PayloadDispatchIndirect pDispatch { hProgram };
+						PayloadDispatchIndirect pDispatch { { .program = hProgram } };
 						pDispatch.barriers		 = toUnderlying( program.dispatchIndirect->barriers );
 						pDispatch.indirectBuffer = _buffers.handle( program.dispatchIndirect->indirectBuffer );
 						pDispatch.offset		 = program.dispatchIndirect->offset;
@@ -666,7 +677,7 @@ namespace VTX::Renderer::Context::Backend
 			uint32_t texWidth  = p_width;
 			uint32_t texHeight = p_height;
 
-			if ( auto * sizePtr = std::get_if<Size2DRelative>( &tex.size ) )
+			if ( const auto * sizePtr = std::get_if<Size2DRelative>( &tex.size ) )
 			{
 				texWidth  = static_cast<uint32_t>( static_cast<float>( _width ) * sizePtr->width );
 				texHeight = static_cast<uint32_t>( static_cast<float>( _height ) * sizePtr->height );
@@ -674,7 +685,9 @@ namespace VTX::Renderer::Context::Backend
 				texHeight = std::max( 1u, texHeight );
 			}
 
-			_textures.get( key ).resize( texWidth, texHeight );
+			assert( texWidth <= static_cast<uint32_t>( TypeMax<GLsizei> ) );
+			assert( texHeight <= static_cast<uint32_t>( TypeMax<GLsizei> ) );
+			_textures.get( key ).resize( static_cast<GLsizei>( texWidth ), static_cast<GLsizei>( texHeight ) );
 		}
 
 		for ( const auto & pass : p_passes )
@@ -689,15 +702,15 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	Desc::Handle OpenGL::_getOrCreateFramebuffer(
-		const Desc::Pass &		p_pass,
-		const Desc::Resources & p_res,
-		const bool				p_isLast
+		const Desc::Pass & p_pass,
+		const Desc::Resources &,
+		const bool p_isLast
 	)
 	{
 		using namespace Desc;
 
 		const Key & key = p_pass.name;
-		Handle		h;
+		Handle		h	= Desc::NO_HANDLE;
 
 		if ( _framebuffers.validate( key ) )
 		{
@@ -718,9 +731,9 @@ namespace VTX::Renderer::Context::Backend
 			_offscreen = h;
 
 			// Create a default fbo.
-			if ( not _framebuffers.validate( _DEFAULT_FBO ) )
+			if ( not _framebuffers.validate( Desc::Key { DEFAULT_FBO } ) )
 			{
-				_default = _framebuffers.emplace( _DEFAULT_FBO, 0 );
+				_default = _framebuffers.emplace( Desc::Key { DEFAULT_FBO }, 0 );
 			}
 
 			if ( targetWasUnset || targetWasDefault )
@@ -736,7 +749,7 @@ namespace VTX::Renderer::Context::Backend
 		return h;
 	}
 
-	Desc::Handle OpenGL::_getOrCreateResourceTable( const Desc::Pass & p_pass, const Desc::Resources & p_res )
+	Desc::Handle OpenGL::_getOrCreateResourceTable( const Desc::Pass & p_pass, const Desc::Resources & )
 	{
 		using namespace Desc;
 
@@ -780,12 +793,12 @@ namespace VTX::Renderer::Context::Backend
 		uint32_t width	= _width;
 		uint32_t height = _height;
 
-		if ( auto * sizePtr = std::get_if<Size2DAbsolute>( &p_text.size ) )
+		if ( const auto * sizePtr = std::get_if<Size2DAbsolute>( &p_text.size ) )
 		{
 			width  = sizePtr->width;
 			height = sizePtr->height;
 		}
-		else if ( auto * sizePtr = std::get_if<Size2DRelative>( &p_text.size ) )
+		else if ( const auto * sizePtr = std::get_if<Size2DRelative>( &p_text.size ) )
 		{
 			width  = static_cast<uint32_t>( static_cast<float>( _width ) * sizePtr->width );
 			height = static_cast<uint32_t>( static_cast<float>( _height ) * sizePtr->height );
@@ -793,13 +806,13 @@ namespace VTX::Renderer::Context::Backend
 			height = std::max( 1u, height );
 		}
 
-		GLPixelFormat glFormat = _toGL( p_text.format );
+		const GLPixelFormat glFormat = _toGL( p_text.format );
 
 		const Handle h = _textures.emplace(
 			p_key,
 			p_text,
-			GLsizei( width ),
-			GLsizei( height ),
+			static_cast<GLsizei>( width ),
+			static_cast<GLsizei>( height ),
 			glFormat.internalFormat,
 			_toGL( p_text.target ),
 			p_text.external
@@ -857,7 +870,7 @@ namespace VTX::Renderer::Context::Backend
 			{
 				const GLuint attribIndex  = location;
 				const GLuint bindingIndex = location; // planar : 1 binding per attribute
-				const GLuint relOffset	  = GLuint( col * ga.components * ga.bytesPerComp );
+				const GLuint relOffset	  = static_cast<GLuint>( col * ga.components * ga.bytesPerComp );
 
 				vao.enableAttribute( attribIndex );
 				vao.setAttributeFormat(
@@ -1093,13 +1106,16 @@ namespace VTX::Renderer::Context::Backend
 		Binding b = 0;
 
 		// For each input.
-		for ( auto & input : p_pass.inputs )
+		for ( const auto & input : p_pass.inputs )
 		{
 			switch ( input.type )
 			{
 			case E_RESOURCE_TYPE::TEXTURE:
 			{
-				assert( input.secondary );
+				if ( not input.secondary )
+				{
+					throw GraphicException( "Texture input requires a sampler" );
+				}
 				const Handle hTex  = _textures.handle( input.primary );
 				const Handle hSamp = _samplers.handle( *input.secondary );
 				rt.textures.emplace_back( hTex, hSamp, b++ );
@@ -1120,7 +1136,7 @@ namespace VTX::Renderer::Context::Backend
 		}
 
 		// For each program check if shader buffer exists.
-		for ( auto & program : p_pass.programs )
+		for ( const auto & program : p_pass.programs )
 		{
 			const Key & key = program.name;
 			if ( _buffers.contains( key ) )
@@ -1132,7 +1148,7 @@ namespace VTX::Renderer::Context::Backend
 
 		b = 0;
 		// For each output.
-		for ( auto & output : p_pass.outputs )
+		for ( const auto & output : p_pass.outputs )
 		{
 			switch ( output.type )
 			{
@@ -1195,7 +1211,7 @@ namespace VTX::Renderer::Context::Backend
 
 		// Attach.
 		uint colorAttach = 0;
-		for ( auto & output : p_pass.outputs )
+		for ( const auto & output : p_pass.outputs )
 		{
 			if ( output.type != E_RESOURCE_TYPE::TEXTURE )
 			{
@@ -1262,7 +1278,7 @@ namespace VTX::Renderer::Context::Backend
 			const Handle	   hBuffer	 = _bufferHandle( bufferKey, p_resources, p_chunk );
 			const GL::Buffer & vbo		 = _buffers.get( hBuffer );
 
-			const GLsizei stride = GLsizei( ga.columns * ga.components * ga.bytesPerComp );
+			const GLsizei stride = static_cast<GLsizei>( ga.columns * ga.components * ga.bytesPerComp );
 			for ( uint8_t col = 0; col < ga.columns; ++col )
 			{
 				const GLuint bindingIndex = location;
@@ -1278,11 +1294,11 @@ namespace VTX::Renderer::Context::Backend
 	{
 		using namespace Desc;
 
-		const Key	 quadLayoutKey = _QUAD;
+		const Key	 quadLayoutKey { QUAD };
 		VertexLayout quadLayout;
-		quadLayout.attributes = { VertexAttribute { _QUAD_VBO, E_TYPE::VEC2F } };
+		quadLayout.attributes = { VertexAttribute { Key { QUAD_VBO }, E_TYPE::VEC2F } };
 
-		const Key quadVboKey = _QUAD_VBO;
+		const Key quadVboKey { QUAD_VBO };
 		Buffer	  quadVboDesc;
 		quadVboDesc.name	  = quadVboKey;
 		quadVboDesc.usage	  = E_BUFFER_USAGE::VERTEX;
@@ -1293,8 +1309,9 @@ namespace VTX::Renderer::Context::Backend
 			return _vertexArrays.handle( quadLayoutKey );
 		}
 
-		const std::array<Vec2f, 4> quad
-			= { Vec2f { -1.f, 1.f }, Vec2f { -1.f, -1.f }, Vec2f { 1.f, 1.f }, Vec2f { 1.f, -1.f } };
+		const auto quad = std::to_array<Vec2f>(
+			{ Vec2f { -1.f, 1.f }, Vec2f { -1.f, -1.f }, Vec2f { 1.f, 1.f }, Vec2f { 1.f, -1.f } }
+		);
 
 		Geometry quadGeo;
 		quadGeo.vertexLayout = quadLayoutKey;
@@ -1310,7 +1327,7 @@ namespace VTX::Renderer::Context::Backend
 
 		_bindGeometryToVao( quadLayoutKey, quadGeo, fakeRes, 0 );
 
-		_buffers.get( quadVboKey ).setStorage( quad.data(), GLsizei( sizeof( quad ) ) );
+		_buffers.get( quadVboKey ).setStorage( quad.data(), static_cast<GLsizei>( sizeof( quad ) ) );
 
 		return h;
 	}
@@ -1320,6 +1337,8 @@ namespace VTX::Renderer::Context::Backend
 		using namespace Desc;
 
 		assert( _buffers.contains( p_key ) );
+		assert( p_offset <= static_cast<size_t>( TypeMax<GLsizei> ) );
+		assert( p_bytes.size() <= static_cast<size_t>( TypeMax<GLsizei> ) - p_offset );
 
 		const Handle h	  = _buffers.handle( p_key );
 		const auto & desc = _buffers.descriptor( p_key );
@@ -1327,7 +1346,9 @@ namespace VTX::Renderer::Context::Backend
 		if ( ( Util::Enum::hasAnyBit( desc.usage, E_BUFFER_USAGE::UNIFORM | E_BUFFER_USAGE::STORAGE ) )
 			 && desc.mutability == E_BUFFER_MUTABILITY::IMMUTABLE )
 		{
-			_buffers.get( h ).setSub( p_bytes.data(), GLsizei( p_bytes.size() ), p_offset );
+			_buffers.get( h ).setSub(
+				p_bytes.data(), static_cast<GLsizeiptr>( p_bytes.size() ), static_cast<GLintptr>( p_offset )
+			);
 
 			return;
 		}
@@ -1338,13 +1359,16 @@ namespace VTX::Renderer::Context::Backend
 			_cudaInterop.unregisterBuffer( p_key );
 		}
 
-		buffer.setData( p_bytes.data(), GLsizei( p_bytes.size() ), p_offset, _toGL( desc.frequency ) );
+		buffer.setData(
+			p_bytes.data(),
+			static_cast<GLsizei>( p_bytes.size() ),
+			static_cast<GLintptr>( p_offset ),
+			_toGL( desc.frequency )
+		);
 	}
 
 	void OpenGL::setBufferData( const Desc::BufferRef & p_ref, SpanBytes p_bytes, const size_t p_offset )
-	{
-		_setBufferData( _physicalBufferKey( p_ref ), p_bytes, p_offset );
-	}
+	{ _setBufferData( _physicalBufferKey( p_ref ), p_bytes, p_offset ); }
 
 	bool OpenGL::ensureBufferChunk( const Desc::BufferRef & p_ref )
 	{
@@ -1389,10 +1413,7 @@ namespace VTX::Renderer::Context::Backend
 		const Desc::Key chunkSuffix = _vertexArrayChunkKey( "", *p_ref.chunk );
 		for ( const Desc::Key & vertexArrayKey : _vertexArrays.keys() )
 		{
-			if ( vertexArrayKey.size() >= chunkSuffix.size()
-				 && vertexArrayKey.compare(
-						vertexArrayKey.size() - chunkSuffix.size(), chunkSuffix.size(), chunkSuffix
-					) == 0 )
+			if ( vertexArrayKey.size() >= chunkSuffix.size() && vertexArrayKey.ends_with( chunkSuffix ) )
 			{
 				_vertexArrays.erase( vertexArrayKey );
 			}
@@ -1406,8 +1427,12 @@ namespace VTX::Renderer::Context::Backend
 		const Desc::BufferRef &	  p_ref
 	)
 	{
-		std::array<Desc::BufferRef, 1> refs { p_ref };
-		auto						   mappings = mapInteropBuffers( p_api, refs );
+		auto refs	  = std::to_array<Desc::BufferRef>( { p_ref } );
+		auto mappings = mapInteropBuffers( p_api, refs );
+		if ( mappings.empty() )
+		{
+			throw GraphicException( "Could not map interop buffer '{}'", p_ref.key );
+		}
 		assert( mappings.size() == 1 );
 
 		return std::move( mappings.front() );
@@ -1450,13 +1475,20 @@ namespace VTX::Renderer::Context::Backend
 		}
 		catch ( ... )
 		{
-			for ( const Desc::InteropBufferMapping & mapping : result )
-			{
-				_cudaInterop.unmapBuffer( mapping.key );
-			}
 			for ( const Desc::Key & cleanupKey : p_keys )
 			{
-				_cudaInterop.unregisterBuffer( cleanupKey );
+				try
+				{
+					_cudaInterop.unregisterBuffer( cleanupKey );
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "Failed to unregister CUDA buffer '{}': {}", cleanupKey, p_e.what() );
+				}
+				catch ( ... )
+				{
+					VTX_ERROR( "Failed to unregister CUDA buffer '{}': unknown exception", cleanupKey );
+				}
 			}
 			throw;
 		}
@@ -1487,7 +1519,7 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL::unmapInteropBuffer( const Desc::E_INTEROP_API p_api, const Desc::InteropBufferMapping & p_mapping )
 	{
-		std::array<Desc::InteropBufferMapping, 1> mappings { p_mapping };
+		auto mappings = std::to_array<Desc::InteropBufferMapping>( { p_mapping } );
 		unmapInteropBuffers( p_api, mappings );
 	}
 
@@ -1549,13 +1581,13 @@ namespace VTX::Renderer::Context::Backend
 
 		texture.getSubImage(
 			0,
-			single ? GLint( *p_x ) : 0,
-			single ? GLint( *p_y ) : 0,
-			GLsizei( w ),
-			GLsizei( h ),
+			single ? static_cast<GLint>( *p_x ) : 0,
+			single ? static_cast<GLint>( *p_y ) : 0,
+			static_cast<GLsizei>( w ),
+			static_cast<GLsizei>( h ),
 			glFormat.uploadFormat,
 			glFormat.uploadType,
-			GLsizei( data.size() ),
+			static_cast<GLsizei>( data.size() ),
 			data.data()
 		);
 
@@ -1582,9 +1614,10 @@ namespace VTX::Renderer::Context::Backend
 			throw GraphicException( "Texture '{}': width and height must be specified together", p_key );
 		}
 
-		const size_t width	= p_width.value_or( size_t( texture.getWidth() ) );
-		const size_t height = p_height.value_or( size_t( texture.getHeight() ) );
-		if ( width == 0 || height == 0 || width > size_t( TypeMax<GLsizei> ) || height > size_t( TypeMax<GLsizei> ) )
+		const size_t width	= p_width.value_or( static_cast<size_t>( texture.getWidth() ) );
+		const size_t height = p_height.value_or( static_cast<size_t>( texture.getHeight() ) );
+		if ( width == 0 || height == 0 || width > static_cast<size_t>( TypeMax<GLsizei> )
+			 || height > static_cast<size_t>( TypeMax<GLsizei> ) )
 		{
 			throw GraphicException( "Texture '{}': invalid dimensions {}x{}", p_key, width, height );
 		}
@@ -1594,9 +1627,11 @@ namespace VTX::Renderer::Context::Backend
 		{
 			throw GraphicException( "Texture '{}': expected {} bytes, got {}", p_key, expectedSize, p_bytes.size() );
 		}
-		if ( p_width && ( size_t( texture.getWidth() ) != width || size_t( texture.getHeight() ) != height ) )
+		if ( p_width
+			 && ( std::cmp_not_equal( texture.getWidth(), width )
+				  || std::cmp_not_equal( texture.getHeight(), height ) ) )
 		{
-			texture.resize( GLsizei( width ), GLsizei( height ) );
+			texture.resize( static_cast<GLsizei>( width ), static_cast<GLsizei>( height ) );
 		}
 
 		texture.fill( p_bytes.data(), glFormat.uploadFormat, glFormat.uploadType );
@@ -1642,7 +1677,7 @@ namespace VTX::Renderer::Context::Backend
 	{
 		p_infos.renderer	   = _openglInfos.glRenderer;
 		p_infos.cudaAvailable  = _cudaInterop.availability().available();
-		p_infos.maxTextureSize = size_t( _openglInfos.glMaxTextureSize );
+		p_infos.maxTextureSize = static_cast<size_t>( _openglInfos.glMaxTextureSize );
 
 // NVX_gpu_memory_info
 #if ( GL_NVX_gpu_memory_info == 1 )
@@ -1672,10 +1707,11 @@ namespace VTX::Renderer::Context::Backend
 
 	void OpenGL::_getOpenglInfos()
 	{
-		_openglInfos.glVendor	 = std::string( (const char *)glGetString( GL_VENDOR ) );
-		_openglInfos.glRenderer	 = std::string( (const char *)glGetString( GL_RENDERER ) );
-		_openglInfos.glVersion	 = std::string( (const char *)glGetString( GL_VERSION ) );
-		_openglInfos.glslVersion = std::string( (const char *)glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+		_openglInfos.glVendor	= std::string( reinterpret_cast<const char *>( glGetString( GL_VENDOR ) ) );
+		_openglInfos.glRenderer = std::string( reinterpret_cast<const char *>( glGetString( GL_RENDERER ) ) );
+		_openglInfos.glVersion	= std::string( reinterpret_cast<const char *>( glGetString( GL_VERSION ) ) );
+		_openglInfos.glslVersion
+			= std::string( reinterpret_cast<const char *>( glGetString( GL_SHADING_LANGUAGE_VERSION ) ) );
 
 		glGetIntegerv( GL_MAX_UNIFORM_BLOCK_SIZE, &_openglInfos.glMaxUniformBlockSize );
 		glGetIntegerv( GL_MAX_UNIFORM_BUFFER_BINDINGS, &_openglInfos.glMaxUniformBufferBindings );
@@ -1697,14 +1733,14 @@ namespace VTX::Renderer::Context::Backend
 		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
 		for ( int32_t i = 0; i < numExtensions; ++i )
 		{
-			const char * extension = (const char *)glGetStringi( GL_EXTENSIONS, i );
+			const char * extension = reinterpret_cast<const char *>( glGetStringi( GL_EXTENSIONS, i ) );
 			if ( strcmp( "GL_NVX_gpu_memory_info", extension ) == 0 )
 			{
-				_openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ] = true;
+				_openglInfos.glExtensions[ toUnderlying( GL::E_GL_EXTENSIONS::NVX_gpu_memory_info ) ] = true;
 			}
 			if ( strcmp( "GL_ATI_meminfo", extension ) == 0 )
 			{
-				_openglInfos.glExtensions[ GL::E_GL_EXTENSIONS::ATI_meminfo ] = true;
+				_openglInfos.glExtensions[ toUnderlying( GL::E_GL_EXTENSIONS::ATI_meminfo ) ] = true;
 			}
 		}
 	}

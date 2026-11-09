@@ -4,7 +4,6 @@
 #include "app/helper/system.hpp"
 #include "app/input/input_manager.hpp"
 #include "app/services.hpp"
-#include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
 #include "util/math/grid.hpp"
@@ -12,6 +11,7 @@
 #include <optional>
 #include <renderer/renderer.hpp>
 #include <unordered_map>
+#include <util/exceptions.hpp>
 
 namespace VTX::App::Action::Selection
 {
@@ -108,7 +108,7 @@ namespace VTX::App::Action::Selection
 	void Pick::execute( const Vec2i & p_mousePos, const E_GRANULARITY p_granularity, const bool p_append )
 	{
 		// Get renderer picking info at mouse position.
-		Vec2i picked = RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y );
+		const Vec2i picked = RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y );
 
 		const UID32 first  = picked.x;
 		const UID32 second = picked.y;
@@ -214,7 +214,10 @@ namespace VTX::App::Action::Selection
 		{
 			// Look for residue.
 			firstEntOpt = Helper::Scene::findSystemByResidueUID( first );
-			assert( firstEntOpt );
+			if ( not firstEntOpt )
+			{
+				throw VTXException( "No system found for residue UID {}", first );
+			}
 			assert( second == INVALID_UID );
 			if ( granularity == E_GRANULARITY::ATOM )
 			{
@@ -227,11 +230,10 @@ namespace VTX::App::Action::Selection
 			const auto & uid		  = REG().get<System::UID>( firstEnt );
 			const Index	 residueIndex = uid.getResidueIndex( first );
 
-			bool select = not(
-				Helper::System::getSelectionState( { firstEnt, Core::Struct::E_SYSTEM_ITEM::RESIDUE, residueIndex } )
-					== App::System::E_SELECTION_STATE::FULL
-				&& p_append
-			);
+			bool select
+				= Helper::System::getSelectionState( { firstEnt, Core::Struct::E_SYSTEM_ITEM::RESIDUE, residueIndex } )
+					  != App::System::E_SELECTION_STATE::FULL
+				  || not p_append;
 
 			switch ( granularity )
 			{

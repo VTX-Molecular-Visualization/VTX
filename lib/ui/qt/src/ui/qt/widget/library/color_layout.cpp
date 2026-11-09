@@ -7,12 +7,13 @@
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/chain.hpp>
 #include <core/chemdb/residue.hpp>
+#include <memory>
 #include <renderer/color.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
 
-	ColorLayout::ColorLayout( QWidget * p_parent ) : BasePresetWidget( p_parent )
+	ColorLayout::ColorLayout( QWidget * const p_parent ) : BasePresetWidget( p_parent )
 	{
 		using namespace Renderer;
 		using namespace Core::ChemDB;
@@ -21,11 +22,11 @@ namespace VTX::UI::QT::Widget::Library
 		setTitle( "Edit color layout" );
 
 		// Search bar.
-		auto * searchBar = new QLineEdit( this );
+		auto * searchBar = Helper::makeQObject<QLineEdit>( this );
 		searchBar->setPlaceholderText( "TODO" );
 		addWidget( searchBar );
 
-		_checkBoxHideNonUsual = new QCheckBox( "Hide non usual", this );
+		_checkBoxHideNonUsual = Helper::makeQObject<QCheckBox>( "Hide non usual", this );
 		addWidget( _checkBoxHideNonUsual );
 
 		_buttons.resize( COLOR_LAYOUT_SIZE );
@@ -45,7 +46,7 @@ namespace VTX::UI::QT::Widget::Library
 		_createGroupBox( "Custom", LAYOUT_OFFSET_CUSTOM, LAYOUT_COUNT_CUSTOM );
 
 		// Randomize.
-		auto * const buttonRandomize = new QPushButton( "Randomize", this );
+		auto * const buttonRandomize = Helper::makeQObject<QPushButton>( "Randomize", this );
 		connect(
 			buttonRandomize,
 			&QPushButton::clicked,
@@ -96,8 +97,8 @@ namespace VTX::UI::QT::Widget::Library
 		std::span<const std::string_view> p_tip
 	)
 	{
-		auto * groupBox = new QGroupBox( QString::fromStdString( p_title.data() ) );
-		auto * layout	= new Layout::FlowLayout( groupBox );
+		auto * groupBox = new QGroupBox( QString::fromUtf8( p_title ) );
+		auto * layout	= Helper::makeQObject<Layout::FlowLayout>( groupBox );
 
 		// Create buttons.
 		size_t offset = 0;
@@ -105,13 +106,13 @@ namespace VTX::UI::QT::Widget::Library
 		{
 			// QString text = p_text ? QString::fromStdString( p_text[ offset ].data() ) : QString::number( i );
 
-			_buttons[ i ] = new ColorPicker( groupBox );
-			_buttons[ i ]->setFixedSize( _BUTTON_SIZE, _BUTTON_SIZE );
+			_buttons[ i ] = Helper::makeQObject<ColorPicker>( groupBox );
+			_buttons[ i ]->setFixedSize( BUTTON_SIZE, BUTTON_SIZE );
 
 			if ( not p_text.empty() )
 			{
 				// First letter in uppercase.
-				QString text = QString::fromStdString( p_text[ offset ].data() );
+				QString text = QString::fromUtf8( p_text[ offset ] );
 				text		 = text.toLower();
 				text[ 0 ]	 = text[ 0 ].toUpper();
 				_buttons[ i ]->setText( text );
@@ -119,12 +120,16 @@ namespace VTX::UI::QT::Widget::Library
 
 			if ( not p_tip.empty() )
 			{
-				_buttons[ i ]->setToolTip( QString::fromStdString( p_tip[ offset ].data() ) );
-				_buttons[ i ]->setStatusTip( QString::fromStdString( p_tip[ offset ].data() ) );
+				_buttons[ i ]->setToolTip( QString::fromUtf8( p_tip[ offset ] ) );
+				_buttons[ i ]->setStatusTip( QString::fromUtf8( p_tip[ offset ] ) );
 			}
 
 			// Connect picker.
-			_buttons[ i ]->onColorChanged += [ this, i ]( const QColor & p_color ) { _changeColor( i, p_color ); };
+			connect(
+				_buttons[ i ],
+				&Widget::ColorPicker::colorChanged,
+				[ this, i ]( const QColor & p_color ) { _changeColor( i, p_color ); }
+			);
 
 			layout->addWidget( _buttons[ i ] );
 			offset++;
@@ -136,7 +141,7 @@ namespace VTX::UI::QT::Widget::Library
 	void ColorLayout::_changeColor( const size_t p_index, const QColor & p_color )
 	{
 		App::ACTION().execute<App::Action::ColorLayout::Change>(
-			currentPreset(), Index( p_index ), Helper::fromQColor( p_color )
+			currentPreset(), static_cast<Index>( p_index ), Helper::fromQColor( p_color )
 		);
 	}
 
@@ -158,9 +163,9 @@ namespace VTX::UI::QT::Widget::Library
 	{
 		using namespace VTX::Core::ChemDB;
 
-		auto * groupBox = static_cast<QGroupBox *>( _buttons[ p_start ]->parentWidget() );
-		delete groupBox->layout();
-		auto * layout = new Layout::FlowLayout( groupBox );
+		auto * groupBox = qobject_cast<QGroupBox *>( _buttons[ p_start ]->parentWidget() );
+		std::unique_ptr<QLayout> { groupBox->layout() }.reset();
+		auto * layout = Helper::makeQObject<Layout::FlowLayout>( groupBox );
 
 		size_t count = 0;
 		for ( size_t i = p_start; i < p_start + p_count; ++i )

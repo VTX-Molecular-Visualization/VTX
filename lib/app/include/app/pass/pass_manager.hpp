@@ -1,10 +1,11 @@
-#ifndef __VTX_APP_PASS_MANAGER__
-#define __VTX_APP_PASS_MANAGER__
+#ifndef VTX_APP_PASS_PASS_MANAGER_HPP
+#define VTX_APP_PASS_PASS_MANAGER_HPP
 
 #include <concepts>
 #include <forward_list>
 #include <util/collection.hpp>
 #include <util/event_hub.hpp>
+#include <util/exceptions.hpp>
 
 namespace VTX::App::Pass
 {
@@ -25,9 +26,9 @@ namespace VTX::App::Pass
 
 		virtual ~IPass() = default;
 
-		inline void setPaused( const bool p_paused ) { _paused = p_paused; }
+		void setPaused( const bool p_paused ) noexcept { _paused = p_paused; }
 
-		inline void setDeleteNextFrame( const bool p_deleted ) { _deleted = p_deleted; }
+		void setDeleteNextFrame( const bool p_deleted ) noexcept { _deleted = p_deleted; }
 
 	  protected:
 		bool _paused  = false;
@@ -42,14 +43,18 @@ namespace VTX::App::Pass
 	  public:
 		using UpdateDelegate = Util::EventHub::Delegate<void( const float, const float )>;
 
-		PassManager()				  = default;
-		PassManager( PassManager && ) = default;
+		PassManager()								   = default;
+		PassManager( const PassManager & )			   = delete;
+		PassManager & operator=( const PassManager & ) = delete;
+		PassManager( PassManager && )				   = delete;
+		PassManager & operator=( PassManager && )	   = delete;
+		~PassManager()								   = default;
 
 		/**
 		 * @brief Instantiates a pass.
 		 */
 		template<ConceptPass T, typename... Args>
-		T * const addPass( Args &&... p_args )
+		T * addPass( Args &&... p_args )
 		{
 			assert( not _passes.has<T>() );
 
@@ -58,7 +63,7 @@ namespace VTX::App::Pass
 			// Register update delegate.
 			UpdateDelegate d;
 			d.template connect<&T::update>( p );
-			_delegates.push_back( std::move( d ) );
+			_delegates.push_back( d );
 
 			return p;
 		}
@@ -120,8 +125,10 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Updates all passes.
 		 */
-		inline void update( const float p_delta, const float p_elapsed )
+		void update( const float p_delta, const float p_elapsed )
 		{
+			Util::ExceptionCollector errors;
+
 			// Update delegates.
 			for ( const auto & delegate : _delegates )
 			{
@@ -132,7 +139,7 @@ namespace VTX::App::Pass
 					continue;
 				}
 
-				delegate( p_delta, p_elapsed );
+				errors.run( "Pass update failed", [ & ]() { delegate( p_delta, p_elapsed ); } );
 			}
 
 			// Remove passes flagged for deletion.
@@ -151,6 +158,8 @@ namespace VTX::App::Pass
 					++it;
 				}
 			}
+
+			errors.rethrow();
 		}
 
 	  private:

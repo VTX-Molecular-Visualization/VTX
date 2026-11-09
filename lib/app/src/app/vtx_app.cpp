@@ -1,13 +1,8 @@
 #include "app/vtx_app.hpp"
 #include "app/action/action_manager.hpp"
 #include "app/action/application.hpp"
-#include "app/action/camera.hpp"
-#include "app/action/color_layout.hpp"
-#include "app/action/controller.hpp"
-#include "app/action/graphics_config.hpp"
 #include "app/action/io.hpp"
 #include "app/action/preset.hpp"
-#include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
 #include "app/helper/preset.hpp"
@@ -30,7 +25,9 @@
 #include "app/setting/accessibility.hpp"
 #include "app/setting/controller.hpp"
 #include "app/uid/uid_manager.hpp"
+#include <cstdio>
 #include <exception>
+#include <tuple>
 #include <util/thread/thread_manager.hpp>
 #if VTX_PYTHON_BINDING
 #include <python_binding/interpretor.hpp>
@@ -53,13 +50,15 @@ namespace VTX::App
 
 	VTXApp::VTXApp( Arguments && p_args )
 	{
-		bool debug = p_args.debug;
+		const bool debug = p_args.debug;
 
 		// Set global registry.
 		ECS::setRegistry( _registry );
 
 		// Store args.
 		ECS::setCtx<Arguments>( std::move( p_args ) );
+		// Event hub.
+		ECS::setCtx<Util::EventHub>();
 		// Session.
 		ECS::setCtx<Session>();
 		// Logger.
@@ -68,25 +67,25 @@ namespace VTX::App
 
 	VTXApp::~VTXApp()
 	{
-		if ( ECS::hasCtx<Action::ActionManager>() )
-		{
-			ACTION().shutdown();
-		}
-#if VTX_PYTHON_BINDING
 		try
 		{
-			if ( ECS::hasCtx<PythonBinding::Interpretor>() )
+			if ( ECS::hasCtx<Action::ActionManager>() )
 			{
-				ECS::removeCtx<PythonBinding::Interpretor>();
+				ACTION().shutdown();
 			}
 		}
 		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( "Exception during interpretor cleanup: {}", p_e.what() );
+			VTX_ERROR( "Exception during action manager shutdown: {}", p_e.what() );
 		}
 		catch ( ... )
 		{
-			VTX_ERROR( "Unknown exception during interpretor cleanup" );
+			VTX_ERROR( "Unknown exception during action manager shutdown" );
+		}
+#if VTX_PYTHON_BINDING
+		if ( ECS::hasCtx<PythonBinding::Interpretor>() )
+		{
+			ECS::removeCtx<PythonBinding::Interpretor>();
 		}
 #endif
 		// Destroy component users before entt registry destruction.
@@ -94,23 +93,29 @@ namespace VTX::App
 		{
 			ECS::removeCtx<Pass::PassManager>();
 		}
+		if ( ECS::hasCtx<Util::Thread::ThreadManager>() )
+		{
+			ECS::removeCtx<Util::Thread::ThreadManager>();
+		}
+
+		if ( ECS::hasCtx<Network::NetworkManager>() )
+		{
+			ECS::removeCtx<Network::NetworkManager>();
+		}
+
+		if ( ECS::hasCtx<Session>() )
+		{
+			ECS::removeCtx<Session>();
+		}
+
 		try
 		{
-			if ( ECS::hasCtx<Util::Thread::ThreadManager>() )
-			{
-				ECS::removeCtx<Util::Thread::ThreadManager>();
-			}
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Exception during thread manager cleanup: {}", p_e.what() );
+			LOGGER::stop();
 		}
 		catch ( ... )
 		{
-			VTX_ERROR( "Unknown exception during thread manager cleanup" );
+			std::ignore = std::fputs( "Failed to stop logger\n", stderr );
 		}
-
-		LOGGER().flush();
 	}
 
 	void VTXApp::start()
@@ -140,9 +145,10 @@ namespace VTX::App
 		VTX_INFO( toString( ARGS() ) );
 		SESSION().print();
 
-		ECS::setCtx<Util::EventHub>();
 		ECS::setCtx<Util::Monitoring::Stats>();
 		ECS::setCtx<Renderer::Renderer>();
+		RENDERER().onReady
+			= []( const Renderer::StructInfos & p_infos ) { HUB().trigger<Events::RendererReady>( p_infos ); };
 		ECS::setCtx<Action::ActionManager>();
 		ECS::setCtx<Input::InputManager>();
 		ECS::setCtx<Network::NetworkManager>();
@@ -157,7 +163,11 @@ namespace VTX::App
 		);
 		THREAD().setDefaultTerminatedCallback(
 			[]( const Util::Thread::BaseThread & p_thread )
-			{ HUB().trigger<Events::ThreadTerminated>( p_thread.getId(), p_thread.isManuallyStopped() ); }
+			{
+				HUB().trigger<Events::ThreadTerminated>(
+					p_thread.getId(), p_thread.isManuallyStopped(), p_thread.hasFailed()
+				);
+			}
 		);
 		ECS::setCtx<Uid::UIDManager>();
 		ECS::setCtx<Pass::PassManager>();
@@ -183,6 +193,10 @@ namespace VTX::App
 			catch ( const std::exception & p_e )
 			{
 				VTX_ERROR( "Failed to initialize python interpretor: {}", p_e.what() );
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "Failed to initialize python interpretor: unknown exception" );
 			}
 		}
 		else
@@ -225,7 +239,7 @@ namespace VTX::App
 	void VTXApp::finishStartup()
 	{
 #if VTX_PYTHON_BINDING
-		if ( not ARGS().noPython )
+		if ( not ARGS().noPython && ECS::hasCtx<PythonBinding::Interpretor>() )
 		{
 			const std::string runtimePythonVersion = INTERPRETOR().getRuntimePythonVersion();
 			if ( not runtimePythonVersion.empty() )
@@ -257,7 +271,7 @@ namespace VTX::App
 	void VTXApp::handleArgs()
 	{
 		const Arguments & args = ARGS();
-		for ( auto & it_file : args.positionalFiles )
+		for ( const auto & it_file : args.positionalFiles )
 		{
 			if ( it_file.empty() )
 			{

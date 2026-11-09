@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHON_BINDING_TOPOLOGY_HELPERS__
-#define __VTX_APP_PYTHON_BINDING_TOPOLOGY_HELPERS__
+#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_HELPERS_HPP
+#define VTX_APP_PYTHON_BINDING_TOPOLOGY_HELPERS_HPP
 
 #include "app/python_binding/topology/types.hpp"
 #include <app/system/selection.hpp>
@@ -12,34 +12,28 @@ namespace VTX::App::PythonBinding::Topology
 	/**
 	 * @brief Get the topology from entity.
 	 */
-	const Core::Struct::Topology & getTopology( const Entity p_entity );
+	const Core::Struct::Topology & getTopology( Entity p_entity );
 
 	/**
 	 * @brief Get the system from name first, then pdb, then file name.
 	 */
-	System getSystem( const std::string_view p_name );
+	System getSystem( std::string_view p_name );
 
 	/**
 	 * @brief Get the visible state.
 	 */
-	App::System::E_VISIBLE_STATE getVisibleState(
-		const Entity			   p_entity,
-		const SystemItem		   p_item,
-		const std::optional<Index> p_index
-	);
-	bool isVisible( const Entity p_entity, const SystemItem p_item, const std::optional<Index> p_index );
-	bool isFullyVisible( const Entity p_entity, const SystemItem p_item, const std::optional<Index> p_index );
+	App::System::E_VISIBLE_STATE getVisibleState( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
+	bool						 isVisible( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
+	bool						 isFullyVisible( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
 
 	/**
 	 * @brief Get the selection state.
 	 */
-	App::System::E_SELECTION_STATE getSelectionState(
-		const Entity			   p_entity,
-		const SystemItem		   p_item,
-		const std::optional<Index> p_index
-	);
-	bool isSelected( const Entity p_entity, const SystemItem p_item, const std::optional<Index> p_index );
-	bool isFullySelected( const Entity p_entity, const SystemItem p_item, const std::optional<Index> p_index );
+	App::System::E_SELECTION_STATE getSelectionState( Entity			   p_entity,
+													  SystemItem		   p_item,
+													  std::optional<Index> p_index );
+	bool						   isSelected( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
+	bool						   isFullySelected( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
 
 } // namespace VTX::App::PythonBinding::Topology
 

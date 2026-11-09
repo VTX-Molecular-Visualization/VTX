@@ -8,7 +8,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 {
 	namespace
 	{
-		std::vector<std::pair<const char *, std::string>> generateKeyValues( const MdInstructions::Equil & p_ ) noexcept
+		std::vector<std::pair<const char *, std::string>> generateKeyValues( const MdInstructions::Equil & p_ )
 		{
 			return {
 				{ "${nsteps}", std::to_string( p_.nsteps ) },		{ "${dt}", std::to_string( p_.dt ) },
@@ -17,7 +17,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			};
 		}
 
-		std::vector<std::pair<const char *, std::string>> generateKeyValues( const MdInstructions::Prod & p_ ) noexcept
+		std::vector<std::pair<const char *, std::string>> generateKeyValues( const MdInstructions::Prod & p_ )
 		{
 			return {
 				{ "${nsteps}", std::to_string( p_.nsteps ) },
@@ -30,18 +30,16 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			};
 		}
 
-		ErrorReport generateMdpFile(
-			const FilePath &										  p_template,
-			const FilePath &										  p_dest,
-			const std::vector<std::pair<const char *, std::string>> & p_replaceText
-		) noexcept
+		ErrorReport generateMdpFile( const FilePath &										   p_template,
+									 const FilePath &										   p_dest,
+									 const std::vector<std::pair<const char *, std::string>> & p_replaceText )
 		{
-			FilePath templateFile = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "nvt.mdp";
+			const FilePath templateFile = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "nvt.mdp";
 			if ( fs::exists( p_template ) )
 			{
 				std::string templateFileContent = getFileContent( p_template );
 
-				for ( auto & pair : p_replaceText )
+				for ( const auto & pair : p_replaceText )
 				{
 					replace( templateFileContent, pair.first, pair.second );
 				}
@@ -52,52 +50,46 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	} // namespace
 
-	ErrorReport createNvtMdp( const FilePath & p_dest, MdInstructions & p_in ) noexcept
+	ErrorReport createNvtMdp( const FilePath & p_dest, MdInstructions & p_in )
 	{
-		if ( fs::exists( p_dest ) == false )
+		if ( not fs::exists( p_dest ) )
 		{
 			fs::create_directories( p_dest );
 		}
-		return generateMdpFile(
-			VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "nvt.mdp",
-			p_dest / "nvt.mdp",
-			generateKeyValues( p_in.nvt )
-		);
+		return generateMdpFile( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "nvt.mdp",
+								p_dest / "nvt.mdp",
+								generateKeyValues( p_in.nvt ) );
 	}
 
-	ErrorReport createNptMdp( const FilePath & p_dest, MdInstructions & p_in ) noexcept
+	ErrorReport createNptMdp( const FilePath & p_dest, MdInstructions & p_in )
 	{
-		if ( fs::exists( p_dest ) == false )
+		if ( not fs::exists( p_dest ) )
 		{
 			fs::create_directories( p_dest );
 		}
-		return generateMdpFile(
-			VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "npt.mdp",
-			p_dest / "npt.mdp",
-			generateKeyValues( p_in.npt )
-		);
+		return generateMdpFile( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "npt.mdp",
+								p_dest / "npt.mdp",
+								generateKeyValues( p_in.npt ) );
 	}
 
-	ErrorReport createProdMdp( const FilePath & p_dest, MdInstructions & p_in ) noexcept
+	ErrorReport createProdMdp( const FilePath & p_dest, MdInstructions & p_in )
 	{
-		if ( fs::exists( p_dest ) == false )
+		if ( not fs::exists( p_dest ) )
 		{
 			fs::create_directories( p_dest );
 		}
-		return generateMdpFile(
-			VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "prod.mdp",
-			p_dest / "prod.mdp",
-			generateKeyValues( p_in.prod )
-		);
+		return generateMdpFile( VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "prod.mdp",
+								p_dest / "prod.mdp",
+								generateKeyValues( p_in.prod ) );
 	}
 
-	ErrorReport createWorkflowPy( const FilePath & p_dest, MdInstructions & p_in ) noexcept
+	ErrorReport createWorkflowPy( const FilePath & p_dest, MdInstructions & p_in )
 	{
-		if ( fs::exists( p_dest ) == false )
+		if ( not fs::exists( p_dest ) )
 		{
 			fs::create_directories( p_dest );
 		}
-		FilePath templateFile = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "runMD.py";
+		const FilePath templateFile = VTX::Tool::Mdprep::backends::Gromacs::defaultGmxTemplatesPath() / "runMD.py";
 		if ( fs::exists( templateFile ) )
 		{
 			std::string templateFileContent = getFileContent( templateFile );
@@ -110,11 +102,9 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		return { true, fmt::format( "Template file <{}> not found.", templateFile.string() ) };
 	}
 
-	ErrorReport pack(
-		const FilePath &			 p_dest,
-		const CumulativeOuputFiles & p_prepareOutputs,
-		MdInstructions &			 p_instructions
-	) noexcept
+	ErrorReport pack( const FilePath &			   p_dest,
+					  const CumulativeOuputFiles & p_prepareOutputs,
+					  MdInstructions &			   p_instructions )
 	{
 		ErrorReport err = createNvtMdp( p_dest, p_instructions );
 		if ( err.error )
@@ -137,14 +127,14 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			return err;
 		}
 
-		auto fileStrPtr = getFirstFileOfType( p_prepareOutputs, ".tpr" );
+		const auto * fileStrPtr = getFirstFileOfType( p_prepareOutputs, ".tpr" );
 		if ( fileStrPtr == nullptr )
 		{
 			return { true, "Preparation failed. Please check preparation step in red to learn more." };
 		}
 
 		FilePath file { *fileStrPtr };
-		if ( fs::exists( file ) == false )
+		if ( not fs::exists( file ) )
 		{
 			return { true, "Preparation failed. Please check preparation step in red to learn more." };
 		}
@@ -158,7 +148,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		file = *fileStrPtr;
-		if ( fs::exists( file ) == false )
+		if ( not fs::exists( file ) )
 		{
 			return { true, "Preparation failed. Please check preparation step in red to learn more." };
 		}
@@ -172,7 +162,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		file = *fileStrPtr;
-		if ( fs::exists( file ) == false )
+		if ( not fs::exists( file ) )
 		{
 			return { true, "Preparation failed. Please check preparation step in red to learn more." };
 		}
@@ -186,7 +176,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 
 		file = *fileStrPtr;
-		if ( fs::exists( file ) == false )
+		if ( not fs::exists( file ) )
 		{
 			return { true, "Preparation failed. Please check preparation step in red to learn more." };
 		}

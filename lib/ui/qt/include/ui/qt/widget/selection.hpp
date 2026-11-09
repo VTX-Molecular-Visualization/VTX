@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_SELECTION__
-#define __VTX_UI_QT_WIDGET_SELECTION__
+#ifndef VTX_UI_QT_WIDGET_SELECTION_HPP
+#define VTX_UI_QT_WIDGET_SELECTION_HPP
 
 #include "ui/qt/widget/transform.hpp"
 #include <QListWidget>
@@ -21,8 +21,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Constructor.
 		 */
-		Selection( QWidget * const p_parent = nullptr );
-		~Selection();
+		Selection( QWidget * p_parent = nullptr );
 
 	  private:
 		/**
@@ -46,12 +45,6 @@ namespace VTX::UI::QT::Widget
 		QPointer<QPlainTextEdit> _textName;
 
 		/**
-		 * @brief Refresh from app.
-		 */
-		Util::EventHub::Connection _connTransformChanged;
-		Util::EventHub::Connection _connMetadataChanged;
-
-		/**
 		 * @brief Currently selected entities.
 		 */
 		std::vector<Entity> _entities;
@@ -65,6 +58,12 @@ namespace VTX::UI::QT::Widget
 		 * @brief Metadata updated.
 		 */
 		void _metadataUpdated( Registry &, Entity );
+
+		/**
+		 * @brief Refresh from app.
+		 */
+		VTX::Util::EventHub::ScopedConnection _connTransformChanged;
+		VTX::Util::EventHub::ScopedConnection _connMetadataChanged;
 	};
 } // namespace VTX::UI::QT::Widget
 

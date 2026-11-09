@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CONTROLLER_ANIMATION__
-#define __VTX_APP_CONTROLLER_ANIMATION__
+#ifndef VTX_APP_CONTROLLER_ANIMATION_HPP
+#define VTX_APP_CONTROLLER_ANIMATION_HPP
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
@@ -31,18 +31,16 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Constructor.
 		 */
-		Animation(
-			const AnimationData &,
-			const AnimationData &,
-			const float,
-			const InterpPositionFunc &,
-			const InterpRotationFunc &
-		);
+		Animation( const AnimationData &,
+				   const AnimationData &,
+				   float,
+				   const InterpPositionFunc &,
+				   const InterpRotationFunc & );
 
 		/**
 		 * @brief Called each frame.
 		 */
-		bool update( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
+		bool update( float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
 
 		/**
 		 * @brief Stop camera movement.

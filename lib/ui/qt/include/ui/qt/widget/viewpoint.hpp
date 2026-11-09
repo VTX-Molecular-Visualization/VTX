@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_VIEWPOINT__
-#define __VTX_UI_QT_WIDGET_VIEWPOINT__
+#ifndef VTX_UI_QT_WIDGET_VIEWPOINT_HPP
+#define VTX_UI_QT_WIDGET_VIEWPOINT_HPP
 
 #include "ui/qt/widget/transform.hpp"
 #include <QLineEdit>
@@ -22,8 +22,7 @@ namespace VTX::UI::QT::Widget
 	class ViewPoint : public QWidget
 	{
 	  public:
-		ViewPoint( const Entity, QWidget * const p_parent = nullptr );
-		~ViewPoint();
+		ViewPoint( Entity, QWidget * p_parent = nullptr );
 
 	  private:
 		const Entity _entity;
@@ -32,12 +31,14 @@ namespace VTX::UI::QT::Widget
 		QPointer<QLineEdit>	  _lineName;
 		QPointer<Transform>	  _transform;
 
-		Util::EventHub::Connection _connTransformChanged;
+		VTX::Util::EventHub::ScopedConnection _connTransformChanged;
 
 		void _setName();
 		void _setTransform();
 		void _onViewPointRenamed( const App::Events::ViewPointRenamed & );
 		void _transformUpdated( Registry &, Entity );
+
+		VTX::Util::EventHub::ScopedConnection _viewPointRenamedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
 

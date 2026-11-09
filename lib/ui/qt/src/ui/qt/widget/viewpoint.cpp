@@ -1,4 +1,5 @@
 #include "ui/qt/widget/viewpoint.hpp"
+#include "ui/qt/helper.hpp"
 #include <QGroupBox>
 #include <QPushButton>
 #include <QSignalBlocker>
@@ -13,48 +14,44 @@ namespace VTX::UI::QT::Widget
 {
 	ViewPoint::ViewPoint( const Entity p_entity, QWidget * const p_parent ) : QWidget( p_parent ), _entity( p_entity )
 	{
-		_layout = new QVBoxLayout( this );
+		_layout = Helper::makeQObject<QVBoxLayout>( this );
 		_layout->setContentsMargins( 0, 0, 0, 0 );
 
-		auto * groupBoxTransform = new QGroupBox( "Viewpoint", this );
-		auto * layoutTransform	 = new QVBoxLayout( groupBoxTransform );
+		auto * groupBoxTransform = Helper::makeQObject<QGroupBox>( "Viewpoint", this );
+		auto * layoutTransform	 = Helper::makeQObject<QVBoxLayout>( groupBoxTransform );
 
-		_lineName = new QLineEdit( this );
+		_lineName = Helper::makeQObject<QLineEdit>( this );
 		layoutTransform->addWidget( _lineName );
 
-		_transform = new Transform( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
+		_transform = Helper::makeQObject<Transform>( this, Transform::E_FLAG::POSITION | Transform::E_FLAG::ROTATION );
 		layoutTransform->addWidget( _transform );
 		_layout->addWidget( groupBoxTransform );
 
-		auto * buttonUpdateFromCamera = new QPushButton( "Update from current camera", this );
+		auto * buttonUpdateFromCamera = Helper::makeQObject<QPushButton>( "Update from current camera", this );
 		_layout->addWidget( buttonUpdateFromCamera );
 
-		connect(
-			_transform,
-			&Transform::positionChanged,
-			[ this ]( const Vec3f & p_position )
-			{ App::ACTION().execute<App::Action::Camera::SetViewPointPosition>( _entity, p_position ); }
-		);
-		connect(
-			_transform,
-			&Transform::rotationChanged,
-			[ this ]( const Quatf & p_rotation )
-			{ App::ACTION().execute<App::Action::Camera::SetViewPointRotation>( _entity, p_rotation ); }
-		);
-		connect(
-			buttonUpdateFromCamera,
-			&QPushButton::clicked,
-			[ this ]() { App::ACTION().execute<App::Action::Camera::UpdateViewPointFromCamera>( _entity ); }
-		);
-		connect(
-			_lineName,
-			&QLineEdit::editingFinished,
-			this,
-			[ this ]()
-			{ App::ACTION().execute<App::Action::Camera::RenameViewPoint>( _entity, _lineName->text().toStdString() ); }
-		);
+		connect( _transform,
+				 &Transform::positionChanged,
+				 [ this ]( const Vec3f & p_position )
+				 { App::ACTION().execute<App::Action::Camera::SetViewPointPosition>( _entity, p_position ); } );
+		connect( _transform,
+				 &Transform::rotationChanged,
+				 [ this ]( const Quatf & p_rotation )
+				 { App::ACTION().execute<App::Action::Camera::SetViewPointRotation>( _entity, p_rotation ); } );
+		connect( buttonUpdateFromCamera,
+				 &QPushButton::clicked,
+				 [ this ]() { App::ACTION().execute<App::Action::Camera::UpdateViewPointFromCamera>( _entity ); } );
+		connect( _lineName,
+				 &QLineEdit::editingFinished,
+				 this,
+				 [ this ]()
+				 {
+					 App::ACTION().execute<App::Action::Camera::RenameViewPoint>( _entity,
+																				  _lineName->text().toStdString() );
+				 } );
 
-		App::HUB().connect<App::Events::ViewPointRenamed, &ViewPoint::_onViewPointRenamed>( this );
+		_viewPointRenamedConnection
+			= App::HUB().connect<App::Events::ViewPointRenamed, &ViewPoint::_onViewPointRenamed>( this );
 		_connTransformChanged
 			= App::REG().on_update<Util::Math::Transform>().connect<&ViewPoint::_transformUpdated>( this );
 
@@ -62,21 +59,15 @@ namespace VTX::UI::QT::Widget
 		_setTransform();
 	}
 
-	ViewPoint::~ViewPoint()
-	{
-		_connTransformChanged.release();
-		App::HUB().disconnectAllOf( *this );
-	}
-
 	void ViewPoint::_setName()
 	{
-		QSignalBlocker blocker( _lineName );
+		const QSignalBlocker blocker( _lineName );
 		_lineName->setText( QString::fromStdString( App::REG().get<App::Generic::Name>( _entity ).name ) );
 	}
 
 	void ViewPoint::_setTransform()
 	{
-		QSignalBlocker blocker( _transform );
+		const QSignalBlocker blocker( _transform );
 		_transform->setTransform( App::REG().get<Util::Math::Transform>( _entity ) );
 	}
 

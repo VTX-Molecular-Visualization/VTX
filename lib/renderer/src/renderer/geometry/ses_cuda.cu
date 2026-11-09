@@ -15,7 +15,8 @@ namespace VTX::Renderer::Geometry::SESDetail
 		uint32_t					sectorNb = 0;
 	};
 
-	void CudaConstructionDeleter::operator()( CudaConstruction * p_construction ) const { delete p_construction; }
+	void CudaConstructionDeleter::operator()( CudaConstruction * p_construction ) const noexcept
+	{ delete p_construction; }
 
 	namespace
 	{

@@ -8,15 +8,15 @@
 namespace VTX::UI::QT::Style
 {
 
-	void CodepointIconEngine::paint(
-		QPainter *	  p_painter,
-		const QRect & p_rect,
-		QIcon::Mode	  p_mode,
-		QIcon::State  p_state
-	)
+	void CodepointIconEngine::paint( QPainter *	   p_painter,
+									 const QRect & p_rect,
+									 QIcon::Mode   p_mode,
+									 QIcon::State  p_state )
 	{
 		if ( p_painter == nullptr || p_rect.isEmpty() )
+		{
 			return;
+		}
 
 		p_painter->save();
 		p_painter->setRenderHint( QPainter::Antialiasing, true );
@@ -33,7 +33,7 @@ namespace VTX::UI::QT::Style
 		default: break;
 		}
 
-		QFont f( DEFAULT_FONT_FAMILY_ICONS );
+		QFont f( DEFAULT_FONT_FAMILY_ICONS.toString() );
 		f.setStyleStrategy( QFont::NoFontMerging );
 		f.setHintingPreference( QFont::PreferNoHinting );
 
@@ -49,7 +49,7 @@ namespace VTX::UI::QT::Style
 		}
 
 		QPainterPath path = raw.pathForGlyph( glyphs[ 0 ] );
-		QRectF		 br	  = path.boundingRect();
+		const QRectF br	  = path.boundingRect();
 		if ( br.isEmpty() )
 		{
 			p_painter->restore();
@@ -80,12 +80,13 @@ namespace VTX::UI::QT::Style
 	QPixmap CodepointIconEngine::pixmap( const QSize & p_size, QIcon::Mode p_mode, QIcon::State p_state )
 	{
 		qreal dpr = 1.0;
-		if ( QScreen * s = QGuiApplication::primaryScreen() )
+		if ( const QScreen * s = QGuiApplication::primaryScreen() )
 		{
 			dpr = s->devicePixelRatio();
 		}
 
-		QPixmap pm( QSize( int( std::ceil( p_size.width() * dpr ) ), int( std::ceil( p_size.height() * dpr ) ) ) );
+		QPixmap pm( QSize( static_cast<int>( std::ceil( p_size.width() * dpr ) ),
+						   static_cast<int>( std::ceil( p_size.height() * dpr ) ) ) );
 		pm.setDevicePixelRatio( dpr );
 		pm.fill( Qt::transparent );
 

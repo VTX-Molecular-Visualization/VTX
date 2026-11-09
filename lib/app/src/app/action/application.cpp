@@ -12,14 +12,12 @@ namespace VTX::App::Action::Application
 
 	void Resize::execute( const size_t p_width, const size_t p_height, const bool p_resizeMainWindow )
 	{
-		REG().patch<Renderer::Camera>(
-			ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>(),
-			[ p_width, p_height ]( Renderer::Camera & p_camera )
-			{
-				p_camera.screenHeight = p_height;
-				p_camera.screenWidth  = p_width;
-			}
-		);
+		REG().patch<Renderer::Camera>( ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>(),
+									   [ p_width, p_height ]( Renderer::Camera & p_camera )
+									   {
+										   p_camera.screenHeight = p_height;
+										   p_camera.screenWidth	 = p_width;
+									   } );
 
 		RENDERER().resize( p_width, p_height );
 		HUB().trigger<Events::RendererResize>( p_width, p_height, p_resizeMainWindow );

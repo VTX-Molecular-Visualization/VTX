@@ -2,19 +2,16 @@
 #include <qformlayout.h>
 #include <qlineedit.h>
 #include <qspinbox.h>
-#include <qvalidator.h>
 #include <string>
-#include <thread>
+#include <ui/qt/helper.hpp>
+#include <utility>
 #include <vector>
 //
 #include "tool/mdprep/gateway/form_data.hpp"
-#include "tool/mdprep/gateway/shared.hpp"
 //
 #include "tool/mdprep/ui/shared.hpp"
 //
 #include "tool/mdprep/gateway/backend_gromacs.hpp"
-#include "tool/mdprep/ui/gromacs.hpp"
-#include "tool/mdprep/ui/md_engine.hpp"
 #include <ui/qt/util.hpp>
 #include <ui/qt/validator.hpp>
 //
@@ -23,21 +20,21 @@
 namespace VTX::Tool::Mdprep::ui
 {
 	GromacsMdStepFieldPlacer::GromacsMdStepFieldPlacer( Gateway::Gromacs::MdStep & p_data ) : _data( &p_data ) {}
-	void GromacsMdStepFieldPlacer::placeFields( QFormLayout * p_layout ) noexcept
+
+	void GromacsMdStepFieldPlacer::placeFields( QFormLayout * p_layout )
 	{
 		_field_nstvout = VTX::UI::QT::Util::addUInt64Field(
 			p_layout,
 			"Velocity Save Interval",
-			"Number of steps between each velocity save. 0 means velocities aren't saved."
-		);
+			"Number of steps between each velocity save. 0 means velocities aren't saved." );
 		_field_nstvout->setText( QString::number( _data->nstvout ) );
 		_field_nstenergy = VTX::UI::QT::Util::addUInt64Field(
-			p_layout, "Energy Save Interval", "Number of steps between each energy save. 0 means energies aren't saved."
-		);
+			p_layout,
+			"Energy Save Interval",
+			"Number of steps between each energy save. 0 means energies aren't saved." );
 		_field_nstenergy->setText( QString::number( _data->nstenergy ) );
 		_field_nstlog = VTX::UI::QT::Util::addUInt64Field(
-			p_layout, "Log Save Interval", "Number of steps between each log write. 0 means logs aren't written."
-		);
+			p_layout, "Log Save Interval", "Number of steps between each log write. 0 means logs aren't written." );
 		_field_nstlog->setText( QString::number( _data->nstlog ) );
 		if ( _data->nstxout_compressed.has_value() )
 		{
@@ -45,51 +42,58 @@ namespace VTX::Tool::Mdprep::ui
 				p_layout,
 				"Compressed Coordinates Save Interval",
 				"Number of steps between each coordinate save in a compressed format. 0 means no compressed "
-				"coordinates are written."
-			);
+				"coordinates are written." );
 			_field_nstxout_compressed->setText( QString::number( _data->nstxout_compressed.value() ) );
 		}
 	}
-	void GromacsMdStepFieldPlacer::apply() noexcept
+
+	void GromacsMdStepFieldPlacer::apply()
 	{
 		_data->nstvout	 = _field_nstvout->text().toUInt();
 		_data->nstenergy = _field_nstenergy->text().toUInt();
 		_data->nstlog	 = _field_nstlog->text().toUInt();
 		if ( _data->nstxout_compressed.has_value() )
+		{
 			_data->nstxout_compressed = _field_nstxout_compressed->text().toUInt();
+		}
 	}
 
 	GromacsSystemFieldPlacer::GromacsSystemFieldPlacer( Gateway::Gromacs::SystemSettings & p_ ) : _data( &p_ ) {}
+
 	namespace
 	{
-		inline void createInt64HiddenField( QWidget * p_parent, QLineEdit *& p_field, const double & p_default )
+		inline void createInt64HiddenField( QWidget * const p_parent, QLineEdit *& p_field, const double & p_default )
 		{
-			p_field = new QLineEdit( p_parent );
-			p_field->setValidator( new VTX::UI::QT::QUInt64Validator( p_field ) );
+			p_field = VTX::UI::QT::Helper::makeQObject<QLineEdit>( p_parent );
+			p_field->setValidator( VTX::UI::QT::Helper::makeQObject<VTX::UI::QT::QUInt64Validator>( p_field ) );
 			p_field->setText( QString::number( p_default ) );
 			p_field->hide();
 		}
 	} // namespace
-	void GromacsSystemFieldPlacer::placeFields( QFormLayout * p_layout ) noexcept
+
+	void GromacsSystemFieldPlacer::placeFields( QFormLayout * p_layout )
 	{
 		_targetLayout = p_layout;
 
-		_boxFields.fieldBoxSizeMode = new QComboBox( _targetLayout->parentWidget() );
+		_boxFields.fieldBoxSizeMode = VTX::UI::QT::Helper::makeQObject<QComboBox>( _targetLayout->parentWidget() );
 		_boxFields.fieldBoxSizeMode->hide();
 		{
 			std::vector<std::string> values;
 			Gateway::Gromacs::boxDimensionModeCollection( values );
 			for ( auto & it_str : values )
+			{
 				_boxFields.fieldBoxSizeMode->addItem( QString::fromStdString( it_str ) );
+			}
 
-			if ( _data->boxSizeMode < static_cast<size_t>( _boxFields.fieldBoxSizeMode->count() ) )
+			if ( std::cmp_less( _data->boxSizeMode, _boxFields.fieldBoxSizeMode->count() ) )
+			{
 				_boxFields.fieldBoxSizeMode->setCurrentIndex( static_cast<int>( _data->boxSizeMode ) );
+			}
 		}
 		QObject::connect(
-			_boxFields.fieldBoxSizeMode, &QComboBox::currentIndexChanged, [ & ] { this->_updateBoxSizeMode(); }
-		);
+			_boxFields.fieldBoxSizeMode, &QComboBox::currentIndexChanged, [ & ] { this->_updateBoxSizeMode(); } );
 
-		_boxFields.fieldDistance = new QDoubleSpinBox( _targetLayout->parentWidget() );
+		_boxFields.fieldDistance = VTX::UI::QT::Helper::makeQObject<QDoubleSpinBox>( _targetLayout->parentWidget() );
 		_boxFields.fieldDistance->setMinimum( 0. );
 		_boxFields.fieldDistance->setMaximum( 100. );
 		_boxFields.fieldDistance->setSingleStep( 0.1 );
@@ -104,7 +108,8 @@ namespace VTX::Tool::Mdprep::ui
 		createInt64HiddenField( _targetLayout->parentWidget(), _boxFields.fieldAngleY, _data->boxAngles[ 1 ] );
 		createInt64HiddenField( _targetLayout->parentWidget(), _boxFields.fieldAngleZ, _data->boxAngles[ 2 ] );
 	}
-	void GromacsSystemFieldPlacer::apply() noexcept
+
+	void GromacsSystemFieldPlacer::apply()
 	{
 		_data->boxSizeMode		  = _boxFields.fieldBoxSizeMode->currentIndex();
 		_data->distanceNm		  = _boxFields.fieldDistance->value();
@@ -115,11 +120,14 @@ namespace VTX::Tool::Mdprep::ui
 		_data->boxAngles[ 1 ]	  = _boxFields.fieldAngleY->text().toInt();
 		_data->boxAngles[ 2 ]	  = _boxFields.fieldAngleZ->text().toInt();
 	}
-	void GromacsSystemFieldPlacer::update( const EngineSpecificCommonInformationFieldUpdate & p_info ) noexcept
+
+	void GromacsSystemFieldPlacer::update( const EngineSpecificCommonInformationFieldUpdate & p_info )
 	{
 		if ( p_info.field != E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxShape
 			 && p_info.field != E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxDimensionMode )
+		{
 			return;
+		}
 
 		_removeFields();
 
@@ -148,27 +156,32 @@ namespace VTX::Tool::Mdprep::ui
 			break;
 		}
 	}
-	void GromacsSystemFieldPlacer::_updateBoxSizeMode() noexcept
+
+	void GromacsSystemFieldPlacer::_updateBoxSizeMode()
 	{
 		update( EngineSpecificCommonInformationFieldUpdate {
 			.field	  = E_ENGINE_SPECIFIC_COMMON_INFORMATION_FIELD ::boxDimensionMode,
 			.newValue = static_cast<size_t>( _boxFields.fieldBoxSizeMode->currentIndex() ) } );
 	}
+
 	namespace
 	{
-		void removeField( QFormLayout * p_from, QWidget * p_what ) noexcept
+		void removeField( QFormLayout * p_from, QWidget * p_what )
 		{
 			int					  rowToTakeOutIndex = INT32_MAX;
-			QFormLayout::ItemRole _tmp;
+			QFormLayout::ItemRole _tmp {};
 			p_from->getWidgetPosition( p_what, &rowToTakeOutIndex, &_tmp );
 			if ( rowToTakeOutIndex == INT32_MAX || rowToTakeOutIndex == -1 )
+			{
 				return;
+			}
 			auto stuffTakenOut = p_from->takeRow( rowToTakeOutIndex );
 			stuffTakenOut.fieldItem->widget()->hide();
 			stuffTakenOut.labelItem->widget()->hide();
 		}
 	} // namespace
-	void GromacsSystemFieldPlacer::_removeFields() noexcept
+
+	void GromacsSystemFieldPlacer::_removeFields()
 	{
 		removeField( _targetLayout, _boxFields.fieldBoxSizeMode );
 		removeField( _targetLayout, _boxFields.fieldDistance );
@@ -181,7 +194,8 @@ namespace VTX::Tool::Mdprep::ui
 		removeField( _targetLayout, _boxFields.fieldAngleY );
 		removeField( _targetLayout, _boxFields.fieldAngleZ );
 	}
-	void GromacsSystemFieldPlacer::_addDimensionModeField() noexcept
+
+	void GromacsSystemFieldPlacer::_addDimensionModeField()
 	{
 		_boxFields.fieldBoxSizeMode->show();
 		_targetLayout->addRow(
@@ -192,39 +206,34 @@ namespace VTX::Tool::Mdprep::ui
 				"and use it as a reference. The distance value will be the length in nanometers between this reference "
 				"and the system edge.<br><b>size</b> means you choose the size of the solid shape. Only one value is "
 				"required for symetrical shapes.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
-			_boxFields.fieldBoxSizeMode
-		);
+				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
+			_boxFields.fieldBoxSizeMode );
 	}
-	void GromacsSystemFieldPlacer::_addDistanceField() noexcept
+
+	void GromacsSystemFieldPlacer::_addDistanceField()
 	{
 		_boxFields.fieldDistance->show();
 		_targetLayout->addRow(
-			VTX::UI::QT::Util::LabelWithHelper(
-				"Distance (nm)",
-				"Distance between the edge of the box and its closest atom.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
-			_boxFields.fieldDistance
-		);
+			VTX::UI::QT::Util::LabelWithHelper( "Distance (nm)",
+												"Distance between the edge of the box and its closest atom.",
+												VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
+			_boxFields.fieldDistance );
 	}
-	void GromacsSystemFieldPlacer::_addSizeOnlyX() noexcept
+
+	void GromacsSystemFieldPlacer::_addSizeOnlyX()
 	{
 		_boxFields.fieldSizeX->show();
 		_targetLayout->addRow(
-			VTX::UI::QT::Util::LabelWithHelper(
-				"Box Size (nm)",
-				"Face-to-face distance of the box in nanometers.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
-			_boxFields.fieldSizeX
-		);
+			VTX::UI::QT::Util::LabelWithHelper( "Box Size (nm)",
+												"Face-to-face distance of the box in nanometers.",
+												VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
+			_boxFields.fieldSizeX );
 	}
-	void GromacsSystemFieldPlacer::_addSizeXYZ() noexcept
+
+	void GromacsSystemFieldPlacer::_addSizeXYZ()
 	{
-		_boxFields.containerSizeXYZ = new QWidget;
-		QHBoxLayout * layout		= new QHBoxLayout( _boxFields.containerSizeXYZ );
+		_boxFields.containerSizeXYZ = VTX::UI::QT::Helper::makeQObject<QWidget>( _targetLayout->parentWidget() );
+		QHBoxLayout * layout		= VTX::UI::QT::Helper::makeQObject<QHBoxLayout>( _boxFields.containerSizeXYZ );
 		layout->setContentsMargins( { 0, 0, 0, 0 } );
 		layout->addWidget( _boxFields.fieldSizeX );
 		layout->addWidget( _boxFields.fieldSizeY );
@@ -233,18 +242,16 @@ namespace VTX::Tool::Mdprep::ui
 		_boxFields.fieldSizeY->show();
 		_boxFields.fieldSizeZ->show();
 		_targetLayout->addRow(
-			VTX::UI::QT::Util::LabelWithHelper(
-				"Box's x, y and z dimensions",
-				"Defines the size of each edge of the system's box in nanometers.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
-			_boxFields.containerSizeXYZ
-		);
+			VTX::UI::QT::Util::LabelWithHelper( "Box's x, y and z dimensions",
+												"Defines the size of each edge of the system's box in nanometers.",
+												VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
+			_boxFields.containerSizeXYZ );
 	}
-	void GromacsSystemFieldPlacer::_addAnglesXYZ() noexcept
+
+	void GromacsSystemFieldPlacer::_addAnglesXYZ()
 	{
-		_boxFields.containerAngleXYZ = new QWidget;
-		QHBoxLayout * layout		 = new QHBoxLayout( _boxFields.containerAngleXYZ );
+		_boxFields.containerAngleXYZ = VTX::UI::QT::Helper::makeQObject<QWidget>( _targetLayout->parentWidget() );
+		QHBoxLayout * layout		 = VTX::UI::QT::Helper::makeQObject<QHBoxLayout>( _boxFields.containerAngleXYZ );
 		layout->setContentsMargins( { 0, 0, 0, 0 } );
 		layout->addWidget( _boxFields.fieldAngleX );
 		layout->addWidget( _boxFields.fieldAngleY );
@@ -253,12 +260,9 @@ namespace VTX::Tool::Mdprep::ui
 		_boxFields.fieldAngleY->show();
 		_boxFields.fieldAngleZ->show();
 		_targetLayout->addRow(
-			VTX::UI::QT::Util::LabelWithHelper(
-				"Box's angles",
-				"Defines the angles of the system's periodic box in degrees.",
-				VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left
-			),
-			_boxFields.containerAngleXYZ
-		);
+			VTX::UI::QT::Util::LabelWithHelper( "Box's angles",
+												"Defines the angles of the system's periodic box in degrees.",
+												VTX::UI::QT::Util::LabelWithHelper::E_QUESTIONMARK_POSITION::left ),
+			_boxFields.containerAngleXYZ );
 	}
 } // namespace VTX::Tool::Mdprep::ui

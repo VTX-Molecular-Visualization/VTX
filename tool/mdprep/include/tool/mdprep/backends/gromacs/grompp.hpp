@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS_GROMPP__
-#define __VTX_TOOL_TOOLS_MDPREP_GROMACS_GROMPP__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMPP_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMPP_HPP
 
 #include <filesystem>
 #include <util/filesystem.hpp>
@@ -17,7 +17,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		uint64_t nsteps = 50000;  // Maximum number of (minimization) steps to perform
 	};
 
-	enum class E_GROMPP_STEP
+	enum class E_GROMPP_STEP : uint8_t
 	{
 		ions,
 		posres, // We need to compile a .top file for topology with posres, and for topology without constraints.
@@ -41,17 +41,15 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	// Setup job folder and place input files as the job need them
 	// Generate the .mdp file from template based on the user inputs in GromppInstructionsMinimization
 	// if .mdp found in previous output files, will use it instead
-	void prepareJob(
-		const CumulativeOuputFiles &,
-		const FilePath &		 p_root,
-		const std::string_view & p_folderName,
-		GromppInstructions &
-	) noexcept;
+	void prepareJob( const CumulativeOuputFiles &,
+					 const FilePath &		  p_root,
+					 const std::string_view & p_folderName,
+					 GromppInstructions & );
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.
 	//    Does not perform filesystem check on input gro
-	void convert( const GromppInstructions &, GromacsJobData & ) noexcept;
+	void convert( const GromppInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

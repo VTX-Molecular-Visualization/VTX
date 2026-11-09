@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_IO__
-#define __VTX_APP_ACTION_IO__
+#ifndef VTX_APP_ACTION_IO_HPP
+#define VTX_APP_ACTION_IO_HPP
 
 #include "app/ecs.hpp"
 #include <app/action/action_manager.hpp>
@@ -7,14 +7,6 @@
 #include <util/image.hpp>
 #include <util/thread/base_thread.hpp>
 #include <util/types.hpp>
-#include <util/url.hpp>
-
-namespace VTX::Util::Url
-{
-
-	class SystemId;
-	class UrlFull;
-} // namespace VTX::Util::Url
 
 namespace VTX::App::Action::IO
 {
@@ -24,18 +16,18 @@ namespace VTX::App::Action::IO
 	 */
 	struct Open
 	{
-		void execute( const FilePath & p_path );
+		void execute( FilePath p_path );
 		void execute( const std::string & p_path );
 	};
 
-	struct _SystemIo;
+	struct SystemIo;
 
-	struct _SystemIoDel
+	struct SystemIoDel
 	{
-		void operator()( _SystemIo * ) noexcept;
+		void operator()( SystemIo * ) noexcept;
 	};
 
-	using _SystemIoPtr = std::unique_ptr<_SystemIo, _SystemIoDel>;
+	using SystemIoPtr = std::unique_ptr<SystemIo, SystemIoDel>;
 
 	/**
 	 * @brief Load a molecular system from disk or buffer.
@@ -47,10 +39,10 @@ namespace VTX::App::Action::IO
 
 		void execute( FilePath p_path );
 		void execute( FilePath p_path, std::string && p_buffer );
-		void wait() noexcept;
+		void wait();
 
 	  private:
-		_SystemIoPtr _data;
+		SystemIoPtr _data;
 	};
 
 	/**
@@ -92,12 +84,12 @@ namespace VTX::App::Action::IO
 	{
 		AssociateTrajectory();
 		AssociateTrajectory( Util::Thread::ThreadData );
-		void execute( const FilePath & p_path, const Entity & );
+		void execute( FilePath p_path, const Entity & );
 		void execute( const std::string & p_path, const Entity & );
-		void wait() noexcept;
+		void wait();
 
 	  private:
-		_SystemIoPtr _data;
+		SystemIoPtr _data;
 	};
 
 	struct RunPythonScript
@@ -111,9 +103,7 @@ namespace VTX::App::Action::IO
 	struct DownloadSystem
 	{
 	  public:
-		void execute( VTX::Util::Url::SystemId );
-		void execute( VTX::Util::Url::SystemId, FilePath );
-		void execute( VTX::Util::Url::UrlFull, FilePath );
+		void execute( const std::string & p_url, FilePath p_path );
 		void execute( const std::string & p_systemId );
 	};
 
@@ -124,21 +114,13 @@ namespace VTX::App::Action::IO
 	{
 	  public:
 		void execute();
-		void execute(
-			const std::optional<FilePath> p_path,
-			const std::optional<FilePath> p_filename,
-			const Util::Image::E_FORMAT	  p_format,
-			const std::optional<size_t>	  p_width,
-			const std::optional<size_t>	  p_height,
-			const std::optional<float>	  p_backgroundOpacity
-		);
-		void execute(
-			const FilePath,
-			const Util::Image::E_FORMAT,
-			const size_t,
-			const size_t,
-			const std::optional<float> = std::nullopt
-		);
+		void execute( const std::optional<FilePath> & p_path,
+					  const std::optional<FilePath> & p_filename,
+					  Util::Image::E_FORMAT			  p_format,
+					  std::optional<size_t>			  p_width,
+					  std::optional<size_t>			  p_height,
+					  std::optional<float>			  p_backgroundOpacity );
+		void execute( const FilePath &, Util::Image::E_FORMAT, size_t, size_t, std::optional<float> = std::nullopt );
 	};
 
 } // namespace VTX::App::Action::IO

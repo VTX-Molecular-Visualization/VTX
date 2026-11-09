@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_TYPES__
-#define __VTX_UTIL_TYPES__
+#ifndef VTX_UTIL_TYPES_HPP
+#define VTX_UTIL_TYPES_HPP
 
 #include <cstdint>
 #include <glm/detail/qualifier.hpp>
@@ -48,9 +48,7 @@ namespace VTX
 	template<typename E>
 		requires std::is_enum_v<E>
 	constexpr std::underlying_type_t<E> toUnderlying( const E p_e ) noexcept
-	{
-		return static_cast<std::underlying_type_t<E>>( p_e );
-	}
+	{ return static_cast<std::underlying_type_t<E>>( p_e ); }
 
 } // namespace VTX
 

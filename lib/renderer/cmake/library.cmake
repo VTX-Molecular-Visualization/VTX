@@ -15,7 +15,7 @@ if(CMAKE_CUDA_COMPILER)
 	find_package(CUDAToolkit)
 	if(CUDAToolkit_FOUND)
 		set(VTX_CUDA_ENABLED ON)
-		target_include_directories(vtx_renderer PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor/cuda_helper")
+		target_include_directories(vtx_renderer SYSTEM PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor/cuda_helper")
 
 		set_target_properties(vtx_renderer PROPERTIES
 			LINKER_LANGUAGE CUDA
@@ -93,7 +93,7 @@ endif()
 file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
 add_executable(vtx_renderer_test ${TESTS})
 set_property(TARGET vtx_renderer_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_renderer_test)
+vtx_configure_target(vtx_renderer_test NO_LINTER)
 
 target_link_libraries(vtx_renderer PUBLIC vtx_util::vtx_util)
 target_link_libraries(vtx_renderer PUBLIC vtx_core::vtx_core)

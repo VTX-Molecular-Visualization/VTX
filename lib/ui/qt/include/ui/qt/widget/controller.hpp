@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_CONTROLLER__
-#define __VTX_UI_QT_WIDGET_CONTROLLER__
+#ifndef VTX_UI_QT_WIDGET_CONTROLLER_HPP
+#define VTX_UI_QT_WIDGET_CONTROLLER_HPP
 
 #include "ui/qt/widget/editable_slider.hpp"
 #include <QCheckBox>
@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <QPointer>
 #include <app/ecs.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -16,8 +17,7 @@ namespace VTX::UI::QT::Widget
 	class Controller : public QGroupBox
 	{
 	  public:
-		Controller( const Entity, QWidget * );
-		~Controller();
+		Controller( Entity, QWidget * );
 
 	  private:
 		const Entity _entity;
@@ -32,6 +32,8 @@ namespace VTX::UI::QT::Widget
 		QPointer<EditableSlider> _sliderElasticityFactor;
 
 		void _setController();
+
+		VTX::Util::EventHub::ScopedConnection _controllerUpdatedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
 #endif

@@ -5,7 +5,11 @@
 #include "app/constants.hpp"
 #include "app/services.hpp"
 #include <atomic>
+#include <cstdio>
+#include <iostream>
+#include <tuple>
 #include <util/event_hub.hpp>
+#include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/thread/thread_manager.hpp>
@@ -71,7 +75,7 @@ namespace VTX::App
 		/**
 		 * @brief Download worker thread id.
 		 */
-		Util::Thread::ID updateDownloadThreadId {};
+		Util::Thread::ID updateDownloadThreadId;
 
 		/**
 		 * @brief Last error message produced during the download phase.
@@ -81,17 +85,17 @@ namespace VTX::App
 		/**
 		 * @brief Held while waiting for the update check result on the main thread.
 		 */
-		Util::EventHub::Connection updateCheckConnection;
+		Util::EventHub::ScopedConnection updateCheckConnection;
 
 		/**
 		 * @brief Held while waiting for the update download result on the main thread.
 		 */
-		Util::EventHub::Connection updateDownloadConnection;
+		Util::EventHub::ScopedConnection updateDownloadConnection;
 
 		/**
 		 * @brief Held while waiting for the update download progress on the main thread.
 		 */
-		Util::EventHub::Connection updateDownloadProgressConnection;
+		Util::EventHub::ScopedConnection updateDownloadProgressConnection;
 	};
 
 	void Session::handleStartupActivation()
@@ -105,14 +109,30 @@ namespace VTX::App
 				//.OnAfterUpdate(  )
 				//.OnFirstRun(  )
 				//.OnRestarted(  )
-				.OnBeforeUninstall( []( void *, const char * )
-									{ std::filesystem::remove_all( Filesystem::getDataHome() / APP_FOLDER_NAME ); } )
+				.OnBeforeUninstall(
+					[]( void *, const char * ) noexcept
+					{
+						try
+						{
+							std::error_code error;
+							std::filesystem::remove_all( Filesystem::getDataHome() / APP_FOLDER_NAME, error );
+							if ( error )
+							{
+								std::cerr << "Velopack uninstall hook: " << error.message() << '\n';
+							}
+						}
+						catch ( ... )
+						{
+							std::ignore = std::fputs( "Velopack uninstall hook: unknown exception\n", stderr );
+						}
+					}
+				)
 				.Run();
 		}
 		catch ( const std::exception & p_e )
 		{
 			// Logger not initialized.
-			std::cout << "Velopack startup hook: " << p_e.what() << std::endl;
+			std::cout << "Velopack startup hook: " << p_e.what() << '\n';
 		}
 	}
 
@@ -126,7 +146,7 @@ namespace VTX::App
 		catch ( const std::exception & p_e )
 		{
 			// Logger not initialized yet.
-			std::cerr << "Velopack update manager error: " << p_e.what() << std::endl;
+			std::cerr << "Velopack update manager error: " << p_e.what() << '\n';
 		}
 	}
 
@@ -151,7 +171,7 @@ namespace VTX::App
 		_impl->pendingUpdate.reset();
 
 		THREAD().createThread(
-			[ this ]( Util::Thread::StopToken, Util::Thread::BaseThread & p_thread ) -> uint
+			[ this ]( const Util::Thread::StopToken &, Util::Thread::BaseThread & p_thread ) -> uint
 			{
 				p_thread.setProgressText( "Checking for updates..." );
 				try
@@ -167,10 +187,16 @@ namespace VTX::App
 					_impl->updateCheckFailed = true;
 					VTX_ERROR( "Updater error: {}", p_e.what() );
 				}
+				catch ( ... )
+				{
+					_impl->updateCheckFailed = true;
+					VTX_ERROR( "Updater error: unknown exception" );
+				}
 				_impl->updateCheckReady = true;
 				return 0;
-			}
-		);
+			} );
+
+		_impl->updateCheckConnection.release();
 
 		_impl->updateCheckConnection = HUB().connect<Events::Update, &Session::_onUpdateCheckResult>( this );
 	}
@@ -183,7 +209,7 @@ namespace VTX::App
 		}
 
 		_impl->updateCheckInProgress = false;
-		HUB().disconnect( _impl->updateCheckConnection );
+		_impl->updateCheckConnection.release();
 
 		if ( _impl->updateCheckFailed )
 		{
@@ -241,8 +267,8 @@ namespace VTX::App
 			_impl->updateDownloadError.clear();
 
 			VTX_TRACE( "downloadUpdate: starting update to {}", release.Version );
-			Util::Thread::BaseThread & downloadThread = THREAD().createThread(
-				[ this, pendingUpdate ]( Util::Thread::StopToken, Util::Thread::BaseThread & p_thread ) -> uint
+			const Util::Thread::BaseThread & downloadThread = THREAD().createThread(
+				[ this, pendingUpdate ]( const Util::Thread::StopToken &, Util::Thread::BaseThread & p_thread ) -> uint
 				{
 					p_thread.setProgressText( "Downloading update..." );
 					try
@@ -254,11 +280,10 @@ namespace VTX::App
 								[]( void * p_userData, size_t p_progress )
 								{
 									Util::Thread::BaseThread * thread
-										= reinterpret_cast<Util::Thread::BaseThread *>( p_userData );
-									thread->setProgress( float( p_progress ) / 100.f );
+										= static_cast<Util::Thread::BaseThread *>( p_userData );
+									thread->setProgress( static_cast<float>( p_progress ) / 100.f );
 								},
-								&p_thread
-							);
+								&p_thread );
 						p_thread.setProgress( 1.f );
 						VTX_TRACE( "downloadUpdate: DownloadUpdates completed" );
 						_impl->updateDownloadSucceeded = true;
@@ -269,14 +294,22 @@ namespace VTX::App
 						_impl->updateDownloadError	   = p_e.what();
 						VTX_ERROR( "Update download error: {}", p_e.what() );
 					}
+					catch ( ... )
+					{
+						_impl->updateDownloadSucceeded = false;
+						_impl->updateDownloadError	   = "Unknown error.";
+						VTX_ERROR( "Update download error: unknown exception" );
+					}
 
 					_impl->updateDownloadReady = true;
 					return 0;
-				}
-			);
+				} );
 			_impl->updateDownloadThreadId = downloadThread.getId();
 
+			_impl->updateDownloadConnection.release();
+
 			_impl->updateDownloadConnection = HUB().connect<Events::Update, &Session::_onUpdateDownloadResult>( this );
+			_impl->updateDownloadProgressConnection.release();
 			_impl->updateDownloadProgressConnection
 				= HUB().connect<Events::Update, &Session::_onUpdateDownloadProgress>( this );
 		}
@@ -294,16 +327,15 @@ namespace VTX::App
 			return;
 		}
 
-		HUB().disconnect( _impl->updateDownloadConnection );
-		HUB().disconnect( _impl->updateDownloadProgressConnection );
+		_impl->updateDownloadConnection.release();
+		_impl->updateDownloadProgressConnection.release();
 
 		if ( not _impl->updateDownloadSucceeded )
 		{
 			_impl->updateDownloadInProgress = false;
 			VTX_TRACE( "downloadUpdate: download phase failed" );
 			HUB().trigger<Events::UpdateDownloadFailed>(
-				_impl->updateDownloadError.empty() ? "Update download failed." : _impl->updateDownloadError
-			);
+				_impl->updateDownloadError.empty() ? "Update download failed." : _impl->updateDownloadError );
 			return;
 		}
 
@@ -329,13 +361,13 @@ namespace VTX::App
 			return;
 		}
 
-		Util::Thread::BaseThread * downloadThread = THREAD().get( _impl->updateDownloadThreadId );
+		const Util::Thread::BaseThread * downloadThread = THREAD().get( _impl->updateDownloadThreadId );
 		if ( downloadThread == nullptr )
 		{
 			return;
 		}
 
-		const uint progress = uint( downloadThread->getProgress() * 100.f );
+		const uint progress = static_cast<uint>( downloadThread->getProgress() * 100.f );
 		HUB().trigger<Events::UpdateDownloadProgress>( progress );
 	}
 
@@ -370,18 +402,21 @@ namespace VTX::App
 		}
 	}
 
-	bool Session::hasManager() const { return _impl->manager.has_value(); }
+	bool Session::hasManager() const noexcept { return _impl->manager.has_value(); }
 
 	bool Session::isPortable() const
 	{
-		assert( _impl->manager );
+		if ( not _impl->manager )
+		{
+			throw VTXException( "Session manager is not initialized" );
+		}
 
 		return ( *_impl->manager ).IsPortable();
 	}
 
 	namespace
 	{
-		enum class SessionPathRoot
+		enum class SessionPathRoot : uint8_t
 		{
 			Data,
 			Pictures
@@ -398,11 +433,12 @@ namespace VTX::App
 			return Filesystem::getDataHome();
 		}
 
+#ifdef _WIN32
 		FilePath _getPortableWindowsRoot()
 		{
 			const FilePath executablePath = Filesystem::getExecutable();
-			const FilePath executableDir  = executablePath.parent_path();
-			const FilePath parentDir	  = executableDir.parent_path();
+			FilePath	   executableDir  = executablePath.parent_path();
+			FilePath	   parentDir	  = executableDir.parent_path();
 
 			if ( not parentDir.empty() )
 			{
@@ -411,6 +447,7 @@ namespace VTX::App
 
 			return executableDir;
 		}
+#endif
 	} // namespace
 
 	FilePath Session::getDataHome() const
@@ -420,7 +457,7 @@ namespace VTX::App
 			return getApplicationDir();
 		}
 
-#if defined( _WIN32 )
+#ifdef _WIN32
 		if ( isPortable() )
 		{
 			return _getPortableWindowsRoot();
@@ -437,7 +474,7 @@ namespace VTX::App
 			return getApplicationDir();
 		}
 
-#if defined( _WIN32 )
+#ifdef _WIN32
 		if ( isPortable() )
 		{
 			return _getPortableWindowsRoot();

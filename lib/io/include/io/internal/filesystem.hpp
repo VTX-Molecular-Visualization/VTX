@@ -1,7 +1,8 @@
-#ifndef __VTX_IO_INTERNAL_FILESYSTEM__
-#define __VTX_IO_INTERNAL_FILESYSTEM__
+#ifndef VTX_IO_INTERNAL_FILESYSTEM_HPP
+#define VTX_IO_INTERNAL_FILESYSTEM_HPP
 
-#include <string>
+#include <cstdint>
+#include <string_view>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/types.hpp>
@@ -10,10 +11,10 @@
 namespace VTX::IO::Internal::Filesystem
 {
 	// JSon save fail when size > 192
-	static const int		 MAX_FILE_LENGTH	  = 180;
-	static const std::string REGEX_VALID_FILENAME = "[^\\\\/:*?\"<>|]*";
+	static constexpr int			  MAX_FILE_LENGTH	   = 180;
+	static constexpr std::string_view REGEX_VALID_FILENAME = R"([^\\/:*?"<>|]*)";
 
-	enum class FILE_TYPE_ENUM : int
+	enum class FILE_TYPE_ENUM : uint8_t
 	{
 		SCENE,
 		CONFIGURATION,
@@ -63,17 +64,15 @@ namespace VTX::IO::Internal::Filesystem
 		}
 	}
 
-	inline void fillFilepathPerMode(
-		std::vector<FilePath>				 p_filepaths,
-		std::vector<std::vector<FilePath>> & p_filepathPerMode
-	)
+	inline void fillFilepathPerMode( std::vector<FilePath> &			  p_filepaths,
+									 std::vector<std::vector<FilePath>> & p_filepathPerMode )
 	{
-		p_filepathPerMode.resize( int( FILE_TYPE_ENUM::COUNT ) );
+		p_filepathPerMode.resize( static_cast<int>( FILE_TYPE_ENUM::COUNT ) );
 
 		for ( const FilePath & path : p_filepaths )
 		{
 			const FILE_TYPE_ENUM filetype = getFileTypeFromFilePath( path );
-			p_filepathPerMode[ int( filetype ) ].emplace_back( path );
+			p_filepathPerMode[ static_cast<int>( filetype ) ].emplace_back( path );
 		}
 	}
 

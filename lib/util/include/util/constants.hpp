@@ -1,9 +1,10 @@
-#ifndef __VTX_UTIL_CONSTANTS__
-#define __VTX_UTIL_CONSTANTS__
+#ifndef VTX_UTIL_CONSTANTS_HPP
+#define VTX_UTIL_CONSTANTS_HPP
 
 #include "util/color/rgba.hpp"
 #include "util/types.hpp"
 #include <limits>
+#include <type_traits>
 
 namespace VTX
 {
@@ -14,6 +15,8 @@ namespace VTX
 	template<typename T>
 	constexpr T TypeLowest = std::numeric_limits<T>::lowest();
 	template<typename T>
+		requires( std::is_integral_v<T> && std::is_unsigned_v<T>
+				  && std::numeric_limits<T>::digits < std::numeric_limits<size_t>::digits )
 	constexpr size_t TypeCount = size_t { 1 } << std::numeric_limits<T>::digits;
 
 	constexpr float EPSILON	 = 1e-4f;

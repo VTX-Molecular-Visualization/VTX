@@ -19,9 +19,7 @@ namespace pdb100
 		 * @return
 		 */
 		double computeStrideEfficiency( const Rates & p_rates )
-		{
-			return 1000 * p_rates.computeStridesElapsedMs / p_rates.numResidues;
-		}
+		{ return 1000 * p_rates.computeStridesElapsedMs / p_rates.numResidues; }
 
 		void convert( const ReportItem<String> & p_in, ReportItem<std::string> & p_out )
 		{
@@ -37,9 +35,8 @@ namespace pdb100
 		 */
 		void fetchItems( Reporter & p_reporter )
 		{
-			boost::interprocess::managed_shared_memory sharedSegment(
-				boost::interprocess::open_only, pdb100::shm::rsltMap::SEGNAME
-			);
+			boost::interprocess::managed_shared_memory sharedSegment( boost::interprocess::open_only,
+																	  pdb100::shm::rsltMap::SEGNAME );
 			auto rsltMapAndInt = sharedSegment.find<ReportItemCollection>( pdb100::shm::rsltMap::OBJNAME );
 			while ( not rsltMapAndInt.first->empty() )
 			{
@@ -59,7 +56,9 @@ namespace pdb100
 		 * so the results are not lost.
 		 */
 		if ( not _mustWrite )
+		{
 			return;
+		}
 
 		fetchItems( *this );
 
@@ -71,13 +70,16 @@ namespace pdb100
 		for ( auto & it : _items )
 		{
 			if ( it.correctnessRates.numResidues > 0 )
+			{
 				_computeStrideEfficiencyStdDev
 					+= abs( _computeStrideEfficiencyRateMean - computeStrideEfficiency( it.correctnessRates ) );
+			}
 			if ( it.correctnessRates.residuesInSs > 0 )
+			{
 				_ssTanimotoStdDev += abs(
 					( static_cast<float>( it.correctnessRates.matchingResidues ) / it.correctnessRates.residuesInSs )
-					- _ssTanimotoMean
-				);
+					- _ssTanimotoMean );
+			}
 		}
 		_ssTanimotoStdDev /= oneIfZero( _items.size() - _num_noSs );
 		_computeStrideEfficiencyStdDev /= oneIfZero( _computeStrideEfficiencyNumStruct );
@@ -97,14 +99,12 @@ namespace pdb100
 		outFile << "\tAssignement efficiency standard deviation: " << _computeStrideEfficiencyStdDev << "\n";
 		outFile << "\n";
 		outFile << "\tsuccess rate : "
-				<< static_cast<double>(
-					   static_cast<double>( _num_success ) / static_cast<double>( _num_failed + _num_success )
-				   )
+				<< static_cast<double>( static_cast<double>( _num_success )
+										/ static_cast<double>( _num_failed + _num_success ) )
 				<< "\n";
 		outFile << "\tfail rate : "
-				<< static_cast<double>(
-					   static_cast<double>( _num_failed ) / static_cast<double>( _num_failed + _num_success )
-				   )
+				<< static_cast<double>( static_cast<double>( _num_failed )
+										/ static_cast<double>( _num_failed + _num_success ) )
 				<< "\n";
 		outFile << "\tno data rate : " << ( static_cast<double>( _num_noSs ) / ( _items.size() ) ) << "\n";
 		outFile << "\tFully correct Beta-sheet rate mean : " << _betaSheetCorrectnessRate << "\n";
@@ -133,9 +133,13 @@ namespace pdb100
 			outFile << "matching res : " << it.correctnessRates.matchingResidues << "\n";
 			outFile << "res in ss : " << it.correctnessRates.residuesInSs << "\n";
 			if ( it.correctnessRates.numResidues == 0 )
+			{
 				outFile << "0 res found ?" << "\n";
+			}
 			else
+			{
 				outFile << "Computation efficiency :" << computeStrideEfficiency( it.correctnessRates ) << "\n";
+			}
 			outFile << "\n";
 			if ( it.correctnessRates.numBetaSheet > 0 )
 			{

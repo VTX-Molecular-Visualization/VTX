@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_BACKEND_INTEROP_OPENGL_CUDA_INTEROP__
-#define __VTX_RENDERER_CONTEXT_BACKEND_INTEROP_OPENGL_CUDA_INTEROP__
+#ifndef VTX_RENDERER_CONTEXT_BACKEND_INTEROP_OPENGL_CUDA_INTEROP_HPP
+#define VTX_RENDERER_CONTEXT_BACKEND_INTEROP_OPENGL_CUDA_INTEROP_HPP
 
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/descriptors.hpp"
@@ -42,9 +42,9 @@ namespace VTX::Renderer::Context::Backend::Interop
 			Desc::E_BUFFER_USAGE usage			  = Desc::E_BUFFER_USAGE::NONE;
 		};
 
-		Desc::InteropBufferMapping mapBuffer( const Desc::Key &, uint, Desc::E_BUFFER_USAGE );
+		Desc::InteropBufferMapping				mapBuffer( const Desc::Key &, uint, Desc::E_BUFFER_USAGE );
 		std::vector<Desc::InteropBufferMapping> mapBuffers( std::span<const BufferRequest> );
-		void					   unmapBuffer( const Desc::Key & );
+		void									unmapBuffer( const Desc::Key & );
 
 		/**
 		 * @brief Unregister a buffer when a buffer is invalidated (resized for example).

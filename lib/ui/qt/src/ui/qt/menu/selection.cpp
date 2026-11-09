@@ -1,8 +1,8 @@
 #include "ui/qt/menu/selection.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
-#include <app/action/scene.hpp>
 #include <app/helper/system.hpp>
 #include <app/system/selection.hpp>
 #include <core/struct/topology.hpp>
@@ -21,9 +21,8 @@ namespace VTX::UI::QT::Menu
 
 			if ( p_selected.index )
 			{
-				params.emplace(
-					std::string( Action::Selection::PARAM_COLOR_INDEX ), static_cast<int>( *p_selected.index )
-				);
+				params.emplace( std::string( Action::Selection::PARAM_COLOR_INDEX ),
+								static_cast<int>( *p_selected.index ) );
 			}
 
 			return params;
@@ -36,7 +35,7 @@ namespace VTX::UI::QT::Menu
 		}
 	} // namespace
 
-	Selection::Selection( QWidget * p_parent ) : BaseWidget( p_parent )
+	Selection::Selection( QWidget * const p_parent ) : BaseWidget( p_parent )
 	{
 		setTitle( "Selection" );
 
@@ -59,24 +58,23 @@ namespace VTX::UI::QT::Menu
 		// UI_ACTIONS().addTo( *this, Action::Selection::SOLO );
 		addSeparator();
 
-		_colorSchemeMenu = new ColorScheme( this );
-		connect(
-			_colorSchemeMenu,
-			&ColorScheme::selected,
-			this,
-			[]( const ColorScheme::Selected & p_selected )
-			{ UI_ACTIONS().trigger( Action::Selection::SET_COLOR_SCHEME, colorSchemeParams( p_selected ) ); }
-		);
+		_colorSchemeMenu = Helper::makeQObject<ColorScheme>( this );
+		connect( _colorSchemeMenu,
+				 &ColorScheme::selected,
+				 this,
+				 []( const ColorScheme::Selected & p_selected )
+				 { UI_ACTIONS().trigger( Action::Selection::SET_COLOR_SCHEME, colorSchemeParams( p_selected ) ); } );
 		addMenu( _colorSchemeMenu );
 
-		_representationMenu = new Representation( this );
-		connect(
-			_representationMenu,
-			&Representation::selected,
-			this,
-			[]( const Entity p_representation )
-			{ UI_ACTIONS().trigger( Action::Selection::SET_REPRESENTATION, representationParams( p_representation ) ); }
-		);
+		_representationMenu = Helper::makeQObject<Representation>( this );
+		connect( _representationMenu,
+				 &Representation::selected,
+				 this,
+				 []( const Entity p_representation )
+				 {
+					 UI_ACTIONS().trigger( Action::Selection::SET_REPRESENTATION,
+										   representationParams( p_representation ) );
+				 } );
 		addMenu( _representationMenu );
 
 		auto &	   reg		= REG();
@@ -85,7 +83,7 @@ namespace VTX::UI::QT::Menu
 		{
 			const auto & metadata = reg.get<IO::Metadata>( entity );
 
-			QString name = QString::fromStdString( metadata.name );
+			const QString name = QString::fromStdString( metadata.name );
 
 			const auto systemState = App::Helper::System::getSelectionState( { entity, E_SYSTEM_ITEM::SYSTEM } );
 			if ( systemState == App::System::E_SELECTION_STATE::FULL )

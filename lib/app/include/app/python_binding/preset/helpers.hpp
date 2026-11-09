@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHON_BINDING_PRESET_HELPERS__
-#define __VTX_APP_PYTHON_BINDING_PRESET_HELPERS__
+#ifndef VTX_APP_PYTHON_BINDING_PRESET_HELPERS_HPP
+#define VTX_APP_PYTHON_BINDING_PRESET_HELPERS_HPP
 
 #include "app/generic/name.hpp"
 #include "app/python_binding/preset/types.hpp"
@@ -22,6 +22,6 @@ namespace VTX::App::PythonBinding::Preset
 		validate( p_preset );
 		return REG().get<T>( p_preset.entity );
 	}
-}
+} // namespace VTX::App::PythonBinding::Preset
 
 #endif

@@ -1,7 +1,6 @@
-#ifndef __VTX_APP_SYSTEM_VISIBILITY__
-#define __VTX_APP_SYSTEM_VISIBILITY__
+#ifndef VTX_APP_SYSTEM_VISIBILITY_HPP
+#define VTX_APP_SYSTEM_VISIBILITY_HPP
 
-#include <core/struct/topology.hpp>
 #include <util/math/bitset.hpp>
 
 namespace VTX::App::System
@@ -27,7 +26,7 @@ namespace VTX::App::System
 		Util::Math::BitSet atoms;
 	};
 
-	bool isAnythingVisible() noexcept; 
+	bool isAnythingVisible();
 
 } // namespace VTX::App::System
 

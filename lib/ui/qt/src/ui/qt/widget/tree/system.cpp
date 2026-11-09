@@ -2,6 +2,7 @@
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
 #include "ui/qt/delegate/system_delegate.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/menu/color_scheme.hpp"
 #include "ui/qt/menu/representation.hpp"
 #include "ui/qt/menu/selection.hpp"
@@ -11,7 +12,6 @@
 #include <app/action/camera.hpp>
 #include <app/action/color.hpp>
 #include <app/action/representation.hpp>
-#include <app/action/selection.hpp>
 #include <app/action/visibility.hpp>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
@@ -37,7 +37,7 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 	} // namespace
 
-	System::System( const Entity p_system, QWidget * p_parent ) :
+	System::System( const Entity p_system, QWidget * const p_parent ) :
 		Widget::Tree::BaseTree<System, QTreeView>( p_parent ), _system( p_system )
 	{
 		setExpandsOnDoubleClick( false );
@@ -45,14 +45,15 @@ namespace VTX::UI::QT::Widget::Tree
 		setIndentation( 12 );
 
 		// Model.
-		setModel( new Model::SystemModel( p_system, this ) );
+		_model = Helper::makeQObject<Model::SystemModel>( p_system, this );
+		setModel( _model );
 
 		// Selection is rendered from app state, not from Qt selection.
 		setSelectionMode( QAbstractItemView::NoSelection );
 		setSelectionBehavior( QAbstractItemView::SelectRows );
 
 		// Delegate.
-		const auto delegate = new Delegate::SystemDelegate( p_system, this );
+		auto * const delegate = Helper::makeQObject<Delegate::SystemDelegate>( p_system, *_model, this );
 		setItemDelegate( delegate );
 
 		// One expanded at a time.
@@ -62,12 +63,12 @@ namespace VTX::UI::QT::Widget::Tree
 			&QTreeView::expanded,
 			[ this ]( const QModelIndex & p_index )
 			{
-				QModelIndex parent	 = p_index.parent();
-				const int	rowCount = model()->rowCount( parent );
+				const QModelIndex parent   = p_index.parent();
+				const int		  rowCount = model()->rowCount( parent );
 
 				for ( int r = 0; r < rowCount; r++ )
 				{
-					QModelIndex sibling = model()->index( r, 0, parent );
+					const QModelIndex sibling = model()->index( r, 0, parent );
 
 					if ( sibling != p_index && isExpanded( sibling ) )
 					{
@@ -81,7 +82,7 @@ namespace VTX::UI::QT::Widget::Tree
 		connect(
 			delegate,
 			&Delegate::SystemDelegate::doubleClicked,
-			[ this ]( const QModelIndex & p_index ) { App::ACTION().execute<App::Action::Camera::Orient>(); }
+			[]( const QModelIndex & p_index ) { App::ACTION().execute<App::Action::Camera::Orient>(); }
 		);
 
 		// Click on visibility icon.
@@ -90,9 +91,8 @@ namespace VTX::UI::QT::Widget::Tree
 			&Delegate::SystemDelegate::visibilityClicked,
 			[ this ]( const QModelIndex & p_index )
 			{
-				const auto &				model = getSystemModel();
-				Core::Struct::E_SYSTEM_ITEM item;
-				Index						index;
+				Core::Struct::E_SYSTEM_ITEM item {};
+				Index						index {};
 				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				const App::System::E_VISIBLE_STATE visible = static_cast<App::System::E_VISIBLE_STATE>(
@@ -100,7 +100,7 @@ namespace VTX::UI::QT::Widget::Tree
 				);
 
 				App::ACTION().execute<App::Action::Visibility::SetVisibleItem>(
-					_system, item, index, visible == App::System::E_VISIBLE_STATE::HIDDEN ? true : false
+					_system, item, index, visible == App::System::E_VISIBLE_STATE::HIDDEN
 				);
 			}
 		);
@@ -111,13 +111,12 @@ namespace VTX::UI::QT::Widget::Tree
 			&Delegate::SystemDelegate::colorSchemeClicked,
 			[ this ]( const QModelIndex & p_index )
 			{
-				const auto &				model = getSystemModel();
-				Core::Struct::E_SYSTEM_ITEM item;
-				Index						index;
+				Core::Struct::E_SYSTEM_ITEM item {};
+				Index						index {};
 				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				// Get current scheme.
-				std::optional<Renderer::E_COLOR_SCHEME> scheme
+				const std::optional<Renderer::E_COLOR_SCHEME> scheme
 					= App::Helper::System::getColorScheme( { _system, item, index } );
 				const auto secondaryStructureScheme
 					= App::Helper::System::getSecondaryStructureColorScheme( { _system, item, index } );
@@ -165,13 +164,12 @@ namespace VTX::UI::QT::Widget::Tree
 			&Delegate::SystemDelegate::representationClicked,
 			[ this ]( const QModelIndex & p_index )
 			{
-				const auto &				model = getSystemModel();
-				Core::Struct::E_SYSTEM_ITEM item;
-				Index						index;
+				Core::Struct::E_SYSTEM_ITEM item {};
+				Index						index {};
 				Model::SystemModel::unpack( p_index.internalId(), item, index );
 
 				// Get current representation.
-				std::optional<Entity> representation
+				const std::optional<Entity> representation
 					= App::Helper::System::getRepresentation( { _system, item, index } );
 
 				Menu::Representation  menu( this, representation );
@@ -254,7 +252,7 @@ namespace VTX::UI::QT::Widget::Tree
 	void System::mouseMoveEvent( QMouseEvent * p_e )
 	{
 		const bool draggingButton = p_e->buttons() & ( Qt::LeftButton | Qt::RightButton );
-		if ( _dragging == false || not draggingButton || UI_ACTIONS().isChecked( Action::Selection::LOCK ) )
+		if ( not _dragging || not draggingButton || UI_ACTIONS().isChecked( Action::Selection::LOCK ) )
 		{
 			QTreeView::mouseMoveEvent( p_e );
 			return;
@@ -292,10 +290,10 @@ namespace VTX::UI::QT::Widget::Tree
 		p_option.rect			 = visualRect( p_index );
 		const bool isBranchClick = p_e->pos().x() < p_option.rect.left();
 
-		const auto * delegate = static_cast<const Delegate::SystemDelegate *>( itemDelegateForIndex( p_index ) );
+		const auto * delegate = qobject_cast<const Delegate::SystemDelegate *>( itemDelegateForIndex( p_index ) );
 		const bool	 actionButtonClick = p_e->button() == Qt::LeftButton && delegate != nullptr
 										 && delegate->hitsButton( p_option, p_index, p_e->pos() );
-		return delegate != nullptr && isBranchClick == false && not actionButtonClick;
+		return delegate != nullptr && not isBranchClick && not actionButtonClick;
 	}
 
 	bool System::_isFullySelected( const QModelIndex & p_index ) const
@@ -303,8 +301,8 @@ namespace VTX::UI::QT::Widget::Tree
 		using namespace App;
 		using namespace Core::Struct;
 
-		E_SYSTEM_ITEM item;
-		Index		  itemIndex;
+		E_SYSTEM_ITEM item {};
+		Index		  itemIndex {};
 		Model::SystemModel::unpack( p_index.internalId(), item, itemIndex );
 
 		return App::Helper::System::getSelectionState( { _system, item, itemIndex } )
@@ -316,8 +314,8 @@ namespace VTX::UI::QT::Widget::Tree
 		using namespace App;
 		using namespace Core::Struct;
 
-		E_SYSTEM_ITEM item;
-		Index		  itemIndex;
+		E_SYSTEM_ITEM item {};
+		Index		  itemIndex {};
 		Model::SystemModel::unpack( p_index.internalId(), item, itemIndex );
 
 		switch ( item )

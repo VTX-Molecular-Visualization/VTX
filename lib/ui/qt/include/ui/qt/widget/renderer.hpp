@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_RENDERER__
-#define __VTX_UI_QT_WIDGET_RENDERER__
+#ifndef VTX_UI_QT_WIDGET_RENDERER_HPP
+#define VTX_UI_QT_WIDGET_RENDERER_HPP
 
 #include "ui/qt/events.hpp"
 #include "ui/qt/widget/base_widget.hpp"
@@ -16,6 +16,7 @@
 #include <QToolButton>
 #include <app/events.hpp>
 #include <optional>
+#include <util/event_hub.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Widget
@@ -54,7 +55,7 @@ namespace VTX::UI::QT::Widget
 		 * @brief Constructor.
 		 */
 		Renderer( QWidget * );
-		~Renderer();
+		~Renderer() override;
 
 		/**
 		 * @brief Get native surface, display and platform for graphic context creation.
@@ -85,11 +86,12 @@ namespace VTX::UI::QT::Widget
 		 * @brief Override resize.
 		 */
 		bool eventFilter( QObject *, QEvent * ) override;
+
+	  protected:
 		void paintEvent( QPaintEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
 
-	  protected:
 		/**
 		 * @brief Debounce callback.
 		 */
@@ -168,6 +170,10 @@ namespace VTX::UI::QT::Widget
 		 * @brief Synchronize widget size after an App renderer resize.
 		 */
 		void _onRendererResize( const App::Events::RendererResize & );
+		void _onRendererReady( const App::Events::RendererReady & );
+
+		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
+		VTX::Util::EventHub::ScopedConnection _rendererReadyConnection;
 	};
 } // namespace VTX::UI::QT::Widget
 

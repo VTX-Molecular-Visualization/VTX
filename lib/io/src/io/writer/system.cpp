@@ -36,7 +36,7 @@ namespace VTX::IO::Writer
 			 * @param p_currentSystemAtomIdx
 			 * @return
 			 */
-			inline uint newAtomIdx( const uint & p_currentSystemAtomIdx )
+			uint newAtomIdx( const uint & p_currentSystemAtomIdx )
 			{
 				if ( _multiSystem )
 				{
@@ -59,7 +59,7 @@ namespace VTX::IO::Writer
 			 * @param p_currentSystemAtomIdx
 			 * @return
 			 */
-			inline const uint & getAtomIdx( const uint & p_currentSystemAtomIdx ) const
+			uint getAtomIdx( const uint & p_currentSystemAtomIdx ) const noexcept
 			{
 				if ( _multiSystem )
 				{
@@ -68,7 +68,7 @@ namespace VTX::IO::Writer
 				}
 				else if ( _currentSystem->topology->atomOriginalIndexes )
 				{
-					return _currentSystem->topology->atomOriginalIndexes.value()[ p_currentSystemAtomIdx ];
+					return ( *_currentSystem->topology->atomOriginalIndexes )[ p_currentSystemAtomIdx ];
 				}
 				else
 				{
@@ -76,7 +76,7 @@ namespace VTX::IO::Writer
 				}
 			}
 
-			inline uint newResIdx( const uint & p_currentSystemResIdx )
+			uint newResIdx( const uint & p_currentSystemResIdx )
 			{
 				if ( _multiSystem )
 				{
@@ -88,7 +88,7 @@ namespace VTX::IO::Writer
 				}
 			}
 
-			inline const uint & getResIdx( const uint & p_currentSystemResIdx ) const
+			const uint & getResIdx( const uint & p_currentSystemResIdx ) const
 			{
 				if ( _multiSystem )
 				{
@@ -103,14 +103,14 @@ namespace VTX::IO::Writer
 			/**
 			 * @brief Tells the manager that from now on, we are going to query next system's atom indexes.
 			 */
-			void nextSystem()
+			void nextSystem() noexcept
 			{
 				_currentSystem++;
 				_currentSystemAtomIdxMap.clear();
 				_currentSystemResIdxMap.clear();
 			}
 
-			inline bool multiSystem() const { return _multiSystem; }
+			bool multiSystem() const noexcept { return _multiSystem; }
 
 		  private:
 			std::reference_wrapper<const std::vector<WriteArgs::System>> _topologies;
@@ -128,11 +128,9 @@ namespace VTX::IO::Writer
 
 		using WrittenAtomMap = std::unordered_map<uint, uint>;
 
-		inline bool isResidueOfChain(
-			const size_t &						p_residueIdx,
-			const size_t &						p_chainIdx,
-			const VTX::Core::Struct::Topology & p_mol
-		) noexcept
+		inline bool isResidueOfChain( const size_t &					  p_residueIdx,
+									  const size_t &					  p_chainIdx,
+									  const VTX::Core::Struct::Topology & p_mol ) noexcept
 		{
 			if ( p_chainIdx < p_mol.getChainCount() - 1 )
 			{
@@ -145,7 +143,7 @@ namespace VTX::IO::Writer
 			const size_t &						p_atomIdx,
 			const size_t &						p_residueIdx,
 			const VTX::Core::Struct::Topology & p_mol
-		)
+		) noexcept
 		{
 			if ( p_residueIdx < p_mol.getResidueCount() - 1 )
 			{
@@ -170,53 +168,44 @@ namespace VTX::IO::Writer
 			}
 		}
 
-		inline void addAtom(
-			const VTX::Core::Struct::Topology & p_topology,
-			const size_t &						p_atomIdx,
-			System &							p_system,
-			Residue &							p_residue,
-			SystemIndexManager &				p_indexManager
-		)
+		inline void addAtom( const VTX::Core::Struct::Topology & p_topology,
+							 const size_t &						 p_atomIdx,
+							 System &							 p_system,
+							 Residue &							 p_residue,
+							 SystemIndexManager &				 p_indexManager )
 		{
 			Atom w_atom = p_system.newAtom( AtomId { p_indexManager.newAtomIdx( static_cast<uint>( p_atomIdx ) ) } );
 			p_residue.add( w_atom );
 			w_atom.setName( p_topology.atomNames[ p_atomIdx ] );
-			auto & constSymbol
+			const auto & constSymbol
 				= VTX::Core::ChemDB::Atom ::SYMBOL_STR[ static_cast<int>( p_topology.atomSymbols[ p_atomIdx ] ) ];
 			w_atom.setSymbol( std::string( constSymbol.begin(), constSymbol.end() ) );
 		}
 
-		inline void addResidue(
-			const VTX::Core::Struct::Topology & p_topology,
-			const size_t &						p_residueIdx,
-			System &							p_system,
-			Chain &								p_chain,
-			AtomFilter &						p_atomFilter,
-			SystemIndexManager &				p_indexManager
+		inline void addResidue( const VTX::Core::Struct::Topology & p_topology,
+								const size_t &						p_residueIdx,
+								System &							p_system,
+								Chain &								p_chain,
+								AtomFilter &						p_atomFilter,
+								SystemIndexManager &				p_indexManager
 
 		)
 		{
 			Residue w_residue = p_system.newResidue();
 			p_chain.add( w_residue );
 			w_residue.setResId( static_cast<int>( p_indexManager.newResIdx( static_cast<uint>( p_residueIdx ) ) ) );
-			auto & constSymbol
-				= VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>( p_topology
-																				.residueSymbols[ p_residueIdx ] ) ];
-			std::string residueSymbol
+			const auto &	  constSymbol = VTX::Core::ChemDB::Residue::SYMBOL_STR[ static_cast<int>(
+				p_topology.residueSymbols[ p_residueIdx ] ) ];
+			const std::string residueSymbol
 				= p_topology.residueSymbols[ p_residueIdx ] == VTX::Core::ChemDB::Residue::SYMBOL::UNKNOWN
 					  ? p_topology.residueNames[ p_residueIdx ]
 					  : std::string( constSymbol.begin(), constSymbol.end() );
 			w_residue.setSymbol( residueSymbol );
-			w_residue.set(
-				Property { .key	  = "secondary_structure",
-						   .value = VTX::Core::ChemDB::SecondaryStructure::enumToPdbFormatted(
-							   p_topology.residueSecondaryStructureTypes[ p_residueIdx ]
-						   ) }
-			);
-			w_residue.set(
-				Property { .key	  = "is_standard_pdb",
-						   .value = VTX::Core::ChemDB::Residue::checkIfStandardFromName( residueSymbol ) }
-			);
+			w_residue.set( Property { .key	 = "secondary_structure",
+									  .value = VTX::Core::ChemDB::SecondaryStructure::enumToPdbFormatted(
+										  p_topology.residueSecondaryStructureTypes[ p_residueIdx ] ) } );
+			w_residue.set( Property { .key	 = "is_standard_pdb",
+									  .value = VTX::Core::ChemDB::Residue::checkIfStandardFromName( residueSymbol ) } );
 			for ( size_t it_atomIdx = p_topology.residueFirstAtomIndexes[ p_residueIdx ];
 				  isAtomOfResidue( it_atomIdx, p_residueIdx, p_topology );
 				  it_atomIdx++ )
@@ -229,12 +218,11 @@ namespace VTX::IO::Writer
 			}
 		}
 
-		inline void addChain(
-			const VTX::Core::Struct::Topology & p_topology,
-			const size_t &						p_chainIdx,
-			System &							p_system,
-			AtomFilter &						p_atomFilter,
-			SystemIndexManager &				p_indexManager
+		inline void addChain( const VTX::Core::Struct::Topology & p_topology,
+							  const size_t &					  p_chainIdx,
+							  System &							  p_system,
+							  AtomFilter &						  p_atomFilter,
+							  SystemIndexManager &				  p_indexManager
 
 		)
 		{
@@ -253,41 +241,36 @@ namespace VTX::IO::Writer
 			}
 		}
 
-		inline void setBonds(
-			const VTX::Core::Struct::Topology & p_mol,
-			System &							p_system,
-			AtomFilter &						p_atomFilter,
-			const SystemIndexManager &			p_indexManager
-		)
+		inline void setBonds( const VTX::Core::Struct::Topology & p_mol,
+							  System &							  p_system,
+							  AtomFilter &						  p_atomFilter,
+							  const SystemIndexManager &		  p_indexManager )
 		{
-			for ( size_t bondIdx = 0; bondIdx < p_mol.getBondCount() * 2; bondIdx += 2 )
+			for ( Index bondIdx = 0; bondIdx < p_mol.getBondCount() * 2; bondIdx += 2 )
 			{
-				size_t atomIdx1 = p_mol.bondPairAtomIndexes[ bondIdx ],
-					   atomIdx2 = p_mol.bondPairAtomIndexes[ bondIdx + 1 ];
+				const Index atomIdx1 = p_mol.bondPairAtomIndexes[ bondIdx ];
+				const Index atomIdx2 = p_mol.bondPairAtomIndexes[ bondIdx + 1 ];
+
 				if ( p_atomFilter( atomIdx1 ) && p_atomFilter( atomIdx2 ) )
 				{
 					E_BOND_ORDER w_bondOrder = E_BOND_ORDER::unknown;
 					convert( p_mol.bondOrders[ bondIdx >> 1 ], w_bondOrder );
-					p_system.bind(
-						AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIdx1 ) ) },
-						AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIdx2 ) ) },
-						w_bondOrder
-					);
+					p_system.bind( AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIdx1 ) ) },
+								   AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIdx2 ) ) },
+								   w_bondOrder );
 				}
 			}
 		}
 
-		inline void fillFrames(
-			const TrajectoryFrameGetter &  p_traj,
-			const Core::Struct::Topology & p_topology,
-			System &					   p_system,
-			SystemIndexManager &		   p_indexManager
+		inline void fillFrames( const TrajectoryFrameGetter & p_traj,
+								System &					  p_system,
+								SystemIndexManager &		  p_indexManager
 
 		)
 		{
 			for ( size_t frameIdx = 0; frameIdx < p_traj.frameCount(); frameIdx++ )
 			{
-				Frame w_frame;
+				Frame w_frame {};
 				if ( not p_system.fetch( w_frame, frameIdx ) )
 				{
 					w_frame = p_system.newFrame();
@@ -299,21 +282,18 @@ namespace VTX::IO::Writer
 					{
 						for ( size_t atomIndex = 0; atomIndex < p_positions.size(); atomIndex++ )
 						{
-							Atom atom;
+							Atom atom {};
 
 							// If the atom doesn't exist for some reason, skip to the next one.
 							if ( p_system.fetch(
-									 atom, AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIndex ) ) }
-								 ) )
+									 atom, AtomId { p_indexManager.getAtomIdx( static_cast<uint>( atomIndex ) ) } ) )
 							{
 								const Vec3f & position = p_positions[ atomIndex ];
-								w_frame.set(
-									atom, AtomCoordinates { .x = position.x, .y = position.y, .z = position.z }
-								);
+								w_frame.set( atom,
+											 AtomCoordinates { .x = position.x, .y = position.y, .z = position.z } );
 							}
 						}
-					}
-				);
+					} );
 				if ( not frameAvailable )
 				{
 					throw IOException( "Trajectory frame {} became unavailable during export.", frameIdx );
@@ -334,7 +314,7 @@ namespace VTX::IO::Writer
 				{
 					continue;
 				}
-				uint atomWritten = 0;
+
 				for ( size_t chainIdx = 0; chainIdx < system.topology->getChainCount(); chainIdx++ )
 				{
 					addChain( *system.topology, chainIdx, w_system, system.atomFilter, indexManager );
@@ -356,13 +336,14 @@ namespace VTX::IO::Writer
 					return;
 				}
 
-				fillFrames( system.trajectory, *topology, w_system, indexManager );
+				fillFrames( system.trajectory, w_system, indexManager );
 				indexManager.nextSystem();
 			}
 
 			// We fill the write destination at the very end so if we stopped due to the stoptoken, nothing get written
 			writer.setWriteDestination( std::move( p_args.destination ) );
-			writer.setWriteFormat( std::move( p_args.format ) );
+			writer.setWriteFormat( p_args.format );
+			writer.close();
 		}
 	} // namespace
 

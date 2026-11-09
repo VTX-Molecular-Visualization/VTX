@@ -1,10 +1,10 @@
 #include "util/logger.hpp"
 #include "util/chrono.hpp"
-#include "util/enum.hpp"
 #include "util/exceptions.hpp"
 #include <chrono>
 #include <fmt/chrono.h>
 #include <fmt/format.h>
+#include <mutex>
 #include <spdlog/async.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/callback_sink.h>
@@ -14,18 +14,46 @@ namespace
 {
 	constexpr std::string_view NAME = "vtx_logger";
 
+	/**
+	 * @brief State for the callback sink.
+	 */
+	struct CallbackState
+	{
+		std::mutex										  mutex;
+		std::function<void( const VTX::Util::LogInfo & )> callback;
+	};
+
+	/**
+	 * @brief Get the state for the callback sink.
+	 */
+	std::shared_ptr<CallbackState> _callbackState()
+	{
+		static const auto state = std::make_shared<CallbackState>();
+		return state;
+	}
+
+	/**
+	 * @brief Convert a time_point to a string in the format "HH:MM:SS".
+	 */
 	std::string _pointTimeToStr( const std::chrono::system_clock::time_point & p_timePoint )
 	{
 		const std::string timePointStr( fmt::format( "{:%T}", p_timePoint ) );
 		return timePointStr.substr( 0, 8 );
 	}
 
+	/**
+	 * @brief Convert a spdlog::source_loc to a VTX::Util::LOG_HINT.
+	 */
 	VTX::Util::LOG_HINT _toLogHint( const spdlog::source_loc & p_source )
 	{
 		const std::string_view hint = p_source.funcname != nullptr ? p_source.funcname : "";
-		return hint.empty() ? VTX::Util::LOG_HINT::STD : VTX::Util::Enum::enumCast<VTX::Util::LOG_HINT>( std::string( hint ) );
+		return hint.empty() ? VTX::Util::LOG_HINT::STD
+							: VTX::Util::Enum::enumCast<VTX::Util::LOG_HINT>( std::string( hint ) );
 	}
 
+	/**
+	 * @brief Convert a spdlog::details::log_msg to a VTX::Util::LogInfo.
+	 */
 	VTX::Util::LogInfo _toLogInfo( const spdlog::details::log_msg & p_msg )
 	{
 		return { static_cast<VTX::Util::LOG_LEVEL>( p_msg.level ),
@@ -38,12 +66,8 @@ namespace
 
 namespace VTX::Util
 {
-	const char * Logger::toSpdlogHint( const LOG_HINT p_hint )
-	{
-		return Enum::enumName( p_hint ).data();
-	}
 
-	void Logger::init( const std::filesystem::path & p_logDir, const bool p_debug )
+	void Logger::init( const FilePath & p_logDir, const bool p_debug )
 	{
 		try
 		{
@@ -52,14 +76,23 @@ namespace VTX::Util
 
 			// File sink.
 			auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(
-				( p_logDir / ( std::to_string( Chrono::getTimestamp() ) + ".log" ) ).string()
-			);
+				( p_logDir / ( std::to_string( Chrono::getTimestamp() ) + ".log" ) ).string() );
 			fileSink->set_level( spdlog::level::trace );
 
 			// Callback sink.
-			auto callbackSink
-				= std::make_shared<spdlog::sinks::callback_sink_mt>( []( const spdlog::details::log_msg & p_msg )
-																	 { onLog( _toLogInfo( p_msg ) ); } );
+			auto callbackSink = std::make_shared<spdlog::sinks::callback_sink_mt>(
+				[ state = _callbackState() ]( const spdlog::details::log_msg & p_msg )
+				{
+					std::function<void( const LogInfo & )> callback;
+					{
+						const std::scoped_lock lock( state->mutex );
+						callback = state->callback;
+					}
+					if ( callback )
+					{
+						callback( _toLogInfo( p_msg ) );
+					}
+				} );
 			callbackSink->set_level( p_debug ? spdlog::level::debug : spdlog::level::info );
 
 			// Logger.
@@ -74,8 +107,7 @@ namespace VTX::Util
 			}
 
 			auto logger = std::make_shared<spdlog::async_logger>(
-				NAME.data(), sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block
-			);
+				NAME.data(), sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block );
 			logger->set_pattern( "[%t] [%H:%M:%S] [%^%l%$] %v" );
 			logger->set_level( spdlog::level::trace );
 			logger->flush_on( p_debug ? spdlog::level::trace : spdlog::level::info );
@@ -88,20 +120,68 @@ namespace VTX::Util
 		{
 			throw LibException( "Logger initialization failed : " + std::string( p_e.what() ) );
 		}
+		catch ( const std::filesystem::filesystem_error & p_e )
+		{
+			throw LibException( "Logger initialization failed : " + std::string( p_e.what() ) );
+		}
+	}
+
+	void Logger::setCallback( std::function<void( const LogInfo & )> p_callback )
+	{
+		const auto			   state = _callbackState();
+		const std::scoped_lock lock( state->mutex );
+		state->callback.swap( p_callback );
 	}
 
 	void Logger::flush()
 	{
-		if ( auto logger = spdlog::get( NAME.data() ) )
+		if ( auto logger = spdlog::get( std::string( NAME ) ) )
 		{
 			logger->flush();
 		}
 	}
 
+	bool Logger::isInitialized() noexcept
+	{
+		try
+		{
+			return spdlog::get( std::string( NAME ) ) != nullptr;
+		}
+		catch ( ... )
+		{
+			return false;
+		}
+	}
+
+	void Logger::logException( const std::string_view p_context, const std::exception_ptr & p_error ) noexcept
+	{
+		if ( not p_error )
+		{
+			VTX_ERROR( "{}: no active exception", p_context );
+			return;
+		}
+
+		try
+		{
+			std::rethrow_exception( p_error );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "{}: {}", p_context, p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "{}: unknown exception", p_context );
+		}
+	}
+
 	void Logger::stop()
 	{
+		flush();
 		spdlog::shutdown();
-		onLog.clear();
+		const auto			   state = _callbackState();
+		const std::scoped_lock lock( state->mutex );
+		state->callback = {};
 	}
 
 } // namespace VTX::Util

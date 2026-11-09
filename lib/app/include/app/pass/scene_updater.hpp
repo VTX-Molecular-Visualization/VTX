@@ -1,8 +1,9 @@
-#ifndef __VTX_APP_PASS_SCENE_UPDATER__
-#define __VTX_APP_PASS_SCENE_UPDATER__
+#ifndef VTX_APP_PASS_SCENE_UPDATER_HPP
+#define VTX_APP_PASS_SCENE_UPDATER_HPP
 
 #include "app/ecs.hpp"
 #include "app/pass/pass_manager.hpp"
+#include <util/event_hub.hpp>
 
 namespace VTX::App::Pass
 {
@@ -14,7 +15,7 @@ namespace VTX::App::Pass
 	  public:
 		SceneUpdater( const Entity & );
 
-		inline void update( const float, const float ) noexcept {}
+		void update( const float, const float ) noexcept {}
 
 	  private:
 		/**
@@ -58,6 +59,18 @@ namespace VTX::App::Pass
 		 * @brief Update renderer when global accessibility settings are updated.
 		 */
 		void _onUpdateAccessibility( Registry &, Entity );
+
+		Util::EventHub::ScopedConnection _aabbUpdatedConnection;
+		Util::EventHub::ScopedConnection _transformUpdatedConnection;
+		Util::EventHub::ScopedConnection _systemDestroyedConnection;
+		Util::EventHub::ScopedConnection _meshDestroyedConnection;
+		Util::EventHub::ScopedConnection _graphicsConfigConstructedConnection;
+		Util::EventHub::ScopedConnection _graphicsConfigUpdatedConnection;
+		Util::EventHub::ScopedConnection _colorLayoutConstructedConnection;
+		Util::EventHub::ScopedConnection _colorLayoutUpdatedConnection;
+		Util::EventHub::ScopedConnection _graphicsConfigPresetUpdatedConnection;
+		Util::EventHub::ScopedConnection _colorLayoutPresetUpdatedConnection;
+		Util::EventHub::ScopedConnection _accessibilityUpdatedConnection;
 	};
 } // namespace VTX::App::Pass
 #endif

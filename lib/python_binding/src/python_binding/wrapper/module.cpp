@@ -1,6 +1,6 @@
 #include "python_binding/wrapper/module.hpp"
 #include "python_binding/binding/vtx_module.hpp"
-#include <pybind11/embed.h>
+#include <pybind11/eval.h>
 #include <pybind11/pybind11.h>
 #include <util/logger.hpp>
 
@@ -13,9 +13,10 @@ namespace VTX::PythonBinding::Wrapper
 
 		return Module( module, modulePath );
 	}
+
 	Module Module::getSubmodule( const std::string & p_submoduleName )
 	{
-		const std::string submodulePath = _modulePath + "." + std::string( p_submoduleName.c_str() );
+		const std::string submodulePath = _modulePath + "." + p_submoduleName;
 		pybind11::module_ module		= _pyModule.import( submodulePath.c_str() );
 
 		return Module( module, submodulePath );
@@ -33,7 +34,7 @@ namespace VTX::PythonBinding::Wrapper
 		}
 	}
 
-	std::vector<std::string> Module::getFunctionList() const
+	std::vector<std::string> Module::getFunctionList()
 	{
 		std::vector<std::string> res = std::vector<std::string>();
 
@@ -58,6 +59,10 @@ namespace VTX::PythonBinding::Wrapper
 			}
 		}
 		catch ( const pybind11::error_already_set & e )
+		{
+			VTX_ERROR( "getFunctionList fail : {}", e.what() );
+		}
+		catch ( const pybind11::cast_error & e )
 		{
 			VTX_ERROR( "getFunctionList fail : {}", e.what() );
 		}

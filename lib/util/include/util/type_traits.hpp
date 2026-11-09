@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_TYPE_TRAITS__
-#define __VTX_UTIL_TYPE_TRAITS__
+#ifndef VTX_UTIL_TYPE_TRAITS_HPP
+#define VTX_UTIL_TYPE_TRAITS_HPP
 
 #include "color/rgba.hpp"
 #include "types.hpp"
@@ -19,6 +19,9 @@ namespace VTX
 	using is_vec3i = std::is_same<std::remove_cvref_t<T>, Vec3i>;
 	template<typename T>
 	using is_color4 = std::is_same<std::remove_cvref_t<T>, Util::Color::Rgba>;
+
+	template<typename T>
+	using NoRefNoConst = std::remove_cvref_t<T>;
 
 	template<class T>
 	constexpr bool is_vec2f_v = is_vec2f<T>::value;

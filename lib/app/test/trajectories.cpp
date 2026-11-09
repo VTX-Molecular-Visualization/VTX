@@ -18,6 +18,7 @@
 #include <string_view>
 #include <thread>
 #include <util/ecs.hpp>
+#include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/thread/thread_manager.hpp>
 #include <utility>
@@ -30,22 +31,12 @@ namespace
 	{
 		TrajectoryPlayerLifecycleObserver()
 		{
-			App::REG().on_construct<App::Trajectory::Player>().connect<&TrajectoryPlayerLifecycleObserver::onConstruct>(
-				this
-			);
-			App::REG().on_destroy<App::Trajectory::Player>().connect<&TrajectoryPlayerLifecycleObserver::onDestroy>(
-				this
-			);
-		}
-
-		~TrajectoryPlayerLifecycleObserver()
-		{
-			App::REG()
-				.on_construct<App::Trajectory::Player>()
-				.disconnect<&TrajectoryPlayerLifecycleObserver::onConstruct>( this );
-			App::REG().on_destroy<App::Trajectory::Player>().disconnect<&TrajectoryPlayerLifecycleObserver::onDestroy>(
-				this
-			);
+			_constructConnection = App::REG()
+									   .on_construct<App::Trajectory::Player>()
+									   .connect<&TrajectoryPlayerLifecycleObserver::onConstruct>( this );
+			_destroyConnection	 = App::REG()
+									   .on_destroy<App::Trajectory::Player>()
+									   .connect<&TrajectoryPlayerLifecycleObserver::onDestroy>( this );
 		}
 
 		void onConstruct( Registry &, const Entity ) { constructCount++; }
@@ -54,6 +45,9 @@ namespace
 
 		uint constructCount = 0;
 		uint destroyCount	= 0;
+
+		Util::EventHub::ScopedConnection _constructConnection;
+		Util::EventHub::ScopedConnection _destroyConnection;
 	};
 
 	bool waitUntil( const std::function<bool()> & p_predicate )
@@ -71,8 +65,7 @@ namespace
 		auto					   extractor		= std::make_shared<App::Extractor::System>( p_entity, p_path );
 		Util::Thread::BaseThread & extractionThread = App::THREAD().createThread(
 			[ extractor ]( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread )
-			{ return ( *extractor )( std::move( p_stopToken ), std::ref( p_thread ) ); }
-		);
+			{ return ( *extractor )( std::move( p_stopToken ), std::ref( p_thread ) ); } );
 		extractionThread.wait();
 		App::PASS().update( 0.f, 0.f );
 		extractor->wait();
@@ -115,22 +108,14 @@ TEST_CASE( "VTX_APP - Circular trajectory frame windows", "[unit][trajectory]" )
 {
 	using namespace VTX::App::Trajectory;
 
-	CHECK(
-		VTX::App::Helper::Trajectory::getFrameWindow( 4, 10, 3, TRAJECTORY_READ_DIRECTION::FORWARD )
-		== FrameRange( 4, 7 )
-	);
-	CHECK(
-		VTX::App::Helper::Trajectory::getFrameWindow( 9, 10, 3, TRAJECTORY_READ_DIRECTION::FORWARD )
-		== FrameRange( 7, 10 )
-	);
-	CHECK(
-		VTX::App::Helper::Trajectory::getFrameWindow( 5, 10, 3, TRAJECTORY_READ_DIRECTION::BACKWARD )
-		== FrameRange( 3, 6 )
-	);
-	CHECK(
-		VTX::App::Helper::Trajectory::getFrameWindow( 0, 10, 3, TRAJECTORY_READ_DIRECTION::BACKWARD )
-		== FrameRange( 0, 3 )
-	);
+	CHECK( VTX::App::Helper::Trajectory::getFrameWindow( 4, 10, 3, TRAJECTORY_READ_DIRECTION::FORWARD )
+		   == FrameRange( 4, 7 ) );
+	CHECK( VTX::App::Helper::Trajectory::getFrameWindow( 9, 10, 3, TRAJECTORY_READ_DIRECTION::FORWARD )
+		   == FrameRange( 7, 10 ) );
+	CHECK( VTX::App::Helper::Trajectory::getFrameWindow( 5, 10, 3, TRAJECTORY_READ_DIRECTION::BACKWARD )
+		   == FrameRange( 3, 6 ) );
+	CHECK( VTX::App::Helper::Trajectory::getFrameWindow( 0, 10, 3, TRAJECTORY_READ_DIRECTION::BACKWARD )
+		   == FrameRange( 0, 3 ) );
 }
 
 TEST_CASE( "VTX_APP - Trajectory loader circular mapping", "[unit][trajectory]" )
@@ -142,17 +127,15 @@ TEST_CASE( "VTX_APP - Trajectory loader circular mapping", "[unit][trajectory]" 
 	const auto getStorageFrameIndex = [ & ]( const uint p_frame, const size_t p_storageCount )
 	{
 		return VTX::App::Helper::Trajectory::resolveStorageFrameIndex(
-			p_frame, p_storageCount, TRAJECTORY_BUFFER_MODE::CIRCULAR, firstFrameAvailable, loadedFrameCount
-		);
+			p_frame, p_storageCount, TRAJECTORY_BUFFER_MODE::CIRCULAR, firstFrameAvailable, loadedFrameCount );
 	};
 
 	SECTION( "Partially filled" )
 	{
 		loadedFrameCount = 4;
 
-		CHECK(
-			FrameRange::fromFirstCount( firstFrameAvailable, loadedFrameCount ) == FrameRange::fromFirstCount( 0, 4 )
-		);
+		CHECK( FrameRange::fromFirstCount( firstFrameAvailable, loadedFrameCount )
+			   == FrameRange::fromFirstCount( 0, 4 ) );
 		for ( uint frame = 0; frame < 4; frame++ )
 		{
 			CHECK( getStorageFrameIndex( frame, 5 ) == frame );
@@ -164,9 +147,8 @@ TEST_CASE( "VTX_APP - Trajectory loader circular mapping", "[unit][trajectory]" 
 	{
 		loadedFrameCount = 5;
 
-		CHECK(
-			FrameRange::fromFirstCount( firstFrameAvailable, loadedFrameCount ) == FrameRange::fromFirstCount( 0, 5 )
-		);
+		CHECK( FrameRange::fromFirstCount( firstFrameAvailable, loadedFrameCount )
+			   == FrameRange::fromFirstCount( 0, 5 ) );
 		for ( uint frame = 0; frame < 5; frame++ )
 		{
 			CHECK( getStorageFrameIndex( frame, 5 ) == frame );
@@ -184,9 +166,8 @@ TEST_CASE( "VTX_APP - Trajectory loader circular mapping", "[unit][trajectory]" 
 		firstFrameAvailable = 1;
 		loadedFrameCount	= 5;
 
-		CHECK(
-			FrameRange::fromFirstCount( firstFrameAvailable, loadedFrameCount ) == FrameRange::fromFirstCount( 1, 5 )
-		);
+		CHECK( FrameRange::fromFirstCount( firstFrameAvailable, loadedFrameCount )
+			   == FrameRange::fromFirstCount( 1, 5 ) );
 		for ( uint frame = 1; frame <= 5; frame++ )
 		{
 			const std::optional<size_t> storageIndex = getStorageFrameIndex( frame, storage.size() );
@@ -202,9 +183,8 @@ TEST_CASE( "VTX_APP - Trajectory loader circular mapping", "[unit][trajectory]" 
 		firstFrameAvailable = 5;
 		loadedFrameCount	= 3;
 
-		CHECK(
-			FrameRange::fromFirstCount( firstFrameAvailable, loadedFrameCount ) == FrameRange::fromFirstCount( 5, 3 )
-		);
+		CHECK( FrameRange::fromFirstCount( firstFrameAvailable, loadedFrameCount )
+			   == FrameRange::fromFirstCount( 5, 3 ) );
 		CHECK( getStorageFrameIndex( 5, 3 ) == 2 );
 		CHECK( getStorageFrameIndex( 6, 3 ) == 0 );
 		CHECK( getStorageFrameIndex( 7, 3 ) == 1 );
@@ -219,9 +199,8 @@ TEST_CASE( "VTX_APP - Trajectory loader full mapping", "[unit][trajectory]" )
 
 	CHECK( VTX::App::Helper::Trajectory::resolveStorageFrameIndex( 0, 10, TRAJECTORY_BUFFER_MODE::FULL, 0, 3 ) == 0 );
 	CHECK( VTX::App::Helper::Trajectory::resolveStorageFrameIndex( 2, 10, TRAJECTORY_BUFFER_MODE::FULL, 0, 3 ) == 2 );
-	CHECK_FALSE(
-		VTX::App::Helper::Trajectory::resolveStorageFrameIndex( 3, 10, TRAJECTORY_BUFFER_MODE::FULL, 0, 3 ).has_value()
-	);
+	CHECK_FALSE( VTX::App::Helper::Trajectory::resolveStorageFrameIndex( 3, 10, TRAJECTORY_BUFFER_MODE::FULL, 0, 3 )
+					 .has_value() );
 }
 
 TEST_CASE( "VTX_APP - Trajectory player replacement lifecycle", "[integration][trajectory]" )
@@ -235,8 +214,8 @@ TEST_CASE( "VTX_APP - Trajectory player replacement lifecycle", "[integration][t
 	REQUIRE( systems.begin() != systems.end() );
 	const Entity entity = *systems.begin();
 
-	TrajectoryPlayerLifecycleObserver observer;
-	const FilePath					  dataDirectory = Util::Filesystem::getExecutableDir() / "data";
+	const TrajectoryPlayerLifecycleObserver observer;
+	const FilePath							dataDirectory = Util::Filesystem::getExecutableDir() / "data";
 
 	associateTrajectory( entity, dataDirectory / "1gcn_traj.xtc" );
 	CHECK( observer.constructCount == 1 );
@@ -277,8 +256,7 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 
 	Util::Thread::BaseThread & extractionThread = THREAD().createThread(
 		[ extractor ]( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread )
-		{ return ( *extractor )( std::move( p_stopToken ), std::ref( p_thread ) ); }
-	);
+		{ return ( *extractor )( std::move( p_stopToken ), std::ref( p_thread ) ); } );
 	extractionThread.wait();
 	PASS().update( 0.f, 0.f );
 	extractor->wait();
@@ -305,8 +283,7 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 		{
 			PASS().update( 0.f, 0.f );
 			return Helper::Trajectory::isFrameAvailable( entity, 0 );
-		}
-	) );
+		} ) );
 
 	Action::Trajectory::JumpTo().execute( entity, lastFrame );
 	PASS().update( 0.f, 0.f );
@@ -315,20 +292,15 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 		{
 			PASS().update( 0.f, 0.f );
 			return Helper::Trajectory::isFrameAvailable( entity, lastFrame );
-		}
-	) );
+		} ) );
 	PASS().update( 0.f, 0.f );
 
 	Trajectory::FrameRange availableFrames = loader.availableFrames;
 	CHECK( availableFrames == Trajectory::FrameRange( lastFrame + 1 - circularCapacity, lastFrame + 1 ) );
-	CHECK(
-		Helper::Trajectory::visitFrame(
-			entity,
-			lastFrame,
-			[ &topology ]( const Core::Struct::FrameView p_frame )
-			{ CHECK( p_frame.size() == topology.getAtomCount() ); }
-		)
-	);
+	CHECK( Helper::Trajectory::visitFrame( entity,
+										   lastFrame,
+										   [ &topology ]( const Core::Struct::FrameView p_frame )
+										   { CHECK( p_frame.size() == topology.getAtomCount() ); } ) );
 	CHECK( REG().get<Trajectory::Player>( entity ).currentFrameIndex == lastFrame );
 
 	Action::Trajectory::JumpTo().execute( entity, 0 );
@@ -338,20 +310,15 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 		{
 			PASS().update( 0.f, 0.f );
 			return Helper::Trajectory::isFrameAvailable( entity, 0 );
-		}
-	) );
+		} ) );
 	PASS().update( 0.f, 0.f );
 
 	availableFrames = loader.availableFrames;
 	CHECK( availableFrames == Trajectory::FrameRange( 0, circularCapacity ) );
-	CHECK(
-		Helper::Trajectory::visitFrame(
-			entity,
-			0,
-			[ &topology ]( const Core::Struct::FrameView p_frame )
-			{ CHECK( p_frame.size() == topology.getAtomCount() ); }
-		)
-	);
+	CHECK( Helper::Trajectory::visitFrame( entity,
+										   0,
+										   [ &topology ]( const Core::Struct::FrameView p_frame )
+										   { CHECK( p_frame.size() == topology.getAtomCount() ); } ) );
 	CHECK( REG().get<Trajectory::Player>( entity ).currentFrameIndex == 0 );
 
 	const uint64_t requestVersion = loader.thread->getRequestVersion();

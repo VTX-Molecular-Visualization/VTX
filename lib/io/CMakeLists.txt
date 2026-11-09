@@ -1,5 +1,5 @@
-message("vtx_io")
-cmake_minimum_required(VERSION 3.23)
+message(STATUS "VTX - vtx_io")
+cmake_minimum_required(VERSION 3.28)
 project(vtx_io)
 
 find_package(vtx_util CONFIG REQUIRED)

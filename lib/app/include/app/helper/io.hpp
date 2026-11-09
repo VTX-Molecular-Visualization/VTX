@@ -1,11 +1,11 @@
-#ifndef __VTX_APP_HELPER_IO__
-#define __VTX_APP_HELPER_IO__
+#ifndef VTX_APP_HELPER_IO_HPP
+#define VTX_APP_HELPER_IO_HPP
 
 #include <util/filesystem.hpp>
 
 namespace VTX::App::Helper::IO
 {
-	enum class FileDropHandling
+	enum class FileDropHandling : uint8_t
 	{
 		actionOpen,
 		associateTrajectory

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_VISIBILITY__
-#define __VTX_APP_ACTION_VISIBILITY__
+#ifndef VTX_APP_ACTION_VISIBILITY_HPP
+#define VTX_APP_ACTION_VISIBILITY_HPP
 
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
@@ -13,11 +13,11 @@
 
 namespace VTX::App::Action::Visibility
 {
-	void patchVisibility( const Entity p_ent, Util::Math::BitSet p_atoms );
+	void patchVisibility( Entity p_ent, Util::Math::BitSet p_atoms );
 
 	struct SetVisibleAll
 	{
-		void execute( const bool p_visible );
+		void execute( bool p_visible );
 	};
 
 	/**
@@ -26,13 +26,11 @@ namespace VTX::App::Action::Visibility
 	template<Core::Struct::E_SYSTEM_ITEM ITEM>
 	struct SetVisible
 	{
-		void execute(
-			const Entity						 p_ent,
-			const Core::Struct::IndexRangeList & p_ranges  = {},
-			const bool							 p_visible = true
-		)
+		void execute( const Entity						   p_ent,
+					  const Core::Struct::IndexRangeList & p_ranges	 = {},
+					  const bool						   p_visible = true )
 		{
-			Util::ScopedChrono timer( "App::Action::SetVisible" );
+			const Util::ScopedChrono timer( "App::Action::SetVisible" );
 
 			const auto & visibility = REG().get<System::Visibility>( p_ent );
 
@@ -59,8 +57,8 @@ namespace VTX::App::Action::Visibility
 			}
 			else
 			{
-				Core::Struct::IndexRangeList atoms	 = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
-				Util::Math::BitSet			 current = visibility.atoms;
+				const Core::Struct::IndexRangeList atoms   = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+				Util::Math::BitSet				   current = visibility.atoms;
 
 				if ( p_visible )
 				{
@@ -76,64 +74,44 @@ namespace VTX::App::Action::Visibility
 		}
 
 		void execute( const Entity p_ent, const Core::Struct::IndexRange & p_range, const bool p_visible = true )
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_visible );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_visible ); }
 
 		void execute( const Entity p_ent, const std::vector<Index> & p_values, const bool p_visible = true )
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_visible );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_visible ); }
 
 		void execute( const Entity p_ent, const Index p_value, const bool p_visible = true )
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_visible );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_visible ); }
 	};
 
 	struct SetVisibleSelected
 	{
-		void execute( const bool p_visible = true );
+		void execute( bool p_visible = true );
 	};
 
 	struct SetVisibleItem
 	{
-		void execute(
-			const Entity						 p_ent,
-			const Core::Struct::E_SYSTEM_ITEM	 p_item,
-			const Core::Struct::IndexRangeList & p_ranges  = {},
-			const bool							 p_visible = true
-		);
+		void execute( Entity							   p_ent,
+					  Core::Struct::E_SYSTEM_ITEM		   p_item,
+					  const Core::Struct::IndexRangeList & p_ranges	 = {},
+					  bool								   p_visible = true );
 
-		inline void execute(
-			const Entity					  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const Core::Struct::IndexRange &  p_range,
-			const bool						  p_visible = true
-		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_visible );
-		}
+		void execute( const Entity						p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM p_item,
+					  const Core::Struct::IndexRange &	p_range,
+					  const bool						p_visible = true )
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_visible ); }
 
-		inline void execute(
-			const Entity					  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const std::vector<Index> &		  p_values,
-			const bool						  p_visible = true
-		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_visible );
-		}
+		void execute( const Entity						p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM p_item,
+					  const std::vector<Index> &		p_values,
+					  const bool						p_visible = true )
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_visible ); }
 
-		inline void execute(
-			const Entity					  p_ent,
-			const Core::Struct::E_SYSTEM_ITEM p_item,
-			const Index						  p_value,
-			const bool						  p_visible = true
-		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_visible );
-		}
+		void execute( const Entity						p_ent,
+					  const Core::Struct::E_SYSTEM_ITEM p_item,
+					  const Index						p_value,
+					  const bool						p_visible = true )
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_visible ); }
 	};
 
 } // namespace VTX::App::Action::Visibility

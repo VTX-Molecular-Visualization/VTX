@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_HELPER_SYSTEM__
-#define __VTX_APP_HELPER_SYSTEM__
+#ifndef VTX_APP_HELPER_SYSTEM_HPP
+#define VTX_APP_HELPER_SYSTEM_HPP
 
 #include "app/ecs.hpp"
 #include "app/scene/tag_root.hpp"
@@ -53,10 +53,8 @@ namespace VTX::App::Helper::System
 	 * @brief Get the atom range list of an item.
 	 */
 	template<Core::Struct::E_SYSTEM_ITEM ITEM>
-	Core::Struct::IndexRangeList getAtomRangeList(
-		const Entity						 p_ent,
-		const Core::Struct::IndexRangeList & p_ranges = {}
-	)
+	Core::Struct::IndexRangeList getAtomRangeList( const Entity							p_ent,
+												   const Core::Struct::IndexRangeList & p_ranges = {} )
 	{
 		using namespace Core::Struct;
 
@@ -104,10 +102,8 @@ namespace VTX::App::Helper::System
 	 * @brief Get the residue range list of an item.
 	 */
 	template<Core::Struct::E_SYSTEM_ITEM ITEM>
-	Core::Struct::IndexRangeList getResidueRangeList(
-		const Entity						 p_ent,
-		const Core::Struct::IndexRangeList & p_ranges = {}
-	)
+	Core::Struct::IndexRangeList getResidueRangeList( const Entity						   p_ent,
+													  const Core::Struct::IndexRangeList & p_ranges = {} )
 	{
 		using namespace Core::Struct;
 
@@ -160,15 +156,15 @@ namespace VTX::App::Helper::System
 	 */
 	struct SystemItemView
 	{
-		Entity						entity;
-		Core::Struct::E_SYSTEM_ITEM item  = Core::Struct::E_SYSTEM_ITEM::SYSTEM;
-		std::optional<Index>		index = std::nullopt;
+		Entity						entity = InvalidEntity;
+		Core::Struct::E_SYSTEM_ITEM item   = Core::Struct::E_SYSTEM_ITEM::SYSTEM;
+		std::optional<Index>		index  = std::nullopt;
 	};
 
 	/**
 	 * @brief Get current atom position in system-local coordinates.
 	 */
-	Vec3f getAtomPosition( const Entity p_entity, const Index p_atom );
+	Vec3f getAtomPosition( Entity p_entity, Index p_atom );
 
 	/**
 	 * @brief Get the visibility state of an item.
@@ -189,8 +185,7 @@ namespace VTX::App::Helper::System
 	 * @brief Get the secondary structure color scheme of an item (nothing if multiples).
 	 */
 	std::optional<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE> getSecondaryStructureColorScheme(
-		const SystemItemView &
-	);
+		const SystemItemView & );
 
 	/**
 	 * @brief Count all atoms assigned in the color component.

@@ -1,10 +1,11 @@
-#ifndef __VTX_UI_QT_WIDGET_CAMERA__
-#define __VTX_UI_QT_WIDGET_CAMERA__
+#ifndef VTX_UI_QT_WIDGET_CAMERA_HPP
+#define VTX_UI_QT_WIDGET_CAMERA_HPP
 
 #include "ui/qt/widget/editable_slider.hpp"
 #include "ui/qt/widget/transform.hpp"
 #include <QGroupBox>
 #include <app/ecs.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -14,8 +15,7 @@ namespace VTX::UI::QT::Widget
 	class Camera : public QGroupBox
 	{
 	  public:
-		Camera( const Entity, QWidget * );
-		~Camera();
+		Camera( Entity, QWidget * );
 
 	  private:
 		const Entity _entity;
@@ -27,6 +27,9 @@ namespace VTX::UI::QT::Widget
 
 		void _setTransform();
 		void _setCamera();
+
+		VTX::Util::EventHub::ScopedConnection _transformChangedConnection;
+		VTX::Util::EventHub::ScopedConnection _cameraUpdatedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
 #endif

@@ -1,8 +1,10 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_FORM_BASIC__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_FORM_BASIC_FORM_BASIC__
+#ifndef VTX_TOOL_MDPREP_UI_FORM_BASIC_FORM_BASIC_HPP
+#define VTX_TOOL_MDPREP_UI_FORM_BASIC_FORM_BASIC_HPP
 
+#include <array>
 #include <functional>
 #include <optional>
+#include <ui/qt/util.hpp>
 //
 #include "tool/mdprep/ui/form_basic/data.hpp"
 //
@@ -29,7 +31,7 @@ namespace VTX::Tool::Mdprep::ui
 	struct FormLayouts;
 	class InputChecker;
 	class IonicFields;
-	enum class E_FIELD_SECTION;
+	enum class E_FIELD_SECTION : uint8_t;
 } // namespace VTX::Tool::Mdprep::ui
 
 namespace VTX::Tool::Mdprep::ui::form_basic
@@ -39,20 +41,18 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 	{
 	  public:
 		FormBasic() = delete;
-		FormBasic(
-			QWidget * p_container,
-			SpecificFieldsPlacerCallback,
-			const MdParameters & p_defaults,
-			ReportManager &		 p_reportManager
-		);
+		FormBasic( QWidget * p_container,
+				   SpecificFieldsPlacerCallback,
+				   const MdParameters & p_defaults,
+				   ReportManager &		p_reportManager );
 
 		/**
 		 * @brief Change information related to the current engine.
 		 * @param Data
 		 */
-		void update( const EngineSpecificCommonInformation & p_data ) noexcept;
+		void update( const EngineSpecificCommonInformation & p_data );
 
-		void get( MdParameters & ) const noexcept;
+		void get( MdParameters & ) const;
 		void get( FormLayouts & ) const noexcept;
 
 	  private:
@@ -91,9 +91,9 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		IonicFields			  _fieldsIons;
 		EventManager		  _eventManager;
 
-		void _createAndPlaceUiItems( QWidget * p_container ) noexcept;
-		void _loadValues( const MdParameters & p_defaults ) noexcept;
-		void _setupSlots() noexcept;
+		void _createAndPlaceUiItems( QWidget * p_container );
+		void _loadValues( const MdParameters & p_defaults ) const;
+		void _setupSlots();
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
 #endif

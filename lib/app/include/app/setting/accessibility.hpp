@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SETTING_ACCESSIBILITY__
-#define __VTX_APP_SETTING_ACCESSIBILITY__
+#ifndef VTX_APP_SETTING_ACCESSIBILITY_HPP
+#define VTX_APP_SETTING_ACCESSIBILITY_HPP
 
 #include <util/types.hpp>
 
@@ -8,7 +8,7 @@ namespace VTX::App::Setting
 	/**
 	 * @brief Color modes.
 	 */
-	enum struct E_COLOR_ACCESSIBILITY_MODE : uint
+	enum struct E_COLOR_ACCESSIBILITY_MODE : uint8_t
 	{
 		DEFAULT,
 		HIGH_CONTRAST,

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_SELECTION_MANAGER__
-#define __VTX_UI_QT_SELECTION_MANAGER__
+#ifndef VTX_UI_QT_SELECTION_MANAGER_HPP
+#define VTX_UI_QT_SELECTION_MANAGER_HPP
 
 #include <QAbstractItemView>
 #include <QItemSelectionModel>
@@ -16,7 +16,7 @@ namespace VTX::UI::QT
 	/**
 	 * @brief Group of item that can be selected together.
 	 */
-	enum struct E_SELECTION_GROUP
+	enum struct E_SELECTION_GROUP : uint8_t
 	{
 		GRAPHICS_CONFIG,
 		COLOR_LAYOUT,
@@ -51,7 +51,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Add a view to the manager.
 		 */
-		void add( QItemSelectionModel *, const E_SELECTION_GROUP );
+		void add( QItemSelectionModel *, E_SELECTION_GROUP );
 
 		/**
 		 * @brief Clear all selection.
@@ -66,23 +66,18 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Clear selection of a group.
 		 */
-		void clear( const E_SELECTION_GROUP );
+		void clear( E_SELECTION_GROUP );
 
 		/**
 		 * @brief Clear selection of all group except the given one.
 		 */
-		void clearBut( const E_SELECTION_GROUP );
+		void clearBut( E_SELECTION_GROUP );
 
 		/**
 		 * @brief Select item.
 		 */
 		template<Core::Struct::E_SYSTEM_ITEM ITEM, typename S>
-		void select(
-			const Entity p_ent,
-			const S &			   p_data,
-			const bool			   p_selected = true,
-			const bool			   p_append	  = false
-		)
+		void select( const Entity p_ent, const S & p_data, const bool p_selected = true, const bool p_append = false )
 		{
 			using namespace App::Action;
 
@@ -99,7 +94,7 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Pick item at position and add it to the selection.
 		 */
-		void pick( const Vec2i &, const bool );
+		void pick( const Vec2i &, bool );
 
 		/**
 		 * @brief Get current selection.
@@ -111,7 +106,7 @@ namespace VTX::UI::QT
 		 * @brief UI selection changed signal. Empty selection means no item is selected in the group.
 
 		 */
-		void selectionChanged( const E_SELECTION_GROUP, const QItemSelection & p_selection );
+		void selectionChanged( E_SELECTION_GROUP, const QItemSelection & p_selection );
 
 	  private:
 		/**

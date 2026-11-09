@@ -6,8 +6,10 @@
 #include <app/ui/concepts.hpp>
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
+#include <memory>
 #include <string_view>
 #include <ui/qt/action_registry.hpp>
+#include <ui/qt/helper.hpp>
 #include <ui/qt/services.hpp>
 #include <ui/qt/widget/main_window.hpp>
 #include <util/logger.hpp>
@@ -16,8 +18,7 @@ namespace VTX::Tool::TopologyEditor
 {
 	namespace
 	{
-		constexpr std::string_view			   ACTION_OPEN_TOPOLOGY_EDITOR = "tool.topology_editor.open";
-		QPointer<Dialog::TopologyEditorDialog> g_dialog;
+		constexpr std::string_view ACTION_OPEN_TOPOLOGY_EDITOR = "tool.topology_editor.open";
 
 		QString entityLabel( const Entity p_entity )
 		{
@@ -39,26 +40,28 @@ namespace VTX::Tool::TopologyEditor
 
 		void openDialogForSystem( const Entity p_system )
 		{
+			static QPointer<Dialog::TopologyEditorDialog> dialog;
+
 			if ( p_system == InvalidEntity )
 			{
 				VTX_WARNING( "Topology Editor: no system available" );
 				return;
 			}
 
-			if ( g_dialog == nullptr || g_dialog->getSystem() != p_system )
+			if ( dialog == nullptr || dialog->getSystem() != p_system )
 			{
-				if ( g_dialog != nullptr )
+				if ( dialog != nullptr )
 				{
-					g_dialog->close();
-					delete g_dialog;
+					dialog->close();
+					std::default_delete<Dialog::TopologyEditorDialog>()( dialog );
 				}
-				g_dialog = new Dialog::TopologyEditorDialog( p_system );
-				g_dialog->setAttribute( Qt::WA_DeleteOnClose, false );
+				dialog = VTX::UI::QT::Helper::makeQObject<Dialog::TopologyEditorDialog>( p_system );
+				dialog->setAttribute( Qt::WA_DeleteOnClose, false );
 			}
 
-			g_dialog->show();
-			g_dialog->raise();
-			g_dialog->activateWindow();
+			dialog->show();
+			dialog->raise();
+			dialog->activateWindow();
 		}
 
 		App::UI::DescAction openTopologyEditorAction()
@@ -76,42 +79,40 @@ namespace VTX::Tool::TopologyEditor
 
 	void TopologyEditor::registerActions()
 	{
-		UI::QT::UI_ACTIONS().registerAction(
-			openTopologyEditorAction(),
-			[]( const UI::QT::ActionRegistry::ActionContext & )
-			{
-				auto systems = App::REG().view<Core::Struct::Topology, IO::Metadata>();
-				if ( systems.begin() == systems.end() )
-				{
-					VTX_WARNING( "Topology Editor: no system available" );
-					return;
-				}
+		UI::QT::UI_ACTIONS().registerAction( openTopologyEditorAction(),
+											 []( const UI::QT::ActionRegistry::ActionContext & )
+											 {
+												 auto systems = App::REG().view<Core::Struct::Topology, IO::Metadata>();
+												 if ( systems.begin() == systems.end() )
+												 {
+													 VTX_WARNING( "Topology Editor: no system available" );
+													 return;
+												 }
 
-				const Entity firstSystem = *systems.begin();
-				auto				   secondIt	   = systems.begin();
-				++secondIt;
-				if ( secondIt == systems.end() )
-				{
-					openDialogForSystem( firstSystem );
-					return;
-				}
+												 const Entity firstSystem = *systems.begin();
+												 auto		  secondIt	  = systems.begin();
+												 ++secondIt;
+												 if ( secondIt == systems.end() )
+												 {
+													 openDialogForSystem( firstSystem );
+													 return;
+												 }
 
-				QMenu menu( &UI::QT::MAIN_WINDOW() );
-				for ( const Entity entity : systems )
-				{
-					QAction * const action = menu.addAction( entityLabel( entity ) );
-					action->setData( static_cast<uint>( entity ) );
-				}
+												 QMenu menu( &UI::QT::MAIN_WINDOW() );
+												 for ( const Entity entity : systems )
+												 {
+													 QAction * const action = menu.addAction( entityLabel( entity ) );
+													 action->setData( static_cast<uint>( entity ) );
+												 }
 
-				QAction * const selected = menu.exec( QCursor::pos() );
-				if ( selected == nullptr )
-				{
-					return;
-				}
+												 const QAction * const selected = menu.exec( QCursor::pos() );
+												 if ( selected == nullptr )
+												 {
+													 return;
+												 }
 
-				openDialogForSystem( Entity( selected->data().toUInt() ) );
-			}
-		);
+												 openDialogForSystem( Entity( selected->data().toUInt() ) );
+											 } );
 	}
 
 	void TopologyEditor::buildUI()

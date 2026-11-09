@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_UTIL_BOND_ORDER_GUESSING__
-#define __VTX_IO_UTIL_BOND_ORDER_GUESSING__
+#ifndef VTX_IO_UTIL_BOND_ORDER_GUESSING_HPP
+#define VTX_IO_UTIL_BOND_ORDER_GUESSING_HPP
 
 #include <core/struct/topology.hpp>
 #include <core/struct/trajectory.hpp>

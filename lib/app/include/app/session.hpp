@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_VTX_UPDATER__
-#define __VTX_APP_VTX_UPDATER__
+#ifndef VTX_APP_SESSION_HPP
+#define VTX_APP_SESSION_HPP
 
 #include "app/constants.hpp"
 #include "app/events.hpp"
@@ -20,12 +20,16 @@ namespace VTX::App
 		 * @brief Constructor.
 		 */
 		Session();
+		Session( const Session & )			   = delete;
+		Session & operator=( const Session & ) = delete;
+		Session( Session && )				   = delete;
+		Session & operator=( Session && )	   = delete;
 		~Session();
 
 		/**
 		 * @brief Current version.
 		 */
-		inline static std::string version()
+		static std::string version()
 		{
 			return std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
 				   + std::to_string( VERSION_PATCH );
@@ -54,7 +58,7 @@ namespace VTX::App
 		/**
 		 * @brief Does the application have an update manager available (not in dev mode).
 		 */
-		bool hasManager() const;
+		bool hasManager() const noexcept;
 
 		/**
 		 * @brief Is this version portable.

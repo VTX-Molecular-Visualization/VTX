@@ -1,9 +1,8 @@
-#ifndef __VTX_UTIL_MONITORING_STAT__
-#define __VTX_UTIL_MONITORING_STAT__
+#ifndef VTX_UTIL_MONITORING_STATS_HPP
+#define VTX_UTIL_MONITORING_STATS_HPP
 
 #include "frame_info.hpp"
 #include <list>
-#include <util/callback.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
 
@@ -20,6 +19,13 @@ namespace VTX::Util::Monitoring
 	class Stats
 	{
 	  public:
+		Stats()							   = default;
+		Stats( const Stats & )			   = delete;
+		Stats & operator=( const Stats & ) = delete;
+		Stats( Stats && )				   = delete;
+		Stats & operator=( Stats && )	   = delete;
+		~Stats()						   = default;
+
 		/**
 		 * @brief Creates and returns a reference to a new FrameInfo object.
 		 */
@@ -28,7 +34,7 @@ namespace VTX::Util::Monitoring
 		/**
 		 * @brief Returns a reference to the current (most recent) frame.
 		 */
-		inline FrameInfo & currentFrame() { return _frames.back(); }
+		FrameInfo & currentFrame() noexcept { return _frames.back(); }
 
 		/**
 		 * @brief Calculates the average elapsed time between recorded frames.
@@ -41,7 +47,7 @@ namespace VTX::Util::Monitoring
 		template<typename T>
 		T average( const Hash & p_hashedKey ) const
 		{
-			if ( _frames.size() == 0 )
+			if ( _frames.empty() )
 			{
 				return 0;
 			}

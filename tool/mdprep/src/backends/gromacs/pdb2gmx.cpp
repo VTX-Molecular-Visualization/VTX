@@ -1,8 +1,10 @@
+#include <algorithm>
+#include <cstring>
 #include <fstream>
 #include <re2/re2.h>
 #include <regex>
-#include <set>
-#include <string.h>
+#include <stdexcept>
+#include <string_view>
 //
 #include <app/services.hpp>
 #include <app/session.hpp>
@@ -30,7 +32,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		std::vector<forcefield> out;
 
-		for ( auto & fsElement : fs::directory_iterator( p_dataDir ) )
+		for ( const auto & fsElement : fs::directory_iterator( p_dataDir ) )
 		{
 			if ( !fsElement.is_directory() )
 			{
@@ -44,6 +46,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				continue;
 			}
 		}
+
+		std::ranges::sort( out, {}, &forcefield::forcefieldFolderPath );
 
 		return out;
 	}
@@ -83,60 +87,61 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 	std::string_view forcefield::getName() const
 	{
-		size_t filenamePos
+		const size_t filenamePos
 			= this->forcefieldFolderPath.find( FilePath( this->forcefieldFolderPath ).filename().string() );
-		size_t extensionPos = this->forcefieldFolderPath.size() - ( sizeof( g_ff_suffix ) - 1 );
-		return std::string_view { std::next( this->forcefieldFolderPath.begin(), filenamePos ),
-								  std::next( this->forcefieldFolderPath.begin(), extensionPos ) };
+		const size_t extensionPos = this->forcefieldFolderPath.size() - ( sizeof( g_ff_suffix ) - 1 );
+		return std::string_view( this->forcefieldFolderPath ).substr( filenamePos, extensionPos - filenamePos );
 	}
 
-	void parse( const std::string & p_user_str, E_INTERACTIVE_KEYWORD & p_out ) noexcept
+	namespace
 	{
-		if ( p_user_str == "HIS" )
+		constexpr void parse( const std::string_view p_user_str, E_INTERACTIVE_KEYWORD & p_out ) noexcept
 		{
-			p_out = E_INTERACTIVE_KEYWORD::his;
-			return;
-		};
-		if ( p_user_str == "LYS" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::lys;
-			return;
-		};
-		if ( p_user_str == "ASP" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::asp;
-			return;
-		};
-		if ( p_user_str == "GLN" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::gln;
-			return;
-		};
-		if ( p_user_str == "GLU" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::glu;
-			return;
-		};
-		if ( p_user_str == "ARG" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::arg;
-			return;
-		};
-		if ( p_user_str == "TER" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::ter;
-			return;
-		};
-		if ( p_user_str == "SS" )
-		{
-			p_out = E_INTERACTIVE_KEYWORD::ss;
-			return;
-		};
-		p_out = E_INTERACTIVE_KEYWORD::none;
-		return;
-	}
+			if ( p_user_str == "HIS" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::his;
+				return;
+			};
+			if ( p_user_str == "LYS" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::lys;
+				return;
+			};
+			if ( p_user_str == "ASP" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::asp;
+				return;
+			};
+			if ( p_user_str == "GLN" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::gln;
+				return;
+			};
+			if ( p_user_str == "GLU" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::glu;
+				return;
+			};
+			if ( p_user_str == "ARG" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::arg;
+				return;
+			};
+			if ( p_user_str == "TER" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::ter;
+				return;
+			};
+			if ( p_user_str == "SS" )
+			{
+				p_out = E_INTERACTIVE_KEYWORD::ss;
+				return;
+			};
+			p_out = E_INTERACTIVE_KEYWORD::none;
+		}
+	} // namespace
 
-	parseReport parsePdb2gmxUserScript( const std::string_view & p_script, Pdb2gmxInputs & p_args ) noexcept
+	parseReport parsePdb2gmxUserScript( const std::string_view & p_script, Pdb2gmxInputs & p_args )
 	{
 		parseReport out;
 
@@ -146,8 +151,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			return out;
 		}
 
-		std::string_view::const_iterator currentPos		= p_script.begin(),
-										 nextNewlinePos = std::find( p_script.begin(), p_script.end(), '\n' );
+		std::string_view::const_iterator currentPos		= p_script.begin();
+		std::string_view::const_iterator nextNewlinePos = std::ranges::find( p_script, '\n' );
 		if ( nextNewlinePos != p_script.end() )
 		{
 			nextNewlinePos++;
@@ -160,18 +165,16 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 
 		while ( currentPos != p_script.end() )
 		{
-			std::string lineBuf {
+			const std::string lineBuf {
 				currentPos, nextNewlinePos
 			}; // We need to used this buffer because the regex match function doesn't stop at the en of a string view
-			   // iterator but rather at the end of the entire super-string. So we need to copy the string data on a
-			   // separated buffer for it to work as intended.
-			if ( std::regex_match( lineBuf, match, lineRegex ) == false || match.size() < NUM_EXPECTED_GROUPS + 1 )
+			// iterator but rather at the end of the entire super-string. So we need to copy the string data on a
+			// separated buffer for it to work as intended.
+			if ( not std::regex_match( lineBuf, match, lineRegex ) || match.size() < NUM_EXPECTED_GROUPS + 1 )
 			{
 				out.error	= true;
-				out.message = fmt::format(
-					"Line <{}> isn't understood.\nPattern is \n[chain] [kw][num] [value]\n",
-					std::string( currentPos, nextNewlinePos )
-				);
+				out.message = fmt::format( "Line <{}> isn't understood.\nPattern is \n[chain] [kw][num] [value]\n",
+										   std::string( currentPos, nextNewlinePos ) );
 				return out;
 			}
 			Pdb2gmxInputId new_id;
@@ -184,24 +187,22 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 			{
 				out.error	= true;
 				out.message = fmt::format(
-					"residue <{}> isn't understood.\nCorrect values are HIS, LYS, ASP, GLN, GLU, ARG, TER, SS", buf
-				);
+					"residue <{}> isn't understood.\nCorrect values are HIS, LYS, ASP, GLN, GLU, ARG, TER, SS", buf );
 				return out;
 			}
 			buf = match[ 3 ].str();
 			if ( buf.empty() )
 			{
 				out.error	= true;
-				out.message = fmt::format(
-					"No residue num has been found in line <{}>.", std::string( currentPos, nextNewlinePos )
-				);
+				out.message = fmt::format( "No residue num has been found in line <{}>.",
+										   std::string( currentPos, nextNewlinePos ) );
 				return out;
 			}
 			try
 			{
 				new_id.num = std::stoul( buf );
 			}
-			catch ( std::invalid_argument & )
+			catch ( const std::logic_error & )
 			{
 				out.error	= true;
 				out.message = fmt::format( "Number <{}> isn't a correct value.", buf );
@@ -216,7 +217,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 				return out;
 			}
 
-			p_args.kwValue.insert( { std::move( new_id ), buf } );
+			p_args.kwValue.insert( { new_id, buf } );
 			currentPos	   = nextNewlinePos;
 			nextNewlinePos = std::find( currentPos, p_script.end(), '\n' );
 			if ( nextNewlinePos != p_script.end() )
@@ -228,18 +229,16 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		return out;
 	}
 
-	void prepareJob(
-		const CumulativeOuputFiles &,
-		const FilePath &		 p_root,
-		const std::string_view & p_folderName,
-		Pdb2gmxInstructions &	 p_instructions
-	) noexcept
+	void prepareJob( const CumulativeOuputFiles &,
+					 const FilePath &		  p_root,
+					 const std::string_view & p_folderName,
+					 Pdb2gmxInstructions &	  p_instructions )
 	{
-		if ( fs::exists( p_root ) && fs::is_directory( p_root ) == false )
+		if ( fs::exists( p_root ) && not fs::is_directory( p_root ) )
 		{
 			return; // This scenario shouldn't happen
 		}
-		FilePath jobDir = p_root / p_folderName;
+		const FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
 		p_instructions.outputDir = jobDir.string();
@@ -318,22 +317,21 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 					break;
 				}
 			}
-			if ( topFile.empty() || fs::exists( topFile ) == false )
+			if ( topFile.empty() || not fs::exists( topFile ) )
 			{
 				return; // if no top file is found it's the checkRslt's responsibility to report it
 			}
-			FilePath tmpFile = App::SESSION().getAppTmpFolder() / "vtxgmxtopfiletmp";
+			const FilePath tmpFile = App::SESSION().getAppTmpFolder() / "vtxgmxtopfiletmp";
 			fs::create_directories( tmpFile.parent_path() );
 			if ( fs::exists( tmpFile ) )
 			{
 				fs::remove( tmpFile );
 			}
 			{
-				std::string fileStem = topFile.stem().string();
-				RE2			itpÎncludePattern { fmt::format( "#include +(\"|<)({}.*\\.\\w\\w\\w)(\"|>).*", fileStem ) };
+				std::string	  fileStem = topFile.stem().string();
+				RE2			  itpÎncludePattern { fmt::format( R"(#include +("|<)({}.*\.\w\w\w)("|>).*)", fileStem ) };
 				std::ifstream fileStrm { topFile };
 				std::ofstream outStrm { tmpFile };
-				std::string	  jobDirString = p_jobDir.string();
 				std::string	  line;
 				while ( std::getline( fileStrm, line ) )
 				{
@@ -343,7 +341,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 						auto pos = line.find( fileName );
 						if ( pos != std::string::npos )
 						{
-							line.replace( pos, fileName.size(), jobDirString + "/" + fileName );
+							// Generic string because the path separator in the .top file is always '/'.
+							line.replace( pos, fileName.size(), ( p_jobDir / fileName ).generic_string() );
 						}
 					}
 					outStrm << line << '\n';
@@ -354,7 +353,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	} // namespace
 
-	void convert( const Pdb2gmxInstructions & p_in, GromacsJobData & p_out ) noexcept
+	void convert( const Pdb2gmxInstructions & p_in, GromacsJobData & p_out )
 	{
 		if ( p_in.forcefields.empty() )
 		{
@@ -381,34 +380,34 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		fs::create_directories( outputDir );
 		p_out.arguments.clear();
 
-		p_out.arguments.push_back( "pdb2gmx" );
-		p_out.arguments.push_back( "-f" );
+		p_out.arguments.emplace_back( "pdb2gmx" );
+		p_out.arguments.emplace_back( "-f" );
 		p_out.arguments.push_back( p_in.inputPdb.string() );
-		p_out.arguments.push_back( "-o" );
+		p_out.arguments.emplace_back( "-o" );
 		p_out.arguments.push_back( ( outputDir / ( p_in.fileStem + ".gro" ) ).make_preferred().string() );
 		setLastArgumentAsExpectedOutputFile( p_out );
-		p_out.arguments.push_back( "-p" );
+		p_out.arguments.emplace_back( "-p" );
 		p_out.arguments.push_back( ( outputDir / ( p_in.fileStem + ".top" ) ).make_preferred().string() );
 		setLastArgumentAsExpectedOutputFile( p_out );
-		p_out.arguments.push_back( "-i" );
+		p_out.arguments.emplace_back( "-i" );
 		p_out.arguments.push_back( ( outputDir / ( p_in.fileStem + ".itp" ) ).make_preferred().string() );
 		// .itp won't be among the expected output as mulitple files will be produced by multiple chains, giving an
 		// "unpredictible" result. Also the file is not usefull for us so far
-		p_out.arguments.push_back( "-n" );
+		p_out.arguments.emplace_back( "-n" );
 		p_out.arguments.push_back( ( outputDir / ( p_in.fileStem + ".ndx" ) ).make_preferred().string() );
 		setLastArgumentAsExpectedOutputFile( p_out );
-		p_out.arguments.push_back( "-ff" );
+		p_out.arguments.emplace_back( "-ff" );
 		auto ffName = p_in.forcefields.at( p_in.forcefieldIndex ).getName();
-		p_out.arguments.push_back( std::string( ffName.data(), ffName.size() ) );
-		p_out.arguments.push_back( "-water" );
-		p_out.arguments.push_back( string( p_in.water ) );
+		p_out.arguments.emplace_back( ffName.data(), ffName.size() );
+		p_out.arguments.emplace_back( "-water" );
+		p_out.arguments.emplace_back( string( p_in.water ) );
 
 		if ( p_in.customParameter.has_value() )
 		{
 			FilePath batchFile = App::SESSION().getAppTmpFolder() / ( p_in.fileStem + "_pdb2gmx_batch.txt" );
 			fs::create_directories( batchFile.parent_path() );
 			writeBatchFile( batchFile, *p_in.customParameter );
-			p_out.arguments.push_back( "-batch" );
+			p_out.arguments.emplace_back( "-batch" );
 			p_out.arguments.push_back( batchFile.make_preferred().string() );
 		}
 

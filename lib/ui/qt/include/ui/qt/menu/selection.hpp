@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_MENU_SELECTION__
-#define __VTX_UI_QT_MENU_SELECTION__
+#ifndef VTX_UI_QT_MENU_SELECTION_HPP
+#define VTX_UI_QT_MENU_SELECTION_HPP
 
 #include "ui/qt/menu/color_scheme.hpp"
 #include "ui/qt/menu/representation.hpp"

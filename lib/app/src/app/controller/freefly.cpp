@@ -9,12 +9,10 @@
 namespace VTX::App::Controller
 {
 
-	bool Freefly::update(
-		const float					p_deltaTime,
-		const Setting::Controller & p_settings,
-		Util::Math::Transform &		p_transform,
-		Vec3f &						p_target
-	)
+	bool Freefly::update( const float				  p_deltaTime,
+						  const Setting::Controller & p_settings,
+						  Util::Math::Transform &	  p_transform,
+						  Vec3f &					  p_target )
 	{
 		using namespace Util;
 		auto & input = INPUT();
@@ -22,17 +20,16 @@ namespace VTX::App::Controller
 		const float rotationSpeed = p_settings.rotationSpeed * Setting::ROTATION_SPEED_MULTIPLIER;
 
 		//  Rotation.
-		Vec2i rotation		= input.rotate();
-		Vec3f localRotation = VEC3F_ZERO;
+		const Vec2i rotation	  = input.rotate();
+		Vec3f		localRotation = VEC3F_ZERO;
 		if ( rotation.x || rotation.y )
 		{
 			localRotation = Vec3f(
-				-rotationSpeed * rotation.y * ( p_settings.invertY ? -1.f : 1.f ), -rotationSpeed * rotation.x, 0.f
-			);
+				-rotationSpeed * rotation.y * ( p_settings.invertY ? -1.f : 1.f ), -rotationSpeed * rotation.x, 0.f );
 		}
 
-		Vec2i rotationAlt  = input.rotateAlt();
-		float rollRotation = 0.f;
+		const Vec2i rotationAlt	 = input.rotateAlt();
+		float		rollRotation = 0.f;
 		if ( rotationAlt.x || rotationAlt.y )
 		{
 			rollRotation = -rotationSpeed * rotationAlt.x;
@@ -41,9 +38,9 @@ namespace VTX::App::Controller
 		// Translation.
 		const Vec3i translationAxis = input.translationAxis();
 		Vec3f		translation		= VEC3F_ZERO;
-		translation.x				= float( translationAxis.x );
-		translation.y				= float( translationAxis.y );
-		translation.z				= float( translationAxis.z );
+		translation.x				= static_cast<float>( translationAxis.x );
+		translation.y				= static_cast<float>( translationAxis.y );
+		translation.z				= static_cast<float>( translationAxis.z );
 
 		if ( translation != VEC3F_ZERO )
 		{

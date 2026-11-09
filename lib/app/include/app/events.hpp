@@ -1,9 +1,10 @@
-#ifndef __VTX_APP_EVENTS__
-#define __VTX_APP_EVENTS__
+#ifndef VTX_APP_EVENTS_HPP
+#define VTX_APP_EVENTS_HPP
 
 #include "app/controller/animation.hpp"
 #include "app/ecs.hpp"
 #include <core/struct/trajectory.hpp>
+#include <renderer/struct_infos.hpp>
 #include <string>
 #include <thread>
 #include <util/types.hpp>
@@ -74,6 +75,11 @@ namespace VTX::App::Events
 		bool   resizeMainWindow;
 	};
 
+	struct RendererReady
+	{
+		Renderer::StructInfos infos;
+	};
+
 	struct BlockingOperationStart
 	{
 		std::string message;
@@ -123,14 +129,14 @@ namespace VTX::App::Events
 
 	struct TrajectoryCurrentFrameChange
 	{
-		Entity					system;
+		Entity					system = InvalidEntity;
 		Core::Struct::FrameView frame;
 	};
 
 	template<typename P>
 	struct PresetRename
 	{
-		Entity		preset;
+		Entity		preset = InvalidEntity;
 		std::string name;
 	};
 
@@ -144,7 +150,8 @@ namespace VTX::App::Events
 	struct ThreadTerminated
 	{
 		std::jthread::id id;
-		bool			 manuallyStopped;
+		bool			 manuallyStopped {};
+		bool			 failed {};
 	};
 
 	struct PythonInitialized

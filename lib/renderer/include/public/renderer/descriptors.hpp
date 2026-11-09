@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_DESCRIPTORS__
-#define __VTX_RENDERER_DESCRIPTORS__
+#ifndef VTX_RENDERER_DESCRIPTORS_HPP
+#define VTX_RENDERER_DESCRIPTORS_HPP
 
 #include <array>
 #include <memory>
@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <util/constants.hpp>
 #include <util/enum.hpp>
+#include <util/filesystem.hpp>
 #include <util/hashing.hpp>
 #include <util/types.hpp>
 #include <utility>
@@ -45,7 +46,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief All data types.
 	 */
-	enum struct E_TYPE : uint32_t
+	enum struct E_TYPE : uint8_t
 	{
 		BOOL,
 		BYTE,
@@ -68,7 +69,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief Pass resource types.
 	 */
-	enum struct E_RESOURCE_TYPE : uint32_t
+	enum struct E_RESOURCE_TYPE : uint8_t
 	{
 		TEXTURE,
 		GEOMETRY,
@@ -87,7 +88,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief All data formats.
 	 */
-	enum struct E_FORMAT : uint32_t
+	enum struct E_FORMAT : uint8_t
 	{
 		RGBA8UI,
 		SRGB8_ALPHA8,
@@ -105,7 +106,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief All draw primitives.
 	 */
-	enum struct E_PRIMITIVE : uint32_t
+	enum struct E_PRIMITIVE : uint8_t
 	{
 		POINTS,
 		LINES,
@@ -116,7 +117,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief All buffer mutability types.
 	 */
-	enum struct E_BUFFER_MUTABILITY : uint32_t
+	enum struct E_BUFFER_MUTABILITY : uint8_t
 	{
 		MUTABLE,
 		IMMUTABLE
@@ -125,7 +126,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief All buffer access types.
 	 */
-	enum struct E_BUFFER_ACCESS : uint32_t
+	enum struct E_BUFFER_ACCESS : uint8_t
 	{
 		NONE,
 		READ,
@@ -136,7 +137,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief All buffer update frequencies.
 	 */
-	enum struct E_UPDATE_FREQUENCY : uint32_t
+	enum struct E_UPDATE_FREQUENCY : uint8_t
 	{
 		STATIC,
 		DYNAMIC,
@@ -146,7 +147,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief All ways a buffer can be consumed by the renderer or external compute backends.
 	 */
-	enum struct E_BUFFER_USAGE : uint32_t
+	enum struct E_BUFFER_USAGE : uint8_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
 		NONE	   = 0u,
@@ -162,7 +163,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief Physical allocation strategy for a logical render graph buffer.
 	 */
-	enum struct E_BUFFER_ALLOCATION : uint32_t
+	enum struct E_BUFFER_ALLOCATION : uint8_t
 	{
 		SINGLE,
 		CHUNKED
@@ -171,7 +172,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief All sampler wrapping modes.
 	 */
-	enum struct E_WRAPPING : uint32_t
+	enum struct E_WRAPPING : uint8_t
 	{
 		REPEAT,
 		MIRRORED_REPEAT,
@@ -183,7 +184,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief All sampler filtering modes.
 	 */
-	enum struct E_FILTERING : uint32_t
+	enum struct E_FILTERING : uint8_t
 	{
 		NEAREST,
 		LINEAR,
@@ -196,7 +197,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief Various settings.
 	 */
-	enum struct E_SETTING : uint32_t
+	enum struct E_SETTING : uint8_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
 		CLEAR_COLOR	 = 1u << 0,
@@ -233,7 +234,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief External compute APIs that can interop with renderer-owned resources.
 	 */
-	enum struct E_INTEROP_API : uint32_t
+	enum struct E_INTEROP_API : uint8_t
 	{
 		CUDA,
 		OPTIX
@@ -266,7 +267,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief Set render target for the graphics pipeline.
 	 */
-	enum struct E_RENDER_TARGET : uint32_t
+	enum struct E_RENDER_TARGET : uint8_t
 	{
 		SCREEN,
 		OFFSCREEN
@@ -275,7 +276,7 @@ namespace VTX::Renderer::Desc
 	/**
 	 * @brief All options.
 	 */
-	enum struct E_OPTION : uint32_t
+	enum struct E_OPTION : uint8_t
 	{
 		VSYNC
 	};
@@ -325,7 +326,7 @@ namespace VTX::Renderer::Desc
 	 */
 	struct Texture
 	{
-		E_FORMAT			   format;
+		E_FORMAT			   format = E_FORMAT::RGBA8UI;
 		Size2D				   size;
 		std::vector<std::byte> data;
 		E_TEXTURE_TARGET	   target	= E_TEXTURE_TARGET::TEXTURE_2D;
@@ -422,8 +423,8 @@ namespace VTX::Renderer::Desc
 	struct Geometry
 	{
 		Key						 vertexLayout;
-		std::optional<Key>		 indiceBuffer	= {};
-		std::optional<Key>		 indirectBuffer = {};
+		std::optional<Key>		 indiceBuffer;
+		std::optional<Key>		 indirectBuffer;
 		std::vector<BufferChunk> chunks;
 	};
 
@@ -440,7 +441,7 @@ namespace VTX::Renderer::Desc
 
 	struct DrawIndirectRecord
 	{
-		DrawIndirectCommand command;
+		DrawIndirectCommand command {};
 		uint32_t			idModel	 = 0;
 		uint32_t			padding0 = 0;
 		uint32_t			padding1 = 0;
@@ -458,7 +459,7 @@ namespace VTX::Renderer::Desc
 
 	struct DrawIndexedIndirectRecord
 	{
-		DrawIndexedIndirectCommand command;
+		DrawIndexedIndirectCommand command {};
 		uint32_t				   idModel	= 0;
 		uint32_t				   padding0 = 0;
 		uint32_t				   padding1 = 0;
@@ -478,7 +479,7 @@ namespace VTX::Renderer::Desc
 	struct DrawCall
 	{
 		Key			geometry;
-		E_PRIMITIVE primitive;
+		E_PRIMITIVE primitive {};
 
 		struct Range
 		{
@@ -574,9 +575,7 @@ namespace VTX::Renderer::Desc
 	 */
 	template<typename T>
 	Hash hashDesc( const T & )
-	{
-		return 0;
-	}
+	{ return 0; }
 
 	template<>
 	inline Hash hashDesc<Texture>( const Texture & p_text )
@@ -618,7 +617,7 @@ namespace VTX::Renderer::Desc
 		/**
 		 * @brief Availability.
 		 */
-		bool inline available() const noexcept { return compiled && runtime; }
+		bool available() const noexcept { return compiled && runtime; }
 	};
 
 	/**

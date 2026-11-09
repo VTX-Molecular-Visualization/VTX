@@ -1,5 +1,5 @@
-#ifndef __VTX_BENCH_UTIL__
-#define __VTX_BENCH_UTIL__
+#ifndef VTX_BENCH_UTIL_HPP
+#define VTX_BENCH_UTIL_HPP
 
 #include <core/struct/topology.hpp>
 #include <core/struct/trajectory.hpp>

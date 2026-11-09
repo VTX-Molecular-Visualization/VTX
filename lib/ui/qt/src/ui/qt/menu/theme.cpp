@@ -1,9 +1,9 @@
 #include "ui/qt/menu/theme.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/style_manager.hpp"
-#include "ui/qt/widget/main_window.hpp"
 #include <QActionGroup>
 #include <app/services.hpp>
 #include <string>
@@ -21,11 +21,11 @@ namespace VTX::UI::QT::Menu
 		}
 	} // namespace
 
-	Theme::Theme( QWidget * p_parent ) : BaseWidget( p_parent )
+	Theme::Theme( QWidget * const p_parent ) : BaseWidget( p_parent )
 	{
 		setTitle( "Theme" );
 
-		_actionGroup = new QActionGroup( this );
+		_actionGroup = Helper::makeQObject<QActionGroup>( this );
 		_actionGroup->setExclusive( true );
 
 		_addThemeAction( "System", Style::E_THEME::SYSTEM );
@@ -36,7 +36,7 @@ namespace VTX::UI::QT::Menu
 
 		_syncTheme();
 		connect( this, &QMenu::aboutToShow, this, &Theme::_syncTheme );
-		App::HUB().connect<Events::ThemeChanged, &Theme::_onThemeChanged>( this );
+		_themeChangedConnection = App::HUB().connect<Events::ThemeChanged, &Theme::_onThemeChanged>( this );
 	}
 
 	void Theme::_addThemeAction( const QString & p_label, const Style::E_THEME p_theme )
@@ -46,12 +46,10 @@ namespace VTX::UI::QT::Menu
 		_actionGroup->addAction( action );
 		_themeActions[ static_cast<std::size_t>( toUnderlying( p_theme ) ) ] = action;
 
-		connect(
-			action,
-			&QAction::triggered,
-			this,
-			[ p_theme ]() { UI_ACTIONS().trigger( Action::Theme::SET, themeParams( p_theme ) ); }
-		);
+		connect( action,
+				 &QAction::triggered,
+				 this,
+				 [ p_theme ]() { UI_ACTIONS().trigger( Action::Theme::SET, themeParams( p_theme ) ); } );
 	}
 
 	void Theme::_syncTheme()

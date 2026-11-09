@@ -1,9 +1,10 @@
-#ifndef __VTX_UTIL_DATALOCKER__
-#define __VTX_UTIL_DATALOCKER__
+#ifndef VTX_UTIL_DATALOCKER_HPP
+#define VTX_UTIL_DATALOCKER_HPP
 
 #include "concepts.hpp"
 #include <mutex>
 #include <optional>
+#include <type_traits>
 #include <util/exceptions.hpp>
 
 namespace VTX::Util
@@ -21,11 +22,12 @@ namespace VTX::Util
 		DataType _data;
 		mutable std::mutex
 			_mutex; // This member is mutable so the lock can be tested on a const DataLocker, which make sense as we
-					// expect a const object to prevent Data modification but to be lockable anyway
+
+		// expect a const object to prevent Data modification but to be lockable anyway
 
 		static DataType lock_and_copy( const DataType & p_data, std::mutex & p_mutex )
 		{
-			std::scoped_lock<std::mutex> lock { p_mutex };
+			const std::scoped_lock<std::mutex> lock { p_mutex };
 			return DataType( p_data );
 		}
 
@@ -43,30 +45,42 @@ namespace VTX::Util
 		DataLocker( Args... args ) : _data( std::forward<Args>( args )... )
 		{
 		}
+
 		~DataLocker() = default;
 
-		inline DataLocker( DataLocker<DataType> && p_ ) : _data( std::move( p_._data ) ) {}
-		inline DataLocker( const DataLocker<DataType> & p_ ) : _data( lock_and_copy( p_._data, p_._mutex ) ) {}
-		inline DataLocker & operator=( DataLocker<DataType> && p_ )
+		DataLocker( DataLocker<DataType> && p_ ) noexcept( std::is_nothrow_move_constructible_v<DataType> ) :
+			_data( std::move( p_._data ) )
+		{
+		}
+
+		DataLocker( const DataLocker<DataType> & p_ ) : _data( lock_and_copy( p_._data, p_._mutex ) ) {}
+
+		DataLocker & operator=( DataLocker<DataType> && p_ ) noexcept( std::is_nothrow_move_assignable_v<DataType> )
 		{
 			if ( &p_ != this )
+			{
 				_data = std::move( p_._data );
+			}
 
 			return *this;
 		}
-		inline DataLocker & operator=( const DataLocker<DataType> & p_ )
+
+		DataLocker & operator=( const DataLocker<DataType> & p_ )
 		{
 			std::scoped_lock<std::mutex> lock { p_._mutex };
 
 			if ( &p_ != this )
+			{
 				_data = DataType( p_._data );
+			}
 
 			return *this;
 		}
 
 		// Open the datalocker to be granted an exclusive scoped usage of the datastruct inside
-		ReservedData<DataType>		 open() noexcept { return ReservedData( _data, _mutex ); }
-		ReservedData<const DataType> open() const noexcept { return ReservedData<const DataType>( _data, _mutex ); }
+		ReservedData<DataType> open() { return ReservedData( _data, _mutex ); }
+
+		ReservedData<const DataType> open() const { return ReservedData<const DataType>( _data, _mutex ); }
 
 		bool isDataAvailable() const noexcept
 		{
@@ -88,7 +102,6 @@ namespace VTX::Util
 		std::optional<std::unique_lock<std::mutex>> _lock;
 
 		ReservedData( ReservedDataType & d, std::mutex & m ) : _dataPtr( &d ), _lock( m ) {}
-		ReservedData() = delete;
 
 		friend DataLocker<ReservedDataType>;
 		friend DataLocker<typename std::remove_cvref_t<ReservedDataType>>; // Very nice trick to befriend a
@@ -96,10 +109,15 @@ namespace VTX::Util
 																		   // while being a const data
 
 	  public:
-		ReservedDataType *		 operator->() { return _dataPtr; }
-		const ReservedDataType * operator->() const { return _dataPtr; }
-		ReservedDataType &		 operator*() { return *_dataPtr; }
-		const ReservedDataType & operator*() const { return *_dataPtr; }
+		ReservedData() = delete;
+
+		ReservedDataType * operator->() noexcept { return _dataPtr; }
+
+		const ReservedDataType * operator->() const noexcept { return _dataPtr; }
+
+		ReservedDataType & operator*() noexcept { return *_dataPtr; }
+
+		const ReservedDataType & operator*() const noexcept { return *_dataPtr; }
 	};
 } // namespace VTX::Util
 

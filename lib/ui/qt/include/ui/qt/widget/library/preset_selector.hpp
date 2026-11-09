@@ -1,6 +1,7 @@
-#ifndef __VTX_UI_QT_WIDGET_PRESET_SELECTOR__
-#define __VTX_UI_QT_WIDGET_PRESET_SELECTOR__
+#ifndef VTX_UI_QT_WIDGET_LIBRARY_PRESET_SELECTOR_HPP
+#define VTX_UI_QT_WIDGET_LIBRARY_PRESET_SELECTOR_HPP
 
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
@@ -34,20 +35,20 @@ namespace VTX::UI::QT::Widget::Library
 		Q_OBJECT
 
 	  public:
-		BasePresetSelector( QWidget * p_parent ) : QGroupBox( p_parent ) {}
+		BasePresetSelector( QWidget * const p_parent ) : QGroupBox( p_parent ) {}
 
-		virtual ~BasePresetSelector() = default;
+		~BasePresetSelector() override = default;
 
 	  signals:
 		/**
 		 * @brief Signal emitted when the selected preset is changed from the widget.
 		 */
-		void presetChanged( const Entity );
+		void presetChanged( Entity );
 
 		/**
 		 * @brief Signal emitted when the current preset is updated from App.
 		 */
-		void currentPresetUpdated( const Entity );
+		void currentPresetUpdated( Entity );
 	};
 
 	/**
@@ -57,17 +58,18 @@ namespace VTX::UI::QT::Widget::Library
 	class PresetSelector : public BasePresetSelector
 	{
 	  public:
-		PresetSelector( QWidget * p_parent ) : BasePresetSelector( p_parent )
+		PresetSelector( QWidget * const p_parent ) :
+			BasePresetSelector( p_parent ), _comboBox( Helper::makeQObject<QComboBox>( this ) ),
+			_lineRename( Helper::makeQObject<QLineEdit>( this ) )
 		{
-			auto * layout = new QVBoxLayout( this );
+			auto * layout = Helper::makeQObject<QVBoxLayout>( this );
 			setTitle( "Presets" );
 
 			// layout->setContentsMargins( 0, 0, 0, 0 );
 
-			_comboBox = new QComboBox( this );
 			layout->addWidget( _comboBox );
 
-			auto * toolbar = new QToolBar( this );
+			auto * toolbar = Helper::makeQObject<QToolBar>( this );
 			toolbar->setMovable( false );
 			toolbar->setFloatable( false );
 			toolbar->setToolButtonStyle( Qt::ToolButtonIconOnly );
@@ -78,73 +80,61 @@ namespace VTX::UI::QT::Widget::Library
 
 			layout->addWidget( toolbar );
 
-			_lineRename = new QLineEdit( this );
 			layout->addWidget( _lineRename );
 
-			auto * bApply = new QPushButton( "Apply", this );
+			auto * bApply = Helper::makeQObject<QPushButton>( "Apply", this );
 			bApply->setIcon( STYLE().iconFromCodepoint( Style::Icons::APPLY ) );
 			bApply->setToolTip( "Apply this preset" );
 			bApply->setStatusTip( "Apply this preset to the whole scene" );
 
 			layout->addWidget( bApply );
 
-			connect(
-				_comboBox,
-				&QComboBox::currentIndexChanged,
-				this,
-				[ this ]( const int )
-				{
-					_lineRename->setText( _comboBox->currentText() );
-					emit presetChanged( getCurrentPreset() );
-				}
-			);
+			connect( _comboBox,
+					 &QComboBox::currentIndexChanged,
+					 this,
+					 [ this ]( const int )
+					 {
+						 _lineRename->setText( _comboBox->currentText() );
+						 emit presetChanged( getCurrentPreset() );
+					 } );
 
-			connect(
-				bNew,
-				&QToolButton::clicked,
-				this,
-				[]() { App::ACTION().execute<App::Action::Preset::Add<P>>( std::nullopt, std::nullopt ); }
-			);
+			connect( bNew,
+					 &QToolButton::clicked,
+					 this,
+					 []() { App::ACTION().execute<App::Action::Preset::Add<P>>( std::nullopt, std::nullopt ); } );
 
-			connect(
-				bDuplicate,
-				&QToolButton::clicked,
-				this,
-				[ this ]()
-				{
-					const Entity preset = getCurrentPreset();
-					if ( preset != InvalidEntity )
-					{
-						App::ACTION().execute<App::Action::Preset::Duplicate<P>>( preset, std::nullopt );
-					}
-				}
-			);
+			connect( bDuplicate,
+					 &QToolButton::clicked,
+					 this,
+					 [ this ]()
+					 {
+						 const Entity preset = getCurrentPreset();
+						 if ( preset != InvalidEntity )
+						 {
+							 App::ACTION().execute<App::Action::Preset::Duplicate<P>>( preset, std::nullopt );
+						 }
+					 } );
 
-			connect(
-				bApply,
-				&QToolButton::clicked,
-				this,
-				[ this ]()
-				{
-					const Entity preset = getCurrentPreset();
-					if ( preset != InvalidEntity )
-					{
-						App::ACTION().execute<App::Action::Preset::Apply<P>>( preset );
-					}
-				}
-			);
+			connect( bApply,
+					 &QToolButton::clicked,
+					 this,
+					 [ this ]()
+					 {
+						 const Entity preset = getCurrentPreset();
+						 if ( preset != InvalidEntity )
+						 {
+							 App::ACTION().execute<App::Action::Preset::Apply<P>>( preset );
+						 }
+					 } );
 
-			connect(
-				_lineRename,
-				&QLineEdit::editingFinished,
-				this,
-				[ this ]()
-				{
-					App::ACTION().execute<App::Action::Preset::Rename<P>>(
-						getCurrentPreset(), _lineRename->text().toStdString()
-					);
-				}
-			);
+			connect( _lineRename,
+					 &QLineEdit::editingFinished,
+					 this,
+					 [ this ]()
+					 {
+						 App::ACTION().execute<App::Action::Preset::Rename<P>>( getCurrentPreset(),
+																				_lineRename->text().toStdString() );
+					 } );
 
 			// Callbacks.
 			auto & reg = App::REG();
@@ -156,19 +146,11 @@ namespace VTX::UI::QT::Widget::Library
 			_onPresetUpdateConnection = reg.on_update<P>().template connect<&PresetSelector::_onUpdatePreset>( this );
 		}
 
-		virtual ~PresetSelector()
-		{
-			_onConstructConnection.release();
-			_onDestroyConnection.release();
-			_onNameUpdateConnection.release();
-			_onPresetUpdateConnection.release();
-		}
+		Entity getCurrentPreset() const { return _comboBox->currentData().value<Entity>(); }
 
-		inline Entity getCurrentPreset() const { return _comboBox->currentData().value<Entity>(); }
+		void refresh() { _refreshComboBox( App::REG(), Entity {} ); }
 
-		inline void refresh() { _refreshComboBox( App::REG(), Entity {} ); }
-
-		inline void setCurrentPreset( const Entity p_preset )
+		void setCurrentPreset( const Entity p_preset )
 		{
 			if ( _comboBox->count() == 0 )
 			{
@@ -196,19 +178,17 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Connections to App.
 		 */
-		VTX::Util::EventHub::Connection _onConstructConnection;
-		VTX::Util::EventHub::Connection _onDestroyConnection;
-		VTX::Util::EventHub::Connection _onNameUpdateConnection;
-		VTX::Util::EventHub::Connection _onPresetUpdateConnection;
+		VTX::Util::EventHub::ScopedConnection _onConstructConnection;
+		VTX::Util::EventHub::ScopedConnection _onDestroyConnection;
+		VTX::Util::EventHub::ScopedConnection _onNameUpdateConnection;
+		VTX::Util::EventHub::ScopedConnection _onPresetUpdateConnection;
 
-		QToolButton * _addButton(
-			QToolBar &			   p_toolbar,
-			const QString &		   p_text,
-			const Style::Codepoint p_icon,
-			const QString &		   p_tip
-		)
+		QToolButton * _addButton( QToolBar &			 p_toolbar,
+								  const QString &		 p_text,
+								  const Style::Codepoint p_icon,
+								  const QString &		 p_tip )
 		{
-			auto * const button = new QToolButton( &p_toolbar );
+			auto * const button = Helper::makeQObject<QToolButton>( &p_toolbar );
 			button->setText( p_text );
 			button->setIcon( STYLE().iconFromCodepoint( p_icon ) );
 			button->setToolTip( p_tip );
@@ -226,7 +206,7 @@ namespace VTX::UI::QT::Widget::Library
 		void _refreshComboBox( Registry &, Entity )
 		{
 			using namespace App;
-			QSignalBlocker blocker( _comboBox );
+			const QSignalBlocker blocker( _comboBox );
 
 			const Entity currentPreset = getCurrentPreset();
 			_comboBox->clear();
@@ -241,14 +221,12 @@ namespace VTX::UI::QT::Widget::Library
 				presets.emplace_back( QString::fromStdString( presetName ), entity );
 			}
 
-			std::sort(
-				presets.begin(),
-				presets.end(),
-				[]( const auto & p_left, const auto & p_right )
-				{ return QString::localeAwareCompare( p_left.first, p_right.first ) < 0; }
-			);
+			std::sort( presets.begin(),
+					   presets.end(),
+					   []( const auto & p_left, const auto & p_right )
+					   { return QString::localeAwareCompare( p_left.first, p_right.first ) < 0; } );
 
-			for ( int i = 0; i < int( presets.size() ); ++i )
+			for ( int i = 0; std::cmp_less( i, presets.size() ); ++i )
 			{
 				const auto & [ presetName, entity ] = presets[ i ];
 				_comboBox->addItem( presetName, QVariant::fromValue<Entity>( entity ) );

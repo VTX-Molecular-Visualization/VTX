@@ -8,25 +8,42 @@ namespace VTX::Util::Thread
 	ThreadManager::ThreadManager() : _ownerThreadId( std::this_thread::get_id() ) {}
 
 	void ThreadManager::setDefaultProgressCallback( BaseThread::ProgressCallback p_callback )
-	{
-		_progressCallback = std::move( p_callback );
-	}
+	{ _progressCallback = std::move( p_callback ); }
 
 	void ThreadManager::setDefaultTerminatedCallback( BaseThread::TerminatedCallback p_callback )
-	{
-		_terminatedCallback = std::move( p_callback );
-	}
+	{ _terminatedCallback = std::move( p_callback ); }
 
 	ThreadManager::~ThreadManager()
 	{
-		_cancelSynchronizedCalls();
-		for ( const std::shared_ptr<BaseThread> & thread : _threads )
+		try
 		{
-			thread->stop();
+			_cancelSynchronizedCalls();
+		}
+		catch ( ... )
+		{
+			LOGGER::logException( "Failed to cancel synchronized calls" );
 		}
 		for ( const std::shared_ptr<BaseThread> & thread : _threads )
 		{
-			thread->wait();
+			try
+			{
+				thread->stop();
+			}
+			catch ( ... )
+			{
+				LOGGER::logException( "Failed to stop thread" );
+			}
+		}
+		for ( const std::shared_ptr<BaseThread> & thread : _threads )
+		{
+			try
+			{
+				thread->wait();
+			}
+			catch ( ... )
+			{
+				LOGGER::logException( "Failed to wait for thread" );
+			}
 		}
 		_threads.clear();
 	}
@@ -54,19 +71,19 @@ namespace VTX::Util::Thread
 			}
 		};
 
-		std::list<_SynchronizedCall> calls;
-		std::list<_DispatchedCall>	 dispatchedCalls;
+		std::list<SynchronizedCall> calls;
+		std::list<DispatchedCall>	dispatchedCalls;
 		{
 			const std::scoped_lock lock( _synchronizedCallsMutex );
 			calls.splice( calls.end(), _synchronizedCalls );
 			dispatchedCalls.splice( dispatchedCalls.end(), _dispatchedCalls );
 		}
 
-		for ( _SynchronizedCall & call : calls )
+		for ( SynchronizedCall & call : calls )
 		{
 			call.task();
 		}
-		for ( _DispatchedCall & call : dispatchedCalls )
+		for ( DispatchedCall & call : dispatchedCalls )
 		{
 			try
 			{
@@ -116,7 +133,7 @@ namespace VTX::Util::Thread
 		const BaseThread::EndCallback & p_callback
 	)
 	{
-		std::shared_ptr<BaseThread> thread( new BaseThread( *this ) );
+		const std::shared_ptr<BaseThread> thread( new BaseThread( *this ) );
 		_threads.emplace_back( thread );
 		try
 		{
@@ -159,7 +176,7 @@ namespace VTX::Util::Thread
 			return;
 		}
 		_cancelledCallers.emplace( p_caller );
-		_synchronizedCalls.remove_if( [ p_caller ]( const _SynchronizedCall & p_call )
+		_synchronizedCalls.remove_if( [ p_caller ]( const SynchronizedCall & p_call )
 									  { return p_call.caller == p_caller; } );
 	}
 

@@ -1,5 +1,6 @@
 #include "ui/qt/widget/tree/scripts.hpp"
 #include "ui/qt/events.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include "ui/qt/style/icons.hpp"
@@ -62,9 +63,7 @@ namespace VTX::UI::QT::Widget::Tree
 			const QString _scriptsDir;
 
 			static QString _normalize( const QString & p_path )
-			{
-				return QDir::fromNativeSeparators( QDir::cleanPath( p_path ) );
-			}
+			{ return QDir::fromNativeSeparators( QDir::cleanPath( p_path ) ); }
 
 			static bool _isSameOrChild( const QString & p_path, const QString & p_parent )
 			{
@@ -95,14 +94,14 @@ namespace VTX::UI::QT::Widget::Tree
 		const QString  scriptsPath = QString::fromStdString( scriptsDir.string() );
 		const QString  parentPath  = QString::fromStdString( parentDir.string() );
 
-		_fileModel = new QFileSystemModel( this );
+		_fileModel = Helper::makeQObject<QFileSystemModel>( this );
 		_fileModel->setFilter( QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot );
 		_fileModel->setNameFilters( { "*.py" } );
 		_fileModel->setNameFilterDisables( false );
 		_fileModel->setReadOnly( true );
 		_fileModel->setRootPath( parentPath );
 
-		_proxyModel = new ScriptsProxyModel( scriptsPath, this );
+		_proxyModel = Helper::makeQObject<ScriptsProxyModel>( scriptsPath, this );
 		_proxyModel->setSourceModel( _fileModel );
 		_proxyModel->setDynamicSortFilter( true );
 		_proxyModel->sort( 0, Qt::AscendingOrder );
@@ -118,45 +117,36 @@ namespace VTX::UI::QT::Widget::Tree
 
 		connect( this, &QTreeView::clicked, this, &Scripts::_selectScript );
 		connect( this, &QTreeView::doubleClicked, this, &Scripts::_runScript );
+		connect( this,
+				 &QTreeView::expanded,
+				 this,
+				 [ this, scriptsPath ]( const QModelIndex & p_index )
+				 {
+					 if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
+					 {
+						 SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, true );
+					 }
+				 } );
+		connect( this,
+				 &QTreeView::collapsed,
+				 this,
+				 [ this, scriptsPath ]( const QModelIndex & p_index )
+				 {
+					 if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
+					 {
+						 SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, false );
+					 }
+				 } );
 		connect(
-			this,
-			&QTreeView::expanded,
-			this,
-			[ this, scriptsPath ]( const QModelIndex & p_index )
-			{
-				if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
-				{
-					SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, true );
-				}
-			}
-		);
-		connect(
-			this,
-			&QTreeView::collapsed,
-			this,
-			[ this, scriptsPath ]( const QModelIndex & p_index )
-			{
-				if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
-				{
-					SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, false );
-				}
-			}
-		);
-		connect(
-			_fileModel, &QFileSystemModel::directoryLoaded, this, [ this ]( const QString & ) { updateGeometry(); }
-		);
-		connect(
-			_proxyModel,
-			&QAbstractItemModel::rowsInserted,
-			this,
-			[ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); }
-		);
-		connect(
-			_proxyModel,
-			&QAbstractItemModel::rowsRemoved,
-			this,
-			[ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); }
-		);
+			_fileModel, &QFileSystemModel::directoryLoaded, this, [ this ]( const QString & ) { updateGeometry(); } );
+		connect( _proxyModel,
+				 &QAbstractItemModel::rowsInserted,
+				 this,
+				 [ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); } );
+		connect( _proxyModel,
+				 &QAbstractItemModel::rowsRemoved,
+				 this,
+				 [ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); } );
 	}
 
 	void Scripts::_selectScript( const QModelIndex & p_index )
@@ -189,7 +179,6 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 
 		App::ACTION().execute<App::Action::IO::RunPythonScript>(
-			FilePath( _fileModel->filePath( sourceIndex ).toStdString() )
-		);
+			FilePath( _fileModel->filePath( sourceIndex ).toStdString() ) );
 	}
 } // namespace VTX::UI::QT::Widget::Tree

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_EVENTS__
-#define __VTX_UI_QT_EVENTS__
+#ifndef VTX_UI_QT_EVENTS_HPP
+#define VTX_UI_QT_EVENTS_HPP
 
 #include <util/filesystem.hpp>
 

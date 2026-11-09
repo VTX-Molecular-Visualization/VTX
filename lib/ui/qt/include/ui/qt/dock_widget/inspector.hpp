@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_INSPECTOR__
-#define __VTX_UI_QT_DOCK_WIDGET_INSPECTOR__
+#ifndef VTX_UI_QT_DOCK_WIDGET_INSPECTOR_HPP
+#define VTX_UI_QT_DOCK_WIDGET_INSPECTOR_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/widget/library/color_layout.hpp"
@@ -8,6 +8,7 @@
 #include "ui/qt/widget/selection.hpp"
 #include "ui/qt/widget/viewpoint.hpp"
 #include <QToolButton>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -35,6 +36,9 @@ namespace VTX::UI::QT::DockWidget
 
 		bool _hasSystemSelection() const;
 		void _onSystemSelectionUpdated( Registry &, Entity );
+
+		VTX::Util::EventHub::ScopedConnection _selectionUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _systemDestroyedConnection;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

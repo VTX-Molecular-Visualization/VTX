@@ -1,11 +1,12 @@
-#ifndef __VTX_APP_PASS_MESH_UPDATER__
-#define __VTX_APP_PASS_MESH_UPDATER__
+#ifndef VTX_APP_PASS_MESH_UPDATER_HPP
+#define VTX_APP_PASS_MESH_UPDATER_HPP
 
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
 #include <renderer/descriptors.hpp>
 #include <unordered_map>
+#include <util/event_hub.hpp>
 #include <vector>
 
 namespace VTX::App::Pass
@@ -21,7 +22,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Update the renderer with pending changes.
 		 */
-		void update( const float, const float );
+		void update( float, float );
 
 	  private:
 		/**
@@ -39,9 +40,13 @@ namespace VTX::App::Pass
 		 * @brief Push mesh data to renderer.
 		 */
 		void _onMeshLoad( const Events::MeshLoad & );
-		void _onUpdateTransform( Registry &, const Entity );
-		void _onDestroyMesh( Registry &, const Entity );
+		void _onUpdateTransform( Registry &, Entity );
+		void _onDestroyMesh( Registry &, Entity );
+
+		Util::EventHub::ScopedConnection _meshLoadConnection;
+		Util::EventHub::ScopedConnection _transformUpdatedConnection;
+		Util::EventHub::ScopedConnection _meshDestroyedConnection;
 	};
 } // namespace VTX::App::Pass
 
-#endif // !__VTX_APP_PASS_MESH_UPDATER__
+#endif // !VTX_APP_PASS_MESH_UPDATER_HPP

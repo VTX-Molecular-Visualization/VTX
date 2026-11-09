@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_TRAJECTORY_LOADER__
-#define __VTX_APP_TRAJECTORY_LOADER__
+#ifndef VTX_APP_TRAJECTORY_LOADER_HPP
+#define VTX_APP_TRAJECTORY_LOADER_HPP
 
 #include "app/thread/trajectory_loader.hpp"
 #include "app/trajectory/types.hpp"

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CONTROLLER_FREEFLY__
-#define __VTX_APP_CONTROLLER_FREEFLY__
+#ifndef VTX_APP_CONTROLLER_FREEFLY_HPP
+#define VTX_APP_CONTROLLER_FREEFLY_HPP
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
@@ -17,7 +17,7 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Called each frame.
 		 */
-		bool update( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
+		bool update( float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
 
 		/**
 		 * @brief Stop movement.

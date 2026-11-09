@@ -1,14 +1,14 @@
 #include "renderer/context/backend/interop/opengl_cuda_interop.hpp"
-#include "renderer/context/backend/gl/include_opengl.hpp"
 #include <array>
+
+#ifdef VTX_CUDA_ENABLED
+#include "renderer/context/backend/gl/include_opengl.hpp"
+#include <cuda_gl_interop.h>
+#include <cuda_runtime_api.h>
 #include <string>
 #include <unordered_map>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
-
-#ifdef VTX_CUDA_ENABLED
-#include <cuda_gl_interop.h>
-#include <cuda_runtime_api.h>
 #endif
 
 namespace VTX::Renderer::Context::Backend::Interop
@@ -73,9 +73,9 @@ namespace VTX::Renderer::Context::Backend::Interop
 			return;
 		}
 
-		void * devicePtr = nullptr;
-		size_t size		= 0;
-		const bool mapped = cudaGraphicsMapResources( 1, &resource ) == cudaSuccess;
+		void *	   devicePtr = nullptr;
+		size_t	   size		 = 0;
+		const bool mapped	 = cudaGraphicsMapResources( 1, &resource ) == cudaSuccess;
 		if ( mapped && cudaGraphicsResourceGetMappedPointer( &devicePtr, &size, resource ) == cudaSuccess )
 		{
 			_impl->availability.runtime = devicePtr != nullptr && size > 0;
@@ -143,8 +143,10 @@ namespace VTX::Renderer::Context::Backend::Interop
 			{
 				flags = cudaGraphicsRegisterFlagsReadOnly;
 			}
-			else if ( not Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_READ )
-					  && Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_WRITE ) )
+			else if (
+				not Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_READ )
+				&& Util::Enum::hasAnyBit( request.usage, Desc::E_BUFFER_USAGE::CUDA_WRITE )
+			)
 			{
 				flags = cudaGraphicsRegisterFlagsWriteDiscard;
 			}
@@ -159,7 +161,7 @@ namespace VTX::Renderer::Context::Backend::Interop
 		resourcesToMap.reserve( p_requests.size() );
 		for ( const BufferRequest & request : p_requests )
 		{
-			Impl::Registration & registration = _impl->registrations[ request.key ];
+			const Impl::Registration & registration = _impl->registrations[ request.key ];
 			if ( not registration.mapped )
 			{
 				resourcesToMap.emplace_back( registration.resource );
@@ -169,7 +171,7 @@ namespace VTX::Renderer::Context::Backend::Interop
 		if ( not resourcesToMap.empty() )
 		{
 			_cudaCheck(
-				cudaGraphicsMapResources( int( resourcesToMap.size() ), resourcesToMap.data() ),
+				cudaGraphicsMapResources( static_cast<int>( resourcesToMap.size() ), resourcesToMap.data() ),
 				"Could not map CUDA interop buffers"
 			);
 		}
@@ -203,10 +205,10 @@ namespace VTX::Renderer::Context::Backend::Interop
 		const Desc::E_BUFFER_USAGE p_usage
 	)
 	{
-		const std::array<BufferRequest, 1> requests {
+		const auto requests = std::to_array<BufferRequest>( {
 			BufferRequest { p_key, p_graphicsBufferId, p_usage },
-		};
-		auto mappings = mapBuffers( requests );
+		} );
+		auto	   mappings = mapBuffers( requests );
 		assert( mappings.size() == 1 );
 
 		return std::move( mappings.front() );

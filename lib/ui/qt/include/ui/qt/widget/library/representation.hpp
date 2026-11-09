@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_LIBRARY_REPRESENTATION__
-#define __VTX_UI_QT_WIDGET_LIBRARY_REPRESENTATION__
+#ifndef VTX_UI_QT_WIDGET_LIBRARY_REPRESENTATION_HPP
+#define VTX_UI_QT_WIDGET_LIBRARY_REPRESENTATION_HPP
 
 #include "base_preset_widget.hpp"
 #include "ui/qt/widget/editable_slider.hpp"
@@ -7,6 +7,8 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <app/action/representation.hpp>
+#include <app/events.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {
@@ -49,14 +51,15 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<QCheckBox>		   _checkBoxSesOthers;
 		QPointer<EditableSlider>   _sliderSesProbeRadius;
 
+		VTX::Util::EventHub::ScopedConnection _rendererReadyConnection;
+
 		template<VTX::Renderer::E_REPRESENTATION_VALUES S, typename T>
 		void _changeValue( const T p_value )
-		{
-			App::ACTION().execute<App::Action::Representation::Change<S, T>>( currentPreset(), p_value );
-		}
+		{ App::ACTION().execute<App::Action::Representation::Change<S, T>>( currentPreset(), p_value ); }
 
 		void _applyLogic( const VTX::Renderer::Representation & );
 		void _refreshCUDAState();
+		void _onRendererReady( const App::Events::RendererReady & );
 		void _setSesCategoryEnabled( VTX::Renderer::E_SES_COMPUTE_MODE, bool );
 		void _setSesMixedMode( bool );
 	};

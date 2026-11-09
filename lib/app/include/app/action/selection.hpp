@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_SELECTION__
-#define __VTX_APP_ACTION_SELECTION__
+#ifndef VTX_APP_ACTION_SELECTION_HPP
+#define VTX_APP_ACTION_SELECTION_HPP
 
 #include "app/helper/system.hpp"
 #include "app/system/selection.hpp"
@@ -42,11 +42,11 @@ namespace VTX::App::Action::Selection
 			const bool							 p_append	= false
 		)
 		{
-			Util::ScopedChrono timer( "App::Action::SetSelected" );
+			const Util::ScopedChrono timer( "App::Action::SetSelected" );
 
-			const auto &				 selection = REG().get<System::Selection>( p_ent );
-			Core::Struct::IndexRangeList atoms	   = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
-			Util::Math::BitSet			 current   = selection.atoms;
+			const auto &					   selection = REG().get<System::Selection>( p_ent );
+			const Core::Struct::IndexRangeList atoms	 = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+			Util::Math::BitSet				   current	 = selection.atoms;
 
 			if ( not p_append )
 			{
@@ -64,7 +64,7 @@ namespace VTX::App::Action::Selection
 			patchSelection( p_ent, std::move( current ) );
 		}
 
-		inline void execute(
+		void execute(
 			const Entity					 p_ent,
 			const Core::Struct::IndexRange & p_range,
 			const bool						 p_selected = true,
@@ -74,7 +74,7 @@ namespace VTX::App::Action::Selection
 			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected, p_append );
 		}
 
-		inline void execute(
+		void execute(
 			const Entity			   p_ent,
 			const std::vector<Index> & p_values,
 			const bool				   p_selected = true,
@@ -84,7 +84,7 @@ namespace VTX::App::Action::Selection
 			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_selected, p_append );
 		}
 
-		inline void execute(
+		void execute(
 			const Entity p_ent,
 			const Index	 p_value,
 			const bool	 p_selected = true,
@@ -98,14 +98,14 @@ namespace VTX::App::Action::Selection
 	struct SetSelectedItem
 	{
 		void execute(
-			const Entity,
-			const Core::Struct::E_SYSTEM_ITEM,
+			Entity,
+			Core::Struct::E_SYSTEM_ITEM,
 			const Core::Struct::IndexRangeList & = {},
-			const bool							 = true,
-			const bool							 = false
+			bool								 = true,
+			bool								 = false
 		);
 
-		inline void execute(
+		void execute(
 			const Entity					  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM p_item,
 			const std::vector<Index> &		  p_values,
@@ -116,7 +116,7 @@ namespace VTX::App::Action::Selection
 			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_selected, p_append );
 		}
 
-		inline void execute(
+		void execute(
 			const Entity					  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM p_item,
 			const Core::Struct::IndexRange &  p_range,
@@ -127,7 +127,7 @@ namespace VTX::App::Action::Selection
 			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_selected, p_append );
 		}
 
-		inline void execute(
+		void execute(
 			const Entity					  p_ent,
 			const Core::Struct::E_SYSTEM_ITEM p_item,
 			const Index						  p_value,
@@ -158,7 +158,7 @@ namespace VTX::App::Action::Selection
 		/**
 		 * @brief Clear mode.
 		 */
-		enum struct E_MODE : uint
+		enum struct E_MODE : uint8_t
 		{
 			THIS,
 			OTHERS
@@ -167,10 +167,10 @@ namespace VTX::App::Action::Selection
 		/**
 		 * @brief For a specific system.
 		 */
-		void execute( const Entity, const E_MODE );
+		void execute( Entity, E_MODE );
 	};
 
-	enum struct E_GRANULARITY : uint
+	enum struct E_GRANULARITY : uint8_t
 	{
 		ATOM,
 		RESIDUE,
@@ -183,7 +183,7 @@ namespace VTX::App::Action::Selection
 	 */
 	struct Pick
 	{
-		void execute( const Vec2i &, const E_GRANULARITY = E_GRANULARITY::RESIDUE, const bool = false );
+		void execute( const Vec2i &, E_GRANULARITY = E_GRANULARITY::RESIDUE, bool = false );
 	};
 
 	struct ExtendSelectionRes

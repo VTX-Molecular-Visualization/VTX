@@ -1,8 +1,9 @@
-#ifndef __VTX_IO_METADATA__
-#define __VTX_IO_METADATA__
+#ifndef VTX_IO_METADATA_HPP
+#define VTX_IO_METADATA_HPP
 
 #include "io/constants.hpp"
 #include <string>
+#include <util/filesystem.hpp>
 
 namespace VTX::IO
 {
@@ -12,8 +13,8 @@ namespace VTX::IO
 	struct Metadata
 	{
 		FilePath	   path;
-		std::string	   pdbIDCode	 = std::string( PDB_ID_CODE_DEFAULT );
-		std::string	   name			 = "";
+		std::string	   pdbIDCode = std::string( PDB_ID_CODE_DEFAULT );
+		std::string	   name;
 		READER_OPTION  readerOption	 = READER_OPTION::ALL;
 		TOPOLOGY_STATE topologyState = TOPOLOGY_STATE::OK;
 

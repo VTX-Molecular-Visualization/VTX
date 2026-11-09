@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_CONSOLE__
-#define __VTX_UI_QT_DOCK_WIDGET_CONSOLE__
+#ifndef VTX_UI_QT_DOCK_WIDGET_CONSOLE_HPP
+#define VTX_UI_QT_DOCK_WIDGET_CONSOLE_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/widget/command_launcher.hpp"
@@ -10,6 +10,7 @@
 #include <QVBoxLayout>
 #include <app/vtx_app.hpp>
 #include <util/enum.hpp>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -22,14 +23,13 @@ namespace VTX::UI::QT::DockWidget
 	/**
 	 * @brief Class responsible for docking a console and its prompt.
 	 */
-	class Console : public BaseDockWidget<Console, 0, 0>
+	class Console : public BaseDockWidget<Console, false, false>
 	{
 	  public:
 		/**
 		 * @brief Constructor.
 		 */
 		Console( QWidget * p_parent );
-		~Console();
 
 		/**
 		 * @brief Add a log row.
@@ -43,12 +43,6 @@ namespace VTX::UI::QT::DockWidget
 
 	  private:
 		/**
-		 * @brief Callback id for log printing, to disconnect on destruction.
-		 * Useful because logs can be printed after deletion.
-		 */
-		VTX::Util::CallbackId _callbackId;
-
-		/**
 		 * @brief Display logs.
 		 */
 		QPointer<QTextBrowser> _textEdit = nullptr;
@@ -57,6 +51,12 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Python command launcher.
 		 */
 		QPointer<Widget::CommandLauncher> _commandLauncher;
+
+		/**
+		 * @brief Callback id for log printing, to disconnect on destruction.
+		 * Useful because logs can be printed after deletion.
+		 */
+		VTX::Util::EventHub::ScopedConnection _logConnection;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

@@ -1,8 +1,9 @@
-#ifndef __VTX_RENDERER_GEOMETRY_CYLINDER__
-#define __VTX_RENDERER_GEOMETRY_CYLINDER__
+#ifndef VTX_RENDERER_GEOMETRY_CYLINDER_HPP
+#define VTX_RENDERER_GEOMETRY_CYLINDER_HPP
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
+#include <string_view>
 
 namespace VTX::Renderer::Geometry
 {
@@ -10,20 +11,20 @@ namespace VTX::Renderer::Geometry
 	class Cylinder : public BaseGeometry
 	{
 	  public:
-		inline static const Desc::Key		  VERTEX_LAYOUT_ATOMS		 = "Atoms";
-		inline static const Desc::Key		  GEOMETRY_CYLINDERS		 = "Cylinders";
-		inline static const Desc::Key		  INDEX_BONDS				 = "Index.Bonds";
-		inline static const Desc::Key		  INDIRECT_CYLINDERS		 = "Indirect.Cylinders";
-		inline static constexpr Desc::Binding BINDING_INDIRECT_CYLINDERS = 10;
+		static constexpr std::string_view VERTEX_LAYOUT_ATOMS		 = "Atoms";
+		static constexpr std::string_view GEOMETRY_CYLINDERS		 = "Cylinders";
+		static constexpr std::string_view INDEX_BONDS				 = "Index.Bonds";
+		static constexpr std::string_view INDIRECT_CYLINDERS		 = "Indirect.Cylinders";
+		static constexpr Desc::Binding	  BINDING_INDIRECT_CYLINDERS = 10;
 
 		Cylinder()
 		{
-			vertexLayout   = VERTEX_LAYOUT_ATOMS;
+			vertexLayout   = Desc::Key { VERTEX_LAYOUT_ATOMS };
 			indiceBuffer   = INDEX_BONDS;
 			indirectBuffer = INDIRECT_CYLINDERS;
 		}
 
-		void clear()
+		void clear() override
 		{
 			BaseGeometry::clear();
 			_construction.clear();
@@ -33,7 +34,7 @@ namespace VTX::Renderer::Geometry
 
 		void registerSystem( const Desc::Handle p_handle, const Cache::System & p_data )
 		{
-			_construction[ p_handle ] = _Construction { &p_data.data.topology->bondPairAtomIndexes };
+			_construction[ p_handle ] = Construction { &p_data.data.topology->bondPairAtomIndexes };
 
 			const std::vector<Index> & bonds = *_construction[ p_handle ].bonds;
 			const Index				   count = static_cast<Index>( bonds.size() );
@@ -72,12 +73,12 @@ namespace VTX::Renderer::Geometry
 		}
 
 	  private:
-		struct _Construction
+		struct Construction
 		{
 			const std::vector<Index> * bonds;
 		};
 
-		std::unordered_map<Desc::Handle, _Construction> _construction;
+		std::unordered_map<Desc::Handle, Construction> _construction;
 	};
 } // namespace VTX::Renderer::Geometry
 

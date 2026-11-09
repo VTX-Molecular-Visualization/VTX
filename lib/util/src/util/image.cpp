@@ -3,8 +3,6 @@
 #define TINYEXR_IMPLEMENTATION
 
 #include "util/image.hpp"
-#include <algorithm>
-#include <cctype>
 #include <cstdlib>
 #include <exiv2/exiv2.hpp>
 #include <memory>
@@ -56,10 +54,8 @@ namespace VTX::Util::Image
 			if ( pixels == nullptr )
 			{
 				const char * const error = stbi_failure_reason();
-				throw std::runtime_error(
-					"Unable to load HDR '" + p_path.string()
-					+ "': " + ( error != nullptr ? error : "unknown stb_image error" )
-				);
+				throw std::runtime_error( "Unable to load HDR '" + p_path.string()
+										  + "': " + ( error != nullptr ? error : "unknown stb_image error" ) );
 			}
 
 			FloatImage image;
@@ -81,15 +77,13 @@ namespace VTX::Util::Image
 			int		  width			 = 0;
 			int		  height		 = 0;
 			int		  sourceChannels = 0;
-			stbi_uc * pixels
-				= stbi_load( p_path.string().c_str(), &width, &height, &sourceChannels, int( p_channels ) );
+			stbi_uc * pixels		 = stbi_load(
+				p_path.string().c_str(), &width, &height, &sourceChannels, static_cast<int>( p_channels ) );
 			if ( pixels == nullptr )
 			{
 				const char * const error = stbi_failure_reason();
-				throw std::runtime_error(
-					"Unable to load image '" + p_path.string()
-					+ "': " + ( error != nullptr ? error : "unknown stb_image error" )
-				);
+				throw std::runtime_error( "Unable to load image '" + p_path.string()
+										  + "': " + ( error != nullptr ? error : "unknown stb_image error" ) );
 			}
 
 			ByteImage image;
@@ -98,20 +92,18 @@ namespace VTX::Util::Image
 			image.channels = p_channels;
 			const std::unique_ptr<stbi_uc, decltype( &stbi_image_free )> pixelsOwner( pixels, &stbi_image_free );
 			image.pixels.assign(
-				pixelsOwner.get(), pixelsOwner.get() + image.width * image.height * size_t( image.channels )
-			);
+				pixelsOwner.get(),
+				pixelsOwner.get() + image.width * image.height * static_cast<size_t>( image.channels ) );
 
 			return image;
 		}
 	} // namespace
 
-	FilePath write(
-		const FilePath &		p_path,
-		const E_FORMAT			p_format,
-		const size_t			p_width,
-		const size_t			p_height,
-		const std::byte * const p_data
-	)
+	FilePath write( const FilePath &		p_path,
+					const E_FORMAT			p_format,
+					const size_t			p_width,
+					const size_t			p_height,
+					const std::byte * const p_data )
 	{
 		// Remove extension from path.
 		FilePath path = p_path.parent_path() / p_path.stem();
@@ -127,14 +119,26 @@ namespace VTX::Util::Image
 		case E_FORMAT::PNG:
 			path += ".png";
 			stbi_write_png_compression_level = 0;
-			stbi_write_png( path.string().c_str(), int( p_width ), int( p_height ), 4, p_data, 0 );
+			if ( stbi_write_png(
+					 path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 0
+				 )
+				 == 0 )
+			{
+				throw std::runtime_error( "Unable to write image '" + path.string() + "'" );
+			}
 			break;
 		case E_FORMAT::JPEG:
 			path += ".jpg";
-			stbi_write_jpg( path.string().c_str(), int( p_width ), int( p_height ), 4, p_data, 100 );
+			if ( stbi_write_jpg(
+					 path.string().c_str(), static_cast<int>( p_width ), static_cast<int>( p_height ), 4, p_data, 100
+				 )
+				 == 0 )
+			{
+				throw std::runtime_error( "Unable to write image '" + path.string() + "'" );
+			}
 			break;
 
-		default: assert( 1 ); ;
+		default: throw std::runtime_error( "Unsupported image format" );
 		}
 
 		return path;

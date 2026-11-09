@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_WIDGET__
-#define __VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_WIDGET__
+#ifndef VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_WIDGET_HPP
+#define VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_WIDGET_HPP
 
 #include "base_preset_widget.hpp"
 #include "graphics_config/background_section.hpp"

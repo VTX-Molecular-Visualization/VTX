@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_SCENE__
-#define __VTX_UI_QT_DOCK_WIDGET_SCENE__
+#ifndef VTX_UI_QT_DOCK_WIDGET_SCENE_HPP
+#define VTX_UI_QT_DOCK_WIDGET_SCENE_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/events.hpp"
@@ -14,6 +14,7 @@
 #include <QPointer>
 #include <QTimer>
 #include <ui/qt/widget/thread.hpp>
+#include <util/event_hub.hpp>
 #include <util/thread/base_thread.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -113,6 +114,18 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Remove thread widget.
 		 */
 		void _onThreadTerminated( const App::Events::ThreadTerminated & );
+
+		VTX::Util::EventHub::ScopedConnection _cameraConstructedConnection;
+		VTX::Util::EventHub::ScopedConnection _systemLoadConnection;
+		VTX::Util::EventHub::ScopedConnection _systemDestroyedConnection;
+		VTX::Util::EventHub::ScopedConnection _visibilityUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _selectionUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _trajectoryCreatedConnection;
+		VTX::Util::EventHub::ScopedConnection _trajectoryDestroyedConnection;
+		VTX::Util::EventHub::ScopedConnection _selectionLockedConnection;
+		VTX::Util::EventHub::ScopedConnection _treeViewModeChangedConnection;
+		VTX::Util::EventHub::ScopedConnection _threadProgressConnection;
+		VTX::Util::EventHub::ScopedConnection _threadTerminatedConnection;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

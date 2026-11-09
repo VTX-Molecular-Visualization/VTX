@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_BINDING_WRAPPER_OBJECT__
-#define __VTX_PYTHON_BINDING_WRAPPER_OBJECT__
+#ifndef VTX_PYTHON_BINDING_WRAPPER_OBJECT_HPP
+#define VTX_PYTHON_BINDING_WRAPPER_OBJECT_HPP
 
 #include "python_binding/wrapper/function.hpp"
 #include "python_binding/wrapper/pybind11_extra_convertor.hpp"
@@ -33,6 +33,7 @@ namespace VTX::PythonBinding
 				Function func = Function( _pyObject, p_function );
 				func.run( p_args... );
 			}
+
 			template<typename T, typename... Args>
 			T call( const std::string & p_function, Args... p_args )
 			{
@@ -44,37 +45,34 @@ namespace VTX::PythonBinding
 
 			template<typename T>
 			T getMember( const std::string & p_memberName )
-			{
-				return _pyObject.attr( p_memberName.c_str() ).cast<T>();
-			}
+			{ return _pyObject.attr( p_memberName.c_str() ).cast<T>(); }
 
 			template<typename T, std::enable_if<std::is_same_v<T, Object>>>
 			void setMember( const std::string & p_memberName, const Object & p_value )
 			{
 				try
 				{
-					return _pyObject.attr( p_memberName.c_str() ) = p_value._pyObject;
+					_pyObject.attr( p_memberName.c_str() ) = p_value._pyObject;
 				}
 				catch ( const pybind11::error_already_set & e )
 				{
 					throw PythonWrapperException(
-						"Error when setting member " + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
-						+ " - " + e.what()
+						"Error when setting member " + _toString( _pyObject ) + "::" + p_memberName + " - " + e.what()
 					);
 				}
 			}
+
 			template<typename T>
 			void setMember( const std::string & p_memberName, const T & p_value )
 			{
 				try
 				{
-					return _pyObject.attr( p_memberName.c_str() ) = p_value;
+					_pyObject.attr( p_memberName.c_str() ) = p_value;
 				}
 				catch ( const pybind11::error_already_set & e )
 				{
 					throw PythonWrapperException(
-						"Error when setting member " + std::string( pybind11::str( _pyObject ) ) + "::" + p_memberName
-						+ " - " + e.what()
+						"Error when setting member " + _toString( _pyObject ) + "::" + p_memberName + " - " + e.what()
 					);
 				}
 			}
@@ -83,6 +81,19 @@ namespace VTX::PythonBinding
 
 		  private:
 			Object( pybind11::object & p_object ) : _pyObject( p_object ) {}
+
+			static std::string _toString( const pybind11::object & p_object )
+			{
+				try
+				{
+					return std::string( pybind11::str( p_object ) );
+				}
+				catch ( const pybind11::error_already_set & )
+				{
+					return "<unprintable object>";
+				}
+			}
+
 			pybind11::object _pyObject;
 		};
 	}; // namespace Wrapper

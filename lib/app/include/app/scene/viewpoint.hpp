@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SCENE_VIEWPOINT__
-#define __VTX_APP_SCENE_VIEWPOINT__
+#ifndef VTX_APP_SCENE_VIEWPOINT_HPP
+#define VTX_APP_SCENE_VIEWPOINT_HPP
 
 #include <util/types.hpp>
 

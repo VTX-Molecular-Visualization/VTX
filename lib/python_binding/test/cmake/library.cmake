@@ -2,7 +2,7 @@ file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
 
 add_executable(vtx_python_binding_test ${SOURCES})
 set_property(TARGET vtx_python_binding_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_python_binding_test)
+vtx_configure_target(vtx_python_binding_test NO_LINTER)
 
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_util::vtx_util)
 target_link_libraries(vtx_python_binding_test PRIVATE vtx_core::vtx_core)

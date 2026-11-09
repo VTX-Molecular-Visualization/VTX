@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_TOOL_BASE_TOOL__
-#define __VTX_APP_TOOL_BASE_TOOL__
+#ifndef VTX_APP_TOOL_BASE_TOOL_HPP
+#define VTX_APP_TOOL_BASE_TOOL_HPP
 
 #include <optional>
 #include <string>
@@ -15,22 +15,24 @@ namespace VTX::App::Tool
 		/**
 		 * @brief Constructed after the app.
 		 */
-		BaseTool() {}
+		BaseTool() = default;
 
 		/**
 		 * @brief Destroyed with the app.
 		 */
-		virtual ~BaseTool() {}
+		virtual ~BaseTool() = default;
 
 		/**
 		 * @brief Register optional UI actions for this tool.
-		 * Called only by the Qt application path before UI hooks are built.
+		 * Called only by the Qt application
+		   path before UI hooks are built.
 		 */
 		virtual void registerActions() {}
 
 		/**
 		 * @brief Build optional UI hooks for this tool.
-		 * Called only by the Qt application path once the main window exists.
+		 * Called only by the Qt application path
+		 * once the main window exists.
 		 */
 		virtual void buildUI() {}
 

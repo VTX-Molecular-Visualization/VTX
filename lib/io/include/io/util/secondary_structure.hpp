@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_UTIL_SECONDARY_STRUCTURE__
-#define __VTX_IO_UTIL_SECONDARY_STRUCTURE__
+#ifndef VTX_IO_UTIL_SECONDARY_STRUCTURE_HPP
+#define VTX_IO_UTIL_SECONDARY_STRUCTURE_HPP
 
 #include <core/struct/topology.hpp>
 #include <core/struct/trajectory.hpp>

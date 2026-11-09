@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_COLLECTION__
-#define __VTX_UTIL_COLLECTION__
+#ifndef VTX_UTIL_COLLECTION_HPP
+#define VTX_UTIL_COLLECTION_HPP
 
 #include <functional>
 #include <iostream>
@@ -22,21 +22,17 @@ namespace VTX::Util
 	{
 	  public:
 		template<typename T>
-		inline bool has() const
-		{
-			return has( hash<T>() );
-		}
+		bool has() const
+		{ return has( hash<T>() ); }
 
-		inline bool has( const Hash & p_hash ) const { return _map.contains( p_hash ); }
+		bool has( const Hash & p_hash ) const noexcept { return _map.contains( p_hash ); }
 
 		template<typename T>
-		inline T * const get() const
-		{
-			return get<T>( hash<T>() );
-		}
+		T * get() const
+		{ return get<T>( hash<T>() ); }
 
 		template<typename T>
-		inline T * const tryGet() const
+		T * tryGet() const
 		{
 			if ( has<T>() )
 			{
@@ -49,7 +45,7 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		inline T * const getOrCreate()
+		T * getOrCreate()
 		{
 			if ( has<T>() )
 			{
@@ -62,7 +58,7 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		inline T * const getOrCreateWithHash( const Hash & p_hash )
+		T * getOrCreateWithHash( const Hash & p_hash )
 		{
 			if ( has( p_hash ) )
 			{
@@ -75,12 +71,12 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		inline T * const get( const Hash & p_hash ) const
+		T * get( const Hash & p_hash ) const
 		{
 			assert( _map.contains( p_hash ) );
 
 			// Raw pointer.
-			if constexpr ( std::is_pointer<C>::value )
+			if constexpr ( std::is_pointer_v<C> )
 			{
 				return static_cast<T *>( _map[ p_hash ] );
 			}
@@ -102,31 +98,23 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		inline T & getRef() const
-		{
-			return *get<T>();
-		}
+		T & getRef() const
+		{ return *get<T>(); }
 
 		template<typename T, typename... Args>
-		inline T * const create( Args &&... p_args )
-		{
-			return _create<T, Args...>( hash<T>(), std::forward<Args>( p_args )... );
-		}
+		T * create( Args &&... p_args )
+		{ return _create<T, Args...>( hash<T>(), std::forward<Args>( p_args )... ); }
 
 		template<typename T, typename... Args>
-		inline T * const createWithHash( const Hash & p_hash, Args &&... p_args )
-		{
-			return _create<T, Args...>( p_hash, std::forward<Args>( p_args )... );
-		}
+		T * createWithHash( const Hash & p_hash, Args &&... p_args )
+		{ return _create<T, Args...>( p_hash, std::forward<Args>( p_args )... ); }
 
 		template<typename T, typename V>
-		inline void set( V * const p_value )
-		{
-			set<T>( hash<T>(), p_value );
-		}
+		void set( V * const p_value )
+		{ set<T>( hash<T>(), p_value ); }
 
 		template<typename T>
-		inline void set( const Hash & p_hash, T * const p_value )
+		void set( const Hash & p_hash, T * const p_value )
 		{
 			if ( _map.contains( p_hash ) )
 			{
@@ -134,7 +122,7 @@ namespace VTX::Util
 			}
 
 			// Only raw pointer.
-			if constexpr ( std::is_pointer<C>::value )
+			if constexpr ( std::is_pointer_v<C> )
 			{
 				_map[ p_hash ] = static_cast<C>( p_value );
 			}
@@ -156,24 +144,22 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		inline void remove()
-		{
-			remove( hash<T>() );
-		}
+		void remove()
+		{ remove( hash<T>() ); }
 
-		inline void remove( const Hash & p_hash )
+		void remove( const Hash & p_hash ) noexcept
 		{
 			assert( _map.contains( p_hash ) );
 			// Removed if raw ptr (not proprietary), deleted if unique_ptr (proprietary).
 			_map.erase( p_hash );
 		}
 
-		inline bool empty() const { return _map.empty(); }
+		bool empty() const noexcept { return _map.empty(); }
 
-		inline void clear() { _map.clear(); }
+		void clear() noexcept { _map.clear(); }
 
 		template<typename T>
-		static constexpr Hash hash()
+		static Hash hash()
 		{
 #if DEBUG_HASH
 			VTX_DEBUG( "Hash: {}", Util::typeName<T>() );
@@ -182,28 +168,31 @@ namespace VTX::Util
 		}
 
 		auto begin() noexcept { return _map.begin(); }
+
 		auto end() noexcept { return _map.end(); }
 
 		auto begin() const noexcept { return _map.begin(); }
+
 		auto end() const noexcept { return _map.end(); }
 
 		auto cbegin() const noexcept { return _map.cbegin(); }
+
 		auto cend() const noexcept { return _map.cend(); }
 
-		using iterator = typename std::unordered_map<Hash, C>::iterator;
+		using iterator = std::unordered_map<Hash, C>::iterator;
 
-		inline auto erase( const iterator & p_it ) { return _map.erase( p_it ); }
+		auto erase( const iterator & p_it ) noexcept { return _map.erase( p_it ); }
 
 	  private:
 		mutable std::unordered_map<Hash, C> _map;
 
 		template<typename T, typename... Args>
-		inline T * const _create( const Hash & p_hash, Args &&... p_args )
+		T * _create( const Hash & p_hash, Args &&... p_args )
 		{
 			assert( not _map.contains( p_hash ) );
 
 			// Raw pointer.
-			if constexpr ( std::is_pointer<C>::value )
+			if constexpr ( std::is_pointer_v<C> )
 			{
 				_map.emplace( p_hash, new T( std::forward<Args>( p_args )... ) );
 			}
@@ -227,10 +216,8 @@ namespace VTX::Util
 		}
 
 		template<typename T>
-		inline static void _createHelper( Collection * const p_collection )
-		{
-			p_collection->create<T>();
-		}
+		static void _createHelper( Collection * const p_collection )
+		{ p_collection->create<T>(); }
 	};
 
 } // namespace VTX::Util

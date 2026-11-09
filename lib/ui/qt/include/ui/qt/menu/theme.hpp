@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_MENU_THEME__
-#define __VTX_UI_QT_MENU_THEME__
+#ifndef VTX_UI_QT_MENU_THEME_HPP
+#define VTX_UI_QT_MENU_THEME_HPP
 
 #include "ui/qt/events.hpp"
 #include "ui/qt/style/style_manager.hpp"
@@ -11,6 +11,7 @@
 #include <QString>
 #include <array>
 #include <cstddef>
+#include <util/event_hub.hpp>
 #include <util/types.hpp>
 
 namespace VTX::UI::QT::Menu
@@ -22,13 +23,14 @@ namespace VTX::UI::QT::Menu
 		Theme( QWidget * );
 
 	  private:
-		QPointer<QActionGroup> _actionGroup;
-		std::array<QPointer<QAction>, static_cast<std::size_t>( toUnderlying( Style::E_THEME::COUNT ) )>
-			_themeActions;
+		QPointer<QActionGroup>																			 _actionGroup;
+		std::array<QPointer<QAction>, static_cast<std::size_t>( toUnderlying( Style::E_THEME::COUNT ) )> _themeActions;
 
-		void _addThemeAction( const QString &, const Style::E_THEME );
+		void _addThemeAction( const QString &, Style::E_THEME );
 		void _syncTheme();
 		void _onThemeChanged( const Events::ThemeChanged & );
+
+		VTX::Util::EventHub::ScopedConnection _themeChangedConnection;
 	};
 
 } // namespace VTX::UI::QT::Menu

@@ -1,6 +1,7 @@
-#ifndef __VTX_UI_QT_WIDGET_HIDEABLE_GROUP_BOX__
-#define __VTX_UI_QT_WIDGET_HIDEABLE_GROUP_BOX__
+#ifndef VTX_UI_QT_WIDGET_HIDEABLE_GOUPE_BOX_HPP
+#define VTX_UI_QT_WIDGET_HIDEABLE_GOUPE_BOX_HPP
 
+#include "ui/qt/helper.hpp"
 #include <QGroupBox>
 #include <QPointer>
 #include <QToolButton>
@@ -17,9 +18,9 @@ namespace VTX::UI::QT::Widget
 		Q_OBJECT
 
 	  public:
-		explicit HideableGroupBox( const QString & p_title, QWidget * p_parent ) : QWidget( p_parent )
+		explicit HideableGroupBox( const QString & p_title, QWidget * const p_parent ) : QWidget( p_parent )
 		{
-			_toggleButton = new QToolButton( this );
+			_toggleButton = Helper::makeQObject<QToolButton>( this );
 			_toggleButton->setText( p_title );
 			_toggleButton->setCheckable( true );
 			_toggleButton->setChecked( false );
@@ -27,10 +28,10 @@ namespace VTX::UI::QT::Widget
 			_toggleButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
 			_toggleButton->setArrowType( Qt::RightArrow );
 
-			_groupbox = new QGroupBox( this );
+			_groupbox = Helper::makeQObject<QGroupBox>( this );
 			_groupbox->setVisible( false );
-			auto * layout	  = new QVBoxLayout( _groupbox );
-			auto * mainLayout = new QVBoxLayout( this );
+			_groupbox->setLayout( Helper::makeQObject<QVBoxLayout>( _groupbox ) );
+			auto * mainLayout = Helper::makeQObject<QVBoxLayout>( this );
 
 			mainLayout->setContentsMargins( 0, 0, 0, 0 );
 			// mainLayout->setSpacing( 0 );
@@ -38,28 +39,26 @@ namespace VTX::UI::QT::Widget
 			mainLayout->addWidget( _toggleButton );
 			mainLayout->addWidget( _groupbox );
 
-			connect(
-				_toggleButton,
-				&QToolButton::toggled,
-				this,
-				[ this ]( const bool p_visible )
-				{
-					_groupbox->setVisible( p_visible );
-					_toggleButton->setArrowType( p_visible ? Qt::DownArrow : Qt::RightArrow );
-					emit toggled( p_visible );
-				}
-			);
+			connect( _toggleButton,
+					 &QToolButton::toggled,
+					 this,
+					 [ this ]( const bool p_visible )
+					 {
+						 _groupbox->setVisible( p_visible );
+						 _toggleButton->setArrowType( p_visible ? Qt::DownArrow : Qt::RightArrow );
+						 emit toggled( p_visible );
+					 } );
 		}
 
-		inline void setChecked( const bool p_checked ) { _toggleButton->setChecked( p_checked ); }
+		void setChecked( const bool p_checked ) { _toggleButton->setChecked( p_checked ); }
 
-		inline bool isChecked() const { return _toggleButton->isChecked(); }
+		bool isChecked() const { return _toggleButton->isChecked(); }
 
-		inline void addWidget( QWidget * widget ) { _groupbox->layout()->addWidget( widget ); }
+		void addWidget( QWidget * widget ) { _groupbox->layout()->addWidget( widget ); }
 
-		inline void freeze( const bool p_freeze ) { _toggleButton->blockSignals( p_freeze ); }
+		void freeze( const bool p_freeze ) { _toggleButton->blockSignals( p_freeze ); }
 
-		inline void setTitle( const QString & p_title ) { _toggleButton->setText( p_title ); }
+		void setTitle( const QString & p_title ) { _toggleButton->setText( p_title ); }
 
 	  signals:
 		void toggled( bool );

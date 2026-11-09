@@ -145,6 +145,8 @@ jobs:
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
       shell: bash
+      env:
+        CUDAFLAGS: ${{ runner.os == 'Windows' && '-allow-unsupported-compiler' || '' }}
       run: |
         CUDA_ARCH_OPTION=()
         if [ -n "${CUDA_ARCH}" ]; then
@@ -161,7 +163,7 @@ jobs:
           -c tools.cmake.cmaketoolchain:generator=Ninja \
           -c tools.system.package_manager:mode=install \
           -c tools.system.package_manager:sudo=True \
-          -c tools.cmake.cmaketoolchain:extra_variables="{\"CMAKE_CUDA_COMPILER\":\"$CUDACXX\",\"CUDAToolkit_ROOT\":\"$CUDAToolkit_ROOT\"}" 
+          -c tools.cmake.cmaketoolchain:extra_variables="{\"CMAKE_CUDA_COMPILER\":\"$CUDACXX\",\"CUDAToolkit_ROOT\":\"$CUDAToolkit_ROOT\"}"
 
     - name: Upload dependencies
       working-directory: ${{env.LIB_DIR}}

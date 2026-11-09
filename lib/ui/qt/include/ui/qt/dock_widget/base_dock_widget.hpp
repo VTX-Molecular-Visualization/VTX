@@ -1,6 +1,7 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET__
-#define __VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET__
+#ifndef VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET_HPP
+#define VTX_UI_QT_DOCK_WIDGET_BASE_DOCK_WIDGET_HPP
 
+#include "ui/qt/helper.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include <QBoxLayout>
@@ -18,6 +19,7 @@ namespace VTX::UI::QT::DockWidget
 
 	/**
 	 * @brief Abstract class that describes dock widget sizes, margins, and scrollbars.
+	 * CRTP pattern.
 	 * @tparam T is the derived class type.
 	 * @tparam HSA is the vertical scroll area flag.
 	 * @tparam VSA is the horizontal scroll area flag.
@@ -27,18 +29,25 @@ namespace VTX::UI::QT::DockWidget
 	class BaseDockWidget : public Widget::BaseWidget<T, QDockWidget>
 	{
 	  public:
-		BaseDockWidget( QWidget * p_parent, QString && p_title ) : Widget::BaseWidget<T, QDockWidget>( p_parent )
+		~BaseDockWidget() override = default;
+
+	  protected:
+		QPointer<QScrollArea> _scrollArea;
+		QPointer<QWidget>	  _root;
+		QPointer<L>			  _layout;
+
+		BaseDockWidget( QWidget * const p_parent, const QString & p_title ) :
+			Widget::BaseWidget<T, QDockWidget>( p_parent )
 		{
 			QDockWidget::setWindowTitle( p_title );
 			QDockWidget::setMinimumSize( Style::MINIMUM_DOCK_PANEL_WIDTH, Style::MINIMUM_DOCK_PANEL_HEIGHT );
-			QDockWidget::setFeatures(
-				QDockWidget::features() | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable
-			);
+			QDockWidget::setFeatures( QDockWidget::features() | QDockWidget::DockWidgetMovable
+									  | QDockWidget::DockWidgetFloatable );
 
 			// Scroll area.
 			if constexpr ( VSA or HSA )
 			{
-				_scrollArea = new QScrollArea( this );
+				_scrollArea = Helper::makeQObject<QScrollArea>( this );
 				QDockWidget::setWidget( _scrollArea );
 				_scrollArea->setWidgetResizable( true );
 
@@ -59,27 +68,20 @@ namespace VTX::UI::QT::DockWidget
 					_scrollArea->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 				}
 				_scrollArea->setFrameShape( QFrame::NoFrame );
-				_root = new QWidget( _scrollArea );
+				_root = Helper::makeQObject<QWidget>( _scrollArea );
 				_scrollArea->setWidget( _root );
 			}
 			else
 			{
-				_root = new QWidget( this );
+				_root = Helper::makeQObject<QWidget>( this );
 				QDockWidget::setWidget( _root );
 			}
 
 			// Root widget and layout.
-			_layout = new L( _root );
+			_layout = Helper::makeQObject<L>( _root );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 			_layout->setSpacing( 0 );
 		}
-
-		virtual ~BaseDockWidget() = default;
-
-	  protected:
-		QPointer<QScrollArea> _scrollArea;
-		QPointer<QWidget>	  _root;
-		QPointer<L>			  _layout;
 	};
 } // namespace VTX::UI::QT::DockWidget
 

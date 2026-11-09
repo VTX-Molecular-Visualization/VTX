@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TREE_SCRIPTS__
-#define __VTX_UI_QT_WIDGET_TREE_SCRIPTS__
+#ifndef VTX_UI_QT_WIDGET_TREE_SCRIPTS_HPP
+#define VTX_UI_QT_WIDGET_TREE_SCRIPTS_HPP
 
 #include "ui/qt/widget/tree/base_tree.hpp"
 #include <QFileSystemModel>
@@ -15,7 +15,7 @@ namespace VTX::UI::QT::Widget::Tree
 	class Scripts : public Widget::Tree::BaseTree<Scripts, QTreeView>
 	{
 	  public:
-		Scripts( QWidget * const p_parent );
+		Scripts( QWidget * p_parent );
 
 	  private:
 		QPointer<QFileSystemModel>		_fileModel;

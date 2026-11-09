@@ -39,9 +39,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
 {
 	using namespace VTX;
 
-	App::Test::Util::PythonFixture f;
+	const App::Test::Util::PythonFixture f;
 
-	PythonBinding::Interpretor & interpretor = f.interpretor;
+	const PythonBinding::Interpretor & interpretor = f.interpretor;
 
 	const FilePath scriptPath
 		= VTX::Util::Filesystem::getExecutableDir()
@@ -110,7 +110,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
 		customModule.runFunction<std::pair<int, int>>( "testStr", "testStrWithParam" );
 		CHECK( false );
 	}
-	catch ( const pybind11::cast_error & )
+	catch ( const PythonWrapperException & )
 	{
 		CHECK( true );
 	}
@@ -142,7 +142,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
 		pythonObj.setMember( "value", 33 );
 		CHECK( pythonObj.getMember<int>( "value" ) == 33 );
 	}
-	catch ( PythonWrapperException & e )
+	catch ( const PythonWrapperException & e )
 	{
 		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
 		CHECK( false );

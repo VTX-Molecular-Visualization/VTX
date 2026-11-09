@@ -5,6 +5,7 @@
 #include <vtx/secondary_structure/shared/interprocess.hpp>
 //
 #include <boost/process/v2/pid.hpp>
+
 namespace pdb100
 {
 
@@ -17,7 +18,9 @@ namespace pdb100
 	{
 		fs::path dirName = "childlogs";
 		if ( not fs::exists( dirName ) )
+		{
 			fs::create_directories( dirName );
+		}
 
 		fs::path logPath( dirName / fmt::format( "ChildLog-{}.log", boost::process::current_pid() ) );
 

@@ -164,6 +164,9 @@ def config_options_qt(p_conanFile : ConanFile):
     p_conanFile.options["qt"].qtgrpc = False
     p_conanFile.options["qt"].qtquickeffectmaker = False
     p_conanFile.options["qt"].qtgraphs = False
+    p_conanFile.options["qt"].qttasktree = False
+    p_conanFile.options["qt"].qtopenapi = False
+    p_conanFile.options["qt"].qtcanvaspainter = False
     if p_conanFile.settings.os == "Linux":
             p_conanFile.options["qt"].opengl = "desktop" # forced by egl.
             p_conanFile.options["qt"].qtwayland = True
@@ -237,7 +240,7 @@ class VTXUiQtRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_io/1.0")
         self.requires("vtx_python_binding/1.0")
-        self.requires("qt/6.11.1", transitive_headers=True)
+        self.requires("qt/6.12.0", transitive_headers=True)
         if self.settings.os == "Linux":
             self.requires("xkbcommon/1.13.1", force=True)
             self.requires("fontconfig/2.17.1", force=True)

@@ -9,9 +9,7 @@ namespace VTX::UI::QT
 
 	Settings::Settings() :
 		QSettings( QString::fromStdString( App::SESSION().getConfigIniFile().string() ), QSettings::IniFormat )
-	{
-		VTX_DEBUG( "Loading settings: {}", fileName().toStdString() );
-	}
+	{ VTX_DEBUG( "Loading settings: {}", fileName().toStdString() ); }
 
 	void Settings::save()
 	{

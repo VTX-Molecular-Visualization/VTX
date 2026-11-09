@@ -20,11 +20,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 	return;
 #endif // DEBUG
 	using namespace VTX;
-	App::Test::Util::PythonFixture f;
+	const App::Test::Util::PythonFixture f;
 
-	PythonBinding::Interpretor & interpretor = f.interpretor;
+	const PythonBinding::Interpretor & interpretor = f.interpretor;
 
-	VTX::FilePath pythonHome = Util::Filesystem::getExecutableDir() / "external" / "python";
+	const VTX::FilePath pythonHome = Util::Filesystem::getExecutableDir() / "external" / "python";
 
 	interpretor.runCommand( "import sys" );
 	interpretor.runCommand( "print( sys.path)" );
@@ -39,7 +39,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 		backslashPos = pythonPath.find( "\\", backslashPos + 2 );
 	}
 
-	std::string pip_install_dir = ( pythonHome / "Lib" / "site-packages" ).string();
+	const std::string pip_install_dir = ( pythonHome / "Lib" / "site-packages" ).string();
 #else
 	std::string pythonPath = ( pythonHome / "bin" / "python" ).string();
 	std::string pip_install_dir
@@ -49,14 +49,14 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 
 	interpretor.runCommand( fmt::format( "subprocess.run('{} -m pip install numpy', shell=True)", pythonPath ) );
 	bool has_numpy = false;
-	std::ranges::for_each(
-		std::filesystem::directory_iterator( pip_install_dir ),
-		[ has_numpy = &has_numpy ]( const std::filesystem::path & dir_entry )
-		{
-			if ( dir_entry.string().find( "numpy" ) != std::string::npos )
-				*has_numpy = true;
-		}
-	);
+	std::ranges::for_each( std::filesystem::directory_iterator( pip_install_dir ),
+						   [ has_numpy = &has_numpy ]( const std::filesystem::path & dir_entry )
+						   {
+							   if ( dir_entry.string().find( "numpy" ) != std::string::npos )
+							   {
+								   *has_numpy = true;
+							   }
+						   } );
 
 	CHECK( has_numpy );
 	// interpretor.runCommand( "import pip" );

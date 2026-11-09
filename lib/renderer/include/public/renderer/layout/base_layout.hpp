@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_LAYOUT_BASE_LAYOUT__
-#define __VTX_RENDERER_LAYOUT_BASE_LAYOUT__
+#ifndef VTX_RENDERER_LAYOUT_BASE_LAYOUT_HPP
+#define VTX_RENDERER_LAYOUT_BASE_LAYOUT_HPP
 
 #include "renderer/context/context_wrapper.hpp"
 
@@ -11,26 +11,28 @@ namespace VTX::Renderer::Layout
 	class BaseLayout : public Desc::VertexLayout
 	{
 	  public:
+		virtual ~BaseLayout() = default;
+
 		/**
 		 * @brief Push a range.
 		 */
-		inline void add( const Desc::Handle p_handle, const Index & p_count )
+		void add( const Desc::Handle p_handle, const Index & p_count )
 		{
 			if ( _ranges.contains( p_handle ) )
 			{
 				return;
 			}
 
-			Index	   last		= _rangeList.isEmpty() ? 0 : _rangeList.getLast();
-			IndexRange r		= IndexRange::fromFirstCount( last, p_count );
-			_ranges[ p_handle ] = r;
+			const Index		 last = _rangeList.isEmpty() ? 0 : _rangeList.getLast();
+			const IndexRange r	  = IndexRange::fromFirstCount( last, p_count );
+			_ranges[ p_handle ]	  = r;
 			_rangeList.addRange( r );
 		}
 
 		/**
 		 * @brief Clear all registered ranges.
 		 */
-		inline void clear()
+		void clear()
 		{
 			_ranges.clear();
 			_rangeList.clear();
@@ -39,7 +41,7 @@ namespace VTX::Renderer::Layout
 		/**
 		 * @brief Resize whole layout.
 		 */
-		inline void resize( Context::ContextWrapper & p_context )
+		void resize( Context::ContextWrapper & p_context )
 		{
 			const Index size = _rangeList.count();
 			_resize( p_context, size == 0 ? 1 : size );
@@ -65,10 +67,11 @@ namespace VTX::Renderer::Layout
 			return _ranges[ p_handle ].getCount();
 		}
 
+	  protected:
 		/**
 		 * @brief Resize whole layout.
 		 */
-		virtual void _resize( Context::ContextWrapper &, const Index ) = 0;
+		virtual void _resize( Context::ContextWrapper &, Index ) = 0;
 
 	  private:
 		/**

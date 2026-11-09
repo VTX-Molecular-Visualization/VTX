@@ -1,15 +1,93 @@
 option(VTX_ENABLE_NATIVE_OPTIMIZATIONS "Enable CPU-specific release optimizations for local builds." OFF)
 option(VTX_ENABLE_INTERPROCEDURAL_OPTIMIZATION "Enable interprocedural optimization for VTX targets." OFF)
+option(VTX_ENABLE_PCH "Enable precompiled headers for VTX targets." ON)
+set(_vtx_clang_tidy_levels OFF WARN ERR)
+set(VTX_CLANG_TIDY "OFF" CACHE STRING "clang-tidy analysis level for VTX targets (OFF, WARN, ERR).")
+if(NOT VTX_CLANG_TIDY IN_LIST _vtx_clang_tidy_levels)
+	message(FATAL_ERROR "VTX_CLANG_TIDY must be OFF, WARN or ERR (got <${VTX_CLANG_TIDY}>).")
+endif()
+message(STATUS "VTX - clang-tidy: ${VTX_CLANG_TIDY}")
+if(VTX_ENABLE_PCH AND NOT VTX_CLANG_TIDY STREQUAL "OFF")
+	message(STATUS "VTX - precompiled headers disabled because clang-tidy is enabled")
+endif()
 
+# Exclude vendor sources from linting.
+function(_vtx_exclude_vendor_sources_from_linting p_target)
+	get_target_property(srcs ${p_target} SOURCES)
+	foreach(src IN LISTS srcs)
+		file(TO_CMAKE_PATH "${src}" src_patch)
+		if(src_patch MATCHES "(^|/)vendor/")
+			set_source_files_properties("${src}" TARGET_DIRECTORY ${p_target} PROPERTIES SKIP_LINTING ON)
+		endif()
+	endforeach()
+endfunction()
+
+# Exclude vendor sources from precompiled headers.
+function(_vtx_exclude_vendor_sources_from_pch p_target)
+	get_target_property(srcs ${p_target} SOURCES)
+	foreach(src IN LISTS srcs)
+		file(TO_CMAKE_PATH "${src}" src_patch)
+		if(src_patch MATCHES "(^|/)vendor/")
+			set_source_files_properties("${src}" TARGET_DIRECTORY ${p_target} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+		endif()
+	endforeach()
+endfunction()
+
+# Configure a target with VTX-specific settings.
 function(vtx_configure_target p_target)
+	cmake_parse_arguments(PARSE_ARGV 1 arg "NO_LINTER" "PCH" "")
+
+	# Static analysis.
+	if(NOT VTX_CLANG_TIDY STREQUAL "OFF" AND NOT arg_NO_LINTER)
+		get_filename_component(_vtx_compiler_dir "${CMAKE_CXX_COMPILER}" DIRECTORY)
+		# TODO: remove hardcoded path.
+		find_program(VTX_CLANG_TIDY_EXECUTABLE NAMES clang-tidy
+			HINTS "${_vtx_compiler_dir}/../../../../../Llvm/x64/bin"
+			REQUIRED
+		)
+		set_property(TARGET ${p_target} PROPERTY CXX_CLANG_TIDY "${VTX_CLANG_TIDY_EXECUTABLE}")
+		if(VTX_CLANG_TIDY STREQUAL "WARN")
+			set_property(TARGET ${p_target} APPEND PROPERTY CXX_CLANG_TIDY "--warnings-as-errors=-*")
+		else()
+			set_property(TARGET ${p_target} APPEND PROPERTY CXX_CLANG_TIDY "--warnings-as-errors=*")
+		endif()
+		if(MSVC)
+			# Workaround for MSVC: clang-tidy discard flagd starting with '/'.
+			string(TOUPPER "${CMAKE_BUILD_TYPE}" _vtx_build_type)
+			separate_arguments(_vtx_cxx_flags NATIVE_COMMAND "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${_vtx_build_type}}")
+			list(APPEND _vtx_cxx_flags /EHsc /W3 /utf-8 /fp:fast /Zc:__cplusplus)
+			list(REMOVE_DUPLICATES _vtx_cxx_flags)
+			foreach(_vtx_flag IN LISTS _vtx_cxx_flags)
+				if(_vtx_flag MATCHES "^/")
+					set_property(TARGET ${p_target} APPEND PROPERTY CXX_CLANG_TIDY "--extra-arg=${_vtx_flag}")
+				endif()
+			endforeach()
+		endif()
+		# Defer function call to the end of the configuration to ensure that all sources have been added to the target.
+		cmake_language(EVAL CODE "cmake_language(DEFER CALL _vtx_exclude_vendor_sources_from_linting [[${p_target}]])"
+		)
+	endif()
+
+	# Precompiled headers.
+	if(VTX_ENABLE_PCH AND VTX_CLANG_TIDY STREQUAL "OFF")
+		target_precompile_headers(${p_target} PRIVATE
+			"$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_FUNCTION_LIST_DIR}/vtx_pch.hpp>"
+		)
+		if(arg_PCH)
+			target_precompile_headers(${p_target} PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:${arg_PCH}>")
+		endif()
+		cmake_language(EVAL CODE "cmake_language(DEFER CALL _vtx_exclude_vendor_sources_from_pch [[${p_target}]])")
+	endif()
+
+	# Compiler-specific options.
 	if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 		target_compile_options(${p_target} PRIVATE
 			$<$<COMPILE_LANGUAGE:CXX>:-fexperimental-library>
 		)
-	elseif(CMAKE_COMPILER_IS_GNUCC)
-		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall)
+	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall -ffast-math -fno-finite-math-only)
 		target_compile_options(${p_target} PRIVATE
-        	$<$<CONFIG:Release>:-O2 -ffast-math>
+        	$<$<CONFIG:Release>:-O2>
     	)
 		if(VTX_ENABLE_NATIVE_OPTIMIZATIONS)
 			target_compile_options(${p_target} PRIVATE

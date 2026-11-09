@@ -1,7 +1,8 @@
-#ifndef __VTX_UI_QT_WIDGET_LIBRARY_BASE_PRESET_WIDGET__
-#define __VTX_UI_QT_WIDGET_LIBRARY_BASE_PRESET_WIDGET__
+#ifndef VTX_UI_QT_WIDGET_LIBRARY_BASE_PRESET_WIDGET_HPP
+#define VTX_UI_QT_WIDGET_LIBRARY_BASE_PRESET_WIDGET_HPP
 
 #include "preset_selector.hpp"
+#include "ui/qt/helper.hpp"
 #include <QGroupBox>
 #include <QVBoxLayout>
 
@@ -12,13 +13,13 @@ namespace VTX::UI::QT::Widget::Library
 	class BasePresetWidget : public QWidget
 	{
 	  public:
-		BasePresetWidget( QWidget * p_parent ) : QWidget( p_parent )
+		BasePresetWidget( QWidget * const p_parent ) :
+			QWidget( p_parent ), _layout( Helper::makeQObject<QVBoxLayout>( this ) ),
+			_presetSelector( Helper::makeQObject<PresetSelector<P>>( this ) ),
+			_groupboxPreset( Helper::makeQObject<QGroupBox>( this ) )
 		{
-			_presetSelector = new PresetSelector<P>( this );
-			_groupboxPreset = new QGroupBox( this );
-			_groupboxPreset->setLayout( new QVBoxLayout() );
+			_groupboxPreset->setLayout( Helper::makeQObject<QVBoxLayout>( _groupboxPreset ) );
 
-			_layout = new QVBoxLayout( this );
 			setLayout( _layout );
 			_layout->setContentsMargins( 0, 0, 0, 0 );
 
@@ -30,13 +31,19 @@ namespace VTX::UI::QT::Widget::Library
 			connect( _presetSelector, &PresetSelector<P>::presetChanged, this, &BasePresetWidget::_update );
 		}
 
-		inline Entity	 currentPreset() const { return _presetSelector->getCurrentPreset(); }
-		inline QGroupBox * const presetGroupBox() const { return _groupboxPreset; }
-		inline void addWidget( QWidget * const p_widget ) { _groupboxPreset->layout()->addWidget( p_widget ); }
-		inline void setTitle( const QString & p_title ) { _groupboxPreset->setTitle( p_title ); }
-		inline void refresh() { _presetSelector->refresh(); }
-		inline void setCurrentPreset( const Entity p_preset ) { _presetSelector->setCurrentPreset( p_preset ); }
+		Entity currentPreset() const { return _presetSelector->getCurrentPreset(); }
 
+		QGroupBox * presetGroupBox() const { return _groupboxPreset; }
+
+		void addWidget( QWidget * const p_widget ) { _groupboxPreset->layout()->addWidget( p_widget ); }
+
+		void setTitle( const QString & p_title ) { _groupboxPreset->setTitle( p_title ); }
+
+		void refresh() { _presetSelector->refresh(); }
+
+		void setCurrentPreset( const Entity p_preset ) { _presetSelector->setCurrentPreset( p_preset ); }
+
+	  protected:
 		/**
 		 * @brief Update the widget when the preset is updated.
 		 */

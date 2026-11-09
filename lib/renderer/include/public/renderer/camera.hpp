@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CAMERA__
-#define __VTX_RENDERER_CAMERA__
+#ifndef VTX_RENDERER_CAMERA_HPP
+#define VTX_RENDERER_CAMERA_HPP
 
 #include <util/math.hpp>
 
@@ -8,7 +8,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief Projection types.
 	 */
-	enum struct PROJECTION
+	enum struct PROJECTION : uint8_t
 	{
 		PERSPECTIVE,
 		ORTHOGRAPHIC,
@@ -60,24 +60,24 @@ namespace VTX::Renderer
 		/**
 		 * @brief Screen size.
 		 */
-		size_t screenWidth;
-		size_t screenHeight;
+		size_t screenWidth {};
+		size_t screenHeight {};
 
 		/**
 		 * @brief Target.
 		 */
-		Vec3f target;
+		Vec3f target { 0.f };
 
 		/**
 		 * @brief Compute projection matrix.
 		 */
-		inline Mat4f computeProjectionMatrix( const Vec3f & p_position ) const
+		Mat4f computeProjectionMatrix( const Vec3f & p_position ) const
 		{
 			using namespace Util;
 
 			assert( screenWidth > 0.f && screenHeight > 0.f );
 
-			float aspectRatio = float( screenWidth ) / float( screenHeight );
+			const float aspectRatio = static_cast<float>( screenWidth ) / static_cast<float>( screenHeight );
 
 			switch ( projection )
 			{
@@ -87,11 +87,11 @@ namespace VTX::Renderer
 			}
 			case PROJECTION::ORTHOGRAPHIC:
 			{
-				float top = tanf( Math::radians( fov ) * 0.5f ) * Math::distance( target, p_position );
+				const float top = tanf( Math::radians( fov ) * 0.5f ) * Math::distance( target, p_position );
 
-				float bottom = -top;
-				float right	 = top * aspectRatio;
-				float left	 = -top * aspectRatio;
+				const float bottom = -top;
+				const float right  = top * aspectRatio;
+				const float left   = -top * aspectRatio;
 
 				return Math::ortho( left, right, bottom, top, near, far );
 			}

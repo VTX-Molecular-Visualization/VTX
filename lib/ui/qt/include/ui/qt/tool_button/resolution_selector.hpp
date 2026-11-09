@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_TOOL_BUTTON_RESOLUTION_SELECTOR__
-#define __VTX_UI_QT_TOOL_BUTTON_RESOLUTION_SELECTOR__
+#ifndef VTX_UI_QT_TOOL_BUTTON_RESOLUTION_SELECTOR_HPP
+#define VTX_UI_QT_TOOL_BUTTON_RESOLUTION_SELECTOR_HPP
 
 #include <QToolButton>
 
@@ -21,13 +21,13 @@ namespace VTX::UI::QT::ToolButton
 		/**
 		 * @brief Set the resolution text of the button.
 		 */
-		void setResolution( const size_t, const size_t );
+		void setResolution( size_t, size_t );
 
 	  signals:
 		/**
 		 * @brief User changed resolution.
 		 */
-		void resolutionChanged( const size_t, const size_t );
+		void resolutionChanged( size_t, size_t );
 
 	  private:
 	};

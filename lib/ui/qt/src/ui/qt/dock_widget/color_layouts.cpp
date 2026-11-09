@@ -1,21 +1,23 @@
 #include "ui/qt/dock_widget/color_layouts.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/library/color_layout.hpp"
-#include <util/factories.hpp>
+#include <memory>
 
 namespace VTX::UI::QT::DockWidget
 {
 
-	ColorLayouts::ColorLayouts( QWidget * p_parent ) : BaseDockWidget( p_parent, "Colors" )
+	ColorLayouts::ColorLayouts( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Colors" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::COLOR_LAYOUT ) );
 
-		auto * const colorLayoutWidget = new Widget::Library::ColorLayout( this );
+		auto * const colorLayoutWidget = Helper::makeQObject<Widget::Library::ColorLayout>( this );
 		_layout->addWidget( colorLayoutWidget );
 
-		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+		_layout->addSpacerItem(
+			std::make_unique<QSpacerItem>( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ).release() );
 	}
 } // namespace VTX::UI::QT::DockWidget

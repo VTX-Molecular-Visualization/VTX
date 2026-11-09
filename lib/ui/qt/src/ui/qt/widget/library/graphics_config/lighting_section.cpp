@@ -1,7 +1,6 @@
 #include "ui/qt/widget/library/graphics_config/lighting_section.hpp"
 #include "ui/qt/helper.hpp"
 #include <QSignalBlocker>
-#include <string_view>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig
@@ -23,47 +22,57 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		setChecked( true );
 		freeze( true );
 
-		_comboBoxShadingMode = new QComboBox( this );
+		_comboBoxShadingMode = Helper::makeQObject<QComboBox>( this );
 		addWidget( _comboBoxShadingMode );
-		constexpr std::string_view SHADING_STR[ int( E_SHADING::COUNT ) ]
-			= { "Diffuse", "Glossy", "Toon", "Flat", "PBR" };
-		for ( int i = 0; i < int( E_SHADING::COUNT ); ++i )
+		constexpr std::array SHADING_STR { QUtf8StringView { "Diffuse" },
+										   QUtf8StringView { "Glossy" },
+										   QUtf8StringView { "Toon" },
+										   QUtf8StringView { "Flat" },
+										   QUtf8StringView { "PBR" } };
+
+		for ( const QUtf8StringView shading : SHADING_STR )
 		{
-			_comboBoxShadingMode->addItem( SHADING_STR[ i ].data() );
+			_comboBoxShadingMode->addItem( shading.toString() );
 		}
 
-		_colorPickerLight = new ColorPicker( this );
+		_colorPickerLight = Helper::makeQObject<ColorPicker>( this );
 		addWidget( _colorPickerLight );
 		_colorPickerLight->setText( "Light" );
 
-		_labelLightIntensity = new QLabel( "Light intensity", this );
+		_labelLightIntensity = Helper::makeQObject<QLabel>( "Light intensity", this );
 		addWidget( _labelLightIntensity );
-		_sliderLightIntensity = new EditableSlider( Qt::Orientation::Horizontal, this );
+		_sliderLightIntensity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderLightIntensity );
 		_sliderLightIntensity->setMinimum( LIGHT_INTENSITY_MIN );
 		_sliderLightIntensity->setMaximum( LIGHT_INTENSITY_MAX );
 
-		_labelAmbientIntensity = new QLabel( "Ambient light intensity", this );
+		_labelAmbientIntensity = Helper::makeQObject<QLabel>( "Ambient light intensity", this );
 		addWidget( _labelAmbientIntensity );
-		_sliderAmbientIntensity = new EditableSlider( Qt::Orientation::Horizontal, this );
+		_sliderAmbientIntensity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderAmbientIntensity );
 		_sliderAmbientIntensity->setMinimum( AMBIENT_INTENSITY_MIN );
 		_sliderAmbientIntensity->setMaximum( AMBIENT_INTENSITY_MAX );
 
-		_labelToneMappingMode = new QLabel( "Tone mapping", this );
+		_labelToneMappingMode = Helper::makeQObject<QLabel>( "Tone mapping", this );
 		addWidget( _labelToneMappingMode );
-		_comboBoxToneMappingMode = new QComboBox( this );
+		_comboBoxToneMappingMode = Helper::makeQObject<QComboBox>( this );
 		addWidget( _comboBoxToneMappingMode );
-		constexpr std::string_view TONE_MAPPING_STR[ int( E_TONE_MAPPING::COUNT ) ]
-			= { "None", "Classic (LDR)", "Soft (Reinhard)", "Filmic (ACES)", "Natural (Uncharted 2)" };
-		for ( int i = 0; i < int( E_TONE_MAPPING::COUNT ); ++i )
+		constexpr std::array TONE_MAPPING_STR { QUtf8StringView { "None" },
+												QUtf8StringView { "Classic (LDR)" },
+												QUtf8StringView { "Soft (Reinhard)" },
+												QUtf8StringView { "Filmic (ACES)" },
+												QUtf8StringView { "Natural (Uncharted 2)" } };
+
+		static_assert( TONE_MAPPING_STR.size() == static_cast<size_t>( E_TONE_MAPPING::COUNT ) );
+
+		for ( const QUtf8StringView toneMapping : TONE_MAPPING_STR )
 		{
-			_comboBoxToneMappingMode->addItem( TONE_MAPPING_STR[ i ].data() );
+			_comboBoxToneMappingMode->addItem( toneMapping.toString() );
 		}
 
-		_labelToneMappingExposure = new QLabel( "Exposure", this );
+		_labelToneMappingExposure = Helper::makeQObject<QLabel>( "Exposure", this );
 		addWidget( _labelToneMappingExposure );
-		_sliderToneMappingExposure = new EditableSlider( Qt::Orientation::Horizontal, this );
+		_sliderToneMappingExposure = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderToneMappingExposure );
 		_sliderToneMappingExposure->setMinimum( TONE_MAPPING_EXPOSURE_EV_MIN );
 		_sliderToneMappingExposure->setMaximum( TONE_MAPPING_EXPOSURE_EV_MAX );
@@ -71,30 +80,30 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderToneMappingExposure->setDecimals( 2 );
 		_sliderToneMappingExposure->setSuffix( "EV" );
 
-		_labelSpecularFactor = new QLabel( "Specular factor", this );
+		_labelSpecularFactor = Helper::makeQObject<QLabel>( "Specular factor", this );
 		addWidget( _labelSpecularFactor );
-		_sliderSpecularFactor = new EditableSlider( Qt::Orientation::Horizontal, this );
+		_sliderSpecularFactor = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderSpecularFactor );
 		_sliderSpecularFactor->setMinimum( SPECULAR_FACTOR_MIN );
 		_sliderSpecularFactor->setMaximum( SPECULAR_FACTOR_MAX );
 
-		_labelShininess = new QLabel( "Shininess", this );
+		_labelShininess = Helper::makeQObject<QLabel>( "Shininess", this );
 		addWidget( _labelShininess );
-		_sliderShininess = new EditableSlider( Qt::Orientation::Horizontal, this );
+		_sliderShininess = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderShininess );
 		_sliderShininess->setMinimum( SHININESS_MIN );
 		_sliderShininess->setMaximum( SHININESS_MAX );
 
-		_labelToonSteps = new QLabel( "Toon steps", this );
+		_labelToonSteps = Helper::makeQObject<QLabel>( "Toon steps", this );
 		addWidget( _labelToonSteps );
-		_sliderToonSteps = new EditableSlider( Qt::Orientation::Horizontal, this );
+		_sliderToonSteps = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderToonSteps );
 		_sliderToonSteps->setMinimum( TOON_STEPS_MIN );
 		_sliderToonSteps->setMaximum( TOON_STEPS_MAX );
 		_sliderToonSteps->setStep( 1 );
 		_sliderToonSteps->setDecimals( 0 );
 
-		_materialSection = new MaterialSection( this );
+		_materialSection = Helper::makeQObject<MaterialSection>( this );
 		addWidget( _materialSection );
 
 		connect(
@@ -103,8 +112,12 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			[ this ]( const int p_index )
 			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::SHADING_MODE, E_SHADING>( E_SHADING( p_index ) ); }
 		);
-		_colorPickerLight->onColorChanged += [ this ]( const QColor & p_color )
-		{ _changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_LIGHT, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); };
+		connect(
+			_colorPickerLight,
+			&Widget::ColorPicker::colorChanged,
+			[ this ]( const QColor & p_color )
+			{ _changeValue<E_GRAPHICS_CONFIG_VALUES::COLOR_LIGHT, Util::Color::Rgba>( Helper::fromQColor( p_color ) ); }
+		);
 		connect(
 			_sliderLightIntensity,
 			&EditableSlider::valueChanged,
@@ -165,11 +178,11 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const QSignalBlocker blockerShininess( _sliderShininess );
 		const QSignalBlocker blockerToon( _sliderToonSteps );
 
-		_comboBoxShadingMode->setCurrentIndex( int( p_config.shading.mode ) );
+		_comboBoxShadingMode->setCurrentIndex( static_cast<int>( p_config.shading.mode ) );
 		_colorPickerLight->setColor( Helper::toQColor( p_config.shading.colorLight ) );
 		_sliderLightIntensity->setValue( p_config.shading.lightIntensity );
 		_sliderAmbientIntensity->setValue( p_config.shading.ambientIntensity );
-		_comboBoxToneMappingMode->setCurrentIndex( int( p_config.toneMapping.mode ) );
+		_comboBoxToneMappingMode->setCurrentIndex( static_cast<int>( p_config.toneMapping.mode ) );
 		_sliderToneMappingExposure->setValue( _exposureEvFromMultiplier( p_config.toneMapping.exposure ) );
 		_sliderSpecularFactor->setValue( p_config.shading.specularFactor );
 		_sliderShininess->setValue( p_config.shading.shininess );

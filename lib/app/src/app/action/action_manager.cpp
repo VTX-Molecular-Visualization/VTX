@@ -1,15 +1,13 @@
 #include "app/action/action_manager.hpp"
-#include "app/events.hpp"
+#include "app/arguments.hpp"
 #include "app/services.hpp"
-#include "app/vtx_app.hpp"
 #include <mutex>
 #include <queue>
-#include <util/event_hub.hpp>
 
 namespace VTX::App::Action
 {
 
-	struct ActionManager::_Data
+	struct ActionManager::Data
 	{
 		bool					 noThread	  = false;
 		std::atomic_bool		 shuttingDown = false;
@@ -18,9 +16,10 @@ namespace VTX::App::Action
 		std::mutex				 mutex;
 	};
 
-	void ActionManager::Del::operator()( ActionManager::_Data * p_ ) noexcept { delete p_; }
+	void ActionManager::Del::operator()( ActionManager::Data * const p_ ) noexcept
+	{ std::default_delete<ActionManager::Data> {}( p_ ); }
 
-	ActionManager::ActionManager() : _attributesPtr( new _Data { ARGS().noGui } ) {}
+	ActionManager::ActionManager() : _attributesPtr( new Data { ARGS().noGui } ) {}
 
 	QueuedAction::QueuedAction() : _ptr( new _wrapper<_dummy>( _state, _dummy() ) ) {}
 
@@ -28,7 +27,7 @@ namespace VTX::App::Action
 	{
 		if ( _state )
 		{
-			std::scoped_lock<std::mutex> lock( _state->mutex );
+			const std::scoped_lock<std::mutex> lock( _state->mutex );
 			_state->cancelled = true;
 			_state->conditionVariable.notify_all();
 		}
@@ -38,24 +37,26 @@ namespace VTX::App::Action
 	{
 		_skipTime += p_delta;
 		if ( _skipTime < 100.f )
-		{ // We do not want to do that every frame.
+		{
+			// We do not want to do that every frame.
+			// TODO: why not?
 			return;
 		}
-		std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
-		if ( _attributesPtr->actions.empty() )
+		std::queue<QueuedAction> actions;
 		{
-			return;
+			const std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
+			std::swap( actions, _attributesPtr->actions );
 		}
 
-		while ( not _attributesPtr->actions.empty() )
+		while ( not actions.empty() )
 		{
-			QueuedAction & action = _attributesPtr->actions.front();
+			QueuedAction action = std::move( actions.front() );
+			actions.pop();
 			action.execute();
-			_attributesPtr->actions.pop();
 		}
 	};
 
-	void ActionManager::subscribe( QueuedAction p_action ) noexcept
+	void ActionManager::subscribe( QueuedAction p_action )
 	{
 		if ( _noThread() || _attributesPtr->mainThreadId == std::this_thread::get_id() )
 		{
@@ -66,7 +67,7 @@ namespace VTX::App::Action
 			p_action.execute();
 			return;
 		}
-		std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
+		const std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
 		if ( _attributesPtr->shuttingDown )
 		{
 			return;
@@ -74,17 +75,17 @@ namespace VTX::App::Action
 		_attributesPtr->actions.push( std::move( p_action ) );
 	}
 
-	void ActionManager::shutdown() noexcept
+	void ActionManager::shutdown()
 	{
 		_attributesPtr->shuttingDown = true;
 		std::queue<QueuedAction> actions;
 		{
-			std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
+			const std::scoped_lock<std::mutex> guard( _attributesPtr->mutex );
 			std::swap( actions, _attributesPtr->actions );
 		}
 	}
 
 	bool ActionManager::_noThread() const noexcept { return _attributesPtr->noThread; }
 
-	QueuedAction::Waiter QueuedAction::getWaiter() { return Waiter( _ptr, _state ); }
+	QueuedAction::Waiter QueuedAction::getWaiter() noexcept { return Waiter( _ptr, _state ); }
 } // namespace VTX::App::Action

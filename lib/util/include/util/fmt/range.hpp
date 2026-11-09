@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_FMT_RANGE__
-#define __VTX_UTIL_FMT_RANGE__
+#ifndef VTX_UTIL_FMT_RANGE_HPP
+#define VTX_UTIL_FMT_RANGE_HPP
 
 #include "util/math/range.hpp"
 #include <fmt/format.h>

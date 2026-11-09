@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_BUILDER_SYSTEM_BUILD__
-#define __VTX_RENDERER_BUILDER_SYSTEM_BUILD__
+#ifndef VTX_RENDERER_BUILDER_SYSTEM_BUILD_HPP
+#define VTX_RENDERER_BUILDER_SYSTEM_BUILD_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/builder/post_process/blur.hpp"
@@ -29,61 +29,58 @@
 #include <util/math.hpp>
 
 namespace VTX::Renderer::Builder
-{
-	namespace
+{ // namespace
+
+	inline std::vector<ColorIndex> _buildResidueColors( const Cache::System & p_system )
 	{
-		std::vector<ColorIndex> _buildResidueColors( const Cache::System & p_system )
+		const Core::Struct::Topology & topology = *p_system.data.topology;
+		std::vector<ColorIndex>		   residues( topology.getResidueCount() );
+		[[maybe_unused]] size_t		   count = 0;
+
+		for ( const auto & [ scheme, ranges ] : *p_system.data.colorSchemeSecondaryStructureResidues )
 		{
-			const Core::Struct::Topology & topology = *p_system.data.topology;
-			std::vector<ColorIndex>		   residues( topology.getResidueCount() );
-			size_t						   count = 0;
-
-			for ( const auto & [ scheme, ranges ] : *p_system.data.colorSchemeSecondaryStructureResidues )
-			{
-				if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE )
-				{
-					for ( const Index residue : ranges )
-					{
-						residues[ residue ]
-							= Color::getColorIndex( topology.getResidueSecondaryStructureType( residue ) );
-					}
-				}
-				else if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::CHAIN )
-				{
-					for ( const Index residue : ranges )
-					{
-						const Index chain	= topology.getResidueChainIndex( residue );
-						residues[ residue ] = Color::getColorIndex( topology.getChainName( chain ) );
-					}
-				}
-				else if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::RESIDUE )
-				{
-					for ( const Index residue : ranges )
-					{
-						residues[ residue ] = Color::getColorIndex( topology.getResidueSymbol( residue ) );
-					}
-				}
-				else
-				{
-					assert( false && "Unsupported secondary structure color scheme." );
-				}
-
-				count += ranges.count();
-			}
-			for ( const auto & [ colorIndex, ranges ] : *p_system.data.customSecondaryStructureColorResidues )
+			if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE )
 			{
 				for ( const Index residue : ranges )
 				{
-					residues[ residue ] = colorIndex;
+					residues[ residue ] = Color::getColorIndex( topology.getResidueSecondaryStructureType( residue ) );
 				}
-				count += ranges.count();
+			}
+			else if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::CHAIN )
+			{
+				for ( const Index residue : ranges )
+				{
+					const Index chain	= topology.getResidueChainIndex( residue );
+					residues[ residue ] = Color::getColorIndex( topology.getChainName( chain ) );
+				}
+			}
+			else if ( scheme == E_COLOR_SCHEME_SECONDARY_STRUCTURE::RESIDUE )
+			{
+				for ( const Index residue : ranges )
+				{
+					residues[ residue ] = Color::getColorIndex( topology.getResidueSymbol( residue ) );
+				}
+			}
+			else
+			{
+				assert( false && "Unsupported secondary structure color scheme." );
 			}
 
-			assert( count == topology.getResidueCount() );
-
-			return residues;
+			count += ranges.count();
 		}
-	} // namespace
+		for ( const auto & [ colorIndex, ranges ] : *p_system.data.customSecondaryStructureColorResidues )
+		{
+			for ( const Index residue : ranges )
+			{
+				residues[ residue ] = colorIndex;
+			}
+			count += ranges.count();
+		}
+
+		assert( count == topology.getResidueCount() );
+
+		return residues;
+	}
 
 	struct SystemRegistry
 	{
@@ -179,7 +176,7 @@ namespace VTX::Renderer::Builder
 		{
 			const Core::Struct::Topology & data = *p_system.data.topology;
 			std::vector<ColorIndex>		   atoms( data.getAtomCount() );
-			size_t						   count = 0;
+			[[maybe_unused]] size_t		   count = 0;
 
 			for ( const auto & [ scheme, ranges ] : *p_system.data.colorSchemeAtoms )
 			{
@@ -249,7 +246,7 @@ namespace VTX::Renderer::Builder
 			constexpr RepresentationIndex invalidRepresentation = std::numeric_limits<RepresentationIndex>::max();
 
 			std::vector<RepresentationIndex> atoms( p_system.data.topology->getAtomCount(), invalidRepresentation );
-			size_t							 count = 0;
+			[[maybe_unused]] size_t			 count = 0;
 			for ( const auto & [ preset, ranges ] : *p_system.data.presetAtoms )
 			{
 				const auto representationIt = p_system.data.representationHandles->find( preset );
@@ -695,14 +692,12 @@ namespace VTX::Renderer::Builder
 	{
 		static Cache::Representation buildCache( const Representation & p_representation )
 		{
-			bool showSphere	  = p_representation.hasSphere;
-			bool showCylinder = p_representation.hasCylinder;
-			bool showRibbon	  = p_representation.hasRibbon;
-			bool showSes	  = p_representation.hasSes;
+			bool	   showSphere	= p_representation.hasSphere;
+			bool	   showCylinder = p_representation.hasCylinder;
+			bool	   showRibbon	= p_representation.hasRibbon;
+			const bool showSes		= p_representation.hasSes;
 
-			const bool	isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
-			const float cylinderRadius		= p_representation.radiusCylinder;
-			float		sphereRadiusFixed	= p_representation.radiusSphereFixed;
+			const bool isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
 
 			if ( showSes )
 			{
@@ -714,13 +709,6 @@ namespace VTX::Renderer::Builder
 			{
 				showCylinder = false;
 				showRibbon	 = false;
-			}
-			else if ( showSphere && showCylinder )
-			{
-				if ( isSphereRadiusFixed && sphereRadiusFixed < cylinderRadius )
-				{
-					sphereRadiusFixed = cylinderRadius;
-				}
 			}
 			else if ( not showSphere && showCylinder )
 			{
@@ -770,15 +758,15 @@ namespace VTX::Renderer::Builder
 			}
 
 			buffer.close();
-			p_context.setBuffer( { "Representations" }, buffer );
+			p_context.setBuffer( { "Representations" }, buffer.bytes() );
 		}
 
 	  private:
 		static void _write( BinaryBuffer<E_LAYOUT_TYPE::Std140> & p_buffer, const Representation & p_representation )
 		{
-			bool  isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
-			float cylinderRadius	  = p_representation.radiusCylinder;
-			float sphereRadiusFixed	  = p_representation.radiusSphereFixed;
+			bool		isSphereRadiusFixed = p_representation.isRadiusSphereFixed;
+			const float cylinderRadius		= p_representation.radiusCylinder;
+			float		sphereRadiusFixed	= p_representation.radiusSphereFixed;
 
 			if ( p_representation.hasSphere && p_representation.hasCylinder )
 			{
@@ -795,10 +783,10 @@ namespace VTX::Renderer::Builder
 
 			p_buffer.write( sphereRadiusFixed );
 			p_buffer.write( p_representation.radiusSphereAdd );
-			p_buffer.write( uint( isSphereRadiusFixed ) );
+			p_buffer.write( static_cast<uint>( isSphereRadiusFixed ) );
 			p_buffer.write( p_representation.radiusCylinder );
-			p_buffer.write( uint( p_representation.cylinderColorBlending ) );
-			p_buffer.write( uint( p_representation.ribbonColorBlending ) );
+			p_buffer.write( static_cast<uint>( p_representation.cylinderColorBlending ) );
+			p_buffer.write( p_representation.ribbonColorBlending );
 			p_buffer.write( p_representation.sesProbeRadius );
 			p_buffer.write( Geometry::SES::MAX_PROBE_NEIGHBOR_NB );
 		}
@@ -828,13 +816,13 @@ namespace VTX::Renderer::Builder
 				p_camera.camera.far - p_camera.camera.near,
 				p_camera.camera.near
 			) );
-			buffer.write( Vec2i( int( p_width ), int( p_height ) ) );
+			buffer.write( Vec2i( static_cast<int>( p_width ), static_cast<int>( p_height ) ) );
 			buffer.write( Vec2i() );
-			buffer.write( uint( p_camera.camera.projection == PROJECTION::PERSPECTIVE ) );
+			buffer.write( static_cast<uint>( p_camera.camera.projection == PROJECTION::PERSPECTIVE ) );
 			buffer.write( std::tan( Util::Math::radians( p_camera.camera.fov ) * 0.5f ) );
 			buffer.close();
 
-			p_context.setBuffer( { "Camera" }, buffer );
+			p_context.setBuffer( { "Camera" }, buffer.bytes() );
 		}
 	};
 

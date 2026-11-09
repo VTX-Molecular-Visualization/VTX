@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_BASE_WIDGET__
-#define __VTX_UI_QT_WIDGET_BASE_WIDGET__
+#ifndef VTX_UI_QT_WIDGET_BASE_WIDGET_HPP
+#define VTX_UI_QT_WIDGET_BASE_WIDGET_HPP
 
 #include <QWidget>
 #include <type_traits>
@@ -10,6 +10,7 @@ namespace VTX::UI::QT::Widget
 {
 	/**
 	 * @brief A widget must inherit from a QWidget.
+	 * CRTP pattern.
 	 */
 	template<typename W>
 	concept ConceptWidget = std::is_base_of_v<QWidget, W>;
@@ -23,25 +24,38 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		/**
-		 * @brief Construct widget and set its object name from its type.
+		 * @brief Destructor.
 		 */
-		explicit BaseWidget( QWidget * p_parent ) : W( p_parent )
+		~BaseWidget() override
 		{
-			// Set object name.
-			const auto name = VTX::Util::typeName<T>();
-			W::setObjectName( name );
-			VTX_TRACE( "Widget created: {}", name );
+			try
+			{
+				// toStdString() can throw.
+				VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() );
+			}
+			catch ( ... )
+			{
+				VTX_TRACE( "Widget deleted" );
+			}
 		}
-
-		virtual ~BaseWidget() { VTX_TRACE( "Widget deleted: {}", W::objectName().toStdString() ); }
 
 		/**
 		 * @brief Check if widget is of type T.
 		 */
 		template<typename Type>
-		bool is() const
+		static bool is()
+		{ return W::objectName() == VTX::Util::typeName<Type>(); }
+
+	  protected:
+		/**
+		 * @brief Construct widget and set its object name from its type.
+		 */
+		explicit BaseWidget( QWidget * const p_parent ) : W( p_parent )
 		{
-			return W::objectName() == VTX::Util::typeName<Type>();
+			// Set object name.
+			const auto name = VTX::Util::typeName<T>();
+			W::setObjectName( name );
+			VTX_TRACE( "Widget created: {}", name );
 		}
 	};
 

@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_BINDING_INTERPRETOR__
-#define __VTX_PYTHON_BINDING_INTERPRETOR__
+#ifndef VTX_PYTHON_BINDING_INTERPRETOR_HPP
+#define VTX_PYTHON_BINDING_INTERPRETOR_HPP
 
 #include "python_binding/binder.hpp"
 #include <memory>
@@ -35,13 +35,13 @@ namespace VTX::PythonBinding
 		 * @param p_line
 		 * @return
 		 */
-		std::string runCommand( const std::string & p_line ) const;
+		static std::string runCommand( const std::string & p_line );
 
 		/**
 		 * @brief Run the script located in the path in argument.
 		 * @param p_path
 		 */
-		void runScript( const FilePath & p_path ) const;
+		static void runScript( const FilePath & p_path );
 
 		/**
 		 * @brief Load python script from input path as a module and return it.
@@ -50,12 +50,12 @@ namespace VTX::PythonBinding
 		 */
 		Wrapper::Module loadModule( const FilePath & p_path ) const;
 
-		const Wrapper::Module & getModule() const;
-		Wrapper::Module &		getModule();
+		const Wrapper::Module & getModule() const noexcept;
+		Wrapper::Module &		getModule() noexcept;
 
-		void print( const std::string & p_line ) const;
+		static void print( const std::string & p_line );
 
-		void getPythonModule( pybind11::module_ ** );
+		void getPythonModule( pybind11::module_ ** ) noexcept;
 
 	  private:
 		struct Impl;

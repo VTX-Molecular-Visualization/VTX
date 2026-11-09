@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_STYLE_CODEPOINT_ICON_ENGIN__
-#define __VTX_UI_QT_STYLE_CODEPOINT_ICON_ENGIN__
+#ifndef VTX_UI_QT_STYLE_CODEPOINT_ICON_ENGINE_HPP
+#define VTX_UI_QT_STYLE_CODEPOINT_ICON_ENGINE_HPP
 
 #include <QIconEngine>
 
@@ -13,7 +13,7 @@ namespace VTX::UI::QT::Style
 	/**
 	 * @brief Default font family for icons.
 	 */
-	const QString DEFAULT_FONT_FAMILY_ICONS = "Material Symbols Outlined";
+	constexpr QUtf8StringView DEFAULT_FONT_FAMILY_ICONS { "Material Symbols Outlined" };
 
 	/**
 	 * @brief Custom QIconEngine to repaint icons with the current theme color.
@@ -29,7 +29,12 @@ namespace VTX::UI::QT::Style
 		/**
 		 * @brief Override: clone the engine.
 		 */
-		inline QIconEngine * clone() const override { return new CodepointIconEngine( _codepoint ); }
+		[[nodiscard]] QIconEngine * clone() const override
+		{
+			// Qt takes ownership of the clone.
+			// NOLINTNEXTLINE(cppcoreguidelines-owning-memory)
+			return new CodepointIconEngine( _codepoint );
+		}
 
 		/**
 		 * @brief Override: paint the icon using the current theme color.

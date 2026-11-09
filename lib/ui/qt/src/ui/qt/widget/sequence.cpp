@@ -1,19 +1,17 @@
-﻿#include <QContextMenuEvent>
+#include <QContextMenuEvent>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
 #include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
-#include <app/action/selection.hpp>
 #include <app/ecs.hpp>
 #include <app/helper/system.hpp>
 #include <app/scene/color_layout.hpp>
 #include <app/system/selection.hpp>
-#include <app/system/uid.hpp>
-#include <app/system/visibility.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
+#include <memory>
 #include <renderer/color.hpp>
 #include <ui/qt/action_registry.hpp>
 #include <ui/qt/actions.hpp>
@@ -52,7 +50,7 @@ namespace VTX::UI::QT::Widget
 			using reference			= value_type &; // or also value_type&
 
 			ResidueIterator( std::function<Residue( Index )> p_residueGetter, Index p_idx ) :
-				_getter( std::move( p_residueGetter ) ), _idx( p_idx )
+				_idx( p_idx ), _getter( std::move( p_residueGetter ) )
 			{
 			}
 
@@ -120,7 +118,7 @@ namespace VTX::UI::QT::Widget
 	{
 	  public:
 		ResidueSequencer( Entity p_entity ) :
-			_entity( std::move( p_entity ) ),
+			_entity( p_entity ),
 			_mode( static_cast<Sequence::Mode>( SETTINGS().value( SETTING_KEY_SEQUENCE_VTX_RESID ).toInt() ) )
 		{
 			auto & topology = App::REG().get<Core::Struct::Topology>( _entity );
@@ -152,7 +150,7 @@ namespace VTX::UI::QT::Widget
 			}
 		}
 
-		void set( Sequence::Mode p_mode ) { _mode = std::move( p_mode ); }
+		void set( Sequence::Mode p_mode ) { _mode = p_mode; }
 
 		Index residuesCount() const { return App::REG().get<Core::Struct::Topology>( _entity ).getResidueCount(); }
 
@@ -223,7 +221,7 @@ namespace VTX::UI::QT::Widget
 					}
 					else
 					{
-						const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
+						const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ static_cast<int>( symbol ) ];
 						out.oneLetterSymbol = name.at( 0 );
 					}
 				}
@@ -242,10 +240,10 @@ namespace VTX::UI::QT::Widget
 			{
 				if ( _oIdData.ruleIndex2residueIndex.contains( p_index ) )
 				{
-					auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( p_index );
-					out.chainIndex			   = chainId;
-					auto & chainName		   = topology.chainNames[ out.chainIndex ];
-					out.chainName			   = std::string_view( chainName.data(), chainName.size() );
+					const auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( p_index );
+					out.chainIndex					 = chainId;
+					auto & chainName				 = topology.chainNames[ out.chainIndex ];
+					out.chainName					 = std::string_view( chainName.data(), chainName.size() );
 					if ( resIdx < topology.residueSymbols.size() )
 					{
 						const auto symbol = topology.residueSymbols[ resIdx ];
@@ -255,7 +253,7 @@ namespace VTX::UI::QT::Widget
 						}
 						else
 						{
-							const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ int( symbol ) ];
+							const auto name		= Core::ChemDB::Residue::SYMBOL_SHORT_STR[ static_cast<int>( symbol ) ];
 							out.oneLetterSymbol = name.at( 0 );
 						}
 					}
@@ -311,10 +309,10 @@ namespace VTX::UI::QT::Widget
 
 			if ( _oIdData.ruleIndex2residueIndex.contains( it_searchIndex ) )
 			{
-				auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( it_searchIndex );
-				p_chainIndex			   = chainId;
-				auto & chainName		   = topology.chainNames[ chainId ];
-				p_chainName				   = std::string_view( chainName.data(), chainName.size() );
+				const auto & [ chainId, resIdx ] = _oIdData.ruleIndex2residueIndex.at( it_searchIndex );
+				p_chainIndex					 = chainId;
+				auto & chainName				 = topology.chainNames[ chainId ];
+				p_chainName						 = std::string_view( chainName.data(), chainName.size() );
 			}
 		}
 
@@ -333,11 +331,11 @@ namespace VTX::UI::QT::Widget
 		} _oIdData;
 	};
 
-	Sequence::Sequence( const Entity p_system, QWidget * p_parent ) :
+	Sequence::Sequence( const Entity p_system, QWidget * const p_parent ) :
 		QAbstractScrollArea( p_parent ), _system( p_system ), _sequencer( new ResidueSequencer( p_system ) ),
 		_modeChange( App::HUB().connect<Events::SequenceResIdChanged, &Sequence::_sequenceModeChange>( this ) )
 	{
-		QFont f( Style::DEFAULT_FONT_FAMILY_SEQUENCE, 10 );
+		QFont f( Style::DEFAULT_FONT_FAMILY_SEQUENCE.toString(), 10 );
 		f.setStyleHint( QFont::Monospace );
 		setFont( f );
 		setMouseTracking( true );
@@ -390,14 +388,16 @@ namespace VTX::UI::QT::Widget
 		int	  labelChainWidth = 0;
 		for ( ; residue != end; ++residue )
 		{
-			painter.setPen( Helper::toQColor( colorlayout.getChainColor( size_t( residue->chainIndex + 1 ) ) ) );
+			painter.setPen(
+				Helper::toQColor( colorlayout.getChainColor( static_cast<size_t>( residue->chainIndex + 1 ) ) )
+			);
 
 			// Chain labels.
 			if ( residue->chainIndex != lastChain )
 			{
 				if ( x > labelWidth )
 				{
-					QString chainLabel = QString( "/%1" ).arg(
+					const QString chainLabel = QString( "/%1" ).arg(
 						QString::fromStdString( std::string( residue->chainName.data(), residue->chainName.size() ) )
 					);
 					// First we draw a background rectangle so edge cases where previous rule label is to wide it
@@ -443,7 +443,8 @@ namespace VTX::UI::QT::Widget
 		menu.exec( p_e->globalPos() );
 	}
 
-	void Sequence::Del::operator()( ResidueSequencer * p_ ) const noexcept { delete p_; }
+	void Sequence::Del::operator()( ResidueSequencer * const p_ ) const noexcept
+	{ std::default_delete<ResidueSequencer> {}( p_ ); }
 
 	void Sequence::mousePressEvent( QMouseEvent * p_e )
 	{
@@ -475,11 +476,8 @@ namespace VTX::UI::QT::Widget
 
 		Index index = *opt;
 
-		auto & reg		 = REG();
-		auto & selection = reg.get<App::System::Selection>( _system );
-
-		bool shift = p_e->modifiers() & Qt::ShiftModifier;
-		bool ctrl  = p_e->modifiers() & Qt::ControlModifier;
+		const bool shift = p_e->modifiers() & Qt::ShiftModifier;
+		const bool ctrl	 = p_e->modifiers() & Qt::ControlModifier;
 
 		const bool selected = App::Helper::System::getSelectionState( { _system, E_SYSTEM_ITEM::RESIDUE, index } )
 							  != App::System::E_SELECTION_STATE::NONE;
@@ -500,8 +498,8 @@ namespace VTX::UI::QT::Widget
 				_anchor = index;
 			}
 
-			Index a = Util::Math::min( _anchor, index );
-			Index b = Util::Math::max( _anchor, index );
+			const Index a = Util::Math::min( _anchor, index );
+			const Index b = Util::Math::max( _anchor, index );
 
 			SELECTION().select<E_SYSTEM_ITEM::RESIDUE>( _system, Core::Struct::IndexRange { a, b } );
 
@@ -546,13 +544,10 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		Index index = *opt;
+		const Index index = *opt;
 
-		auto & reg		 = App::REG();
-		auto & selection = reg.get<App::System::Selection>( _system );
-
-		Index a = Util::Math::min( _dragStartIndex, index );
-		Index b = Util::Math::max( _dragStartIndex, index );
+		const Index a = Util::Math::min( _dragStartIndex, index );
+		const Index b = Util::Math::max( _dragStartIndex, index );
 
 		// Normal.
 		if ( not( p_e->modifiers() & Qt::ControlModifier ) )
@@ -594,8 +589,7 @@ namespace VTX::UI::QT::Widget
 
 	void Sequence::_updateScrollBars()
 	{
-		auto &	   topology		= App::REG().get<Core::Struct::Topology>( _system );
-		const uint contentWidth = uint( _sequencer->ruleSize() ) * SEQ_CHAR_WIDTH;
+		const uint contentWidth = static_cast<uint>( _sequencer->ruleSize() ) * SEQ_CHAR_WIDTH;
 		horizontalScrollBar()->setRange( 0, contentWidth - viewport()->width() );
 		horizontalScrollBar()->setPageStep( viewport()->width() );
 	}
@@ -605,7 +599,7 @@ namespace VTX::UI::QT::Widget
 		const int xOffset = horizontalScrollBar()->value();
 		const int clickX  = p.x() + xOffset;
 
-		Index index = clickX / SEQ_CHAR_WIDTH;
+		const Index index = clickX / SEQ_CHAR_WIDTH;
 		if ( index > _sequencer->ruleSize() )
 		{
 			return std::nullopt;

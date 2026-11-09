@@ -12,7 +12,7 @@
 TEST_CASE( "VTX_APP - Mesh - Load", "[mesh][load]" )
 {
 	using namespace VTX;
-	App::Fixture app;
+	const App::Fixture app;
 
 	const FilePath meshPath = Util::Filesystem::getExecutableDir() / "data" / "two_triangles.obj";
 	App::ACTION().execute<App::Action::IO::Open>( meshPath );

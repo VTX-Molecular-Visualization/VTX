@@ -47,6 +47,7 @@ namespace
 
 int main( const int argc, char ** argv )
 {
+	/*
 	using namespace VTX;
 
 	if ( argc != 2 )
@@ -64,4 +65,5 @@ int main( const int argc, char ** argv )
 	}
 
 	return _bakeEnvironmentDirectoryToKtx( hdrRoot, Renderer::Baker::DEFAULT_ENVIRONMENT_FACE_SIZE );
+	*/
 }

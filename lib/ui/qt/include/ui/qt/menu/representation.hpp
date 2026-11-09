@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_MENU_REPRESENTATION__
-#define __VTX_UI_QT_MENU_REPRESENTATION__
+#ifndef VTX_UI_QT_MENU_REPRESENTATION_HPP
+#define VTX_UI_QT_MENU_REPRESENTATION_HPP
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
@@ -18,7 +18,7 @@ namespace VTX::UI::QT::Menu
 		Q_OBJECT
 
 	  public:
-		Representation( QWidget * p_parent, const std::optional<Entity> p_representation = std::nullopt ) :
+		Representation( QWidget * const p_parent, const std::optional<Entity> p_representation = std::nullopt ) :
 			BaseWidget( p_parent )
 		{
 			setTitle( "Representation" );
@@ -29,8 +29,7 @@ namespace VTX::UI::QT::Menu
 
 			for ( const auto ent : view )
 			{
-				const auto & representation = view.get<Renderer::Representation>( ent );
-				const auto & name			= App::REG().get<App::Generic::Name>( ent );
+				const auto & name = App::REG().get<App::Generic::Name>( ent );
 
 				QAction * a = QMenu::addAction( QString::fromStdString( name.name ) );
 				if ( p_representation )

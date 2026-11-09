@@ -41,6 +41,7 @@ class VTXRecipe(ConanFile):
         "python_binding": [True, False],
         "python_version": ["ANY"],
         "cuda_arch": ["ANY"],
+        "clang_tidy": ["OFF", "WARN", "ERR"],
     }
     default_options = {
         "version": "0.0.0",
@@ -53,6 +54,7 @@ class VTXRecipe(ConanFile):
         "python_binding": True,
         "python_version": DEFAULT_PYTHON_VERSION,
         "cuda_arch": renderer_module.DEFAULT_CUDA_ARCH,
+        "clang_tidy": "OFF",
     }
     
     settings = "os", "compiler", "build_type", "arch"
@@ -73,27 +75,26 @@ class VTXRecipe(ConanFile):
     def requirements(self):
         self.requires("glm/1.0.3")
         self.requires("spdlog/1.17.0")
-        self.requires("fmt/12.1.0", force=True)
-        self.requires("magic_enum/0.9.7")
-        self.requires("nlohmann_json/3.12.0")
+        self.requires("fmt/12.2.0", force=True)
+        self.requires("magic_enum/0.9.8")
         self.requires("cpr/1.14.2")
-        self.requires("catch2/3.15.1")
+        self.requires("catch2/3.16.1")
         self.requires("chemfiles/2026.02.5")
         self.requires("argparse/3.2")
         if self.options.renderer:
-            self.requires("sdl/3.4.8")
-            self.requires("imgui/1.92.8")
+            self.requires("sdl/3.4.16")
+            self.requires("imgui/1.92.9b")
             self.requires("ktx/4.4.2")
-        self.requires("stb/cci.20240531", force=True)
+        self.requires("stb/cci.20261021", force=True)
         self.requires("tinyexr/1.0.7")
         self.requires("exiv2/0.28.3")
-        self.requires("entt/3.16.0")
+        self.requires("entt/4.0.0")
         self.requires("assimp/6.0.5")
         self.requires("minizip/1.3.2", force=True)
         if self.options.python_binding:
             self.requires("pybind11/3.0.1")
         if self.options.ui_qt:
-            self.requires("qt/6.11.1")
+            self.requires("qt/6.12.0")
         if self.options.tool_mdprep:
             self.requires("gromacs/2026.0.1")
         self.requires("re2/20251105")
@@ -132,21 +133,22 @@ class VTXRecipe(ConanFile):
             configure_runtime_toolchain(tc, python_binding_module.runtime_root(self))
         
         versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
-        tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
-        tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
-        tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
-        tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
-        tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
-        tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = 1 if self.options.tool_topology_editor else 0
-        tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
-        tc.cache_variables["VTX_RENDERER"] = 1 if self.options.renderer else 0
-        tc.cache_variables["VTX_PYTHON_BINDING"] = 1 if self.options.python_binding else 0
+        tc.cache_variables["VTX_VERSION_MAJOR"] = str(versionMajor)
+        tc.cache_variables["VTX_VERSION_MINOR"] = str(versionMinor)
+        tc.cache_variables["VTX_VERSION_PATCH"] = str(versionPatch) 
+        tc.cache_variables["VTX_TOOL_EXAMPLE"] = "1" if self.options.tool_example else "0"
+        tc.cache_variables["VTX_TOOL_MDPREP"] = "1" if self.options.tool_mdprep else "0"
+        tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = "1" if self.options.tool_topology_editor else "0"
+        tc.cache_variables["VTX_UI_QT"] = "1" if self.options.ui_qt else "0"
+        tc.cache_variables["VTX_RENDERER"] = "1" if self.options.renderer else "0"
+        tc.cache_variables["VTX_PYTHON_BINDING"] = "1" if self.options.python_binding else "0"
         tc.cache_variables["VTX_VELOPACK_LIB"] = app_module.velopack_lib_name(
             str(self.settings.os), str(self.settings.arch)
         )
         if self.options.renderer:
             tc.cache_variables["VTX_CUDA_ARCH"] = self.options.cuda_arch
-        tc.cache_variables["LOCAL_PDB100"] = 1 if self.options.local_pdb100 else 0
+        tc.cache_variables["LOCAL_PDB100"] = "1" if self.options.local_pdb100 else "0"
+        tc.cache_variables["VTX_CLANG_TIDY"] = str(self.options.clang_tidy)
         if self.options.ui_qt:
             tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_module.qt_runtime_root(self)
         if self.options.tool_mdprep:

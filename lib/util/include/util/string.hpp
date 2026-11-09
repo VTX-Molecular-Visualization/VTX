@@ -1,51 +1,146 @@
-#ifndef __VTX_UTIL_STRING__
-#define __VTX_UTIL_STRING__
+#ifndef VTX_UTIL_STRING_HPP
+#define VTX_UTIL_STRING_HPP
 
 #include "types.hpp"
 #include <algorithm>
+#include <charconv>
+#include <stdexcept>
 #include <string>
+#include <string_view>
+#include <system_error>
+#include <type_traits>
 #include <vector>
 
 namespace VTX::Util::String
 {
 	/**
-	 * Trim empty characters at the start and end and return the result.
+	 * @brief Whitespace chars.
 	 */
-	[[nodiscard]] std::string trim( const std::string & p_str );
+	constexpr std::string_view WHITESPACES = " \n\t\r\f\v";
+
+	/**
+	 * Trim empty characters at the start and end.
+	 */
+	[[nodiscard]] inline std::string trim( const std::string & p_str )
+	{
+		std::string result = p_str;
+		result.erase( 0, result.find_first_not_of( WHITESPACES ) );
+		result.erase( result.find_last_not_of( WHITESPACES ) + 1 );
+		return result;
+	}
+
+	/**
+	 * @brief Replace first occurrence.
+	 */
+	[[nodiscard]] inline std::string replaceFirst(
+		const std::string & p_str,
+		const std::string & p_toReplace,
+		const std::string & p_replacement
+	)
+	{
+		std::string	 result	  = p_str;
+		const size_t position = result.find( p_toReplace );
+		if ( position != std::string::npos )
+		{
+			result.replace( position, p_toReplace.size(), p_replacement );
+		}
+		return result;
+	}
 
 	/**
 	 * Trim empty characters at the start and return the result.
 	 */
-	[[nodiscard]] std::string trimStart( const std::string & p_str );
+	[[nodiscard]] inline std::string trimStart( const std::string & p_str )
+	{
+		std::string result = p_str;
+		result.erase( 0, result.find_first_not_of( WHITESPACES ) );
+		return result;
+	}
 
 	/**
 	 * Trim empty characters at the end and return the result.
 	 */
-	[[nodiscard]] std::string trimEnd( const std::string & p_str );
+	[[nodiscard]] inline std::string trimEnd( const std::string & p_str )
+	{
+		std::string result = p_str;
+		result.erase( result.find_last_not_of( WHITESPACES ) + 1 );
+		return result;
+	}
 
 	/**
 	 * Split a string using a character separator.
 	 */
-	[[nodiscard]] std::vector<std::string> split( const std::string & p_str, const char p_separator );
+	[[nodiscard]] inline std::vector<std::string> split( const std::string & p_str, const char p_separator )
+	{
+		std::vector<std::string> splittedStr = std::vector<std::string>();
+
+		size_t startIndex = 0;
+		size_t endIndex	  = p_str.find( p_separator );
+
+		while ( endIndex != std::string::npos )
+		{
+			splittedStr.emplace_back( p_str.substr( startIndex, endIndex - startIndex ) );
+			startIndex = endIndex + 1;
+			endIndex   = p_str.find( p_separator, startIndex );
+		}
+
+		splittedStr.emplace_back( p_str.substr( startIndex ) );
+		splittedStr.shrink_to_fit();
+
+		return splittedStr;
+	}
 
 	/**
 	 * Replace all occurrences of a string and return the result.
 	 */
-	[[nodiscard]] std::string replaceAll(
+	[[nodiscard]] inline std::string replaceAll(
 		const std::string & p_str,
 		const std::string & p_toReplace,
 		const std::string & p_replacement
-	);
+	)
+	{
+		std::string result = p_str;
+		if ( p_toReplace.empty() )
+		{
+			return result;
+		}
+		size_t currentIndex = result.find( p_toReplace );
+
+		while ( currentIndex != std::string::npos )
+		{
+			result.replace( currentIndex, p_toReplace.size(), p_replacement );
+			currentIndex += p_replacement.size();
+
+			currentIndex = result.find( p_toReplace, currentIndex );
+		}
+
+		return result;
+	}
 
 	/**
 	 * Convert a float to a string with a fixed number of decimals.
 	 */
-	[[nodiscard]] std::string floatToStr( const float p_value, const int p_nbDecimals );
+	[[nodiscard]] std::string floatToStr( float p_value, int p_nbDecimals );
 
 	/**
 	 * Convert a string to an unsigned integer.
 	 */
-	[[nodiscard]] uint strToUint( const std::string & p_str );
+	template<typename T>
+	[[nodiscard]] T strToNumber( const std::string & p_str )
+	{
+		static_assert( std::is_integral_v<T> );
+
+		T value {};
+
+		const auto [ ptr, ec ] = std::from_chars( p_str.data(), p_str.data() + p_str.size(), value );
+
+		if ( ec != std::errc {} || ptr != p_str.data() + p_str.size() )
+		{
+			throw std::invalid_argument( "Invalid numeric value: " + p_str );
+		}
+
+		return value;
+	}
 
 	/**
 	 * Convert all characters to uppercase and return the result.
@@ -58,14 +153,31 @@ namespace VTX::Util::String
 	[[nodiscard]] std::string toLower( const std::string & p_str );
 
 	/**
+	 * @brief Data needed to fmt::format.
+	 */
+	struct FormattedMemSize
+	{
+		size_t size {};
+		bool   isBase10 = true;
+	};
+
+	/**
 	 * Convert a memory size to a string.
 	 */
-	[[nodiscard]] std::string memSizeToStr( const size_t p_size, const bool p_isBase10 = true );
+	[[nodiscard]] std::string memSizeToStr( size_t p_size, bool p_isBase10 = true );
+
+	/**
+	 * @brief Data needed to fmt::format.
+	 */
+	struct FormattedDuration
+	{
+		float durationInMs {};
+	};
 
 	/**
 	 * Convert a duration to a string.
 	 */
-	[[nodiscard]] std::string durationToStr( const float p_durationInMS );
+	[[nodiscard]] std::string durationToStr( float p_durationInMS );
 
 } // namespace VTX::Util::String
 

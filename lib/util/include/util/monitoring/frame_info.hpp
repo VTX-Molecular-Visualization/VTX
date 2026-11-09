@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_MONITORING_FRAME_INFO__
-#define __VTX_UTIL_MONITORING_FRAME_INFO__
+#ifndef VTX_UTIL_MONITORING_FRAME_INFO_HPP
+#define VTX_UTIL_MONITORING_FRAME_INFO_HPP
 
 #include <map>
 #include <util/chrono.hpp>
@@ -19,9 +19,7 @@ namespace VTX::Util::Monitoring
 		 */
 		template<typename T>
 		void set( const Hash & p_hashedKey, const T & p_value )
-		{
-			_metricsMap[ p_hashedKey ] = p_value;
-		}
+		{ _metricsMap[ p_hashedKey ] = p_value; }
 
 		/**
 		 * @brief Gets the value associated with the specified hash.
@@ -38,12 +36,12 @@ namespace VTX::Util::Monitoring
 		/**
 		 * @brief Checks if the specified hashed key exists.
 		 */
-		inline bool has( const Hash & p_hashedKey ) const { return _metricsMap.contains( p_hashedKey ); }
+		bool has( const Hash & p_hashedKey ) const noexcept { return _metricsMap.contains( p_hashedKey ); }
 
 		/**
 		 * @brief Get the frame start time point.
 		 */
-		inline Util::Chrono::TimePoint getTimepoint() const { return _timepoint; }
+		Util::Chrono::TimePoint getTimepoint() const noexcept { return _timepoint; }
 
 	  private:
 		/**

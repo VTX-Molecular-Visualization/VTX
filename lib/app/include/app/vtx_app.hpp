@@ -1,11 +1,13 @@
-#ifndef __VTX_APP_VTX_APP__
-#define __VTX_APP_VTX_APP__
+#ifndef VTX_APP_VTX_APP_HPP
+#define VTX_APP_VTX_APP_HPP
 
 #include "app/arguments.hpp"
 #include "app/ecs.hpp"
 #include "app/pipeline.hpp"
 #include "app/tool/base_tool.hpp"
+#include <exception>
 #include <memory>
+#include <util/logger.hpp>
 #include <vector>
 
 namespace VTX::App
@@ -35,19 +37,26 @@ namespace VTX::App
 		/**
 		 * @brief Main loop update function (called from gui thread).
 		 */
-		inline void update( const float p_deltaTime, const float p_elapsedTime )
+		void update( const float p_deltaTime, const float p_elapsedTime ) noexcept
+		try
 		{
 			_pipeline.process( ECS::getCtx<Util::Monitoring::Stats>(), p_deltaTime, p_elapsedTime );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Application update failed: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Unknown application update failure" );
 		}
 
 		/**
 		 * @brief Add a tool.
 		 */
 		template<typename T>
-		inline void addTool()
-		{
-			_tools.emplace_back( std::make_unique<T>() );
-		}
+		void addTool()
+		{ _tools.emplace_back( std::make_unique<T>() ); }
 
 		/**
 		 * @brief Start application services (logger, event hub, etc.).
@@ -73,7 +82,7 @@ namespace VTX::App
 		/**
 		 * @brief Get instantiated tools.
 		 */
-		inline std::vector<std::unique_ptr<Tool::BaseTool>> & getTools() { return _tools; }
+		std::vector<std::unique_ptr<Tool::BaseTool>> & getTools() noexcept { return _tools; }
 
 	  private:
 		/**

@@ -17,10 +17,16 @@
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
+#include <util/string.hpp>
+#include <utility>
 
+#ifdef _MSC_VER
 #pragma warning( push, 0 )
+#endif
 #include <chemfiles.hpp>
+#ifdef _MSC_VER
 #pragma warning( pop )
+#endif
 
 namespace VTX::IO
 {
@@ -49,7 +55,7 @@ namespace VTX::IO
 		}
 	} // namespace
 
-	struct SystemReader::_Impl
+	struct SystemReader::Impl
 	{
 		FilePath								_filePath;
 		READER_OPTION							_readerOption;
@@ -58,30 +64,28 @@ namespace VTX::IO
 		chemfiles::Trajectory					_trajectory;
 		chemfiles::Frame						_currentFrame;
 		chemfiles::Topology						_topology;
-		const std::vector<chemfiles::Residue> * _residues			 = nullptr;
-		const std::vector<chemfiles::Bond> *	_bonds				 = nullptr;
-		const chemfiles::Residue *				_currentResidue		 = nullptr;
-		const chemfiles::Atom *					_currentAtom		 = nullptr;
-		int64_t									_currentAtomIndex	 = -1;
-		int64_t									_currentFrameIdx	 = -1;
-		std::vector<Index>						_atomOriginalIndexes = {};
+		const std::vector<chemfiles::Residue> * _residues		  = nullptr;
+		const std::vector<chemfiles::Bond> *	_bonds			  = nullptr;
+		const chemfiles::Residue *				_currentResidue	  = nullptr;
+		const chemfiles::Atom *					_currentAtom	  = nullptr;
+		int64_t									_currentAtomIndex = -1;
+		int64_t									_currentFrameIdx  = -1;
+		std::vector<Index>						_atomOriginalIndexes;
 		Frame									_firstFrame;
 		bool									_hasSecondaryStructureData = false;
 
-		_Impl( const FilePath & p_path, const READER_OPTION p_options, const StopToken p_stopToken ) :
-			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
+		Impl( const FilePath & p_path, const READER_OPTION p_options, StopToken p_stopToken ) :
+			_filePath( p_path ), _readerOption( p_options ), _stopToken( std::move( p_stopToken ) ),
 			_trajectory( chemfiles::Trajectory( p_path.string(), 'r' ) )
-		{
-			_init();
-		}
+		{ _init(); }
 
-		_Impl(
+		Impl(
 			MemoryBuffer &&		p_buffer,
 			const FilePath &	p_path,
 			const READER_OPTION p_options,
-			const StopToken		p_stopToken
+			StopToken			p_stopToken
 		) :
-			_filePath( p_path ), _readerOption( p_options ), _stopToken( p_stopToken ),
+			_filePath( p_path ), _readerOption( p_options ), _stopToken( std::move( p_stopToken ) ),
 			_buffer( std::move( p_buffer ) ), _trajectory(
 												  chemfiles::Trajectory::memory_reader(
 													  _buffer->c_str(),
@@ -89,9 +93,7 @@ namespace VTX::IO
 													  chemfiles::guess_format( p_path.string() )
 												  )
 											  )
-		{
-			_init();
-		}
+		{ _init(); }
 
 		size_t frameCount() const { return _trajectory.size(); }
 
@@ -103,7 +105,7 @@ namespace VTX::IO
 			VTX::Util::Math::Grid<Index> & p_atomGrid
 		)
 		{
-			ScopedChrono chrono( "SystemReader::_Impl::get" );
+			const ScopedChrono chrono( "SystemReader::Impl::get" );
 			VTX_INFO( "Reading topology" );
 
 			if ( _stopToken.stop_requested() )
@@ -157,11 +159,11 @@ namespace VTX::IO
 
 				_currentResidue = &( ( *_residues )[ residueIdx ] );
 
-				std::string		  chainName				= _residueStringProp( "chainname" );
-				const std::string residueName			= _currentResidue->name();
-				const bool		  isEmptyResidue		= _currentResidue->size() == 0;
-				Index			  residueFirstAtomIndex = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
-																		 : static_cast<Index>( *_currentResidue->begin() );
+				std::string		  chainName		 = _residueStringProp( "chainname" );
+				const std::string residueName	 = _currentResidue->name();
+				const bool		  isEmptyResidue = _currentResidue->size() == 0;
+				Index residueFirstAtomIndex		 = isEmptyResidue ? static_cast<Index>( _currentFrame.size() )
+																  : static_cast<Index>( *_currentResidue->begin() );
 				coveredAtomCount += static_cast<Index>( _currentResidue->size() );
 
 				if ( residueIdx > 0 && chainName != previousChainName && seenChainNames.contains( chainName ) )
@@ -226,10 +228,9 @@ namespace VTX::IO
 				bool  isFirstAtomInResidue = true;
 				Index previousAtomIndex	   = INVALID_INDEX;
 
-				for ( chemfiles::Residue::const_iterator it = _currentResidue->cbegin(); it != _currentResidue->cend();
-					  ++it )
+				for ( const size_t atom : *_currentResidue )
 				{
-					const Index atomIndex = static_cast<Index>( *it );
+					const Index atomIndex = static_cast<Index>( atom );
 
 					if ( not isFirstAtomInResidue && atomIndex != previousAtomIndex + 1 )
 					{
@@ -320,7 +321,7 @@ namespace VTX::IO
 			}
 		}
 
-		void set( const StopToken p_ ) noexcept { _stopToken = p_; }
+		void set( const StopToken & p_ ) noexcept { _stopToken = p_; }
 
 		void releaseTopologyData()
 		{
@@ -393,7 +394,7 @@ namespace VTX::IO
 			VTX::Util::Math::Grid<Index> & p_atomGrid
 		)
 		{
-			ScopedChrono chrono( "SystemReader::_Impl::_retopologize" );
+			const ScopedChrono chrono( "SystemReader::Impl::_retopologize" );
 			VTX_INFO( "Retopologizing structure" );
 
 			// Clean previous data.
@@ -455,10 +456,9 @@ namespace VTX::IO
 				Residue residue { .sourceResidueIndex = sourceResidueIndex };
 				residue.atomIndexes.reserve( _currentResidue->size() );
 
-				for ( chemfiles::Residue::const_iterator it = _currentResidue->cbegin(); it != _currentResidue->cend();
-					  ++it )
+				for ( const size_t atom : *_currentResidue )
 				{
-					const Index atomIndex = static_cast<Index>( *it );
+					const Index atomIndex = static_cast<Index>( atom );
 					if ( atomIndex >= static_cast<Index>( _currentFrame.size() ) )
 					{
 						VTX_WARNING( "Residue {} references invalid atom {}", sourceResidueIndex, atomIndex );
@@ -481,7 +481,7 @@ namespace VTX::IO
 					continue;
 				}
 
-				std::sort( residue.atomIndexes.begin(), residue.atomIndexes.end() );
+				std::ranges::sort( residue.atomIndexes );
 				residue.firstAtomIndex = residue.atomIndexes.front();
 
 				const Index residueIndex = static_cast<Index>( residues.size() );
@@ -507,8 +507,8 @@ namespace VTX::IO
 					VTX_WARNING( "Some atoms are not assigned to any residue, wrapping them in an artificial residue" );
 				}
 
-				const std::string artificialChainName = "";
-				auto			  chainIt			  = chainNameToIndex.find( artificialChainName );
+				const std::string artificialChainName;
+				auto			  chainIt = chainNameToIndex.find( artificialChainName );
 				if ( chainIt == chainNameToIndex.end() )
 				{
 					const Index chainIndex = static_cast<Index>( chains.size() );
@@ -525,13 +525,12 @@ namespace VTX::IO
 				chains[ chainIt->second ].residueIndexes.emplace_back( residueIndex );
 			}
 
-			std::fill( oldAtomToNewAtom.begin(), oldAtomToNewAtom.end(), INVALID_INDEX );
+			std::ranges::fill( oldAtomToNewAtom, INVALID_INDEX );
 
 			for ( Chain & chain : chains )
 			{
-				std::sort(
-					chain.residueIndexes.begin(),
-					chain.residueIndexes.end(),
+				std::ranges::sort(
+					chain.residueIndexes,
 					[ &residues ]( const Index p_lhs, const Index p_rhs )
 					{ return residues[ p_lhs ].firstAtomIndex < residues[ p_rhs ].firstAtomIndex; }
 				);
@@ -566,7 +565,7 @@ namespace VTX::IO
 						return;
 					}
 
-					Residue & residue = residues[ residueIndex ];
+					const Residue & residue = residues[ residueIndex ];
 
 					topology.residueChainIndexes[ targetResidueIndex ]	   = chainIndex;
 					topology.residueFirstAtomIndexes[ targetResidueIndex ] = targetAtomIndex;
@@ -611,7 +610,7 @@ namespace VTX::IO
 			p_topology.atomOriginalIndexes = _atomOriginalIndexes;
 		}
 
-		void _fillArtificialResidue( const Index p_targetResidueIndex, Topology & p_topology )
+		static void _fillArtificialResidue( const Index p_targetResidueIndex, Topology & p_topology )
 		{
 			p_topology.residueOriginalIds[ p_targetResidueIndex ] = INVALID_INDEX;
 			p_topology.residueSymbols[ p_targetResidueIndex ]	  = Residue::SYMBOL::UNKNOWN;
@@ -724,7 +723,7 @@ namespace VTX::IO
 			const Index					 p_targetBondIndex,
 			Topology &					 p_topology,
 			const std::span<const Index> p_oldAtomToNewAtom = {}
-		)
+		) const
 		{
 			const std::vector<chemfiles::Bond::BondOrder> & bondOrders = _topology.bond_orders();
 			const chemfiles::Bond &							bond	   = ( *_bonds )[ p_sourceBondIndex ];
@@ -743,20 +742,21 @@ namespace VTX::IO
 				secondAtom = p_oldAtomToNewAtom[ secondAtom ];
 			}
 
-			const Bond::ORDER bondOrder = p_sourceBondIndex < bondOrders.size()
-											  ? Bond::ORDER( int( bondOrders[ p_sourceBondIndex ] ) )
-											  : Bond::ORDER::UNKNOWN;
+			const Bond::ORDER bondOrder
+				= p_sourceBondIndex < bondOrders.size()
+					  ? static_cast<Bond::ORDER>( static_cast<int>( bondOrders[ p_sourceBondIndex ] ) )
+					  : Bond::ORDER::UNKNOWN;
 
-			p_topology.bondPairAtomIndexes[ p_targetBondIndex * 2 ]		= firstAtom;
-			p_topology.bondPairAtomIndexes[ p_targetBondIndex * 2 + 1 ] = secondAtom;
-			p_topology.bondOrders[ p_targetBondIndex ]					= bondOrder;
+			p_topology.bondPairAtomIndexes[ static_cast<size_t>( p_targetBondIndex ) * 2 ]	   = firstAtom;
+			p_topology.bondPairAtomIndexes[ static_cast<size_t>( p_targetBondIndex ) * 2 + 1 ] = secondAtom;
+			p_topology.bondOrders[ p_targetBondIndex ]										   = bondOrder;
 		}
 
 		void _recomputeMissingData(
 			Topology &							 p_topology,
 			const Frame &						 p_positions,
 			const VTX::Util::Math::Grid<Index> & p_atomGrid
-		)
+		) const
 		{
 			assert( p_positions.size() == p_topology.getAtomCount() );
 
@@ -778,16 +778,17 @@ namespace VTX::IO
 			}
 		}
 
-		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position )
-		{
-			return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] );
-		}
+		static Vec3f _toVec3f( const chemfiles::Vector3D & p_position ) noexcept
+		{ return Vec3f( p_position[ 0 ], p_position[ 1 ], p_position[ 2 ] ); }
 	};
 
-	void SystemReader::Del::operator()( _Impl * p_impl ) noexcept { delete p_impl; }
+	void SystemReader::Del::operator()( Impl * const p_impl ) noexcept { std::default_delete<Impl> {}( p_impl ); }
 
-	SystemReader::SystemReader( const FilePath & p_path, const READER_OPTION p_options, const StopToken p_stopToken ) :
-		_impl( new _Impl( p_path, p_options, p_stopToken ) )
+	SystemReader::SystemReader(
+		const FilePath &	p_path,
+		const READER_OPTION p_options,
+		const StopToken &	p_stopToken
+	) : _impl( new Impl( p_path, p_options, p_stopToken ) )
 	{
 	}
 
@@ -795,8 +796,8 @@ namespace VTX::IO
 		MemoryBuffer &&		p_buffer,
 		const FilePath &	p_path,
 		const READER_OPTION p_options,
-		const StopToken		p_stopToken
-	) : _impl( new _Impl( std::move( p_buffer ), p_path, p_options, p_stopToken ) )
+		const StopToken &	p_stopToken
+	) : _impl( new Impl( std::move( p_buffer ), p_path, p_options, p_stopToken ) )
 	{
 	}
 
@@ -814,27 +815,24 @@ namespace VTX::IO
 		VTX::Util::Math::AABB &		   p_a,
 		VTX::Util::Math::Grid<Index> & p_g
 	)
-	{
-		_impl->get( p_d, p_t, p_m, p_a, p_g );
-	}
+	{ _impl->get( p_d, p_t, p_m, p_a, p_g ); }
 
 	void SystemReader::get( Frame & p_f, const FrameIndex p_i ) { _impl->get( p_i, p_f ); }
 
 	void SystemReader::releaseTopologyData() { _impl->releaseTopologyData(); }
 
-	void SystemReader::set( const StopToken p_ ) noexcept { _impl->set( p_ ); }
+	void SystemReader::set( const StopToken & p_ ) noexcept { _impl->set( p_ ); }
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
 
 	bool isTrajectoryFileFormat( const FilePath & p_path )
 	{
-		std::string extension = p_path.extension().string();
-		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );
-		const std::array<std::string_view, 4> _trajectoryFileFormatList { ".xtc", ".dcd", ".lammpstrj", ".trj" };
-		return std::any_of(
-			_trajectoryFileFormatList.begin(),
-			_trajectoryFileFormatList.end(),
-			[ &extension ]( const std::string_view & v ) { return v == extension; }
+		const std::string extension = VTX::Util::String::toLower( p_path.extension().string() );
+		const auto		  trajectoryFileFormatList
+			= std::to_array<std::string_view>( { ".xtc", ".dcd", ".lammpstrj", ".trj" } );
+
+		return std::ranges::any_of(
+			trajectoryFileFormatList, [ &extension ]( const std::string_view & v ) { return v == extension; }
 		);
 	};
 

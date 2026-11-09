@@ -16,11 +16,9 @@ namespace
 	using namespace App::Helper::System;
 	using namespace App::System;
 
-	void _checkAtomRangeVisibility(
-		const VTX::Util::Math::BitSet & p_visibility,
-		const IndexRange &				p_range,
-		const bool						p_visible
-	)
+	void _checkAtomRangeVisibility( const VTX::Util::Math::BitSet & p_visibility,
+									const IndexRange &				p_range,
+									const bool						p_visible )
 	{
 		for ( const VTX::Index atom : p_range )
 		{
@@ -28,10 +26,8 @@ namespace
 		}
 	}
 
-	std::optional<VTX::Index> _findResidueWithMinimumAtomCount(
-		const Topology & p_topology,
-		const VTX::Index p_minCount
-	)
+	std::optional<VTX::Index> _findResidueWithMinimumAtomCount( const Topology & p_topology,
+																const VTX::Index p_minCount )
 	{
 		for ( VTX::Index residue = 0; residue < p_topology.getResidueCount(); ++residue )
 		{
@@ -70,7 +66,8 @@ TEST_CASE( "VTX_APP - Visibility - Atom and residue actions target the correct a
 
 	Fixture app;
 	app.loadSystem();
-	const auto [ system, topology, visibility ] = App::ECS::getFirstEntityWithComponents<Topology, System::Visibility>();
+	const auto [ system, topology, visibility ]
+		= App::ECS::getFirstEntityWithComponents<Topology, System::Visibility>();
 	const auto residueIndexOpt = _findResidueWithMinimumAtomCount( topology, 2 );
 
 	REQUIRE( residueIndexOpt.has_value() );
@@ -93,9 +90,7 @@ TEST_CASE( "VTX_APP - Visibility - Atom and residue actions target the correct a
 		CHECK( getVisibleState( { system, E_SYSTEM_ITEM::RESIDUE, residueIndex } ) == E_VISIBLE_STATE::PARTIAL );
 		CHECK( getVisibleState( { system, E_SYSTEM_ITEM::SYSTEM } ) == E_VISIBLE_STATE::PARTIAL );
 
-		ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>(
-			system, std::vector<Index> { hiddenAtom }, true
-		);
+		ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system, std::vector<Index> { hiddenAtom }, true );
 
 		CHECK( REG().get<System::Visibility>( system ).atoms.count() == topology.getAtomCount() );
 		CHECK( getVisibleState( { system, E_SYSTEM_ITEM::ATOM, hiddenAtom } ) == E_VISIBLE_STATE::VISIBLE );
@@ -110,9 +105,7 @@ TEST_CASE( "VTX_APP - Visibility - Atom and residue actions target the correct a
 		const IndexRange secondResidueAtoms = topology.getResidueAtomRange( 1 );
 		const IndexRange thirdResidueAtoms	= topology.getResidueAtomRange( 2 );
 
-		ACTION().execute<SetVisible<E_SYSTEM_ITEM::RESIDUE>>(
-			system, hiddenResidues, false
-		);
+		ACTION().execute<SetVisible<E_SYSTEM_ITEM::RESIDUE>>( system, hiddenResidues, false );
 
 		const auto & updatedVisibility = REG().get<System::Visibility>( system );
 		_checkAtomRangeVisibility( updatedVisibility.atoms, firstResidueAtoms, false );
@@ -123,9 +116,7 @@ TEST_CASE( "VTX_APP - Visibility - Atom and residue actions target the correct a
 		CHECK( getVisibleState( { system, E_SYSTEM_ITEM::RESIDUE, 1 } ) == E_VISIBLE_STATE::HIDDEN );
 		CHECK( getVisibleState( { system, E_SYSTEM_ITEM::SYSTEM } ) == E_VISIBLE_STATE::PARTIAL );
 
-		ACTION().execute<SetVisible<E_SYSTEM_ITEM::RESIDUE>>(
-			system, hiddenResidues, true
-		);
+		ACTION().execute<SetVisible<E_SYSTEM_ITEM::RESIDUE>>( system, hiddenResidues, true );
 
 		CHECK( REG().get<System::Visibility>( system ).atoms.count() == topology.getAtomCount() );
 		CHECK( getVisibleState( { system, E_SYSTEM_ITEM::RESIDUE, 0 } ) == E_VISIBLE_STATE::VISIBLE );
@@ -139,12 +130,13 @@ TEST_CASE( "VTX_APP - Visibility - SetVisibleItem dispatches chain and system up
 
 	Fixture app;
 	app.loadSystem();
-	const auto [ system, topology, visibility ] = App::ECS::getFirstEntityWithComponents<Topology, System::Visibility>();
+	const auto [ system, topology, visibility ]
+		= App::ECS::getFirstEntityWithComponents<Topology, System::Visibility>();
 
 	REQUIRE( topology.getChainCount() >= 1 );
 
-	const Index		   chainIndex = 0;
-	const IndexRange   chainAtoms = topology.getChainAtomRange( chainIndex );
+	const Index			  chainIndex = 0;
+	const IndexRange	  chainAtoms = topology.getChainAtomRange( chainIndex );
 	const E_VISIBLE_STATE systemAfterChainHide
 		= chainAtoms.getCount() == topology.getAtomCount() ? E_VISIBLE_STATE::HIDDEN : E_VISIBLE_STATE::PARTIAL;
 

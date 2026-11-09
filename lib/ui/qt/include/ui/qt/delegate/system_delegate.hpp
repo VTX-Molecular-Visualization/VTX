@@ -1,10 +1,15 @@
-#ifndef __VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE__
-#define __VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE__
+#ifndef VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE_HPP
+#define VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE_HPP
 
 #include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
 #include <app/ecs.hpp>
 #include <util/types.hpp>
+
+namespace VTX::UI::QT::Model
+{
+	class SystemModel;
+} // namespace VTX::UI::QT::Model
 
 namespace VTX::UI::QT::Delegate
 {
@@ -16,7 +21,7 @@ namespace VTX::UI::QT::Delegate
 		Q_OBJECT
 
 	  public:
-		enum struct ACTION : int
+		enum struct ACTION : uint8_t
 		{
 			VISIBILITY = 0,
 			COLOR_SCHEME,
@@ -28,7 +33,7 @@ namespace VTX::UI::QT::Delegate
 		/**
 		 * @brief Constructor.
 		 */
-		SystemDelegate( const Entity, QObject * );
+		SystemDelegate( Entity, const Model::SystemModel &, QObject * );
 
 		/**
 		 * @brief Override: paint the system item with custom visuals.
@@ -39,11 +44,6 @@ namespace VTX::UI::QT::Delegate
 		 * @brief Override: provide custom size hint for system items.
 		 */
 		QSize sizeHint( const QStyleOptionViewItem &, const QModelIndex & ) const override;
-
-		/**
-		 * @brief Override: handle mouse events for the buttons in the system item.
-		 */
-		bool editorEvent( QEvent *, QAbstractItemModel *, const QStyleOptionViewItem &, const QModelIndex & ) override;
 
 		/**
 		 * @brief Override: create custom editor widget for system items (if needed).
@@ -76,19 +76,27 @@ namespace VTX::UI::QT::Delegate
 		void displayModeClicked( const QModelIndex & );
 		void doubleClicked( const QModelIndex & );
 
+	  protected:
+		/**
+		 * @brief Override: handle mouse events for the buttons in the system item.
+		 */
+		bool editorEvent( QEvent *, QAbstractItemModel *, const QStyleOptionViewItem &, const QModelIndex & ) override;
+
 	  private:
 		/**
 		 * @brief Entity to display.
 		 */
 		Entity _system;
 
+		const Model::SystemModel & _model;
+
 		static constexpr int ICON_SIZE = 15;
 		static constexpr int SPACING   = 4;
 		static constexpr int MARGIN_R  = 6;
 
 		QRect  _buttonsRect( const QStyleOptionViewItem &, const QModelIndex & ) const;
-		QRect  _buttonRect( const QStyleOptionViewItem &, const QModelIndex &, const int ) const;
-		ACTION _buttonAction( const QModelIndex &, const int ) const;
+		QRect  _buttonRect( const QStyleOptionViewItem &, const QModelIndex &, int ) const;
+		ACTION _buttonAction( const QModelIndex &, int ) const;
 		int	   _hitTestButton( const QStyleOptionViewItem &, const QModelIndex &, const QPoint & ) const;
 		int	   _buttonCount( const QModelIndex & ) const;
 		bool   _isSystemItem( const QModelIndex & ) const;

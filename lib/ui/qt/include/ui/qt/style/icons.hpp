@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_STYLE_ICONS__
-#define __VTX_UI_QT_STYLE_ICONS__
+#ifndef VTX_UI_QT_STYLE_ICONS_HPP
+#define VTX_UI_QT_STYLE_ICONS_HPP
 
 #include "ui/qt/style/codepoint_icon_engine.hpp"
 

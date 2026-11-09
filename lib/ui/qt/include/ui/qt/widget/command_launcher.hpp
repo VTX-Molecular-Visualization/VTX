@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_COMMAND_LAUNCHER__
-#define __VTX_UI_QT_WIDGET_COMMAND_LAUNCHER__
+#ifndef VTX_UI_QT_WIDGET_COMMAND_LAUNCHER_HPP
+#define VTX_UI_QT_WIDGET_COMMAND_LAUNCHER_HPP
 
 #include "ui/qt/widget/base_widget.hpp"
 #include <QCompleter>
@@ -25,7 +25,7 @@ namespace VTX::UI::QT::Widget
 		void launchCommand( std::string );
 
 	  protected:
-		virtual void keyPressEvent( QKeyEvent * event ) override;
+		void keyPressEvent( QKeyEvent * event ) override;
 
 	  private:
 		void _setupCompleter();

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_GENERIC_NAME__
-#define __VTX_APP_GENERIC_NAME__
+#ifndef VTX_APP_GENERIC_NAME_HPP
+#define VTX_APP_GENERIC_NAME_HPP
 
 #include <string>
 

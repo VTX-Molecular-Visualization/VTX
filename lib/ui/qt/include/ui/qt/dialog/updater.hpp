@@ -1,11 +1,12 @@
-#ifndef __VTX_UI_QT_DIALOG_UPDATER__
-#define __VTX_UI_QT_DIALOG_UPDATER__
+#ifndef VTX_UI_QT_DIALOG_UPDATER_HPP
+#define VTX_UI_QT_DIALOG_UPDATER_HPP
 
 #include "ui/qt/dialog/base_dialog.hpp"
 #include <QDialogButtonBox>
 #include <QPointer>
 #include <QProgressBar>
 #include <QPushButton>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
@@ -16,7 +17,6 @@ namespace VTX::UI::QT::Dialog
 	{
 	  public:
 		Updater( const App::Events::UpdateAvailable & );
-		~Updater();
 
 	  private:
 		void _onUpdateDownloadProgress( const App::Events::UpdateDownloadProgress & );
@@ -30,6 +30,10 @@ namespace VTX::UI::QT::Dialog
 		QPointer<QDialogButtonBox> _buttonBox;
 		QPointer<QPushButton>	   _restartButton;
 		QPointer<QProgressBar>	   _progressBar;
+
+		VTX::Util::EventHub::ScopedConnection _downloadProgressConnection;
+		VTX::Util::EventHub::ScopedConnection _readyToRestartConnection;
+		VTX::Util::EventHub::ScopedConnection _downloadFailedConnection;
 	};
 
 } // namespace VTX::UI::QT::Dialog

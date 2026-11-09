@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CONSTANTS__
-#define __VTX_APP_CONSTANTS__
+#ifndef VTX_APP_CONSTANTS_HPP
+#define VTX_APP_CONSTANTS_HPP
 
 #include <string>
 #include <string_view>
@@ -23,6 +23,11 @@ namespace VTX::App
 	constexpr std::string_view URL_WEBSITE		 = "https://vtx.drugdesign.fr";
 	constexpr std::string_view URL_DOCUMENTATION = "https://vtx.drugdesign.fr/doc";
 	constexpr std::string_view URL_REPORT		 = "https://github.com/VTX-Molecular-Visualization/VTX/issues";
+
+	constexpr std::string_view SYSTEM_REPLACEMENT_TOKEN			= "[SYSTEM_ID]";
+	constexpr std::string_view RCSB_PDB_DOWNLOAD_BASE_URL		= "https://models.rcsb.org/";
+	constexpr std::string_view RCSB_PDB_DOWNLOAD_FILE_EXTENSION = ".bcif.gz";
+	constexpr std::string_view RCSB_PDB_DOWNLOAD_URL_TEMPLATE	= "https://models.rcsb.org/[SYSTEM_ID].bcif.gz";
 
 	// TODO: move.
 	constexpr std::string_view LOG_LINK_REGEX  = R"(//file=\[([^\]]+)\])";

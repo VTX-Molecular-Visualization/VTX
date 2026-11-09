@@ -1,11 +1,14 @@
-#ifndef __VTX_UTIL_CHRONO__
-#define __VTX_UTIL_CHRONO__
+#ifndef VTX_UTIL_CHRONO_HPP
+#define VTX_UTIL_CHRONO_HPP
 
+#include "util/fmt/duration.hpp"
 #include "util/logger.hpp"
 #include "util/string.hpp"
 #include <chrono>
 #include <functional>
 #include <string>
+#include <type_traits>
+#include <utility>
 
 namespace VTX::Util
 {
@@ -24,41 +27,37 @@ namespace VTX::Util
 		/**
 		 * @brief Returns the current timestamp.
 		 */
-		inline static long long getTimestamp() noexcept
-		{
-			return std::chrono::duration_cast<TimeUnit>( now().time_since_epoch() ).count();
-		}
+		static uint64_t getTimestamp() noexcept
+		{ return std::chrono::duration_cast<TimeUnit>( now().time_since_epoch() ).count(); }
 
 		/**
 		 * @brief Returns the current time point.
 		 */
-		inline static TimePoint now() noexcept { return Clock::now(); }
+		static TimePoint now() noexcept { return Clock::now(); }
 
 		/**
 		 * @brief Calculates the elapsed time between two time points.
 		 */
-		inline static float elapsedTime( const TimePoint p_start, const TimePoint p_end = now() ) noexcept
-		{
-			return std::chrono::duration_cast<Duration>( p_end - p_start ).count();
-		}
+		static constexpr float elapsedTime( const TimePoint p_start, const TimePoint p_end = now() ) noexcept
+		{ return std::chrono::duration_cast<Duration>( p_end - p_start ).count(); }
 
 		/**
 		 * @brief Start or restart the chrono.
 		 */
-		inline void start() noexcept { _begin = _interval = now(); }
+		void start() noexcept { _begin = _interval = now(); }
 
 		/**
 		 * @brief Time since start.
 		 */
-		inline float elapsedTime() const noexcept { return elapsedTime( _begin ); }
+		float elapsedTime() const noexcept { return elapsedTime( _begin ); }
 
 		/**
 		 * @brief Time since last call.
 		 */
-		inline float intervalTime() noexcept
+		float intervalTime() noexcept
 		{
-			float intervalTime = elapsedTime( _interval );
-			_interval		   = now();
+			const float intervalTime = elapsedTime( _interval );
+			_interval				 = now();
 			return intervalTime;
 		}
 
@@ -72,7 +71,7 @@ namespace VTX::Util
 	 */
 	template<class F, class... Args>
 		requires std::invocable<F, Args...> && std::same_as<std::invoke_result_t<F, Args...>, void>
-	inline float CHRONO_CPU( F && p_f, Args &&... p_args )
+	inline float CHRONO_CPU( F && p_f, Args &&... p_args ) noexcept( std::is_nothrow_invocable_v<F, Args...> )
 	{
 		Chrono c;
 		c.start();
@@ -86,14 +85,18 @@ namespace VTX::Util
 	class ScopedChrono : public Chrono
 	{
 	  public:
-		ScopedChrono( const std::string & p_name, const Util::LOG_LEVEL p_level = Util::LOG_LEVEL::LOG_TRACE ) :
-			_name( p_name ), _level( p_level )
+		ScopedChrono( std::string p_name, const Util::LOG_LEVEL p_level = Util::LOG_LEVEL::LOG_TRACE ) :
+			_name( std::move( p_name ) ), _level( p_level )
+		{ start(); }
+
+		ScopedChrono( const ScopedChrono & )			 = delete;
+		ScopedChrono & operator=( const ScopedChrono & ) = delete;
+
+		~ScopedChrono() noexcept
 		{
-			start();
-		}
-		~ScopedChrono()
-		{
-			VTX_LOG( _level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::durationToStr( elapsedTime() ) );
+			VTX_LOG(
+				_level, _hint, "Scoped chrono '{}' : {}", _name, Util::String::FormattedDuration { elapsedTime() }
+			);
 		}
 
 	  private:

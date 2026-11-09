@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS__
-#define __VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS__
+#ifndef VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS_HPP
+#define VTX_UI_QT_WIDGET_TREE_BASE_TREE_PRESETS_HPP
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
@@ -10,6 +10,7 @@
 #include <app/action/preset.hpp>
 #include <app/generic/name.hpp>
 #include <app/services.hpp>
+#include <memory>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
@@ -20,21 +21,24 @@ namespace VTX::UI::QT::Widget::Tree
 	  public:
 		using W = Widget::Tree::BaseTree<BaseTreePreset<P>>;
 
-		BaseTreePreset( QWidget * p_parent ) : W( p_parent )
+		BaseTreePreset( QWidget * const p_parent ) :
+			W( p_parent ),
+			_onRenameConnection(
+				App::HUB().connect<App::Events::PresetRename<P>, &BaseTreePreset::_onPresetRename>( this )
+			)
 		{
 			W::setExpandsOnDoubleClick( true );
 
 			auto & reg			   = App::REG();
 			_onConstructConnection = reg.on_construct<P>().template connect<&BaseTreePreset::_addPreset>( this );
 			_onDestroyConnection   = reg.on_destroy<P>().template connect<&BaseTreePreset::_removePreset>( this );
-			App::HUB().connect<App::Events::PresetRename<P>, &BaseTreePreset::_onPresetRename>( this );
 
 			// Connect double click to apply the preset.
 			W::connect(
 				this,
 				&QTreeWidget::itemDoubleClicked,
 				this,
-				[ this ]( QTreeWidgetItem * item, int column )
+				[]( QTreeWidgetItem * item, int column )
 				{
 					if ( item == nullptr || item->parent() == nullptr || column != 0 )
 					{
@@ -47,15 +51,8 @@ namespace VTX::UI::QT::Widget::Tree
 			);
 		}
 
-		virtual ~BaseTreePreset()
-		{
-			_onConstructConnection.release();
-			_onDestroyConnection.release();
-			App::HUB().disconnectAllOf( *this );
-		}
-
 	  protected:
-		void _restoreExpansionState( const QString & p_settingKey )
+		void _restoreExpansionState( const QAnyStringView p_settingKey )
 		{
 			assert( W::topLevelItem( 0 ) != nullptr );
 
@@ -110,8 +107,8 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Connections to App.
 		 */
-		Util::EventHub::Connection _onConstructConnection;
-		Util::EventHub::Connection _onDestroyConnection;
+		VTX::Util::EventHub::ScopedConnection _onConstructConnection;
+		VTX::Util::EventHub::ScopedConnection _onDestroyConnection;
 
 		/**
 		 * @brief Add a preset to the tree.
@@ -139,7 +136,8 @@ namespace VTX::UI::QT::Widget::Tree
 			assert( _entityToItemMap.contains( p_e ) );
 
 			QTreeWidgetItem * const presetItem = _entityToItemMap.at( p_e );
-			delete presetItem;
+			auto * const			parent	   = presetItem->parent();
+			std::unique_ptr<QTreeWidgetItem> { parent->takeChild( parent->indexOfChild( presetItem ) ) }.reset();
 			_entityToItemMap.erase( p_e );
 			if ( _appliedPreset == p_e )
 			{
@@ -181,6 +179,8 @@ namespace VTX::UI::QT::Widget::Tree
 			font.setBold( p_applied );
 			p_item->setFont( 0, font );
 		}
+
+		VTX::Util::EventHub::ScopedConnection _onRenameConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

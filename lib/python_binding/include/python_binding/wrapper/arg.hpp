@@ -1,8 +1,9 @@
-#ifndef __VTX_PYTHON_BINDING_WRAPPER_ARG__
-#define __VTX_PYTHON_BINDING_WRAPPER_ARG__
+#ifndef VTX_PYTHON_BINDING_WRAPPER_ARG_HPP
+#define VTX_PYTHON_BINDING_WRAPPER_ARG_HPP
 
 #include <pybind11/pybind11.h>
 #include <string>
+#include <utility>
 
 namespace VTX::PythonBinding::Wrapper
 {
@@ -12,8 +13,8 @@ namespace VTX::PythonBinding::Wrapper
 	class Arg
 	{
 	  public:
-		Arg( const std::string & p_parameterName ) : _parameterName( p_parameterName ) {};
-		virtual ~Arg() {}
+		Arg( std::string p_parameterName ) : _parameterName( std::move( p_parameterName ) ) {};
+		virtual ~Arg() = default;
 
 		pybind11::arg toPybind11Extra() const { return pybind11::arg( _parameterName.c_str() ); }
 
@@ -33,7 +34,8 @@ namespace VTX::PythonBinding::Wrapper
 			Arg( p_parameterName ), _value( p_defaultValue )
 		{
 		}
-		pybind11::arg_v toPybind11Extra() const { return pybind11::arg_v( _parameterName.c_str(), _value ); }
+
+		pybind11::arg_v toPybind11ExtraWithDefault() const { return pybind11::arg_v( _parameterName.c_str(), _value ); }
 
 	  private:
 		T _value;

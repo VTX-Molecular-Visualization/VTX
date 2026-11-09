@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHONBINDING_SELECTION__
-#define __VTX_APP_PYTHONBINDING_SELECTION__
+#ifndef VTX_APP_PYTHON_BINDING_SELECTION_HPP
+#define VTX_APP_PYTHON_BINDING_SELECTION_HPP
 
 #include "app/python_binding/module.hpp"
 

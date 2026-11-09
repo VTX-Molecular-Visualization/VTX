@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_MATERIAL_SECTION__
-#define __VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_MATERIAL_SECTION__
+#ifndef VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_MATERIAL_SECTION_HPP
+#define VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_MATERIAL_SECTION_HPP
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/editable_slider.hpp"
@@ -39,20 +39,18 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			::VTX::App::ACTION().execute( action, _currentPreset, p_value );
 		}
 
-		static const std::optional<VTX::Renderer::MaterialTexture> & _texture(
-			const VTX::Renderer::Material &,
-			VTX::Renderer::Material::E_TEXTURE
-		);
+		static const std::optional<VTX::Renderer::MaterialTexture> & _texture( const VTX::Renderer::Material &,
+																			   VTX::Renderer::Material::E_TEXTURE );
 		void _changeTexture( VTX::Renderer::Material::E_TEXTURE, const FilePath & );
 
-		Entity _currentPreset;
+		Entity _currentPreset = InvalidEntity;
 
-		QPointer<QListWidget>															_listMaterials;
-		QPointer<EditableSlider>														_sliderMetallic;
-		QPointer<EditableSlider>														_sliderRoughness;
-		QPointer<EditableSlider>														_sliderEmissiveIntensity;
-		QPointer<EditableSlider>														_sliderTextureScale;
-		std::array<TextureWidgets, size_t( VTX::Renderer::Material::E_TEXTURE::COUNT )> _textureWidgets;
+		QPointer<QListWidget>	 _listMaterials;
+		QPointer<EditableSlider> _sliderMetallic;
+		QPointer<EditableSlider> _sliderRoughness;
+		QPointer<EditableSlider> _sliderEmissiveIntensity;
+		QPointer<EditableSlider> _sliderTextureScale;
+		std::array<TextureWidgets, static_cast<size_t>( VTX::Renderer::Material::E_TEXTURE::COUNT )> _textureWidgets;
 	};
 } // namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 

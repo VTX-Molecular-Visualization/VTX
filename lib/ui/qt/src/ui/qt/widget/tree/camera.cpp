@@ -11,29 +11,31 @@
 #include <app/generic/name.hpp>
 #include <app/scene/viewpoint.hpp>
 #include <app/services.hpp>
+#include <memory>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
-	Camera::Camera( const Entity p_entity, QWidget * p_parent ) : BaseTree( p_parent ), _entity( p_entity )
+	Camera::Camera( const Entity p_entity, QWidget * const p_parent ) : BaseTree( p_parent )
 	{
 		setExpandsOnDoubleClick( true );
 
-		addTopLevelItem( new QTreeWidgetItem( QStringList() << "Camera" ) );
+		addTopLevelItem( std::make_unique<QTreeWidgetItem>( QStringList() << "Camera" ).release() );
 		topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::CAMERA ) );
 
 		_onConstructConnection
 			= App::REG().on_construct<App::Scene::ViewPoint>().connect<&Camera::_addViewPoint>( this );
 		_onDestroyConnection
 			= App::REG().on_destroy<App::Scene::ViewPoint>().connect<&Camera::_removeViewPoint>( this );
-		App::HUB().connect<App::Events::ViewPointRenamed, &Camera::_onViewPointRenamed>( this );
+		_viewPointRenamedConnection
+			= App::HUB().connect<App::Events::ViewPointRenamed, &Camera::_onViewPointRenamed>( this );
 
 		// Connect double click to move to viewpoint.
 		connect(
 			this,
 			&QTreeWidget::itemDoubleClicked,
 			this,
-			[ this ]( QTreeWidgetItem * item, int column )
+			[]( QTreeWidgetItem * item, int column )
 			{
 				if ( item == nullptr || item->parent() == nullptr || column != 0 )
 				{
@@ -46,13 +48,6 @@ namespace VTX::UI::QT::Widget::Tree
 		);
 	}
 
-	Camera::~Camera()
-	{
-		_onConstructConnection.release();
-		_onDestroyConnection.release();
-		App::HUB().disconnectAllOf( *this );
-	}
-
 	void Camera::_addViewPoint( Registry & p_r, const Entity p_viewpoint )
 	{
 		if ( _entityToItemMap.contains( p_viewpoint ) )
@@ -62,10 +57,11 @@ namespace VTX::UI::QT::Widget::Tree
 
 		const auto & name = p_r.get<App::Generic::Name>( p_viewpoint );
 
-		QTreeWidgetItem * const item = new QTreeWidgetItem( QStringList() << QString::fromStdString( name.name ) );
+		auto ownedItem = std::make_unique<QTreeWidgetItem>( QStringList() << QString::fromStdString( name.name ) );
+		QTreeWidgetItem * const item = ownedItem.get();
 		item->setData( 0, Qt::UserRole, QVariant::fromValue( p_viewpoint ) );
 
-		topLevelItem( 0 )->addChild( item );
+		topLevelItem( 0 )->addChild( ownedItem.release() );
 		topLevelItem( 0 )->sortChildren( 0, Qt::AscendingOrder );
 		topLevelItem( 0 )->setExpanded( true );
 		_entityToItemMap.emplace( p_viewpoint, item );
@@ -80,7 +76,9 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		delete it->second;
+		auto * const item	= it->second;
+		auto * const parent = item->parent();
+		std::unique_ptr<QTreeWidgetItem> { parent->takeChild( parent->indexOfChild( item ) ) }.reset();
 		_entityToItemMap.erase( it );
 		updateGeometry();
 	}
