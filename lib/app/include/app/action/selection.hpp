@@ -19,14 +19,14 @@ namespace VTX::App::Action::Selection
 	inline void patchSelection( const Entity p_ent, Util::Math::BitSet p_atoms )
 	{
 		auto &		 reg	   = REG();
-		const auto & selection = reg.get<System::Selection>( p_ent );
+		const auto & selection = reg.get<App::System::Selection>( p_ent );
 		if ( selection.atoms == p_atoms )
 		{
 			return;
 		}
 
-		reg.patch<System::Selection>(
-			p_ent, [ &p_atoms ]( System::Selection & p_selection ) { p_selection.atoms = std::move( p_atoms ); } );
+		reg.patch<App::System::Selection>(
+			p_ent, [ &p_atoms ]( App::System::Selection & p_selection ) { p_selection.atoms = std::move( p_atoms ); } );
 	}
 
 	/**
@@ -42,7 +42,7 @@ namespace VTX::App::Action::Selection
 		{
 			const Util::ScopedChrono timer( "App::Action::SetSelected" );
 
-			const auto &					   selection = REG().get<System::Selection>( p_ent );
+			const auto &					   selection = REG().get<App::System::Selection>( p_ent );
 			const Core::Struct::IndexRangeList atoms	 = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 			Util::Math::BitSet				   current	 = selection.atoms;
 

@@ -173,7 +173,7 @@ namespace VTX::App::Action::Preset
 			else if constexpr ( std::is_same_v<T, Renderer::Representation> )
 			{
 				// Loop over all systems and apply the representation preset to each of them.
-				auto view = REG().view<System::Representation>();
+				auto view = REG().view<App::System::Representation>();
 				for ( const Entity entity : view )
 				{
 					ACTION().execute<Action::Representation::Add<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>( entity, p_e );

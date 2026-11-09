@@ -24,9 +24,9 @@ namespace VTX::App::Action::Representation
 			[[maybe_unused]] const auto & topology = reg.get<Core::Struct::Topology>( p_ent );
 			Core::Struct::IndexRangeList  atoms	   = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 
-			reg.patch<System::Representation>(
+			reg.patch<App::System::Representation>(
 				p_ent,
-				[ & ]( System::Representation & p_representation )
+				[ & ]( App::System::Representation & p_representation )
 				{
 					// Merges ranges.
 					if ( not p_representation.presetAtoms.contains( p_preset ) )
@@ -192,8 +192,10 @@ namespace VTX::App::Action::Representation
 	{
 		void execute( const Entity p_e )
 		{
-			REG().view<System::Selection, System::Representation>().each(
-				[ p_e ]( const Entity p_ent, const System::Selection & p_selection, const System::Representation & )
+			REG().view<App::System::Selection, App::System::Representation>().each(
+				[ p_e ](
+					const Entity p_ent, const App::System::Selection & p_selection, const App::System::Representation &
+				)
 				{
 					const Core::Struct::IndexRangeList ranges = p_selection.atoms.toRangeList<Index>();
 					if ( ranges.isEmpty() )

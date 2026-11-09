@@ -32,7 +32,7 @@ namespace VTX::App::Action::Visibility
 		{
 			const Util::ScopedChrono timer( "App::Action::SetVisible" );
 
-			const auto & visibility = REG().get<System::Visibility>( p_ent );
+			const auto & visibility = REG().get<App::System::Visibility>( p_ent );
 
 			if constexpr ( ITEM == Core::Struct::E_SYSTEM_ITEM::SYSTEM )
 			{

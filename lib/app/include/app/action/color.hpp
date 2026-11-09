@@ -32,9 +32,9 @@ namespace VTX::App::Action::Color
 				( isCustomScheme && p_colorIndex.has_value() ) || ( not isCustomScheme && not p_colorIndex.has_value() )
 			);
 
-			reg.patch<System::Color>(
+			reg.patch<App::System::Color>(
 				p_ent,
-				[ & ]( System::Color & p_color )
+				[ & ]( App::System::Color & p_color )
 				{
 					if ( isCustomScheme )
 					{
@@ -211,9 +211,9 @@ namespace VTX::App::Action::Color
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
 		{
-			REG().view<System::Selection, System::Color>().each(
+			REG().view<App::System::Selection, App::System::Color>().each(
 				[ p_scheme, p_colorIndex ](
-					const Entity p_ent, const System::Selection & p_selection, const System::Color & p_color
+					const Entity p_ent, const App::System::Selection & p_selection, const App::System::Color & p_color
 				)
 				{
 					const Core::Struct::IndexRangeList ranges = p_selection.atoms.toRangeList<Index>();
@@ -247,9 +247,9 @@ namespace VTX::App::Action::Color
 				( isCustomScheme && p_colorIndex.has_value() ) || ( not isCustomScheme && not p_colorIndex.has_value() )
 			);
 
-			reg.patch<System::Color>(
+			reg.patch<App::System::Color>(
 				p_ent,
-				[ & ]( System::Color & p_color )
+				[ & ]( App::System::Color & p_color )
 				{
 					if ( isCustomScheme )
 					{
