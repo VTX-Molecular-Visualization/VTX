@@ -122,6 +122,9 @@ namespace VTX
 			static void setCallback( std::function<void( const LogInfo & )> p_callback );
 
 		  private:
+			/**
+			 * @brief Apply log.
+			 */
 			template<typename... Args>
 			static void _log(
 				const spdlog::source_loc		p_source,
