@@ -46,18 +46,13 @@ int main( int, char ** )
 		renderer.setOpenGL( contextInfo, Filesystem::getExecutableDir() );
 		renderer.setGraphicsConfig( Renderer::GraphicsConfigs::DEFAULT() );
 		renderer.setColorLayout( Renderer::Color::Layouts::JMOL );
+		renderer.setForceUpdate( true );
 		const auto rep = Renderer::Representations::STICKS_AND_RIBBONS;
 		renderer.addRepresentation( { rep } );
-		// renderer.setVSync( false );
 		scene.syncRenderer( renderer );
 
 		// Input manager.
 		InputManager inputManager;
-
-		// Math::AABB aabb( VEC3F_ZERO, 100.f );
-
-		// std::vector<Vec3f> mins		   = { aabb.getMin() };
-		// std::vector<Vec3f> maxs		   = { aabb.getMax() };
 
 		// Generate grid with mins and maxs.
 		std::vector<Vec3f> mins;
