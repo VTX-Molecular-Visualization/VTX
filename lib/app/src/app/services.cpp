@@ -5,27 +5,13 @@
 
 namespace VTX::App
 {
+	Util::ActionManager & ACTION() { return ECS::getCtx<Util::ActionManager>(); }
+
 	const Arguments & ARGS() { return ECS::getCtx<Arguments>(); }
 
 	Util::EventHub & HUB() { return ECS::getCtx<Util::EventHub>(); }
 
-	Util::Monitoring::Stats & STATS() { return ECS::getCtx<Util::Monitoring::Stats>(); }
-
-	Renderer::Renderer & RENDERER() { return ECS::getCtx<Renderer::Renderer>(); }
-
-	Action::ActionManager & ACTION() { return ECS::getCtx<Action::ActionManager>(); }
-
 	Input::InputManager & INPUT() { return ECS::getCtx<Input::InputManager>(); }
-
-	Network::NetworkManager & NETWORK() { return ECS::getCtx<Network::NetworkManager>(); }
-
-	Session & SESSION() { return ECS::getCtx<Session>(); }
-
-	Util::Thread::ThreadManager & THREAD() { return ECS::getCtx<Util::Thread::ThreadManager>(); }
-
-	Uid::UIDManager & UID() { return ECS::getCtx<Uid::UIDManager>(); }
-
-	Pass::PassManager & PASS() { return ECS::getCtx<Pass::PassManager>(); }
 
 	PythonBinding::Interpretor & INTERPRETOR()
 	{
@@ -35,4 +21,18 @@ namespace VTX::App
 		}
 		return ECS::getCtx<PythonBinding::Interpretor>();
 	}
+
+	Network::NetworkManager & NETWORK() { return ECS::getCtx<Network::NetworkManager>(); }
+
+	Pass::PassManager & PASS() { return ECS::getCtx<Pass::PassManager>(); }
+
+	PendingUpdates & PENDING_UPDATES() { return ECS::getCtx<PendingUpdates>(); }
+
+	Renderer::Renderer & RENDERER() { return ECS::getCtx<Renderer::Renderer>(); }
+
+	Session & SESSION() { return ECS::getCtx<Session>(); }
+
+	Util::Thread::ThreadManager & THREAD() { return ECS::getCtx<Util::Thread::ThreadManager>(); }
+
+	Uid::UIDManager & UID() { return ECS::getCtx<Uid::UIDManager>(); }
 } // namespace VTX::App

@@ -8,11 +8,6 @@ namespace VTX::App
 {
 	struct Arguments;
 
-	namespace Action
-	{
-		class ActionManager;
-	}
-
 	namespace Input
 	{
 		class InputManager;
@@ -28,20 +23,18 @@ namespace VTX::App
 		class PassManager;
 	}
 
+	class PendingUpdates;
+
 	namespace PythonBinding
 	{
 		class Interpretor;
 	}
+
 	class Session;
 
 	namespace Uid
 	{
 		class UIDManager;
-	}
-
-	namespace PythonBinding
-	{
-		class Interpretor;
 	}
 } // namespace VTX::App
 
@@ -52,20 +45,22 @@ namespace VTX::Renderer
 
 namespace VTX::Util
 {
+	class ActionManager;
+	class EventHub;
+
 	namespace Thread
 	{
 		class ThreadManager;
 	}
-
-	namespace Monitoring
-	{
-		class Stats;
-	}
-	class EventHub;
 } // namespace VTX::Util
 
 namespace VTX::App
 {
+	/**
+	 * @brief Action manager.
+	 */
+	Util::ActionManager & ACTION();
+
 	/**
 	 * @brief Arguments launching the application with.
 	 */
@@ -77,29 +72,31 @@ namespace VTX::App
 	Util::EventHub & HUB();
 
 	/**
-	 * @brief Statistics.
-	 */
-	Util::Monitoring::Stats & STATS();
-
-	/**
-	 * @brief Renderer facade.
-	 */
-	Renderer::Renderer & RENDERER();
-
-	/**
-	 * @brief Action manager.
-	 */
-	Action::ActionManager & ACTION();
-
-	/**
 	 * @brief Input manager.
 	 */
 	Input::InputManager & INPUT();
 
 	/**
+	 * @brief Python interpretor.
+	 */
+	PythonBinding::Interpretor & INTERPRETOR();
+
+	/**
 	 * @brief Network manager.
 	 */
 	Network::NetworkManager & NETWORK();
+
+	/**
+	 * @brief Pass manager.
+	 */
+	Pass::PassManager & PASS();
+
+	PendingUpdates & PENDING_UPDATES();
+
+	/**
+	 * @brief Renderer facade.
+	 */
+	Renderer::Renderer & RENDERER();
 
 	/**
 	 * @brief Runtime session.
@@ -116,15 +113,6 @@ namespace VTX::App
 	 */
 	Uid::UIDManager & UID();
 
-	/**
-	 * @brief Pass manager.
-	 */
-	Pass::PassManager & PASS();
-
-	/**
-	 * @brief Python interpretor.
-	 */
-	PythonBinding::Interpretor & INTERPRETOR();
 } // namespace VTX::App
 
 #endif
