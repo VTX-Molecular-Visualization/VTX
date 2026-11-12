@@ -5,6 +5,7 @@
 #include <entt/signal/dispatcher.hpp>
 #include <entt/signal/sigh.hpp>
 #include <mutex>
+#include <util/atomic_callback.hpp>
 #include <utility>
 
 namespace VTX::Util
@@ -15,12 +16,18 @@ namespace VTX::Util
 	class EventHub
 	{
 	  public:
+		/**
+		 * @brief Aliases.
+		 */
 		using Connection	   = entt::connection;
 		using ScopedConnection = entt::scoped_connection;
 		using Dispatcher	   = entt::dispatcher;
 		template<typename... Args>
 		using Delegate = entt::delegate<Args...>;
 
+		/**
+		 * @brief Constructors.
+		 */
 		EventHub()								 = default;
 		EventHub( const EventHub & )			 = delete;
 		EventHub & operator=( const EventHub & ) = delete;
@@ -84,13 +91,16 @@ namespace VTX::Util
 		template<typename Ev>
 		void enqueue( Ev p_ev )
 		{
-			const std::scoped_lock lock( _pendingMutex );
-			auto				   sink = _pending.sink<Ev>();
-			if ( sink.empty() )
 			{
-				sink.template connect<&EventHub::_forward<Ev>>( this );
+				const std::scoped_lock lock( _pendingMutex );
+				auto				   sink = _pending.sink<Ev>();
+				if ( sink.empty() )
+				{
+					sink.template connect<&EventHub::_forward<Ev>>( this );
+				}
+				_pending.enqueue<Ev>( std::move( p_ev ) );
 			}
-			_pending.enqueue<Ev>( std::move( p_ev ) );
+			_onPending();
 		}
 
 		/**
@@ -127,6 +137,12 @@ namespace VTX::Util
 			_bus.clear<Ev>();
 		}
 
+		/**
+		 * @brief Set callback.
+		 */
+		void setOnPending( const AtomicCallback::Function p_function, void * const p_context ) noexcept
+		{ _onPending.set( p_function, p_context ); }
+
 	  private:
 		/**
 		 * @brief Forward an event from the pending queue to the main dispatcher.
@@ -149,6 +165,8 @@ namespace VTX::Util
 		 * @brief An instance of the entt::dispatcher class used for event dispatching.
 		 */
 		Dispatcher _bus;
+
+		AtomicCallback _onPending;
 	};
 } // namespace VTX::Util
 
