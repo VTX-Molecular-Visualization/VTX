@@ -295,8 +295,8 @@ namespace VTX::App::Action::Selection
 	{
 		// Selects the most efficient extension strategy depending on selection density.
 		unselecMaskedItems();
-		int selec { 0 };
-		int tot { 0 };
+		size_t selec { 0 };
+		size_t tot { 0 };
 		// System loop
 		for ( const Entity system : REG().view<App::System::Selection>() )
 		{
