@@ -33,6 +33,9 @@ namespace VTX::Core::Struct
 		 */
 		std::vector<Frame> frames;
 
+		/**
+		 * @brief Get atom count.
+		 */
 		size_t getAtomCount() const noexcept
 		{
 			if ( frames.empty() )

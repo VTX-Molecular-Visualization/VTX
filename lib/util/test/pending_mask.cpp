@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <thread>
 #include <tuple>
+#include <util/atomic_callback.hpp>
 #include <util/pending_mask.hpp>
 #include <vector>
 
@@ -18,40 +19,40 @@ namespace
 		ALL	 = A | B | C
 	};
 
-	void countWake( void * const p_counter ) noexcept
+	void countCalls( void * const p_counter ) noexcept
 	{ static_cast<std::atomic<int> *>( p_counter )->fetch_add( 1, std::memory_order_relaxed ); }
 
-	struct WakeableStub
+	struct PendingNotifierStub
 	{
-		void setWake( VTX::Util::WakeCallback::Function, void * ) noexcept {}
+		void setOnPending( VTX::Util::AtomicCallback::Function, void * ) noexcept {}
 	};
 
-	struct ThrowingWakeableStub
+	struct ThrowingPendingNotifierStub
 	{
-		void setWake( VTX::Util::WakeCallback::Function, void * ) {}
+		void setOnPending( VTX::Util::AtomicCallback::Function, void * ) {}
 	};
 
-	struct NotWakeableStub
+	struct NotPendingNotifierStub
 	{
 	};
 } // namespace
 
-static_assert( VTX::Util::Wakeable<VTX::Util::PendingMask<E_TEST>> );
-static_assert( VTX::Util::Wakeable<WakeableStub> );
-static_assert( not VTX::Util::Wakeable<ThrowingWakeableStub> );
-static_assert( not VTX::Util::Wakeable<NotWakeableStub> );
+static_assert( VTX::Util::PendingNotifier<VTX::Util::PendingMask<E_TEST>> );
+static_assert( VTX::Util::PendingNotifier<PendingNotifierStub> );
+static_assert( not VTX::Util::PendingNotifier<ThrowingPendingNotifierStub> );
+static_assert( not VTX::Util::PendingNotifier<NotPendingNotifierStub> );
 
-TEST_CASE( "VTX_UTIL - WakeCallback", "[unit]" )
+TEST_CASE( "VTX_UTIL - AtomicCallback", "[unit]" )
 {
 	using namespace VTX::Util;
 
 	std::atomic<int> counter = 0;
-	WakeCallback	 callback;
+	AtomicCallback	 callback;
 
 	callback();
 	CHECK( counter.load() == 0 );
 
-	callback.set( &countWake, &counter );
+	callback.set( &countCalls, &counter );
 	callback();
 	callback();
 	CHECK( counter.load() == 2 );
@@ -83,7 +84,7 @@ TEST_CASE( "VTX_UTIL - PendingMask - mark and consume", "[unit]" )
 	CHECK( mask.consume() == E_TEST::NONE );
 }
 
-TEST_CASE( "VTX_UTIL - PendingMask - wake on transition only", "[unit]" )
+TEST_CASE( "VTX_UTIL - PendingMask - notify on transition only", "[unit]" )
 {
 	using namespace VTX::Util;
 
@@ -94,7 +95,7 @@ TEST_CASE( "VTX_UTIL - PendingMask - wake on transition only", "[unit]" )
 	CHECK( counter.load() == 0 );
 	std::ignore = mask.consume();
 
-	mask.setWake( &countWake, &counter );
+	mask.setOnPending( &countCalls, &counter );
 
 	mask.mark( E_TEST::NONE );
 	CHECK( counter.load() == 0 );
@@ -110,7 +111,7 @@ TEST_CASE( "VTX_UTIL - PendingMask - wake on transition only", "[unit]" )
 	CHECK( counter.load() == 2 );
 
 	std::ignore = mask.consume();
-	mask.setWake( nullptr, nullptr );
+	mask.setOnPending( nullptr, nullptr );
 	mask.mark( E_TEST::A );
 	CHECK( counter.load() == 2 );
 	CHECK( mask.any() );
@@ -124,7 +125,7 @@ TEST_CASE( "VTX_UTIL - PendingMask - concurrent marks", "[unit]" )
 
 	std::atomic<int>	counter = 0;
 	PendingMask<E_TEST> mask;
-	mask.setWake( &countWake, &counter );
+	mask.setOnPending( &countCalls, &counter );
 
 	{
 		std::vector<std::jthread> producers;
@@ -157,7 +158,7 @@ TEST_CASE( "VTX_UTIL - PendingMask - concurrent marks and consumes", "[unit]" )
 	int					nonEmptyConsumes = 0;
 	E_TEST				consumed		 = E_TEST::NONE;
 	PendingMask<E_TEST> mask;
-	mask.setWake( &countWake, &counter );
+	mask.setOnPending( &countCalls, &counter );
 
 	std::jthread consumer(
 		[ & ]()

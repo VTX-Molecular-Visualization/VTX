@@ -1,74 +1,14 @@
 #ifndef VTX_UTIL_PENDING_MASK_HPP
 #define VTX_UTIL_PENDING_MASK_HPP
 
+#include "util/atomic_callback.hpp"
 #include "util/enum.hpp"
 #include "util/types.hpp"
 #include <atomic>
-#include <concepts>
 #include <type_traits>
 
 namespace VTX::Util
 {
-	/**
-	 * @brief Callback.
-	 */
-	class WakeCallback
-	{
-	  public:
-		/**
-		 * @brief Function pointer.
-		 */
-		using Function = void ( * )( void * ) noexcept;
-
-		/**
-		 * @brief Set data.
-		 */
-		void set( const Function p_function, void * const p_context ) noexcept
-		{ _data.store( Data { p_function, p_context }, std::memory_order_release ); }
-
-		/**
-		 * @brief Run.
-		 */
-		void operator()() const noexcept
-		{
-			const Data data = _data.load( std::memory_order_acquire );
-			if ( data.function != nullptr )
-			{
-				data.function( data.context );
-			}
-		}
-
-	  private:
-		/**
-		 * @brief Data structure.
-		 */
-		struct Data
-		{
-			/**
-			 * @brief Function to call.
-			 */
-			Function function = nullptr;
-
-			/**
-			 * @brief Context to pass.
-			 */
-			void * context = nullptr;
-		};
-
-		/**
-		 * @brief Thread-safe data.
-		 */
-		std::atomic<Data> _data = Data {};
-	};
-
-	/**
-	 * @brief Wakeable concept.
-	 */
-	template<typename T>
-	concept Wakeable = requires( T & p_target, const WakeCallback::Function p_function, void * const p_context ) {
-		{ p_target.setWake( p_function, p_context ) } noexcept -> std::same_as<void>;
-	};
-
 	/**
 	 * @brief Handle a dirty flag to specify data to refresh.
 	 */
@@ -77,8 +17,6 @@ namespace VTX::Util
 	class PendingMask
 	{
 	  public:
-		using WakeFn = WakeCallback::Function;
-
 		/**
 		 * @brief Mark flag as dirty.
 		 */
@@ -92,7 +30,7 @@ namespace VTX::Util
 			const Underlying previous = _flags.fetch_or( toUnderlying( p_flags ), std::memory_order_acq_rel );
 			if ( previous == Underlying {} )
 			{
-				_wake();
+				_onPending();
 			}
 		}
 
@@ -107,9 +45,10 @@ namespace VTX::Util
 		bool any() const noexcept { return _flags.load( std::memory_order_acquire ) != Underlying {}; }
 
 		/**
-		 * @brief
+		 * @brief Set the callback invoked when the mask goes from empty to non-empty.
 		 */
-		void setWake( const WakeFn p_fn, void * const p_context ) noexcept { _wake.set( p_fn, p_context ); }
+		void setOnPending( const AtomicCallback::Function p_function, void * const p_context ) noexcept
+		{ _onPending.set( p_function, p_context ); }
 
 	  private:
 		/**
@@ -125,7 +64,7 @@ namespace VTX::Util
 		/**
 		 * @brief Callback.
 		 */
-		WakeCallback _wake;
+		AtomicCallback _onPending;
 	};
 } // namespace VTX::Util
 
