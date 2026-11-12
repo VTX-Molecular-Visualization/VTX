@@ -52,7 +52,7 @@ namespace VTX::Renderer
 				reinterpret_cast<uintptr_t>( &Renderer::_executeSESExternalPass ),
 				reinterpret_cast<uintptr_t>( this )
 			);
-			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ENVIRONMENT;
+			_markDirty( Cache::E_RENDERER_DIRTY::ENVIRONMENT );
 			_context.fillInfos( _infos );
 			if ( onReady )
 			{
@@ -82,8 +82,10 @@ namespace VTX::Renderer
 			_graph.getPasses(),
 			_graph.getResources().textures
 		);
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COMMAND_BUFFER | Cache::E_RENDERER_DIRTY::CAMERA
-						  | Cache::E_RENDERER_DIRTY::NEED_UPDATE;
+		_markDirty(
+			Cache::E_RENDERER_DIRTY::COMMAND_BUFFER | Cache::E_RENDERER_DIRTY::CAMERA
+			| Cache::E_RENDERER_DIRTY::NEED_UPDATE
+		);
 	}
 
 	void Renderer::clear()
@@ -102,13 +104,13 @@ namespace VTX::Renderer
 	{
 		const bool hasDirty = _dirtyRenderer != Cache::E_RENDERER_DIRTY::NONE || not _dirtySystems.empty()
 							  || not _dirtyRepresentations.empty();
-
 		const auto recoverFromFlushFailure = [ this ]()
 		{
 			if ( not _flushRetried )
 			{
 				_flushRetried = true;
-				_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
+				_markDirty( Cache::E_RENDERER_DIRTY::ALL );
+				_onPending();
 				VTX_WARNING( "Renderer update will be retried with a full refresh" );
 				return;
 			}
@@ -144,6 +146,10 @@ namespace VTX::Renderer
 		if ( hasDirty || _forceUpdate )
 		{
 			_render( p_deltaTime, p_elapsedTime );
+			if ( _forceUpdate )
+			{
+				_markDirty( Cache::E_RENDERER_DIRTY::NEED_UPDATE );
+			}
 			return true;
 		}
 
@@ -170,7 +176,7 @@ namespace VTX::Renderer
 		const auto snapshotOffscreen = [ this ]()
 		{
 			_context.setRenderTarget( Desc::E_RENDER_TARGET::OFFSCREEN );
-			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COMMAND_BUFFER;
+			_markDirty( Cache::E_RENDERER_DIRTY::COMMAND_BUFFER );
 			_flushDirty();
 			_render( 0.f, 0.f );
 
@@ -181,7 +187,7 @@ namespace VTX::Renderer
 		const auto restoreScreenRenderTarget = [ this ]()
 		{
 			_context.setRenderTarget( Desc::E_RENDER_TARGET::SCREEN );
-			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COMMAND_BUFFER;
+			_markDirty( Cache::E_RENDERER_DIRTY::COMMAND_BUFFER );
 			_flushDirty();
 			_render( 0.f, 0.f );
 		};
@@ -195,13 +201,13 @@ namespace VTX::Renderer
 		const auto restoreGraphicsConfig = [ this, currentGraphicsConfig ]()
 		{
 			_graphicsConfig = currentGraphicsConfig;
-			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPHICS_CONFIG;
+			_markDirty( Cache::E_RENDERER_DIRTY::GRAPHICS_CONFIG );
 		};
 
 		if ( p_backgroundOpacity.has_value() )
 		{
 			_graphicsConfig.data.shading.colorBackground.a() = *p_backgroundOpacity;
-			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPHICS_CONFIG;
+			_markDirty( Cache::E_RENDERER_DIRTY::GRAPHICS_CONFIG );
 		}
 
 		const bool hasTargetSize = p_resolution.has_value()
@@ -225,7 +231,7 @@ namespace VTX::Renderer
 			_camera.camera.screenWidth	= p_resolution->width;
 			_camera.camera.screenHeight = p_resolution->height;
 			_camera.matProj				= _camera.camera.computeProjectionMatrix( _camera.position );
-			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::CAMERA;
+			_markDirty( Cache::E_RENDERER_DIRTY::CAMERA );
 
 			std::vector<std::byte> data = snapshotOffscreen();
 			restoreCurrentState();
@@ -701,7 +707,7 @@ namespace VTX::Renderer
 	)
 	{
 		_camera = { p_camera, p_position, p_matView, p_matProj };
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::CAMERA;
+		_markDirty( Cache::E_RENDERER_DIRTY::CAMERA );
 	}
 
 	void Renderer::setGraphicsConfig( const GraphicsConfig & p_config )
@@ -724,25 +730,25 @@ namespace VTX::Renderer
 		const bool					  graphChanged	 = not graphReady || *_config != pipelineConfig;
 
 		_graphicsConfig.data = p_config;
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPHICS_CONFIG;
+		_markDirty( Cache::E_RENDERER_DIRTY::GRAPHICS_CONFIG );
 		if ( graphChanged )
 		{
-			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::GRAPH | Cache::E_RENDERER_DIRTY::COMMAND_BUFFER;
+			_markDirty( Cache::E_RENDERER_DIRTY::GRAPH | Cache::E_RENDERER_DIRTY::COMMAND_BUFFER );
 		}
 		if ( environmentChanged )
 		{
-			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ENVIRONMENT;
+			_markDirty( Cache::E_RENDERER_DIRTY::ENVIRONMENT );
 		}
 		if ( materialTexturesChanged )
 		{
-			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::MATERIAL_TEXTURES;
+			_markDirty( Cache::E_RENDERER_DIRTY::MATERIAL_TEXTURES );
 		}
 	}
 
 	void Renderer::setColorLayout( const Color::Layout & p_layout )
 	{
 		_colorLayout.data = p_layout;
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COLOR_LAYOUT;
+		_markDirty( Cache::E_RENDERER_DIRTY::COLOR_LAYOUT );
 	}
 
 	Desc::Handle Renderer::addRepresentation( const Representation & p_representation )
@@ -750,7 +756,7 @@ namespace VTX::Renderer
 		const Desc::Handle handle
 			= _representations.emplace( Builder::RepresentationState::buildCache( p_representation ) );
 
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::REPRESENTATIONS;
+		_markDirty( Cache::E_RENDERER_DIRTY::REPRESENTATIONS );
 
 		return handle;
 	}
@@ -771,13 +777,14 @@ namespace VTX::Renderer
 
 		_representations.erase( p_handle );
 
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::REPRESENTATIONS;
+		_markDirty( Cache::E_RENDERER_DIRTY::REPRESENTATIONS );
 	}
 
 	void Renderer::setRepresentationDirty( const Desc::Handle p_handle, const Cache::E_REPRESENTATION_DIRTY p_flags )
 	{
 		assert( _representations.contains( p_handle ) );
 
+		_markDirty( Cache::E_RENDERER_DIRTY::NEED_UPDATE );
 		_dirtyRepresentations.emplace_back( p_handle, p_flags );
 	}
 
@@ -786,7 +793,7 @@ namespace VTX::Renderer
 		const Desc::Handle handle = _systems.emplace( p_system );
 		Builder::SystemRegistry::registerSystem( _systems, _geometries, _layouts, handle );
 
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
+		_markDirty( Cache::E_RENDERER_DIRTY::ALL );
 		_dirtySystems.emplace_back( handle, Cache::E_SYSTEM_DIRTY::ALL );
 
 		return handle;
@@ -803,13 +810,14 @@ namespace VTX::Renderer
 	{
 		assert( _systems.contains( p_handle ) );
 
+		_markDirty( Cache::E_RENDERER_DIRTY::NEED_UPDATE );
 		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::DELETING );
 	}
 
 	Desc::Handle Renderer::addMesh( const Cache::Mesh & p_mesh )
 	{
 		const Desc::Handle handle = _meshes.emplace( p_mesh );
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
+		_markDirty( Cache::E_RENDERER_DIRTY::ALL );
 
 		return handle;
 	}
@@ -826,7 +834,7 @@ namespace VTX::Renderer
 		assert( _meshes.contains( p_handle ) );
 
 		_meshes.erase( p_handle );
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::ALL;
+		_markDirty( Cache::E_RENDERER_DIRTY::ALL );
 	}
 
 	void Renderer::setMeshTransform( const Desc::Handle p_handle, const Mat4f & p_transform )
@@ -834,7 +842,7 @@ namespace VTX::Renderer
 		assert( _meshes.contains( p_handle ) );
 
 		_meshes.get( p_handle ).transform = p_transform;
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::MODELS;
+		_markDirty( Cache::E_RENDERER_DIRTY::MODELS );
 	}
 
 	bool Renderer::ensureBufferChunk( const Desc::BufferRef & p_ref )
@@ -859,7 +867,7 @@ namespace VTX::Renderer
 		}
 		catch ( ... )
 		{
-			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COMMAND_BUFFER;
+			_markDirty( Cache::E_RENDERER_DIRTY::COMMAND_BUFFER );
 			throw;
 		}
 	}
@@ -886,7 +894,7 @@ namespace VTX::Renderer
 		}
 		catch ( ... )
 		{
-			_dirtyRenderer |= Cache::E_RENDERER_DIRTY::COMMAND_BUFFER;
+			_markDirty( Cache::E_RENDERER_DIRTY::COMMAND_BUFFER );
 			throw;
 		}
 	}
@@ -896,6 +904,7 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_handle ) );
 
 		_systems.get( p_handle ).transform = p_transform;
+		_markDirty( Cache::E_RENDERER_DIRTY::NEED_UPDATE );
 		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::TRANSFORM );
 	}
 
@@ -904,6 +913,7 @@ namespace VTX::Renderer
 		assert( _systems.contains( p_handle ) );
 
 		_systems.get( p_handle ).data.trajectory = p_positions;
+		_markDirty( Cache::E_RENDERER_DIRTY::NEED_UPDATE );
 		_dirtySystems.emplace_back( p_handle, Cache::E_SYSTEM_DIRTY::TRAJECTORY );
 	}
 
@@ -911,6 +921,7 @@ namespace VTX::Renderer
 	{
 		assert( _systems.contains( p_handle ) );
 
+		_markDirty( Cache::E_RENDERER_DIRTY::NEED_UPDATE );
 		_dirtySystems.emplace_back( p_handle, p_flags );
 	}
 
@@ -920,7 +931,23 @@ namespace VTX::Renderer
 
 		_voxels.mins.assign( p_mins.begin(), p_mins.end() );
 		_voxels.maxs.assign( p_maxs.begin(), p_maxs.end() );
-		_dirtyRenderer |= Cache::E_RENDERER_DIRTY::VOXELS;
+		_markDirty( Cache::E_RENDERER_DIRTY::VOXELS );
+	}
+
+	bool Renderer::_isClean() const noexcept
+	{
+		return _dirtyRenderer == Cache::E_RENDERER_DIRTY::NONE && _dirtySystems.empty()
+			   && _dirtyRepresentations.empty();
+	}
+
+	void Renderer::_markDirty( const Cache::E_RENDERER_DIRTY p_flags ) noexcept
+	{
+		const bool wasClean = _isClean();
+		_dirtyRenderer |= p_flags;
+		if ( wasClean )
+		{
+			_onPending();
+		}
 	}
 
 } // namespace VTX::Renderer

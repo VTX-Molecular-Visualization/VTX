@@ -16,6 +16,7 @@
 #include <functional>
 #include <optional>
 #include <unordered_set>
+#include <util/atomic_callback.hpp>
 #include <util/math/bitset.hpp>
 #include <util/resolution.hpp>
 #include <vector>
@@ -142,12 +143,19 @@ namespace VTX::Renderer
 		/**
 		 * @brief Ask for a render update.
 		 */
-		void setNeedUpdate( const bool ) noexcept { _dirtyRenderer |= Cache::E_RENDERER_DIRTY::NEED_UPDATE; }
+		void setNeedUpdate( const bool ) noexcept { _markDirty( Cache::E_RENDERER_DIRTY::NEED_UPDATE ); }
 
 		/**
 		 * @brief Force update each frame.
 		 */
-		void setForceUpdate( const bool p_value ) noexcept { _forceUpdate = p_value; }
+		void setForceUpdate( const bool p_value ) noexcept
+		{
+			_forceUpdate = p_value;
+			if ( _forceUpdate )
+			{
+				_markDirty( Cache::E_RENDERER_DIRTY::NEED_UPDATE );
+			}
+		}
 
 		/**
 		 * @brief Force update each frame.
@@ -160,8 +168,13 @@ namespace VTX::Renderer
 		const StructInfos & getInfos( bool = false );
 
 		/**
+		 * @brief Set pending callback.
+		 */
+		void setOnPending( const Util::AtomicCallback::Function p_function, void * const p_context ) noexcept
+		{ _onPending.set( p_function, p_context ); }
+
+		/**
 		 * @brief Callback when ready.
-		 * TODO: use event hub?
 		 */
 		std::function<void( const StructInfos & )> onReady;
 
@@ -212,7 +225,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Force update each frame.
 		 */
-		bool _forceUpdate = true;
+		bool _forceUpdate = false;
 
 		/**
 		 * @brief Dirty entries.
@@ -251,10 +264,29 @@ namespace VTX::Renderer
 		ResourcePool<Cache::Representation> _representations;
 
 		/**
+		 * @brief Pending callback.
+		 */
+		Util::AtomicCallback _onPending;
+
+		/**
 		 * @brief Flush pending renderer refreshes.
 		 */
 		void _flushDirty();
 
+		/**
+		 * @brief Check if pending refreshes.
+		 */
+		bool _isClean() const noexcept;
+
+		/**
+		 * @brief Mark something as dirty.
+		 */
+		void _markDirty( Cache::E_RENDERER_DIRTY ) noexcept;
+
+		/**
+		 * @brief Execute external pass.
+		 * TODO: better abstraction.
+		 */
 		static void _executeSESExternalPass( uintptr_t );
 
 		/**
