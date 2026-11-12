@@ -70,9 +70,7 @@ namespace VTX::App::Action::Selection
 			const bool						 p_selected = true,
 			const bool						 p_append	= false
 		)
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected, p_append );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_range ), p_selected, p_append ); }
 
 		void execute(
 			const Entity			   p_ent,
@@ -80,9 +78,7 @@ namespace VTX::App::Action::Selection
 			const bool				   p_selected = true,
 			const bool				   p_append	  = false
 		)
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_selected, p_append );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_values ), p_selected, p_append ); }
 
 		void execute(
 			const Entity p_ent,
@@ -90,9 +86,7 @@ namespace VTX::App::Action::Selection
 			const bool	 p_selected = true,
 			const bool	 p_append	= false
 		)
-		{
-			execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_selected, p_append );
-		}
+		{ execute( p_ent, Core::Struct::IndexRangeList( p_value ), p_selected, p_append ); }
 	};
 
 	struct SetSelectedItem
@@ -112,9 +106,7 @@ namespace VTX::App::Action::Selection
 			const bool						  p_selected = true,
 			const bool						  p_append	 = false
 		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_selected, p_append );
-		}
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_values ), p_selected, p_append ); }
 
 		void execute(
 			const Entity					  p_ent,
@@ -123,9 +115,7 @@ namespace VTX::App::Action::Selection
 			const bool						  p_selected = true,
 			const bool						  p_append	 = false
 		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_selected, p_append );
-		}
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_range ), p_selected, p_append ); }
 
 		void execute(
 			const Entity					  p_ent,
@@ -134,9 +124,7 @@ namespace VTX::App::Action::Selection
 			const bool						  p_selected = true,
 			const bool						  p_append	 = false
 		)
-		{
-			execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_selected, p_append );
-		}
+		{ execute( p_ent, p_item, Core::Struct::IndexRangeList( p_value ), p_selected, p_append ); }
 	};
 
 	struct SelectAll
@@ -198,17 +186,17 @@ namespace VTX::App::Action::Selection
 
 	struct ExtendSelection
 	{
-		void execute( const float threshold );
+		void execute( float threshold );
 	};
 
 	struct ExtendSelectionFromSelec
 	{
-		void execute( const float threshold );
+		void execute( float threshold );
 	};
 
 	struct ExtendSelectionFromNonSelec
 	{
-		void execute( const float threshold );
+		void execute( float threshold );
 	};
 } // namespace VTX::App::Action::Selection
 

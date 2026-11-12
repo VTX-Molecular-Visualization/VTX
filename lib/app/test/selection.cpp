@@ -69,7 +69,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system1, toSelect );
 
 	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "2qwo.pdb" ) );
-	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.0 );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.f );
 
 	int count { 0 };
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
@@ -88,12 +88,12 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	// Testing extendSelectionFromNonSelec
 	Entity					 system2	= getSystemByFileName( "2qwo.pdb" );
 	const auto &			 selection2 = App::REG().get<App::System::Selection>( system2 );
-	Core::Struct::IndexRange range { 1, selection2.atoms.size() };
+	Core::Struct::IndexRange range { 1, static_cast<Index>( selection2.atoms.size() ) };
 	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system2, range );
 
 	toMask = 46;
 	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
-	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 5.0 );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 5.f );
 
 	count = 0;
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
@@ -108,10 +108,10 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 
 	App::ACTION().execute<Clear>();
 
-	range = { 1, selection1.atoms.size() };
+	range = { 1, static_cast<Index>( selection1.atoms.size() ) };
 	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system1, range );
 	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, range, false );
-	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.0 );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.f );
 
 	count = 0;
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
@@ -141,7 +141,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	// Testing extendSelectionFromSelec 4.0 angstrom
 	selection3.atoms.set( 0 );
 	visible3.atoms.reset( 8 );
-	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.0 );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.f );
 
 	Util::Math::BitSet			  expected1 = Util::Math::BitSet( 10, false );
 	Util::Math::BitSet			  expected2 = Util::Math::BitSet( 5, false );
@@ -159,7 +159,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	atomList = { 0, 2 };
 	selection4.atoms.reset( atomList );
 	expected2.set( 2 );
-	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 5.0 );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 5.f );
 
 	CHECK( selection3.atoms == expected1 );
 	CHECK( selection4.atoms == expected2 );
@@ -170,7 +170,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	selection4.atoms.reset( atomList );
 	atomList = { 3, 4 };
 	expected2.set( atomList );
-	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.0 );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.f );
 
 	CHECK( selection3.atoms == expected1 );
 	CHECK( selection4.atoms == expected2 );
@@ -249,13 +249,13 @@ TEST_CASE( "VTX_APP - Selection - RevertSelection", "[revertSelection][selection
 	Entity		 system2	= getSystemByFileName( "2qwo.pdb" );
 	const auto & selection1 = App::REG().get<App::System::Selection>( system1 );
 
-	Core::Struct::IndexRange range { 1, selection1.atoms.size() - 10 };
+	Core::Struct::IndexRange range { 1, static_cast<Index>( selection1.atoms.size() - 10 ) };
 	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system1, range );
 
 	Index toMask { 1 };
 	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system2, toMask, false );
 
-	toMask = selection1.atoms.size() - 1;
+	toMask = static_cast<Index>( selection1.atoms.size() - 1 );
 	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
 
 	App::ACTION().execute<App::Action::Selection::RevertSelection>();

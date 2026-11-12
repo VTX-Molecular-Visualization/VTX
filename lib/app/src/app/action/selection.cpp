@@ -3,7 +3,6 @@
 #include "app/helper/scene.hpp"
 #include "app/helper/system.hpp"
 #include "app/helper/trajectory.hpp"
-#include "app/input/input_manager.hpp"
 #include "app/services.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
@@ -11,7 +10,6 @@
 #include "util/math/range_list.hpp"
 #include <optional>
 #include <renderer/renderer.hpp>
-#include <unordered_map>
 #include <util/exceptions.hpp>
 
 namespace VTX::App::Action::Selection
@@ -266,30 +264,58 @@ namespace VTX::App::Action::Selection
 		}
 	}
 
-	struct SystemData
+	namespace
 	{
-		// Holds all data associated with a loaded system
-		Entity						 entity;
-		std::span<const Vec3f>		 positions;
-		App::System::Selection &	 selection;
-		Util::Math::Grid<Index> &	 grid;
-		App::System::Visibility &	 visibility;
-		Core::Struct::IndexRangeList toSelect;
-	};
-
-	void unselecMaskedItems()
-	{
-		// Remove masked items from selection
-		// System loop
-		for ( const Entity system : REG().view<Core::Struct::Topology>() )
+		struct SystemData
 		{
-			const auto & visibility = REG().get<App::System::Visibility>( system );
-			// update selection
-			REG().patch<System::Selection>(
-				system, [ & ]( System::Selection & p_selection ) { p_selection.atoms &= visibility.atoms; }
-			);
+			// Holds all data associated with a loaded system
+			Entity						 entity;
+			std::span<const Vec3f>		 positions;
+			App::System::Selection &	 selection;
+			Util::Math::Grid<Index> &	 grid;
+			App::System::Visibility &	 visibility;
+			Core::Struct::IndexRangeList toSelect;
+		};
+
+		void unselecMaskedItems()
+		{
+			// Remove masked items from selection
+			// System loop
+			for ( const Entity system : REG().view<Core::Struct::Topology>() )
+			{
+				const auto & visibility = REG().get<App::System::Visibility>( system );
+				// update selection
+				REG().patch<System::Selection>(
+					system, [ & ]( System::Selection & p_selection ) { p_selection.atoms &= visibility.atoms; }
+				);
+			}
 		}
-	}
+
+		bool isWithinDist( const Vec3f & p1, const Vec3f & p2, const float p_threshold, const float threshold2 )
+		{
+			// checking distance on axes before calculating distance i - j
+			const float dx = p1.x - p2.x;
+			if ( dx > p_threshold || dx < -p_threshold )
+			{
+				return false;
+			}
+
+			const float dy = p1.y - p2.y;
+			if ( dy > p_threshold || dy < -p_threshold )
+			{
+				return false;
+			}
+
+			const float dz = p1.z - p2.z;
+			if ( dz > p_threshold || dz < -p_threshold )
+			{
+				return false;
+			}
+
+			const float dist2 = dx * dx + dy * dy + dz * dz;
+			return dist2 <= threshold2;
+		}
+	} // namespace
 
 	void ExtendSelection::execute( const float p_threshold )
 	{
@@ -314,35 +340,6 @@ namespace VTX::App::Action::Selection
 		{
 			ACTION().execute<App::Action::Selection::ExtendSelectionFromSelec>( p_threshold );
 		}
-	}
-
-	bool isWithinDist( const Vec3f & p1, const Vec3f & p2, const float p_threshold, const float threshold2 )
-	{
-		// checking distance on axes before calculating distance i - j
-		const float dx = p1.x - p2.x;
-		if ( dx > p_threshold || dx < -p_threshold )
-		{
-			return false;
-		}
-
-		const float dy = p1.y - p2.y;
-		if ( dy > p_threshold || dy < -p_threshold )
-		{
-			return false;
-		}
-
-		const float dz = p1.z - p2.z;
-		if ( dz > p_threshold || dz < -p_threshold )
-		{
-			return false;
-		}
-
-		const float dist2 = dx * dx + dy * dy + dz * dz;
-		if ( dist2 > threshold2 )
-		{
-			return false;
-		}
-		return true;
 	}
 
 	void ExtendSelectionFromNonSelec::execute( const float p_threshold )
@@ -384,9 +381,9 @@ namespace VTX::App::Action::Selection
 			Core::Struct::IndexRangeList toSelect;
 
 			// system's atoms loop
-			for ( size_t i = 0; i < testedSystem.selection.atoms.size(); ++i )
+			for ( Index i = 0; i < testedSystem.selection.atoms.size(); ++i )
 			{
-				if ( !testedSystem.visibility.atoms.test( i ) || testedSystem.selection.atoms.test( i ) )
+				if ( not testedSystem.visibility.atoms.test( i ) || testedSystem.selection.atoms.test( i ) )
 				{
 					continue;
 				}
@@ -399,7 +396,7 @@ namespace VTX::App::Action::Selection
 				for ( SystemData & testingSystem : systems )
 				{
 					// atom i voxel
-					Util::Math::Grid<Index>::CellPosition cell = testingSystem.grid.gridPosition( p1 );
+					const Util::Math::Grid<Index>::CellPosition cell = testingSystem.grid.gridPosition( p1 );
 					// neighbor voxels loop
 					testingSystem.grid.forEachNeighbourCell(
 						cell,
@@ -414,16 +411,16 @@ namespace VTX::App::Action::Selection
 								return;
 							}
 
-							for ( const size_t j : p_neighborCell )
+							for ( const Index j : p_neighborCell )
 							{
-								if ( !testingSystem.selection.atoms.test( j ) )
+								if ( not testingSystem.selection.atoms.test( j ) )
 								{
 									continue;
 								}
 								const Vec3f & p2 = testingSystem.positions[ j ];
 
 								// checking distance on axes before calculating distance i - j
-								if ( !isWithinDist( p1, p2, p_threshold, threshold2 ) )
+								if ( not isWithinDist( p1, p2, p_threshold, threshold2 ) )
 								{
 									continue;
 								}
@@ -484,7 +481,7 @@ namespace VTX::App::Action::Selection
 		for ( const SystemData & testingSystem : systems )
 		{
 			// selected atoms loop
-			for ( size_t i : testingSystem.selection.atoms )
+			for ( const size_t i : testingSystem.selection.atoms )
 			{
 				// coord atom i
 				const Vec3f & p1 = testingSystem.positions[ i ];
@@ -493,7 +490,7 @@ namespace VTX::App::Action::Selection
 				for ( SystemData & testedSystem : systems )
 				{
 					// atom i voxel
-					Util::Math::Grid<Index>::CellPosition cell = testedSystem.grid.gridPosition( p1 );
+					const Util::Math::Grid<Index>::CellPosition cell = testedSystem.grid.gridPosition( p1 );
 					// neighbor voxels loop
 					testedSystem.grid.forEachNeighbourCell(
 						cell,
@@ -502,9 +499,9 @@ namespace VTX::App::Action::Selection
 							const Util::Math::Grid<Index>::Cell &		  p_neighborCell
 						)
 						{
-							for ( const size_t j : p_neighborCell )
+							for ( const Index j : p_neighborCell )
 							{
-								if ( !testedSystem.visibility.atoms.test( j )
+								if ( not testedSystem.visibility.atoms.test( j )
 									 || testedSystem.selection.atoms.test( j ) )
 								{
 									continue;
@@ -514,7 +511,7 @@ namespace VTX::App::Action::Selection
 								const Vec3f & p2 = testedSystem.positions[ j ];
 
 								// checking distance on axes before calculating distance i - j
-								if ( !isWithinDist( p1, p2, p_threshold, threshold2 ) )
+								if ( not isWithinDist( p1, p2, p_threshold, threshold2 ) )
 								{
 									continue;
 								}
@@ -544,15 +541,15 @@ namespace VTX::App::Action::Selection
 			Core::Struct::IndexRangeList toSelect;
 
 			// selected atoms loop
-			for ( size_t i : currentSelection.atoms )
+			for ( const size_t selectedAtom : currentSelection.atoms )
 			{
-				const Index					   resIndex = topology.getAtomResidueIndex( i );
-				const Core::Struct::IndexRange range	= topology.getResidueAtomRange( resIndex );
-				for ( size_t i : range )
+				const Index resIndex = topology.getAtomResidueIndex( static_cast<Index>( selectedAtom ) );
+				const Core::Struct::IndexRange range = topology.getResidueAtomRange( resIndex );
+				for ( const Index residueAtom : range )
 				{
-					if ( visibility.atoms.test( i ) )
+					if ( visibility.atoms.test( residueAtom ) )
 					{
-						toSelect.addRange( i );
+						toSelect.addRange( residueAtom );
 					}
 				}
 			}
