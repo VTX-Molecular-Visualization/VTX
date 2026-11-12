@@ -166,6 +166,9 @@ namespace VTX::Util
 		 */
 		Dispatcher _bus;
 
+		/**
+		 * @brief Pending callback.
+		 */
 		AtomicCallback _onPending;
 	};
 } // namespace VTX::Util

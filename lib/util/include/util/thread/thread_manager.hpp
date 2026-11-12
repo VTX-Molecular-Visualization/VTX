@@ -1,6 +1,7 @@
 #ifndef VTX_UTIL_THREAD_THREAD_MANAGER_HPP
 #define VTX_UTIL_THREAD_THREAD_MANAGER_HPP
 
+#include "util/atomic_callback.hpp"
 #include "util/thread/base_thread.hpp"
 #include <concepts>
 #include <functional>
@@ -45,8 +46,10 @@ namespace VTX::Util::Thread
 		 * @brief Spawn a thread and executes the content of p_asyncOp in the new thread context.
 		 * Once the p_asyncOp has returned, p_callback is executed.
 		 */
-		BaseThread & createThread( const BaseThread::AsyncOp &	   p_asyncOp,
-								   const BaseThread::EndCallback & p_callback = {} );
+		BaseThread & createThread(
+			const BaseThread::AsyncOp &		p_asyncOp,
+			const BaseThread::EndCallback & p_callback = {}
+		);
 
 		/**
 		 * @brief Creates a thread of type T.
@@ -55,16 +58,12 @@ namespace VTX::Util::Thread
 		std::shared_ptr<T> createThread( Args &&... p_args )
 		{
 			std::shared_ptr<T> thread( new T( *this, std::forward<Args>( p_args )... ) );
-			_threads.emplace_back( thread );
-			try
+			thread->start();
 			{
-				thread->start();
+				const std::scoped_lock lock( _threadsMutex );
+				_threads.emplace_back( thread );
 			}
-			catch ( ... )
-			{
-				_threads.pop_back();
-				throw;
-			}
+			_onPending();
 			return thread;
 		}
 
@@ -90,13 +89,15 @@ namespace VTX::Util::Thread
 				std::packaged_task<Result()> resultTask( std::move( function ) );
 				future = resultTask.get_future();
 				SynchronizedCall call(
-					caller, std::packaged_task<void()>( [ task = std::move( resultTask ) ]() mutable { task(); } ) );
+					caller, std::packaged_task<void()>( [ task = std::move( resultTask ) ]() mutable { task(); } )
+				);
 				const std::scoped_lock lock( _synchronizedCallsMutex );
 				if ( not _shuttingDown && not _cancelledCallers.contains( caller ) )
 				{
 					_synchronizedCalls.emplace_back( std::move( call ) );
 				}
 			}
+			_onPending();
 
 			return future.get();
 		}
@@ -109,12 +110,15 @@ namespace VTX::Util::Thread
 			requires std::invocable<std::decay_t<Func> &>
 		void dispatch( Func && p_function )
 		{
-			DispatchedCall		   call( std::forward<Func>( p_function ) );
-			const std::scoped_lock lock( _synchronizedCallsMutex );
-			if ( not _shuttingDown )
+			DispatchedCall call( std::forward<Func>( p_function ) );
 			{
-				_dispatchedCalls.emplace_back( std::move( call ) );
+				const std::scoped_lock lock( _synchronizedCallsMutex );
+				if ( not _shuttingDown )
+				{
+					_dispatchedCalls.emplace_back( std::move( call ) );
+				}
 			}
+			_onPending();
 		}
 
 		/**
@@ -126,12 +130,18 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Returns the thread with the given id.
 		 */
-		BaseThread * get( const ID & ) noexcept;
+		BaseThread * get( const ID & );
 
 		/**
 		 * @brief Stops the thread with the given id.
 		 */
 		void stop( const ID & );
+
+		/**
+		 * @brief Set callback.
+		 */
+		void setOnPending( const AtomicCallback::Function p_function, void * const p_context ) noexcept
+		{ _onPending.set( p_function, p_context ); }
 
 	  private:
 		/**
@@ -155,8 +165,7 @@ namespace VTX::Util::Thread
 		{
 			template<typename Func>
 				requires( not std::same_as<std::remove_cvref_t<Func>, DispatchedCall> )
-			DispatchedCall( Func && p_function ) :
-				task( std::forward<Func>( p_function ) ), result( task.get_future() )
+			DispatchedCall( Func && p_function ) : task( std::forward<Func>( p_function ) ), result( task.get_future() )
 			{
 			}
 
@@ -186,6 +195,11 @@ namespace VTX::Util::Thread
 		std::mutex _synchronizedCallsMutex;
 
 		/**
+		 * @brief Mutex to synchronize access to the threads list.
+		 */
+		std::mutex _threadsMutex;
+
+		/**
 		 * @brief List of synchronized calls to be executed.
 		 */
 		std::list<SynchronizedCall> _synchronizedCalls;
@@ -210,6 +224,11 @@ namespace VTX::Util::Thread
 		 */
 		BaseThread::ProgressCallback   _progressCallback;
 		BaseThread::TerminatedCallback _terminatedCallback;
+
+		/**
+		 * @brief Pending callback.
+		 */
+		AtomicCallback _onPending;
 
 		/**
 		 * @brief Cancels the synchronized calls for the given thread id.

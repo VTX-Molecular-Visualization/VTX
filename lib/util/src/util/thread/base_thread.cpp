@@ -57,6 +57,7 @@ namespace VTX::Util::Thread
 					setFailed();
 				}
 				_finished.store( true, std::memory_order_release );
+				_manager._onPending();
 			}
 		);
 		_id = _thread.get_id();
@@ -91,6 +92,7 @@ namespace VTX::Util::Thread
 	{
 		const float clampedValue = Util::Math::clamp( p_value, 0.f, 1.f );
 		_progress.store( clampedValue, std::memory_order_relaxed );
+		_manager._onPending();
 	}
 
 	std::string BaseThread::getProgressText() const
@@ -101,8 +103,11 @@ namespace VTX::Util::Thread
 
 	void BaseThread::setProgressText( const std::string & p_text )
 	{
-		const std::scoped_lock lock( _progressTextMutex );
-		_progressText = p_text;
+		{
+			const std::scoped_lock lock( _progressTextMutex );
+			_progressText = p_text;
+		}
+		_manager._onPending();
 	}
 
 	void BaseThread::setProgressCallback( ProgressCallback p_callback ) { _progressCallback = std::move( p_callback ); }
