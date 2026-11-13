@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <util/chrono.hpp>
 #include <util/enum.hpp>
+#include <util/exceptions.hpp>
 #include <vector>
 
 namespace VTX::Renderer
@@ -70,6 +71,14 @@ namespace VTX::Renderer
 	void Renderer::resize( const size_t p_width, const size_t p_height )
 	{
 		const Util::ScopedChrono timer( "[RENDERER] resize" );
+
+		const size_t maxSize = _infos.maxTextureSize;
+		if ( maxSize != 0 && ( p_width > maxSize || p_height > maxSize ) )
+		{
+			throw GraphicException(
+				"Resolution {}x{} exceeds the maximum texture size {}.", p_width, p_height, maxSize
+			);
+		}
 
 		VTX_TRACE( "Resizing renderer to {}x{}", p_width, p_height );
 
