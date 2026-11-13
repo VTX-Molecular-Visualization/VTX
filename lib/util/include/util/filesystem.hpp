@@ -3,7 +3,9 @@
 
 #include "types.hpp"
 #include <filesystem>
+#include <initializer_list>
 #include <string>
+#include <string_view>
 
 namespace VTX
 {
@@ -65,6 +67,11 @@ namespace VTX::Util::Filesystem
 	 * @brief Copy directory from source to destination (override if exist).
 	 */
 	void copyDirectory( const FilePath & p_filePathSrc, const FilePath & p_filePathDestination );
+
+	/**
+	 * @brief Check if a file has one of the specified extensions.
+	 */
+	bool hasExtension( const FilePath & p_filePath, std::initializer_list<std::string_view> p_extensions );
 
 } // namespace VTX::Util::Filesystem
 

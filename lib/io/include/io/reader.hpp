@@ -73,8 +73,6 @@ namespace VTX::IO
 		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
 
-	bool isTrajectoryFileFormat( const FilePath & p_path );
-
 } // namespace VTX::IO
 
 #endif // !VTX_IO_READER_HPP

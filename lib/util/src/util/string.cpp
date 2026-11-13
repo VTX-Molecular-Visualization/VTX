@@ -2,6 +2,7 @@
 #include "util/fmt/duration.hpp"
 #include "util/fmt/mem_size.hpp"
 #include <algorithm>
+#include <cctype>
 #include <fmt/format.h>
 #include <iomanip>
 #include <sstream>
@@ -40,6 +41,16 @@ namespace VTX::Util::String
 		);
 
 		return result;
+	}
+
+	bool equalsIgnoreCase( const std::string_view p_lhs, const std::string_view p_rhs ) noexcept
+	{
+		return std::ranges::equal(
+			p_lhs,
+			p_rhs,
+			[]( const unsigned char p_left, const unsigned char p_right )
+			{ return std::tolower( p_left ) == std::tolower( p_right ); }
+		);
 	}
 
 	std::string memSizeToStr( const size_t p_size, const bool p_isBase10 )

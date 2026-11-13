@@ -3,7 +3,6 @@
 #include "io/util/bond_recomputation.hpp"
 #include "io/util/secondary_structure.hpp"
 #include <algorithm>
-#include <array>
 #include <cassert>
 #include <core/chemdb/atom.hpp>
 #include <core/chemdb/bond.hpp>
@@ -17,7 +16,6 @@
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
 #include <util/logger.hpp>
-#include <util/string.hpp>
 #include <utility>
 
 #ifdef _MSC_VER
@@ -824,16 +822,5 @@ namespace VTX::IO
 	void SystemReader::set( const StopToken & p_ ) noexcept { _impl->set( p_ ); }
 
 	size_t SystemReader::frameCount() const { return _impl->frameCount(); }
-
-	bool isTrajectoryFileFormat( const FilePath & p_path )
-	{
-		const std::string extension = VTX::Util::String::toLower( p_path.extension().string() );
-		const auto		  trajectoryFileFormatList
-			= std::to_array<std::string_view>( { ".xtc", ".dcd", ".lammpstrj", ".trj" } );
-
-		return std::ranges::any_of(
-			trajectoryFileFormatList, [ &extension ]( const std::string_view & v ) { return v == extension; }
-		);
-	};
 
 } // namespace VTX::IO

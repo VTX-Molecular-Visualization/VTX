@@ -1,5 +1,7 @@
 #include "util/filesystem.hpp"
 #include "util/exceptions.hpp"
+#include "util/string.hpp"
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <sago/platform_folders.h>
@@ -102,8 +104,9 @@ namespace VTX::Util::Filesystem
 
 		if ( inputFile.is_open() )
 		{
-			std::string fileContent( ( std::istreambuf_iterator<char>( inputFile ) ),
-									 std::istreambuf_iterator<char>() );
+			std::string fileContent(
+				( std::istreambuf_iterator<char>( inputFile ) ), std::istreambuf_iterator<char>()
+			);
 
 			return fileContent;
 		}
@@ -135,8 +138,9 @@ namespace VTX::Util::Filesystem
 		while ( std::filesystem::exists( p_filePath ) )
 		{
 			p_filePath = parentPath
-						 / p_filePath.stem().string().append( "_" + std::to_string( counter )
-															  + p_filePath.extension().string() );
+						 / p_filePath.stem().string().append(
+							 "_" + std::to_string( counter ) + p_filePath.extension().string()
+						 );
 			counter++;
 		}
 	}
@@ -152,6 +156,16 @@ namespace VTX::Util::Filesystem
 		{
 			throw IOException( p_e.what() );
 		}
+	}
+
+	bool hasExtension( const FilePath & p_filePath, const std::initializer_list<std::string_view> p_extensions )
+	{
+		const std::string extension = p_filePath.extension().string();
+		return std::ranges::any_of(
+			p_extensions,
+			[ &extension ]( const std::string_view p_extension )
+			{ return String::equalsIgnoreCase( p_extension, extension ); }
+		);
 	}
 
 } // namespace VTX::Util::Filesystem

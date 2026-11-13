@@ -153,6 +153,11 @@ namespace VTX::Util::String
 	[[nodiscard]] std::string toLower( const std::string & p_str );
 
 	/**
+	 * @brief Compare two strings ignoring case.
+	 */
+	[[nodiscard]] bool equalsIgnoreCase( std::string_view p_lhs, std::string_view p_rhs ) noexcept;
+
+	/**
 	 * @brief Data needed to fmt::format.
 	 */
 	struct FormattedMemSize
