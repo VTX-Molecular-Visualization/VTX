@@ -30,6 +30,11 @@ namespace VTX::App::Pass
 			bool( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & )>;
 
 		/**
+		 * @brief Flag that trigger update.
+		 */
+		static constexpr E_PENDING_UPDATE UPDATE_TRIGGERS = E_PENDING_UPDATE::INPUT | E_PENDING_UPDATE::ANIMATION;
+
+		/**
 		 * @brief Constructor.
 		 */
 		CameraUpdater( const Entity & );
@@ -98,6 +103,7 @@ namespace VTX::App::Pass
 			{
 				_controllers.emplace_back( std::move( entry ) );
 			}
+			_syncAnimatingState();
 		}
 
 		/**
@@ -119,6 +125,7 @@ namespace VTX::App::Pass
 			{
 				_controllers.pop_front();
 			}
+			_syncAnimatingState();
 		}
 
 	  private:
@@ -157,6 +164,14 @@ namespace VTX::App::Pass
 		 */
 		void _onUpdateCamera();
 
+		/**
+		 * @brief Add/remove tag that indicate if camera is animating.
+		 */
+		void _syncAnimatingState();
+
+		/**
+		 * @brief Connections.
+		 */
 		Util::EventHub::ScopedConnection _controllerUpdatedConnection;
 		Util::EventHub::ScopedConnection _cameraUpdatedConnection;
 		Util::EventHub::ScopedConnection _animationStartConnection;
