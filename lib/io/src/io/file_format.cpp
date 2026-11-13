@@ -1,17 +1,5 @@
 #include "io/file_format.hpp"
-#include <algorithm>
-#include <functional>
-#include <string>
 #include <util/filesystem.hpp>
-#include <util/string.hpp>
-
-#ifdef _MSC_VER
-#pragma warning( push, 0 )
-#endif
-#include <chemfiles.hpp>
-#ifdef _MSC_VER
-#pragma warning( pop )
-#endif
 
 namespace VTX::IO
 {
