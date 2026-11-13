@@ -39,16 +39,9 @@ namespace VTX::App::Extractor
 		 */
 		uint operator()( const Util::Thread::StopToken &, Util::Thread::OptionalThreadReference );
 
-		/**
-		 * @brief Stop current execution until the system is extracted.
-		 */
-		void wait();
-
 	  private:
 		struct Data;
 		std::shared_ptr<Data> _attributesPtr;
-
-		void _clean();
 	};
 
 } // namespace VTX::App::Extractor

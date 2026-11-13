@@ -15,9 +15,25 @@ namespace VTX::App::Helper::AABB
 	Util::Math::AABB compute( Core::Struct::FrameView p_positions ) noexcept;
 
 	/**
-	 * @brief Get cached system AABB.
+	 * @brief Get system AABB.
 	 */
 	Util::Math::AABB get( Entity p_entity );
+
+	/**
+	 * @brief Get scene AABB.
+	 * @return
+	 */
+	Util::Math::AABB getScene();
+
+	/**
+	 * @brief Mark system AABB as invalid.
+	 */
+	void invalidate( Entity p_entity );
+
+	/**
+	 * @brief Mark scene AABB as invalid.
+	 */
+	void invalidateScene();
 
 	/**
 	 * @brief Compute selected atoms AABB.
@@ -27,9 +43,11 @@ namespace VTX::App::Helper::AABB
 	/**
 	 * @brief Compute topology item ranges AABB.
 	 */
-	Util::Math::AABB get( Entity							   p_entity,
-						  Core::Struct::E_SYSTEM_ITEM		   p_item,
-						  const Core::Struct::IndexRangeList & p_ranges );
+	Util::Math::AABB get(
+		Entity								 p_entity,
+		Core::Struct::E_SYSTEM_ITEM			 p_item,
+		const Core::Struct::IndexRangeList & p_ranges
+	);
 
 	/**
 	 * @brief Compute bond ranges AABB.

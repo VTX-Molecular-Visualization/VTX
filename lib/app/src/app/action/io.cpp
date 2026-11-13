@@ -1,9 +1,9 @@
 #include "app/action/io.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/constants.hpp"
 #include "app/extractor/mesh.hpp"
 #include "app/extractor/system.hpp"
 #include "app/network/network_manager.hpp"
+#include <util/action_manager.hpp>
 #if VTX_PYTHON_BINDING
 #include "app/python_binding/interpretor.hpp"
 #endif
@@ -67,33 +67,8 @@ namespace VTX::App::Action::IO
 
 	struct SystemIo
 	{
-		// RAII guard.
-		struct CreationGuard
-		{
-			std::latch & latch;
-
-			explicit CreationGuard( std::latch & p_latch ) : latch( p_latch ) {}
-
-			CreationGuard( const CreationGuard & )			   = delete;
-			CreationGuard & operator=( const CreationGuard & ) = delete;
-
-			~CreationGuard() { latch.count_down(); }
-		};
-
 		Util::Thread::ThreadData		 thrData;
-		std::latch						 extractorCreation { 1 };
 		std::optional<Extractor::System> extractor;
-
-		void wait()
-		{
-			this->extractorCreation.wait();
-			if ( this->extractor )
-			{
-				{
-					this->extractor->wait();
-				}
-			}
-		}
 
 		void startExtraction()
 		{
@@ -114,19 +89,15 @@ namespace VTX::App::Action::IO
 
 	void LoadSystem::execute( FilePath p_path )
 	{
-		const SystemIo::CreationGuard guard { _data->extractorCreation };
 		_data->extractor.emplace( std::move( p_path ) );
 		_data->startExtraction();
 	}
 
 	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
 	{
-		const SystemIo::CreationGuard guard { _data->extractorCreation };
 		_data->extractor.emplace( std::move( p_path ), std::move( p_buffer ) );
 		_data->startExtraction();
 	}
-
-	void LoadSystem::wait() { _data->wait(); }
 
 	LoadMesh::LoadMesh( Util::Thread::StopToken p_stopToken, const Util::Thread::OptionalThreadReference p_threadRef ) :
 		_stopToken( std::move( p_stopToken ) ), _threadRef( p_threadRef )
@@ -155,7 +126,6 @@ namespace VTX::App::Action::IO
 
 	void AssociateTrajectory::execute( FilePath p_path, const Entity & p_entity )
 	{
-		const SystemIo::CreationGuard guard { _data->extractorCreation };
 		if ( p_entity == InvalidEntity )
 		{
 			VTX_ERROR( "System entity null." );
@@ -168,7 +138,6 @@ namespace VTX::App::Action::IO
 
 	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
 	{
-		const SystemIo::CreationGuard guard { _data->extractorCreation };
 		if ( p_e == InvalidEntity )
 		{
 			VTX_ERROR( "System entity null." );
@@ -177,8 +146,6 @@ namespace VTX::App::Action::IO
 		_data->extractor.emplace( p_e, p_path );
 		_data->startExtraction();
 	}
-
-	void AssociateTrajectory::wait() { _data->wait(); }
 
 	void RunPythonScript::execute( const FilePath & p_path )
 	{

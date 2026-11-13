@@ -1,15 +1,17 @@
 #include "app/extractor/mesh.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
 #include "app/events.hpp"
 #include "app/generic/name.hpp"
+#include "app/helper/aabb.hpp"
 #include "app/services.hpp"
 #include <core/struct/mesh.hpp>
 #include <fmt/format.h>
 #include <io/mesh_reader.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
+#include <util/thread/thread_manager.hpp>
 
 namespace VTX::App::Extractor
 {
@@ -45,7 +47,7 @@ namespace VTX::App::Extractor
 				reg.emplace<Generic::Name>( entity, name );
 				reg.emplace<Util::Math::Transform>( entity );
 				reg.emplace<Util::Math::AABB>( entity, aabb );
-				reg.patch<Util::Math::AABB>( entity, []( Util::Math::AABB & _ ) {} );
+				Helper::AABB::invalidateScene();
 
 				// Trigger mesh load.
 				HUB().trigger<Events::MeshLoad>( { entity } );
@@ -53,17 +55,14 @@ namespace VTX::App::Extractor
 
 			ACTION().execute<Action::Camera::Orient>( sceneAabb );
 		}
-
-		struct Deliver
-		{
-			void execute( Pending p_data ) { deliver( p_data ); }
-		};
 	} // namespace
 
 	Mesh::Mesh( FilePath p_path ) : _sourcePath( std::move( p_path ) ) {}
 
-	uint Mesh::operator()( const Util::Thread::StopToken &			   p_stopToken,
-						   const Util::Thread::OptionalThreadReference p_thread )
+	uint Mesh::operator()(
+		const Util::Thread::StopToken &				p_stopToken,
+		const Util::Thread::OptionalThreadReference p_thread
+	)
 	{
 		if ( p_thread )
 		{
@@ -77,7 +76,7 @@ namespace VTX::App::Extractor
 			return 0;
 		}
 
-		ACTION().subscribe( Action::QueuedAction( Deliver(), std::move( pendingData ) ) );
+		THREAD().synchronize( [ &pendingData ]() { deliver( pendingData ); } );
 		return 0;
 	}
 } // namespace VTX::App::Extractor

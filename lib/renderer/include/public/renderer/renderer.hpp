@@ -284,15 +284,15 @@ namespace VTX::Renderer
 		void _markDirty( Cache::E_RENDERER_DIRTY ) noexcept;
 
 		/**
+		 * @brief The main render loop that call each generated instruction.
+		 */
+		void _render( const float, const float ) const noexcept { _context.execute(); }
+
+		/**
 		 * @brief Execute external pass.
 		 * TODO: better abstraction.
 		 */
 		static void _executeSESExternalPass( uintptr_t );
-
-		/**
-		 * @brief The main render loop that call each generated instruction.
-		 */
-		void _render( const float, const float ) const noexcept { _context.execute(); }
 	};
 } // namespace VTX::Renderer
 #endif

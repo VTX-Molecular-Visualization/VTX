@@ -2,7 +2,6 @@
 #define VTX_APP_ACTION_IO_HPP
 
 #include "app/ecs.hpp"
-#include <app/action/action_manager.hpp>
 #include <optional>
 #include <util/image.hpp>
 #include <util/thread/base_thread.hpp>
@@ -39,7 +38,6 @@ namespace VTX::App::Action::IO
 
 		void execute( FilePath p_path );
 		void execute( FilePath p_path, std::string && p_buffer );
-		void wait();
 
 	  private:
 		SystemIoPtr _data;
@@ -86,7 +84,6 @@ namespace VTX::App::Action::IO
 		AssociateTrajectory( Util::Thread::ThreadData );
 		void execute( FilePath p_path, const Entity & );
 		void execute( const std::string & p_path, const Entity & );
-		void wait();
 
 	  private:
 		SystemIoPtr _data;
@@ -114,12 +111,14 @@ namespace VTX::App::Action::IO
 	{
 	  public:
 		void execute();
-		void execute( const std::optional<FilePath> & p_path,
-					  const std::optional<FilePath> & p_filename,
-					  Util::Image::E_FORMAT			  p_format,
-					  std::optional<size_t>			  p_width,
-					  std::optional<size_t>			  p_height,
-					  std::optional<float>			  p_backgroundOpacity );
+		void execute(
+			const std::optional<FilePath> & p_path,
+			const std::optional<FilePath> & p_filename,
+			Util::Image::E_FORMAT			p_format,
+			std::optional<size_t>			p_width,
+			std::optional<size_t>			p_height,
+			std::optional<float>			p_backgroundOpacity
+		);
 		void execute( const FilePath &, Util::Image::E_FORMAT, size_t, size_t, std::optional<float> = std::nullopt );
 	};
 

@@ -63,8 +63,14 @@ namespace VTX::Util::Thread
 		 */
 		bool isManuallyStopped() const noexcept { return _stopped.load(); }
 
+		/**
+		 * @brief Check failed state.
+		 */
 		bool hasFailed() const noexcept { return _failed.load( std::memory_order_acquire ); }
 
+		/**
+		 * @brief Set failed state.
+		 */
 		void setFailed() noexcept { _failed.store( true, std::memory_order_release ); }
 
 		/**
@@ -139,7 +145,11 @@ namespace VTX::Util::Thread
 		 * @brief Flag as stopped.
 		 */
 		std::atomic<bool> _stopped = false;
-		std::atomic<bool> _failed  = false;
+
+		/**
+		 * @brief Flag as failed.
+		 */
+		std::atomic<bool> _failed = false;
 
 		/**
 		 * @brief Mutex for progress text.
@@ -166,11 +176,11 @@ namespace VTX::Util::Thread
 		{ p_thread.start() } -> std::same_as<void>;
 	};
 
+	/**
+	 * @brief Short-hand for types that are usually used together.
+	 */
 	using OptionalThreadReference = std::optional<std::reference_wrapper<BaseThread>>;
 
-	/**
-	 * @brief Short-hand for types that are usually used together
-	 */
 	struct ThreadData
 	{
 		StopToken				stopToken;

@@ -1,4 +1,3 @@
-#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/action/visibility.hpp>
 #include <app/fixture.hpp>

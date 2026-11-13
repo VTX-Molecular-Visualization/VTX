@@ -1,6 +1,7 @@
 #include "app/controller/trackball.hpp"
 #include "app/events.hpp"
 #include "app/input/input_manager.hpp"
+#include "app/pending_updates.hpp"
 #include "app/services.hpp"
 #include <util/event_hub.hpp>
 #include <util/math.hpp>
@@ -8,24 +9,26 @@
 
 namespace
 {
-	constexpr float WHEEL_DISTANCE_FACTOR	  = 1e-5f;
-	constexpr float MOUSE_ROTATION_FACTOR	  = 15.f;
-	constexpr float PAN_FACTOR				  = 0.1f;
+	constexpr float WHEEL_DISTANCE_FACTOR	 = 1e-5f;
+	constexpr float MOUSE_ROTATION_FACTOR	 = 15.f;
+	constexpr float PAN_FACTOR				 = 0.1f;
 	constexpr float KEYBOARD_DISTANCE_FACTOR = 1.5f;
 	constexpr float KEYBOARD_ROTATION_FACTOR = 1e4f;
-	constexpr float DISTANCE_MIN			  = 0.1f;
-	constexpr float DISTANCE_MAX			  = 10000.f;
-	constexpr float NON_ELASTIC_DELTA_TIME	  = 0.2f;
-	constexpr float ELASTICITY_THRESHOLD	  = 1e-4f;
+	constexpr float DISTANCE_MIN			 = 0.1f;
+	constexpr float DISTANCE_MAX			 = 10000.f;
+	constexpr float NON_ELASTIC_DELTA_TIME	 = 0.2f;
+	constexpr float ELASTICITY_THRESHOLD	 = 1e-4f;
 } // namespace
 
 namespace VTX::App::Controller
 {
 
-	bool Trackball::update( const float					p_delta,
-							const Setting::Controller & p_settings,
-							Util::Math::Transform &		p_transform,
-							Vec3f &						p_target )
+	bool Trackball::update(
+		const float					p_delta,
+		const Setting::Controller & p_settings,
+		Util::Math::Transform &		p_transform,
+		Vec3f &						p_target
+	)
 	{
 		using namespace Util;
 		auto & input = INPUT();
@@ -123,8 +126,10 @@ namespace VTX::App::Controller
 			float distance = Math::distance( p_transform.getPosition(), p_target );
 			distance	   = Math::clamp( distance - deltaDistance, DISTANCE_MIN, DISTANCE_MAX );
 
-			const Quatf rotation = Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z )
-										  * ( p_settings.elasticityActive ? deltaTime : NON_ELASTIC_DELTA_TIME ) );
+			const Quatf rotation = Quatf(
+				Vec3f( _velocity.y, _velocity.x, _velocity.z )
+				* ( p_settings.elasticityActive ? deltaTime : NON_ELASTIC_DELTA_TIME )
+			);
 
 			p_transform.rotateAround( rotation, p_target, distance );
 			HUB().trigger<Events::CameraTransformChange>();
@@ -140,6 +145,11 @@ namespace VTX::App::Controller
 		else
 		{
 			_velocity = VEC3F_ZERO;
+		}
+
+		if ( _velocity != VEC3F_ZERO || translationAxis != Vec3i( 0 ) || rotationAxis != 0 )
+		{
+			PENDING_UPDATES().mark( E_PENDING_UPDATE::ANIMATION );
 		}
 
 		return true;

@@ -23,6 +23,14 @@ namespace VTX::App::Controller
 	using InterpRotationFunc = Quatf ( * )( const Quatf &, const Quatf &, float );
 
 	/**
+	 * @brief Tag to indicate that the camera is currently animating.
+	 * Useful for python script to wait for animation end.
+	 */
+	struct CameraAnimating
+	{
+	};
+
+	/**
 	 * @brief Object that manages a camera animation to a target position and rotation.
 	 */
 	class Animation : public IController
@@ -31,11 +39,13 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Constructor.
 		 */
-		Animation( const AnimationData &,
-				   const AnimationData &,
-				   float,
-				   const InterpPositionFunc &,
-				   const InterpRotationFunc & );
+		Animation(
+			const AnimationData &,
+			const AnimationData &,
+			float,
+			const InterpPositionFunc &,
+			const InterpRotationFunc &
+		);
 
 		/**
 		 * @brief Called each frame.

@@ -1,4 +1,5 @@
 #include "app/helper/system.hpp"
+#include "app/generic/stale.hpp"
 #include "app/helper/trajectory.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
@@ -6,11 +7,14 @@
 #include <core/struct/topology.hpp>
 #include <stdexcept>
 #include <util/exceptions.hpp>
+#include <utility>
 
 namespace
 {
-	VTX::App::System::E_VISIBLE_STATE _getVisibleState( const VTX::Util::Math::BitSet &		p_visibility,
-														const VTX::Core::Struct::IndexRange p_range )
+	VTX::App::System::E_VISIBLE_STATE _getVisibleState(
+		const VTX::Util::Math::BitSet &		p_visibility,
+		const VTX::Core::Struct::IndexRange p_range
+	)
 	{
 		using namespace VTX::App::System;
 
@@ -19,8 +23,10 @@ namespace
 											 : E_VISIBLE_STATE::HIDDEN;
 	}
 
-	VTX::App::System::E_SELECTION_STATE _getSelectionState( const VTX::Util::Math::BitSet &		p_selection,
-															const VTX::Core::Struct::IndexRange p_range )
+	VTX::App::System::E_SELECTION_STATE _getSelectionState(
+		const VTX::Util::Math::BitSet &		p_selection,
+		const VTX::Core::Struct::IndexRange p_range
+	)
 	{
 		using namespace VTX::App::System;
 
@@ -54,7 +60,8 @@ namespace VTX::App::Helper::System
 					throw std::out_of_range( "Atom position is unavailable." );
 				}
 				position = p_positions[ p_atom ];
-			} );
+			}
+		);
 		if ( not available )
 		{
 			throw std::out_of_range( "Atom position is unavailable." );
@@ -62,6 +69,34 @@ namespace VTX::App::Helper::System
 
 		return position;
 	}
+
+	const Util::Math::Grid<Index> & getAtomGrid( const Entity p_entity )
+	{
+		Registry & registry = REG();
+		if ( registry.all_of<Generic::StaleAtomGrid>( p_entity ) )
+		{
+			Util::Math::Grid<Index> atomGrid;
+			if ( not App::Helper::Trajectory::visitCurrentFrame(
+					 p_entity,
+					 [ &atomGrid ]( const Core::Struct::FrameView p_positions )
+					 {
+						 for ( Index atom = 0; atom < static_cast<Index>( p_positions.size() ); ++atom )
+						 {
+							 atomGrid.add( atom, p_positions[ atom ] );
+						 }
+					 }
+				 ) )
+			{
+				throw std::out_of_range( "Trajectory frame is unavailable." );
+			}
+			registry.replace<Util::Math::Grid<Index>>( p_entity, std::move( atomGrid ) );
+			registry.remove<Generic::StaleAtomGrid>( p_entity );
+		}
+
+		return registry.get<Util::Math::Grid<Index>>( p_entity );
+	}
+
+	void invalidateAtomGrid( const Entity p_entity ) { REG().emplace_or_replace<Generic::StaleAtomGrid>( p_entity ); }
 
 	App::System::E_VISIBLE_STATE getVisibleState( const SystemItemView & p_system )
 	{
@@ -180,7 +215,8 @@ namespace VTX::App::Helper::System
 	}
 
 	std::optional<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE> getSecondaryStructureColorScheme(
-		const SystemItemView & p_system )
+		const SystemItemView & p_system
+	)
 	{
 		using namespace Core::Struct;
 
@@ -425,9 +461,10 @@ namespace VTX::App::Helper::System
 				return true;
 			}
 		}
-		return std::ranges::any_of( color.customSecondaryStructureColorResidues,
-									[ &isRootForResidueRanges ]( const auto & entry )
-									{ return isRootForResidueRanges( entry.second ); } );
+		return std::ranges::any_of(
+			color.customSecondaryStructureColorResidues,
+			[ &isRootForResidueRanges ]( const auto & entry ) { return isRootForResidueRanges( entry.second ); }
+		);
 	}
 
 	std::optional<Entity> getRepresentation( const SystemItemView & p_system )

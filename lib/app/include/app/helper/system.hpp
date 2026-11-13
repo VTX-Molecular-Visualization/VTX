@@ -7,6 +7,7 @@
 #include "app/system/selection.hpp"
 #include "app/system/visibility.hpp"
 #include <core/struct/topology.hpp>
+#include <util/math/grid.hpp>
 #include <util/type_traits.hpp>
 
 /**
@@ -53,8 +54,10 @@ namespace VTX::App::Helper::System
 	 * @brief Get the atom range list of an item.
 	 */
 	template<Core::Struct::E_SYSTEM_ITEM ITEM>
-	Core::Struct::IndexRangeList getAtomRangeList( const Entity							p_ent,
-												   const Core::Struct::IndexRangeList & p_ranges = {} )
+	Core::Struct::IndexRangeList getAtomRangeList(
+		const Entity						 p_ent,
+		const Core::Struct::IndexRangeList & p_ranges = {}
+	)
 	{
 		using namespace Core::Struct;
 
@@ -102,8 +105,10 @@ namespace VTX::App::Helper::System
 	 * @brief Get the residue range list of an item.
 	 */
 	template<Core::Struct::E_SYSTEM_ITEM ITEM>
-	Core::Struct::IndexRangeList getResidueRangeList( const Entity						   p_ent,
-													  const Core::Struct::IndexRangeList & p_ranges = {} )
+	Core::Struct::IndexRangeList getResidueRangeList(
+		const Entity						 p_ent,
+		const Core::Struct::IndexRangeList & p_ranges = {}
+	)
 	{
 		using namespace Core::Struct;
 
@@ -167,6 +172,16 @@ namespace VTX::App::Helper::System
 	Vec3f getAtomPosition( Entity p_entity, Index p_atom );
 
 	/**
+	 * @brief Get system atom grid.
+	 */
+	const Util::Math::Grid<Index> & getAtomGrid( Entity p_entity );
+
+	/**
+	 * @brief Mark system grid as invalid.
+	 */
+	void invalidateAtomGrid( Entity p_entity );
+
+	/**
 	 * @brief Get the visibility state of an item.
 	 */
 	App::System::E_VISIBLE_STATE getVisibleState( const SystemItemView & );
@@ -185,7 +200,8 @@ namespace VTX::App::Helper::System
 	 * @brief Get the secondary structure color scheme of an item (nothing if multiples).
 	 */
 	std::optional<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE> getSecondaryStructureColorScheme(
-		const SystemItemView & );
+		const SystemItemView &
+	);
 
 	/**
 	 * @brief Count all atoms assigned in the color component.

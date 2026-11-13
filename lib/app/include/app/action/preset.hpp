@@ -1,7 +1,6 @@
 #ifndef VTX_APP_ACTION_PRESET_HPP
 #define VTX_APP_ACTION_PRESET_HPP
 
-#include "app/action/action_manager.hpp"
 #include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
@@ -15,6 +14,7 @@
 #include <renderer/material.hpp>
 #include <renderer/renderer.hpp>
 #include <renderer/representation.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 #include <util/exceptions.hpp>
 #include <util/type_traits.hpp>

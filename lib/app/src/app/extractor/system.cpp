@@ -1,5 +1,4 @@
 #include "app/extractor/system.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
 #include "app/ecs.hpp"
 #include "app/events.hpp"
@@ -18,16 +17,16 @@
 #include "app/uid/uid_manager.hpp"
 #include <core/struct/topology.hpp>
 #include <core/struct/trajectory.hpp>
+#include <fmt/format.h>
 #include <io/metadata.hpp>
 #include <io/reader.hpp>
-#include <latch>
 #include <limits>
 #include <memory>
 #include <optional>
 #include <renderer/representation.hpp>
 #include <stdexcept>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
-#include <util/logger.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/grid.hpp>
 #include <util/math/transform.hpp>
@@ -73,36 +72,8 @@ namespace VTX::App::Extractor
 
 	struct System::Data
 	{
-		Pending	   data;
-		std::latch synchronizer { 1 };
-
-		Data() = default;
-
-		void jobFinished() { synchronizer.count_down(); }
+		Pending data;
 	};
-
-	namespace
-	{
-		template<typename JobFinishSignaler>
-		struct DeliverSystem
-		{
-			void execute( const JobFinishSignaler & jobFinishedPtr )
-			{
-				try
-				{
-					deliver( jobFinishedPtr->data );
-				}
-				catch ( ... )
-				{
-					jobFinishedPtr->jobFinished();
-					throw;
-				}
-				jobFinishedPtr->jobFinished();
-			}
-		};
-	} // namespace
-
-	void System::_clean() { _attributesPtr->synchronizer.count_down(); }
 
 	System::System( FilePath p_path, IO::READER_OPTION p_options, const TrajectoryBufferSettings p_bufferSettings ) :
 		_attributesPtr( std::make_shared<Data>() )
@@ -131,111 +102,89 @@ namespace VTX::App::Extractor
 		_attributesPtr->data.onlyTrajectory = true;
 	}
 
-	void System::wait() { _attributesPtr->synchronizer.wait(); }
-
 	uint System::operator()(
 		const Util::Thread::StopToken &				p_stopToken,
 		const Util::Thread::OptionalThreadReference p_thread
 	)
 	{
-		try
+		auto & pendingData = _attributesPtr->data;
+
+		if ( p_thread )
 		{
-			auto & pendingData = _attributesPtr->data;
-
-			if ( p_thread )
-			{
-				p_thread.value().get().setProgressText(
-					fmt::format( "Reading {}...", pendingData.sourcePath.filename().string() )
-				);
-			}
-
-			if ( p_stopToken.stop_requested() )
-			{
-				_clean();
-				return 0;
-			}
-
-			if ( pendingData.buffer )
-			{
-				pendingData.reader.emplace(
-					std::move( pendingData.buffer.value() ),
-					pendingData.sourcePath,
-					pendingData.readerOption,
-					p_stopToken
-				);
-			}
-			else
-			{
-				pendingData.reader.emplace( pendingData.sourcePath, pendingData.readerOption, p_stopToken );
-			}
-			if ( not pendingData.onlyTrajectory )
-			{
-				pendingData.reader->get(
-					ECS::getCtx<Core::ChemDB::Category::Dictionary>(),
-					pendingData.topology,
-					pendingData.metadata,
-					pendingData.aabb,
-					pendingData.atomGrid
-				);
-			}
-
-			if ( p_stopToken.stop_requested() )
-			{
-				_clean();
-				return 0;
-			}
-
-			pendingData.trajectory.frameCount = pendingData.reader->frameCount();
-			if ( pendingData.trajectory.frameCount == 0 )
-			{
-				throw std::runtime_error( "Trajectory contains no frame." );
-			}
-			if ( pendingData.trajectory.frameCount > std::numeric_limits<uint>::max() )
-			{
-				throw std::length_error( "Trajectory frame count exceeds the supported range." );
-			}
-			Core::Struct::Frame firstFrame;
-			pendingData.reader->get( firstFrame, 0 );
-			pendingData.reader->releaseTopologyData();
-			if ( pendingData.trajectory.frameCount > 1 )
-			{
-				pendingData.trajectoryBufferMode.emplace( pendingData.trajectoryBufferSettings.selectMode(
-					firstFrame.size(), pendingData.trajectory.frameCount
-				) );
-			}
-			const size_t frameStorageCount
-				= pendingData.trajectoryBufferMode
-					  ? pendingData.trajectoryBufferSettings.getStorageFrameCount(
-							*pendingData.trajectoryBufferMode, pendingData.trajectory.frameCount
-						)
-					  : pendingData.trajectory.frameCount;
-			pendingData.trajectory.frames.resize( frameStorageCount );
-			pendingData.trajectory.frames[ 0 ] = std::move( firstFrame );
-			if ( pendingData.trajectory.frameCount > 1 )
-			{
-				pendingData.trajectoryPlayer.emplace();
-				pendingData.trajectoryPlayer->player.setStepCount(
-					static_cast<uint>( pendingData.trajectory.frameCount )
-				);
-			}
-
-			if ( p_stopToken.stop_requested() )
-			{
-				_clean();
-				return 0;
-			}
-
-			auto attributesCopy = _attributesPtr; // Keep a copy so wait() can still access the latch.
-			ACTION().subscribe(
-				Action::QueuedAction( DeliverSystem<std::shared_ptr<Data>>(), std::move( attributesCopy ) )
+			p_thread.value().get().setProgressText(
+				fmt::format( "Reading {}...", pendingData.sourcePath.filename().string() )
 			);
+		}
+
+		if ( p_stopToken.stop_requested() )
+		{
 			return 0;
 		}
-		catch ( ... )
+
+		if ( pendingData.buffer )
 		{
-			_clean();
-			throw;
+			pendingData.reader.emplace(
+				std::move( pendingData.buffer.value() ), pendingData.sourcePath, pendingData.readerOption, p_stopToken
+			);
 		}
+		else
+		{
+			pendingData.reader.emplace( pendingData.sourcePath, pendingData.readerOption, p_stopToken );
+		}
+		if ( not pendingData.onlyTrajectory )
+		{
+			pendingData.reader->get(
+				ECS::getCtx<Core::ChemDB::Category::Dictionary>(),
+				pendingData.topology,
+				pendingData.metadata,
+				pendingData.aabb,
+				pendingData.atomGrid
+			);
+		}
+
+		if ( p_stopToken.stop_requested() )
+		{
+			return 0;
+		}
+
+		pendingData.trajectory.frameCount = pendingData.reader->frameCount();
+		if ( pendingData.trajectory.frameCount == 0 )
+		{
+			throw std::runtime_error( "Trajectory contains no frame." );
+		}
+		if ( pendingData.trajectory.frameCount > std::numeric_limits<uint>::max() )
+		{
+			throw std::length_error( "Trajectory frame count exceeds the supported range." );
+		}
+		Core::Struct::Frame firstFrame;
+		pendingData.reader->get( firstFrame, 0 );
+		pendingData.reader->releaseTopologyData();
+		if ( pendingData.trajectory.frameCount > 1 )
+		{
+			pendingData.trajectoryBufferMode.emplace(
+				pendingData.trajectoryBufferSettings.selectMode( firstFrame.size(), pendingData.trajectory.frameCount )
+			);
+		}
+		const size_t frameStorageCount = pendingData.trajectoryBufferMode
+											 ? pendingData.trajectoryBufferSettings.getStorageFrameCount(
+												   *pendingData.trajectoryBufferMode, pendingData.trajectory.frameCount
+											   )
+											 : pendingData.trajectory.frameCount;
+		pendingData.trajectory.frames.resize( frameStorageCount );
+		pendingData.trajectory.frames[ 0 ] = std::move( firstFrame );
+		if ( pendingData.trajectory.frameCount > 1 )
+		{
+			pendingData.trajectoryPlayer.emplace();
+			pendingData.trajectoryPlayer->player.setStepCount( static_cast<uint>( pendingData.trajectory.frameCount ) );
+		}
+
+		if ( p_stopToken.stop_requested() )
+		{
+			return 0;
+		}
+
+		THREAD().synchronize( [ &pendingData ]() { deliver( pendingData ); } );
+		return 0;
 	}
 
 	namespace
@@ -317,7 +266,9 @@ namespace VTX::App::Extractor
 			{
 				if ( not REG().valid( *p_data.entity ) || not REG().all_of<Core::Struct::Topology>( *p_data.entity ) )
 				{
-					return;
+					throw std::runtime_error(
+						fmt::format( "Cannot associate {}: system is no longer available.", p_data.sourcePath.string() )
+					);
 				}
 
 				auto &		 topology		  = REG().get<Core::Struct::Topology>( p_data.entity.value() );
@@ -338,11 +289,13 @@ namespace VTX::App::Extractor
 				}
 				else
 				{
-					VTX::VTX_ERROR(
-						"File {} has different atom count. ({}/{})",
-						p_data.sourcePath.string(),
-						topology.getAtomCount(),
-						pendingAtomCount
+					throw std::runtime_error(
+						fmt::format(
+							"File {} has different atom count. ({}/{})",
+							p_data.sourcePath.string(),
+							topology.getAtomCount(),
+							pendingAtomCount
+						)
 					);
 				}
 			}

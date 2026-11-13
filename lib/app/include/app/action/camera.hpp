@@ -89,10 +89,12 @@ namespace VTX::App::Action::Camera
 		 * @brief Orient on current selection, or scene AABB if no selection.
 		 */
 		void execute();
+		void execute( float p_duration );
 		/**
 		 * @brief Orient on given AABB.
 		 */
 		void execute( const Util::Math::AABB & p_target );
+		void execute( const Util::Math::AABB & p_target, float p_duration );
 	};
 
 	/**
@@ -146,11 +148,18 @@ namespace VTX::App::Action::Camera
 			InterpPositionFunc	interpPositionFunc = nullptr;
 			InterpRotationFunc	interpRotationFunc = nullptr;
 
+			if ( p_duration <= 0.f )
+			{
+				transform.setPosition( p_end.position );
+				transform.setRotation( p_end.rotation );
+				HUB().trigger<Events::CameraTransformChange>();
+				return;
+			}
+
 			// Check if animation is needed.
 			if ( Math::distance( start.position, p_end.position ) < ANIMATION_TRANSLATION_THRESHOLD
 				 && start.rotation == p_end.rotation )
 			{
-				// HUB().trigger<Events::CameraAnimationEnd>();
 				return;
 			}
 
@@ -235,6 +244,7 @@ namespace VTX::App::Action::Camera
 	struct GoToViewPoint
 	{
 		void execute( Entity );
+		void execute( Entity, float );
 	};
 
 } // namespace VTX::App::Action::Camera

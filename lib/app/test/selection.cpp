@@ -5,6 +5,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/topology.hpp>
 #include <optional>
+#include <util/action_manager.hpp>
 #include <vector>
 
 namespace

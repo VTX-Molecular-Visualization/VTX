@@ -1,5 +1,4 @@
 #include "app/session.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/action/application.hpp"
 #include "app/arguments.hpp"
 #include "app/constants.hpp"
@@ -8,6 +7,7 @@
 #include <cstdio>
 #include <iostream>
 #include <tuple>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>

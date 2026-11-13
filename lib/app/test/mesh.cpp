@@ -5,6 +5,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/mesh.hpp>
 #include <iterator>
+#include <util/action_manager.hpp>
 #include <util/filesystem.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>

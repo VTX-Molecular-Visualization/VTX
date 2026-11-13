@@ -1,6 +1,7 @@
 #include "app/controller/freefly.hpp"
 #include "app/events.hpp"
 #include "app/input/input_manager.hpp"
+#include "app/pending_updates.hpp"
 #include "app/services.hpp"
 #include <util/constants.hpp>
 #include <util/event_hub.hpp>
@@ -9,10 +10,12 @@
 namespace VTX::App::Controller
 {
 
-	bool Freefly::update( const float				  p_deltaTime,
-						  const Setting::Controller & p_settings,
-						  Util::Math::Transform &	  p_transform,
-						  Vec3f &					  p_target )
+	bool Freefly::update(
+		const float					p_deltaTime,
+		const Setting::Controller & p_settings,
+		Util::Math::Transform &		p_transform,
+		Vec3f &						p_target
+	)
 	{
 		using namespace Util;
 		auto & input = INPUT();
@@ -25,7 +28,8 @@ namespace VTX::App::Controller
 		if ( rotation.x || rotation.y )
 		{
 			localRotation = Vec3f(
-				-rotationSpeed * rotation.y * ( p_settings.invertY ? -1.f : 1.f ), -rotationSpeed * rotation.x, 0.f );
+				-rotationSpeed * rotation.y * ( p_settings.invertY ? -1.f : 1.f ), -rotationSpeed * rotation.x, 0.f
+			);
 		}
 
 		const Vec2i rotationAlt	 = input.rotateAlt();
@@ -79,6 +83,11 @@ namespace VTX::App::Controller
 			p_target			 = p_transform.getPosition() + front * distance;
 
 			HUB().trigger<Events::CameraTransformChange>();
+		}
+
+		if ( translationAxis != Vec3i( 0 ) )
+		{
+			PENDING_UPDATES().mark( E_PENDING_UPDATE::ANIMATION );
 		}
 
 		return true;

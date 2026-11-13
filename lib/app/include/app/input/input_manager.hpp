@@ -1,6 +1,8 @@
 #ifndef VTX_APP_INPUT_INPUT_MANAGER_HPP
 #define VTX_APP_INPUT_INPUT_MANAGER_HPP
 
+#include "app/pending_updates.hpp"
+#include "app/services.hpp"
 #include <array>
 #include <util/types.hpp>
 
@@ -30,7 +32,7 @@ namespace VTX::App::Input
 		/**
 		 * @brief Constructor.
 		 */
-		InputManager() noexcept
+		InputManager() : _pendingUpdates( PENDING_UPDATES() )
 		{
 			clearActions();
 			consume();
@@ -53,8 +55,8 @@ namespace VTX::App::Input
 			return Vec3i(
 				static_cast<int>( hasAction( Action::MoveRight ) ) - static_cast<int>( hasAction( Action::MoveLeft ) ),
 				static_cast<int>( hasAction( Action::MoveUp ) ) - static_cast<int>( hasAction( Action::MoveDown ) ),
-				static_cast<int>( hasAction( Action::MoveBack ) )
-					- static_cast<int>( hasAction( Action::MoveFront ) ) );
+				static_cast<int>( hasAction( Action::MoveBack ) ) - static_cast<int>( hasAction( Action::MoveFront ) )
+			);
 		}
 
 		int rotationAxis() const noexcept
@@ -79,17 +81,40 @@ namespace VTX::App::Input
 		 * @brief Mutators.
 		 */
 		void setAction( const Action p_action, const bool p_value ) noexcept
-		{ _actions[ static_cast<std::size_t>( p_action ) ] = p_value; }
+		{
+			_actions[ static_cast<std::size_t>( p_action ) ] = p_value;
+			_pendingUpdates.mark( E_PENDING_UPDATE::INPUT );
+		}
 
-		void clearActions() noexcept { _actions.fill( false ); }
+		void clearActions() noexcept
+		{
+			_actions.fill( false );
+			_pendingUpdates.mark( E_PENDING_UPDATE::INPUT );
+		}
 
-		void rotateBy( const Vec2i & p_delta ) noexcept { _rotate += p_delta; }
+		void rotateBy( const Vec2i & p_delta ) noexcept
+		{
+			_rotate += p_delta;
+			_pendingUpdates.mark( E_PENDING_UPDATE::INPUT );
+		}
 
-		void rotateAltBy( const Vec2i & p_delta ) noexcept { _rotateAlt += p_delta; }
+		void rotateAltBy( const Vec2i & p_delta ) noexcept
+		{
+			_rotateAlt += p_delta;
+			_pendingUpdates.mark( E_PENDING_UPDATE::INPUT );
+		}
 
-		void panBy( const Vec2i & p_delta ) noexcept { _pan += p_delta; }
+		void panBy( const Vec2i & p_delta ) noexcept
+		{
+			_pan += p_delta;
+			_pendingUpdates.mark( E_PENDING_UPDATE::INPUT );
+		}
 
-		void zoomBy( const int p_delta ) noexcept { _zoom += p_delta; }
+		void zoomBy( const int p_delta ) noexcept
+		{
+			_zoom += p_delta;
+			_pendingUpdates.mark( E_PENDING_UPDATE::INPUT );
+		}
 
 		/**
 		 * @brief Consume data (reset to zero).
@@ -103,6 +128,8 @@ namespace VTX::App::Input
 		}
 
 	  private:
+		PendingUpdates & _pendingUpdates;
+
 		/**
 		 * @brief Continuous actions.
 		 */

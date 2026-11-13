@@ -1,4 +1,3 @@
-#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/action/visibility.hpp>
 #include <app/fixture.hpp>
@@ -7,6 +6,7 @@
 #include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/topology.hpp>
+#include <util/action_manager.hpp>
 
 TEST_CASE( "VTX_APP - System - Load", "[system][load]" )
 {

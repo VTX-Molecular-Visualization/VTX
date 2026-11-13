@@ -1,16 +1,11 @@
 #ifndef VTX_APP_PIPELINE_HPP
 #define VTX_APP_PIPELINE_HPP
 
+#include "app/pending_updates.hpp"
 #include <exception>
 #include <string>
 #include <string_view>
-#include <util/hashing.hpp>
 #include <utility>
-
-namespace VTX::Util::Monitoring
-{
-	class Stats;
-}
 
 namespace VTX::App
 {
@@ -19,17 +14,10 @@ namespace VTX::App
 	 */
 	struct Pipeline
 	{
-		inline static const Hash UPDATE_PASSES = Util::hash( "UPDATE_PASSES" );
-		inline static const Hash UPDATE_EVENTS = Util::hash( "UPDATE_EVENTS" );
-		inline static const Hash POST_UPDATE   = Util::hash( "POST_UPDATE" );
-		inline static const Hash RENDER		   = Util::hash( "RENDER" );
-		inline static const Hash POST_RENDER   = Util::hash( "POST_RENDER" );
-		inline static const Hash LATE		   = Util::hash( "LATE" );
-
 		/**
 		 * @brief Process each step and log their duration.
 		 */
-		void process( Util::Monitoring::Stats &, float p_delta, float p_elapsed );
+		void process( E_PENDING_UPDATE p_pending, float p_delta, float p_elapsed );
 
 	  private:
 		std::string _lastError;
