@@ -5,9 +5,18 @@
 #include "app/ecs.hpp"
 #include "app/pipeline.hpp"
 #include "app/tool/base_tool.hpp"
+#include <chrono>
+#include <concepts>
+#include <condition_variable>
 #include <exception>
+#include <future>
 #include <memory>
+#include <mutex>
+#include <optional>
+#include <util/atomic_callback.hpp>
+#include <util/chrono.hpp>
 #include <util/logger.hpp>
+#include <util/thread/future.hpp>
 #include <vector>
 
 namespace VTX::App
@@ -35,20 +44,53 @@ namespace VTX::App
 		virtual void start();
 
 		/**
-		 * @brief Main loop update function (called from gui thread).
+		 * @brief
 		 */
-		void update( const float p_deltaTime, const float p_elapsedTime ) noexcept
-		try
+		void setFrameScheduler( Util::AtomicCallback::Function, void * p_context );
+
+		/**
+		 * @brief Main update.
+		 */
+		void update() noexcept;
+
+		/**
+		 * @brief Wait until a predicate is true.
+		 */
+		template<std::predicate P>
+		bool runUntil( const P & p_predicate, const std::optional<std::chrono::milliseconds> p_timeout = std::nullopt )
 		{
-			_pipeline.process( ECS::getCtx<Util::Monitoring::Stats>(), p_deltaTime, p_elapsedTime );
+			std::optional<std::chrono::steady_clock::time_point> deadline;
+			if ( p_timeout.has_value() )
+			{
+				deadline = std::chrono::steady_clock::now() + *p_timeout;
+			}
+
+			while ( not p_predicate() )
+			{
+				if ( not _waitForPendingUpdates( deadline ) )
+				{
+					return p_predicate();
+				}
+				update();
+			}
+			return true;
 		}
-		catch ( const std::exception & p_e )
+
+		/**
+		 * @brief Wait until the application is idle (no pending updates).
+		 */
+		bool runUntilIdle( std::optional<std::chrono::milliseconds> p_timeout = std::nullopt );
+
+		/**
+		 * @brief Wait until a future is ready, while updating the application.
+		 */
+		template<typename T>
+		bool runUntilReady(
+			const std::future<T> &						   p_future,
+			const std::optional<std::chrono::milliseconds> p_timeout = std::nullopt
+		)
 		{
-			VTX_ERROR( "Application update failed: {}", p_e.what() );
-		}
-		catch ( ... )
-		{
-			VTX_ERROR( "Unknown application update failure" );
+			return runUntil( [ &p_future ]() { return Util::Thread::isReady( p_future ); }, p_timeout );
 		}
 
 		/**
@@ -99,6 +141,32 @@ namespace VTX::App
 		 * @brief Instantiated tools.
 		 */
 		std::vector<std::unique_ptr<Tool::BaseTool>> _tools;
+
+		/**
+		 * @brief Main chrono.
+		 */
+		Util::Chrono _chrono;
+
+		/**
+		 * @brief Is idle.
+		 */
+		bool _idle = true;
+
+		/**
+		 * @brief Mutex and condition.
+		 */
+		std::mutex				_wakeMutex;
+		std::condition_variable _wakeCondition;
+
+		/**
+		 * @brief Wait for pending updates, with an optional deadline.
+		 */
+		bool _waitForPendingUpdates( const std::optional<std::chrono::steady_clock::time_point> & p_deadline );
+
+		/**
+		 * @brief Wake function for headless mode (CLI).
+		 */
+		static void _wake( void * p_app ) noexcept;
 	};
 
 } // namespace VTX::App
