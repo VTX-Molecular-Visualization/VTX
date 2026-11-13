@@ -14,6 +14,8 @@ namespace VTX::App::PythonBinding::Topology
 	 */
 	const Core::Struct::Topology & getTopology( Entity p_entity );
 
+	void validateSystem( Entity p_entity );
+
 	/**
 	 * @brief Get the system from name first, then pdb, then file name.
 	 */
@@ -29,11 +31,13 @@ namespace VTX::App::PythonBinding::Topology
 	/**
 	 * @brief Get the selection state.
 	 */
-	App::System::E_SELECTION_STATE getSelectionState( Entity			   p_entity,
-													  SystemItem		   p_item,
-													  std::optional<Index> p_index );
-	bool						   isSelected( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
-	bool						   isFullySelected( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
+	App::System::E_SELECTION_STATE getSelectionState(
+		Entity				 p_entity,
+		SystemItem			 p_item,
+		std::optional<Index> p_index
+	);
+	bool isSelected( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
+	bool isFullySelected( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
 
 } // namespace VTX::App::PythonBinding::Topology
 

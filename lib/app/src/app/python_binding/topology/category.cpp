@@ -1,3 +1,4 @@
+#include "app/python_binding/identity.hpp"
 #include "app/python_binding/topology/actions.hpp"
 #include "app/python_binding/topology/binding.hpp"
 #include "app/python_binding/topology/helpers.hpp"
@@ -29,51 +30,29 @@ namespace VTX::App::PythonBinding::Topology
 
 	void bindCategory( pybind11::module_ & p_module )
 	{
-		py::class_<Category>( p_module, "Category", py::module_local() )
+		bindIdentity(
+			bindState<SystemItem::CATEGORY>( bindStyle(
+				py::class_<Category>( p_module, "Category", py::module_local() ),
+				[]( const Category & p_category )
+				{ return Target { p_category.entity, SystemItem::CATEGORY, RangeList( p_category.index ) }; }
+			) )
+		)
 			.def_property_readonly( "index", []( const Category & p_category ) { return p_category.index; } )
-			.def_property_readonly( "name",
-									[]( const Category & p_category )
-									{ return std::string( Core::ChemDB::Category::TYPE_STR[ p_category.index ] ); } )
 			.def_property_readonly(
-				"residueCount", []( const Category & p_category ) { return p_category.getResidues().ranges.size(); } )
-			.def_property_readonly( "atomCount",
-									[]( const Category & p_category ) { return p_category.getAtoms().ranges.size(); } )
-			.def( "getSystem", &Category::getSystem )
-			.def( "getResidues", &Category::getResidues )
-			.def( "getAtoms", &Category::getAtoms )
-			.def(
-				"setVisible",
-				[]( const Category & p_category, const bool p_visible )
-				{ setVisible<SystemItem::CATEGORY>( p_category.entity, RangeList( p_category.index ), p_visible ); },
-				py::arg( "visible" ) = true )
-			.def(
-				"setSelected",
-				[]( const Category & p_category, const bool p_selected, const bool p_append )
-				{
-					setSelected<SystemItem::CATEGORY>(
-						p_category.entity, RangeList( p_category.index ), p_selected, p_append );
-				},
-				py::arg( "selected" ) = true,
-				py::arg( "append" )	  = false )
-			.def_property_readonly(
-				"visibleState",
+				"name",
 				[]( const Category & p_category )
-				{ return getVisibleState( p_category.entity, SystemItem::CATEGORY, p_category.index ); } )
+				{ return std::string( Core::ChemDB::Category::TYPE_STR[ p_category.index ] ); }
+			)
 			.def_property_readonly(
-				"selectionState",
-				[]( const Category & p_category )
-				{ return getSelectionState( p_category.entity, SystemItem::CATEGORY, p_category.index ); } )
-			.def( "isVisible",
-				  []( const Category & p_category )
-				  { return isVisible( p_category.entity, SystemItem::CATEGORY, p_category.index ); } )
-			.def( "isFullyVisible",
-				  []( const Category & p_category )
-				  { return isFullyVisible( p_category.entity, SystemItem::CATEGORY, p_category.index ); } )
-			.def( "isSelected",
-				  []( const Category & p_category )
-				  { return isSelected( p_category.entity, SystemItem::CATEGORY, p_category.index ); } )
-			.def( "isFullySelected",
-				  []( const Category & p_category )
-				  { return isFullySelected( p_category.entity, SystemItem::CATEGORY, p_category.index ); } );
+				"residueCount",
+				synchronized( []( const Category & p_category ) { return p_category.getResidues().ranges.size(); } )
+			)
+			.def_property_readonly(
+				"atomCount",
+				synchronized( []( const Category & p_category ) { return p_category.getAtoms().ranges.size(); } )
+			)
+			.def( "getSystem", synchronized( &Category::getSystem ) )
+			.def( "getResidues", synchronized( &Category::getResidues ) )
+			.def( "getAtoms", synchronized( &Category::getAtoms ) );
 	}
 } // namespace VTX::App::PythonBinding::Topology

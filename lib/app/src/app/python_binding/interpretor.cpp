@@ -1,9 +1,14 @@
 #include "app/python_binding/interpretor.hpp"
 #include "app/services.hpp"
 #include <atomic>
+#include <condition_variable>
+#include <fmt/format.h>
 #include <memory>
+#include <mutex>
 #include <optional>
+#include <pybind11/pybind11.h>
 #include <python_binding/interpretor.hpp>
+#include <python_binding/wrapper/module.hpp>
 #include <queue>
 #include <thread>
 #include <util/datalocker.hpp>
@@ -37,10 +42,7 @@ namespace VTX::App::PythonBinding
 
 		~Impl()
 		{
-			while ( not _threadedLoopStarted )
-			{
-				std::this_thread::sleep_for( _inactivitySleepTime.load() );
-			}
+			_threadedLoopStarted.wait( false );
 			if ( _threadFinished )
 			{
 				return;
@@ -69,24 +71,33 @@ namespace VTX::App::PythonBinding
 
 		void runCommand( const std::string & p_command )
 		{
-			auto queue = _lockedCmdQueue.open();
-			if ( _failed )
 			{
-				VTX_ERROR( "Python interpretor is not available, command ignored: {}", p_command );
-				return;
+				auto queue = _lockedCmdQueue.open();
+				if ( _failed )
+				{
+					VTX_ERROR( "Python interpretor is not available, command ignored: {}", p_command );
+					return;
+				}
+				queue->push( { p_command } );
 			}
-			queue->push( { p_command } );
+			_notify();
 		}
 
-		void runCommand( const std::string & p_command, std::shared_ptr<std::promise<AsyncJobResult>> p_ret )
+		void runCommand( const std::string & p_command, const std::shared_ptr<std::promise<AsyncJobResult>> & p_ret )
 		{
+			bool queued = false;
 			{
 				auto queue = _lockedCmdQueue.open();
 				if ( not _failed )
 				{
-					queue->push( { p_command, std::move( p_ret ) } );
-					return;
+					queue->push( { p_command, p_ret } );
+					queued = true;
 				}
+			}
+			if ( queued )
+			{
+				_notify();
+				return;
 			}
 			if ( p_ret )
 			{
@@ -96,10 +107,11 @@ namespace VTX::App::PythonBinding
 
 		void runScript( const FilePath & p_path, const std::shared_ptr<std::promise<AsyncJobResult>> & p_promise )
 		{
-			// This method can be called from python thread directly. In this specific scenario, we don't need to use
-			// the subscription/callback infrastructure.
+			// This method can be called from python thread directly. In this specific scenario, we don't need to post
+			// an instruction to the python thread queue.
 			if ( std::this_thread::get_id() != _threadId.load() )
 			{
+				bool queued = false;
 				{
 					auto instructions = _lockedInstructions.open();
 					if ( not _failed )
@@ -109,8 +121,13 @@ namespace VTX::App::PythonBinding
 								VTX::PythonBinding::Interpretor &
 							) { _actuallyRunScript( path, std::exchange( guard->promise, nullptr ) ); }
 						);
-						return;
+						queued = true;
 					}
+				}
+				if ( queued )
+				{
+					_notify();
+					return;
 				}
 				VTX_ERROR( "Python interpretor is not available, script ignored: {}", p_path.string() );
 				if ( p_promise )
@@ -126,20 +143,22 @@ namespace VTX::App::PythonBinding
 
 		void runScript( const FilePath & p_path ) { runScript( p_path, nullptr ); }
 
-		void slowerResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 1000 ); }
-
-		void fasterResponseTime() noexcept { _inactivitySleepTime = std::chrono::milliseconds( 100 ); }
-
-		void subscribe( InterpretorInstructionsOneShot p_instruction )
+		void post( InterpretorInstructionsOneShot p_instruction )
 		{
-			auto instructions = _lockedInstructions.open();
-			if ( _failed )
 			{
-				VTX_ERROR( "Python interpretor is not available, instruction ignored" );
-				return;
+				auto instructions = _lockedInstructions.open();
+				if ( _failed )
+				{
+					VTX_ERROR( "Python interpretor is not available, instruction ignored" );
+					return;
+				}
+				instructions->push( std::move( p_instruction ) );
 			}
-			instructions->push( std::move( p_instruction ) );
+			_notify();
 		}
+
+		void setOnPending( const Util::AtomicCallback::Function p_function, void * const p_context ) noexcept
+		{ _onPending.set( p_function, p_context ); }
 
 		int runPythonThread( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & )
 		{
@@ -159,6 +178,7 @@ namespace VTX::App::PythonBinding
 				VTX_ERROR( "Python interpretor initialization failed: unknown exception" );
 			}
 			_threadedLoopStarted = true;
+			_threadedLoopStarted.notify_all();
 
 			if ( not _interpretor.has_value() )
 			{
@@ -215,6 +235,7 @@ namespace VTX::App::PythonBinding
 					{
 						VTX_ERROR( "Python instruction failed: unknown exception" );
 					}
+					_onPending();
 					goto loop_beginning;
 				}
 				{
@@ -228,17 +249,30 @@ namespace VTX::App::PythonBinding
 				if ( not command.commandStr.empty() )
 				{
 					_actuallyRunCommand( command );
-					// If there was a command in the queue, maybe there is others as well so we
-					// don't want to wait the time interval before executing it.
+					_onPending();
 					goto loop_beginning;
 				}
 
-				std::this_thread::sleep_for( _inactivitySleepTime.load() );
+				{
+					std::unique_lock lock( _wakeMutex );
+					_wakeCondition.wait( lock, _stopToken, [ this ]() { return _hasPendingWork(); } );
+				}
 				if ( _stopToken.stop_requested() )
 				{
 					break;
 				}
 			}
+		}
+
+		bool _hasPendingWork()
+		{ return not _lockedInstructions.open()->empty() || not _lockedCmdQueue.open()->empty(); }
+
+		void _notify()
+		{
+			{
+				const std::scoped_lock lock( _wakeMutex );
+			}
+			_wakeCondition.notify_one();
 		}
 
 		void _actuallyRunCommand( WaitingPythonCommand & p_command )
@@ -333,9 +367,8 @@ namespace VTX::App::PythonBinding
 			}
 		}
 
-		std::atomic<std::chrono::milliseconds> _inactivitySleepTime { std::chrono::milliseconds( 100 ) };
-		std::atomic_bool					   _threadedLoopStarted = false;
-		std::atomic_bool					   _failed				= false;
+		std::atomic_bool _threadedLoopStarted = false;
+		std::atomic_bool _failed			  = false;
 		std::optional<VTX::PythonBinding::Interpretor>
 			_interpretor; // Optional because it will be created and destroyed in the python thread
 		Util::DataLocker<std::queue<InterpretorInstructionsOneShot>> _lockedInstructions;
@@ -344,6 +377,9 @@ namespace VTX::App::PythonBinding
 		std::atomic<std::thread::id>								 _threadId;
 		Util::Thread::StopToken										 _stopToken;
 		Util::Thread::BaseThread *									 _thread = nullptr;
+		std::mutex													 _wakeMutex;
+		std::condition_variable_any									 _wakeCondition;
+		Util::AtomicCallback										 _onPending;
 
 		static AsyncJobResult _unavailableResult()
 		{ return AsyncJobResult { .success = false, .resultStr = "Python interpretor is not available." }; }
@@ -396,15 +432,18 @@ namespace VTX::App::PythonBinding
 				auto instructions = _lockedInstructions.open();
 				*instructions	  = {};
 			}
-			auto queue = _lockedCmdQueue.open();
-			while ( not queue->empty() )
 			{
-				if ( queue->front().promise )
+				auto queue = _lockedCmdQueue.open();
+				while ( not queue->empty() )
 				{
-					queue->front().promise->set_value( _unavailableResult() );
+					if ( queue->front().promise )
+					{
+						queue->front().promise->set_value( _unavailableResult() );
+					}
+					queue->pop();
 				}
-				queue->pop();
 			}
+			_onPending();
 		}
 	};
 
@@ -412,8 +451,11 @@ namespace VTX::App::PythonBinding
 
 	void Interpretor::runCommand( const std::string & p_ ) { _impl->runCommand( p_ ); }
 
-	void Interpretor::runCommand( const std::string & p_cmd, std::shared_ptr<std::promise<AsyncJobResult>> p_ret )
-	{ _impl->runCommand( p_cmd, std::move( p_ret ) ); }
+	void Interpretor::runCommand(
+		const std::string &									  p_cmd,
+		const std::shared_ptr<std::promise<AsyncJobResult>> & p_ret
+	)
+	{ _impl->runCommand( p_cmd, p_ret ); }
 
 	void Interpretor::runScript( const FilePath & p_path ) { _impl->runScript( p_path ); }
 
@@ -423,25 +465,34 @@ namespace VTX::App::PythonBinding
 	)
 	{ _impl->runScript( p_path, p_future ); }
 
-	std::string Interpretor::getRuntimePythonVersion()
+	void Interpretor::requestRuntimePythonVersion( std::function<void( std::string )> p_callback )
 	{
-		auto promise = std::make_shared<std::promise<AsyncJobResult>>();
-		auto future	 = promise->get_future();
-		_impl->runCommand( "'{}.{}.{}'.format(*__import__(\"sys\").version_info[:3])", promise );
-		const AsyncJobResult result = future.get();
-		if ( not result.success || result.resultStr.size() < 2 )
-		{
-			return {};
-		}
-		return result.resultStr.substr( 1, result.resultStr.size() - 2 );
+		_impl->post(
+			[ callback = std::move( p_callback ) ]( VTX::PythonBinding::Interpretor & )
+			{
+				const pybind11::object versionInfo = pybind11::module_::import( "sys" ).attr( "version_info" );
+				callback(
+					fmt::format(
+						"{}.{}.{}",
+						versionInfo.attr( "major" ).cast<int>(),
+						versionInfo.attr( "minor" ).cast<int>(),
+						versionInfo.attr( "micro" ).cast<int>()
+					)
+				);
+			}
+		);
 	}
 
-	// bool Interpretor::lastScriptFailed() const { return _impl->lastScriptFailed(); }
-	void Interpretor::slowerResponseTime() noexcept { _impl->slowerResponseTime(); }
+	void Interpretor::post( InterpretorInstructionsOneShot _ ) { _impl->post( std::move( _ ) ); }
 
-	void Interpretor::fasterResponseTime() noexcept { _impl->fasterResponseTime(); }
+	void Interpretor::setOnPending( const Util::AtomicCallback::Function p_function, void * const p_context ) noexcept
+	{ _impl->setOnPending( p_function, p_context ); }
 
-	void Interpretor::subscribe( InterpretorInstructionsOneShot _ ) { _impl->subscribe( std::move( _ ) ); }
+	void Interpretor::requestFunctionList( std::function<void( std::vector<std::string> )> p_callback )
+	{
+		_impl->post( [ callback = std::move( p_callback ) ]( VTX::PythonBinding::Interpretor & )
+					 { callback( VTX::PythonBinding::Wrapper::Module::getFunctionList() ); } );
+	}
 
 	void Interpretor::Del::operator()( Interpretor::Impl * const p_ ) noexcept
 	{ std::default_delete<Interpretor::Impl> {}( p_ ); }

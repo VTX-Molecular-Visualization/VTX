@@ -1,3 +1,4 @@
+#include "app/python_binding/identity.hpp"
 #include "app/python_binding/topology/binding.hpp"
 #include "app/python_binding/topology/helpers.hpp"
 #include <core/chemdb/bond.hpp>
@@ -18,16 +19,21 @@ namespace VTX::App::PythonBinding::Topology
 
 	void bindBond( pybind11::module_ & p_module )
 	{
-		py::class_<Bond>( p_module, "Bond", py::module_local() )
+		bindIdentity( py::class_<Bond>( p_module, "Bond", py::module_local() ) )
 			.def_property_readonly( "index", []( const Bond & p_bond ) { return p_bond.index; } )
-			.def( "getSystem", &Bond::getSystem )
-			.def( "getFirstAtom", &Bond::getFirstAtom )
-			.def( "getSecondAtom", &Bond::getSecondAtom )
-			.def_property_readonly( "order",
-									[]( const Bond & p_bond )
-									{
-										return Core::ChemDB::Bond::ORDER_STR[ static_cast<size_t>(
-											getTopology( p_bond.entity ).getBondOrder( p_bond.index ) ) ];
-									} );
+			.def( "getSystem", synchronized( &Bond::getSystem ) )
+			.def( "getFirstAtom", synchronized( &Bond::getFirstAtom ) )
+			.def( "getSecondAtom", synchronized( &Bond::getSecondAtom ) )
+			.def_property_readonly(
+				"order",
+				synchronized(
+					[]( const Bond & p_bond )
+					{
+						return Core::ChemDB::Bond::ORDER_STR[ static_cast<size_t>(
+							getTopology( p_bond.entity ).getBondOrder( p_bond.index )
+						) ];
+					}
+				)
+			);
 	}
 } // namespace VTX::App::PythonBinding::Topology

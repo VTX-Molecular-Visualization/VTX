@@ -93,9 +93,10 @@ namespace VTX::UI::QT::Widget
 		}
 
 		App::INTERPRETOR().requestFunctionList(
-			[ launcher = QPointer<CommandLauncher>( this ) ]( std::vector<std::string> names )
+			[ launcher		 = QPointer<CommandLauncher>( this ),
+			  &threadManager = App::THREAD() ]( std::vector<std::string> names )
 			{
-				App::THREAD().dispatch(
+				threadManager.dispatch(
 					[ launcher, names = std::move( names ) ]()
 					{
 						if ( not launcher )

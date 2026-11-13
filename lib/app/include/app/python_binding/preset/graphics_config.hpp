@@ -7,7 +7,10 @@
 
 namespace VTX::App::PythonBinding::Preset
 {
+	/**
+	 * @brief Bind.
+	 */
 	void bindGraphicsConfig( Module &, pybind11::class_<GraphicsConfigHandle> & );
-}
+} // namespace VTX::App::PythonBinding::Preset
 
 #endif

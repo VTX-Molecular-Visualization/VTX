@@ -1,3 +1,4 @@
+#include "app/python_binding/identity.hpp"
 #include "app/python_binding/topology/actions.hpp"
 #include "app/python_binding/topology/binding.hpp"
 #include "app/python_binding/topology/helpers.hpp"
@@ -51,70 +52,63 @@ namespace VTX::App::PythonBinding::Topology
 
 	void bindChain( pybind11::module_ & p_module )
 	{
-		py::class_<Chain>( p_module, "Chain", py::module_local() )
+		bindIdentity(
+			bindState<SystemItem::CHAIN>( bindStyle(
+				py::class_<Chain>( p_module, "Chain", py::module_local() ),
+				[]( const Chain & p_chain )
+				{ return Target { p_chain.entity, SystemItem::CHAIN, RangeList( p_chain.index ) }; }
+			) )
+		)
 			.def_property_readonly( "index", []( const Chain & p_chain ) { return p_chain.index; } )
-			.def_property_readonly( "name",
-									[]( const Chain & p_chain )
-									{ return getTopology( p_chain.entity ).getChainName( p_chain.index ); } )
-			.def_property_readonly( "residueCount",
-									[]( const Chain & p_chain )
-									{ return getTopology( p_chain.entity ).getChainResidueCount( p_chain.index ); } )
-			.def_property_readonly( "atomCount",
-									[]( const Chain & p_chain )
-									{ return getTopology( p_chain.entity ).getChainAtomCount( p_chain.index ); } )
-			.def_property_readonly( "indexFirstResidue",
-									[]( const Chain & p_chain )
-									{ return getTopology( p_chain.entity ).getChainFirstResidue( p_chain.index ); } )
-			.def_property_readonly( "indexLastResidue",
-									[]( const Chain & p_chain )
-									{
-										const Range range
-											= getTopology( p_chain.entity ).getChainResidueRange( p_chain.index );
-										return range.getLast();
-									} )
-			.def_property_readonly( "indexFirstAtom",
-									[]( const Chain & p_chain )
-									{ return getTopology( p_chain.entity ).getChainFirstAtom( p_chain.index ); } )
-			.def_property_readonly( "indexLastAtom",
-									[]( const Chain & p_chain )
-									{
-										const Range range
-											= getTopology( p_chain.entity ).getChainAtomRange( p_chain.index );
-										return range.getLast();
-									} )
-			.def( "getSystem", &Chain::getSystem )
-			.def( "getResidues", &Chain::getResidues )
-			.def( "getAtoms", &Chain::getAtoms )
-			.def( "getResidue", &Chain::getResidue, py::arg( "index" ) )
-			.def( "getAtom", &Chain::getAtom, py::arg( "index" ) )
-			.def(
-				"setVisible",
-				[]( const Chain & p_chain, const bool p_visible )
-				{ setVisible<SystemItem::CHAIN>( p_chain.entity, RangeList( p_chain.index ), p_visible ); },
-				py::arg( "visible" ) = true )
-			.def(
-				"setSelected",
-				[]( const Chain & p_chain, const bool p_selected, const bool p_append )
-				{ setSelected<SystemItem::CHAIN>( p_chain.entity, RangeList( p_chain.index ), p_selected, p_append ); },
-				py::arg( "selected" ) = true,
-				py::arg( "append" )	  = false )
-			.def_property_readonly( "visibleState",
-									[]( const Chain & p_chain )
-									{ return getVisibleState( p_chain.entity, SystemItem::CHAIN, p_chain.index ); } )
-			.def_property_readonly( "selectionState",
-									[]( const Chain & p_chain )
-									{ return getSelectionState( p_chain.entity, SystemItem::CHAIN, p_chain.index ); } )
-			.def( "isVisible",
-				  []( const Chain & p_chain )
-				  { return isVisible( p_chain.entity, SystemItem::CHAIN, p_chain.index ); } )
-			.def( "isFullyVisible",
-				  []( const Chain & p_chain )
-				  { return isFullyVisible( p_chain.entity, SystemItem::CHAIN, p_chain.index ); } )
-			.def( "isSelected",
-				  []( const Chain & p_chain )
-				  { return isSelected( p_chain.entity, SystemItem::CHAIN, p_chain.index ); } )
-			.def( "isFullySelected",
-				  []( const Chain & p_chain )
-				  { return isFullySelected( p_chain.entity, SystemItem::CHAIN, p_chain.index ); } );
+			.def_property_readonly(
+				"name",
+				synchronized( []( const Chain & p_chain )
+							  { return getTopology( p_chain.entity ).getChainName( p_chain.index ); } )
+			)
+			.def_property_readonly(
+				"residueCount",
+				synchronized( []( const Chain & p_chain )
+							  { return getTopology( p_chain.entity ).getChainResidueCount( p_chain.index ); } )
+			)
+			.def_property_readonly(
+				"atomCount",
+				synchronized( []( const Chain & p_chain )
+							  { return getTopology( p_chain.entity ).getChainAtomCount( p_chain.index ); } )
+			)
+			.def_property_readonly(
+				"indexFirstResidue",
+				synchronized( []( const Chain & p_chain )
+							  { return getTopology( p_chain.entity ).getChainFirstResidue( p_chain.index ); } )
+			)
+			.def_property_readonly(
+				"indexLastResidue",
+				synchronized(
+					[]( const Chain & p_chain )
+					{
+						const Range range = getTopology( p_chain.entity ).getChainResidueRange( p_chain.index );
+						return range.getLast();
+					}
+				)
+			)
+			.def_property_readonly(
+				"indexFirstAtom",
+				synchronized( []( const Chain & p_chain )
+							  { return getTopology( p_chain.entity ).getChainFirstAtom( p_chain.index ); } )
+			)
+			.def_property_readonly(
+				"indexLastAtom",
+				synchronized(
+					[]( const Chain & p_chain )
+					{
+						const Range range = getTopology( p_chain.entity ).getChainAtomRange( p_chain.index );
+						return range.getLast();
+					}
+				)
+			)
+			.def( "getSystem", synchronized( &Chain::getSystem ) )
+			.def( "getResidues", synchronized( &Chain::getResidues ) )
+			.def( "getAtoms", synchronized( &Chain::getAtoms ) )
+			.def( "getResidue", synchronized( &Chain::getResidue ), py::arg( "index" ) )
+			.def( "getAtom", synchronized( &Chain::getAtom ), py::arg( "index" ) );
 	}
 } // namespace VTX::App::PythonBinding::Topology

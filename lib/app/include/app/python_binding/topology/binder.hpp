@@ -5,6 +5,9 @@
 
 namespace VTX::App::PythonBinding
 {
+	/**
+	 * @brief Topology binder.
+	 */
 	class TopologyBinder
 	{
 	  public:

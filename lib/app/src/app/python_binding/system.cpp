@@ -1,19 +1,24 @@
 #include "app/python_binding/system.hpp"
-#include "app/helper/scene.hpp"
-#include <python_binding/binding/entity_caster.hpp>
+#include "app/python_binding/topology/types.hpp"
+#include <core/struct/topology.hpp>
+#include <pybind11/stl.h>
+#include <vector>
 
 namespace VTX::App::PythonBinding
 {
-	void SystemBinder::bind( Module & p_vtxModule )
+	namespace
 	{
-		p_vtxModule.def( "getSystemIdByName",
-						 &Helper::Scene::getSystemByName,
-						 "Return a system ID that matches given name (case insensitive)." );
-		p_vtxModule.def( "getSystemIdByPdb",
-						 &Helper::Scene::getSystemByPdb,
-						 "Return a system ID that matches given RCSB PDB ID code (case insensitive)." );
-		p_vtxModule.def( "getSystemIdByFileName",
-						 &Helper::Scene::getSystemByFileName,
-						 "Return a system ID that matches given file name (case insensitive)." );
-	}
+		std::vector<Topology::System> _getSystems()
+		{
+			std::vector<Topology::System> systems;
+			for ( const Entity entity : REG().view<Core::Struct::Topology>() )
+			{
+				systems.push_back( Topology::System { entity } );
+			}
+			return systems;
+		}
+	} // namespace
+
+	void SystemBinder::bind( Module & p_vtxModule )
+	{ p_vtxModule.def( "getSystems", synchronized( &_getSystems ), "Return all loaded systems." ); }
 } // namespace VTX::App::PythonBinding

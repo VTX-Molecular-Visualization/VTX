@@ -7,7 +7,10 @@
 
 namespace VTX::App::PythonBinding::Preset
 {
+	/**
+	 * @brief Bind.
+	 */
 	void bindRepresentation( Module &, pybind11::class_<RepresentationHandle> & );
-}
+} // namespace VTX::App::PythonBinding::Preset
 
 #endif

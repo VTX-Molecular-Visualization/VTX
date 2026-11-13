@@ -27,6 +27,11 @@ namespace VTX::App::PythonBinding
 	};
 
 	/**
+	 * @brief Get frame copy.
+	 */
+	Frame getCurrentFrame( Entity p_entity );
+
+	/**
 	 * @brief Binder.
 	 */
 	class TrajectoryBinder

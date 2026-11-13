@@ -1,8 +1,6 @@
 #include "app/python_binding/preset/representation.hpp"
 #include "app/action/representation.hpp"
 #include "app/python_binding/preset/helpers.hpp"
-#include "app/python_binding/topology/helpers.hpp"
-#include "app/python_binding/topology/types.hpp"
 #include <pybind11/native_enum.h>
 #include <python_binding/binding/helper.hpp>
 #include <renderer/representation.hpp>
@@ -15,23 +13,7 @@ namespace VTX::App::PythonBinding::Preset
 	{
 		template<Renderer::E_REPRESENTATION_VALUES VALUE, typename T>
 		void _setValue( const RepresentationHandle & p_preset, const T p_value )
-		{
-			validate( p_preset );
-			executeAction<Action::Representation::Change<VALUE, T>>( Entity( p_preset.entity ), T( p_value ) );
-		}
-
-		void _apply( const RepresentationHandle & p_preset,
-					 const Topology::System &	  p_system,
-					 const Topology::SystemItem	  p_item,
-					 const Topology::RangeList &  p_ranges )
-		{
-			validate( p_preset );
-			Topology::getTopology( p_system.entity );
-			executeAction<Action::Representation::AddItem>( Entity( p_system.entity ),
-															Topology::SystemItem( p_item ),
-															Entity( p_preset.entity ),
-															Topology::RangeList( p_ranges ) );
-		}
+		{ executePresetAction<Action::Representation::Change<VALUE, T>>( p_preset, T( p_value ) ); }
 
 	} // namespace
 
@@ -96,12 +78,6 @@ namespace VTX::App::PythonBinding::Preset
 			.def_property(
 				"sesProbeRadius",
 				[]( const RepresentationHandle & p_preset ) { return getData( p_preset ).sesProbeRadius; },
-				&_setValue<Renderer::E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float> )
-			.def( "apply",
-				  &_apply,
-				  "Apply this representation preset to system items.",
-				  pybind11::arg( "system" ),
-				  pybind11::arg( "item" )	= Topology::SystemItem::SYSTEM,
-				  pybind11::arg( "ranges" ) = Topology::RangeList() );
+				&_setValue<Renderer::E_REPRESENTATION_VALUES::SES_PROBE_RADIUS, float> );
 	}
 } // namespace VTX::App::PythonBinding::Preset

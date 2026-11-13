@@ -5,7 +5,9 @@
 #include <future>
 #include <memory>
 #include <string>
+#include <util/atomic_callback.hpp>
 #include <util/filesystem.hpp>
+#include <vector>
 
 namespace VTX::PythonBinding
 {
@@ -38,14 +40,13 @@ namespace VTX::App::PythonBinding
 
 		/**
 		 * @brief Run input python command asynchronously.
-		 * @param
 		 */
 		void runCommand( const std::string & );
 
 		/**
 		 * @brief Run input python command asynchronously and fill the future value with its result.
 		 */
-		void runCommand( const std::string &, std::shared_ptr<std::promise<AsyncJobResult>> );
+		void runCommand( const std::string &, const std::shared_ptr<std::promise<AsyncJobResult>> & );
 
 		/**
 		 * @brief Run python script located in the input file asynchronously.
@@ -53,35 +54,30 @@ namespace VTX::App::PythonBinding
 		void runScript( const FilePath & );
 
 		/**
-		 * @brief Run python script located in the input file asynchronously and fill the future with success status
-		 * @param
-		 * @param  Will be true if the script was successfuly executed
+		 * @brief Run python script located in the input file asynchronously and fill the promise with its result.
 		 */
 		void runScript( const FilePath &, const std::shared_ptr<std::promise<AsyncJobResult>> & );
 
 		/**
-		 * @brief Query the currently loaded Python runtime version and return it as "x.y.z".
+		 * @brief Query the currently loaded Python runtime version as "x.y.z" and pass it to the callback, which is
+		 * called on the python thread.
 		 */
-		std::string getRuntimePythonVersion();
+		void requestRuntimePythonVersion( std::function<void( std::string )> );
 
 		/**
-		 * @brief Slow the response time down. Python command are not actually executed right away. They are queue up
-		 * and the queue is watched every once in a while and any command found is then executed. Calling this function
-		 * lengthen the time interval at which the queue is watched, effectively making VTX less energy consuming while
-		 * idling.
+		 * @brief Give instructions to execute code on the python thread.
 		 */
-		void slowerResponseTime() noexcept;
+		void post( InterpretorInstructionsOneShot );
 
 		/**
-		 * @brief Increase execution frequency. See slowerResponseTime method for more details.
+		 * @brief Get available function list.
 		 */
-		void fasterResponseTime() noexcept;
+		void requestFunctionList( std::function<void( std::vector<std::string> )> );
 
 		/**
-		 * @brief Give instructions to execute code on the python thread
-		 * @param
+		 * @brief Set pending callback.
 		 */
-		void subscribe( InterpretorInstructionsOneShot );
+		void setOnPending( Util::AtomicCallback::Function, void * p_context ) noexcept;
 
 	  private:
 		class Impl;

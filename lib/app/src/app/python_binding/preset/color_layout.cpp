@@ -1,6 +1,5 @@
 #include "app/python_binding/preset/color_layout.hpp"
 #include "app/action/color_layout.hpp"
-#include "app/action/scene.hpp"
 #include "app/python_binding/preset/helpers.hpp"
 #include <pybind11/stl.h>
 #include <python_binding/binding/helper.hpp>
@@ -30,28 +29,18 @@ namespace VTX::App::PythonBinding::Preset
 						const py::ssize_t		  p_index,
 						const Util::Color::Rgba & p_color )
 		{
-			validate( p_preset );
-			executeAction<Action::ColorLayout::Change>(
-				Entity( p_preset.entity ), _resolveColorIndex( p_index ), Util::Color::Rgba( p_color ) );
+			executePresetAction<Action::ColorLayout::Change>(
+				p_preset, _resolveColorIndex( p_index ), Util::Color::Rgba( p_color ) );
 		}
 
 		void _setColors( const ColorLayoutHandle & p_preset, const Renderer::Color::LayoutArray & p_colors )
 		{
-			validate( p_preset );
-			executeAction<Action::ColorLayout::ChangeAll>( Entity( p_preset.entity ),
-														   Renderer::Color::LayoutArray( p_colors ) );
+			executePresetAction<Action::ColorLayout::ChangeAll>( p_preset, Renderer::Color::LayoutArray( p_colors ) );
 		}
 
 		void _randomize( const ColorLayoutHandle & p_preset )
 		{
-			validate( p_preset );
-			executeAction<Action::ColorLayout::Randomize>( Entity( p_preset.entity ) );
-		}
-
-		void _apply( const ColorLayoutHandle & p_preset )
-		{
-			validate( p_preset );
-			executeAction<Action::Scene::SetColorLayout>( Entity( p_preset.entity ) );
+			executePresetAction<Action::ColorLayout::Randomize>( p_preset );
 		}
 	} // namespace
 
@@ -67,7 +56,6 @@ namespace VTX::App::PythonBinding::Preset
 				"colorCount", []( const ColorLayoutHandle & p_preset ) { return getData( p_preset ).colors.size(); } )
 			.def( "getColor", &_getColor, py::arg( "index" ) )
 			.def( "randomize", &_randomize )
-			.def( "apply", &_apply, "Apply this color layout preset to the scene." )
 			.def( "__len__", []( const ColorLayoutHandle & p_preset ) { return getData( p_preset ).colors.size(); } )
 			.def( "__getitem__", &_getColor )
 			.def( "__setitem__", &_setColor );

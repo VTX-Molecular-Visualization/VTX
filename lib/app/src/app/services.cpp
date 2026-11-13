@@ -22,7 +22,6 @@ namespace VTX::App
 		return ECS::getCtx<PythonBinding::Interpretor>();
 	}
 
-	Network::NetworkManager & NETWORK() { return ECS::getCtx<Network::NetworkManager>(); }
 
 	Pass::PassManager & PASS() { return ECS::getCtx<Pass::PassManager>(); }
 

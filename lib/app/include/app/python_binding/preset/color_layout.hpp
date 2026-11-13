@@ -7,7 +7,10 @@
 
 namespace VTX::App::PythonBinding::Preset
 {
+	/**
+	 * @brief Bind.
+	 */
 	void bindColorLayout( Module &, pybind11::class_<ColorLayoutHandle> & );
-}
+} // namespace VTX::App::PythonBinding::Preset
 
 #endif

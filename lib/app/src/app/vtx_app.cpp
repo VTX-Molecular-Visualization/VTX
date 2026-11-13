@@ -1,5 +1,4 @@
 #include "app/vtx_app.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/action/application.hpp"
 #include "app/action/io.hpp"
 #include "app/action/preset.hpp"
@@ -7,13 +6,14 @@
 #include "app/events.hpp"
 #include "app/helper/preset.hpp"
 #include "app/input/input_manager.hpp"
-#include "app/network/network_manager.hpp"
 #include "app/pass/camera_updater.hpp"
 #include "app/pass/mesh_updater.hpp"
 #include "app/pass/pass_manager.hpp"
 #include "app/pass/scene_updater.hpp"
 #include "app/pass/system_updater.hpp"
 #include "app/pass/trajectory_updater.hpp"
+#include "app/pending_updates.hpp"
+#include <util/action_manager.hpp>
 #if VTX_PYTHON_BINDING
 #include "app/python_binding/app_binder.hpp"
 #include "app/python_binding/interpretor.hpp"
@@ -25,9 +25,15 @@
 #include "app/setting/accessibility.hpp"
 #include "app/setting/controller.hpp"
 #include "app/uid/uid_manager.hpp"
+#include <chrono>
 #include <cstdio>
 #include <exception>
+#include <future>
+#include <io/file_format.hpp>
+#include <memory>
 #include <tuple>
+#include <util/chrono.hpp>
+#include <util/event_hub.hpp>
 #include <util/thread/thread_manager.hpp>
 #if VTX_PYTHON_BINDING
 #include <python_binding/interpretor.hpp>
@@ -36,7 +42,6 @@
 #include <util/logger.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
-#include <util/monitoring/stats.hpp>
 
 namespace
 {
@@ -47,6 +52,20 @@ namespace
 
 namespace VTX::App
 {
+#if VTX_PYTHON_BINDING
+	namespace
+	{
+		void runScriptUntilDone( VTXApp & p_app, const FilePath & p_path )
+		{
+			const auto promise = std::make_shared<std::promise<PythonBinding::Interpretor::AsyncJobResult>>();
+			std::future<PythonBinding::Interpretor::AsyncJobResult> future = promise->get_future();
+			INTERPRETOR().runScript( p_path, promise );
+
+			std::ignore = p_app.runUntilReady( future );
+			p_app.update();
+		}
+	} // namespace
+#endif
 
 	VTXApp::VTXApp( Arguments && p_args )
 	{
@@ -63,28 +82,30 @@ namespace VTX::App
 		ECS::setCtx<Session>();
 		// Logger.
 		LOGGER::init( SESSION().getLogsDir(), debug );
+		LOGGER::setCallback( [ &hub = HUB() ]( const Util::LogInfo & p_logInfo )
+							 { hub.enqueue<Util::LogInfo>( p_logInfo ); } );
 	}
 
 	VTXApp::~VTXApp()
 	{
-		try
+		if ( ECS::hasCtx<PendingUpdates>() )
 		{
-			if ( ECS::hasCtx<Action::ActionManager>() )
-			{
-				ACTION().shutdown();
-			}
+			unbindPending( PENDING_UPDATES() );
 		}
-		catch ( const std::exception & p_e )
+		if ( ECS::hasCtx<Util::Thread::ThreadManager>() )
 		{
-			VTX_ERROR( "Exception during action manager shutdown: {}", p_e.what() );
+			unbindPending( THREAD() );
 		}
-		catch ( ... )
+		if ( ECS::hasCtx<Renderer::Renderer>() )
 		{
-			VTX_ERROR( "Unknown exception during action manager shutdown" );
+			unbindPending( RENDERER() );
 		}
+		unbindPending( HUB() );
+
 #if VTX_PYTHON_BINDING
 		if ( ECS::hasCtx<PythonBinding::Interpretor>() )
 		{
+			unbindPending( INTERPRETOR() );
 			ECS::removeCtx<PythonBinding::Interpretor>();
 		}
 #endif
@@ -93,14 +114,13 @@ namespace VTX::App
 		{
 			ECS::removeCtx<Pass::PassManager>();
 		}
+		if ( ECS::hasCtx<Util::ActionManager>() )
+		{
+			ECS::removeCtx<Util::ActionManager>();
+		}
 		if ( ECS::hasCtx<Util::Thread::ThreadManager>() )
 		{
 			ECS::removeCtx<Util::Thread::ThreadManager>();
-		}
-
-		if ( ECS::hasCtx<Network::NetworkManager>() )
-		{
-			ECS::removeCtx<Network::NetworkManager>();
 		}
 
 		if ( ECS::hasCtx<Session>() )
@@ -121,6 +141,7 @@ namespace VTX::App
 	void VTXApp::start()
 	{
 		startServices();
+		setFrameScheduler( &VTXApp::_wake, this );
 		createInitialEntities();
 
 		auto & renderer = RENDERER();
@@ -145,14 +166,23 @@ namespace VTX::App
 		VTX_INFO( toString( ARGS() ) );
 		SESSION().print();
 
-		ECS::setCtx<Util::Monitoring::Stats>();
+		ECS::setCtx<PendingUpdates>();
+		bindPending<E_PENDING_UPDATE::EVENTS>( HUB() );
 		ECS::setCtx<Renderer::Renderer>();
+		bindPending<E_PENDING_UPDATE::RENDER>( RENDERER() );
 		RENDERER().onReady
 			= []( const Renderer::StructInfos & p_infos ) { HUB().trigger<Events::RendererReady>( p_infos ); };
-		ECS::setCtx<Action::ActionManager>();
-		ECS::setCtx<Input::InputManager>();
-		ECS::setCtx<Network::NetworkManager>();
 		ECS::setCtx<Util::Thread::ThreadManager>();
+		bindPending<E_PENDING_UPDATE::THREADS>( THREAD() );
+		if ( ARGS().noGui )
+		{
+			ECS::setCtx<Util::ActionManager>();
+		}
+		else
+		{
+			ECS::setCtx<Util::ActionManager>( THREAD() );
+		}
+		ECS::setCtx<Input::InputManager>();
 		THREAD().setDefaultProgressCallback(
 			[]( const Util::Thread::BaseThread & p_thread )
 			{
@@ -182,7 +212,8 @@ namespace VTX::App
 			try
 			{
 				ECS::setCtx<PythonBinding::Interpretor>();
-				INTERPRETOR().subscribe(
+				bindPending<E_PENDING_UPDATE::THREADS>( INTERPRETOR() );
+				INTERPRETOR().post(
 					[]( VTX::PythonBinding::Interpretor & p_interpretor )
 					{
 						p_interpretor.add( VTX::App::PythonBinding::AppBinder() );
@@ -241,12 +272,18 @@ namespace VTX::App
 #if VTX_PYTHON_BINDING
 		if ( not ARGS().noPython && ECS::hasCtx<PythonBinding::Interpretor>() )
 		{
-			const std::string runtimePythonVersion = INTERPRETOR().getRuntimePythonVersion();
-			if ( not runtimePythonVersion.empty() )
-			{
-				HUB().trigger<Events::PythonInitialized>( runtimePythonVersion );
-				VTX_INFO( "Python interpretor initialized" );
-			}
+			INTERPRETOR().requestRuntimePythonVersion(
+				[ &threadManager = THREAD() ]( std::string p_version )
+				{
+					threadManager.dispatch(
+						[ version = std::move( p_version ) ]()
+						{
+							HUB().trigger<Events::PythonInitialized>( version );
+							VTX_INFO( "Python interpretor initialized" );
+						}
+					);
+				}
+			);
 		}
 #endif
 
@@ -266,6 +303,9 @@ namespace VTX::App
 		{
 			SESSION().checkForUpdate();
 		}
+
+		_chrono.start();
+		_idle = true;
 	}
 
 	void VTXApp::handleArgs()
@@ -285,21 +325,85 @@ namespace VTX::App
 				continue;
 			}
 
+#if VTX_PYTHON_BINDING
+			if ( args.noGui && ECS::hasCtx<PythonBinding::Interpretor>() && VTX::IO::isScriptFileFormat( it_file ) )
+			{
+				runScriptUntilDone( *this, it_file );
+				continue;
+			}
+#endif
 			Action::IO::Open openAction;
 			ACTION().execute( openAction, it_file );
 		}
 	}
 
-	//	bool VTXApp::hasAnyModifications() const
-	//	{
-	//		const bool hasSavePath	   = !getScenePathData().getCurrentPath().empty();
-	//		const bool sceneIsEmpty	   = getScene().isEmpty();
-	//		const bool sceneHasChanged = getScenePathData().sceneHasModifications();
-	// #ifdef VTX_PRODUCTION
-	//		return ( !hasSavePath && !sceneIsEmpty ) || ( hasSavePath && sceneHasChanged );
-	// #else
-	//		return hasSavePath && sceneHasChanged;
-	// #endif
-	//	}
+	void VTXApp::setFrameScheduler( const Util::AtomicCallback::Function p_function, void * const p_context )
+	{
+		PendingUpdates & pendingUpdates = PENDING_UPDATES();
+		pendingUpdates.setOnPending( p_function, p_context );
+		if ( p_function != nullptr )
+		{
+			pendingUpdates.mark( E_PENDING_UPDATE::ALL );
+			p_function( p_context );
+		}
+	}
 
+	void VTXApp::update() noexcept
+	try
+	{
+		PendingUpdates & pendingUpdates = PENDING_UPDATES();
+		if ( not pendingUpdates.any() )
+		{
+			_idle = true;
+			return;
+		}
+
+		if ( _idle )
+		{
+			std::ignore = _chrono.intervalTime();
+		}
+
+		const E_PENDING_UPDATE pending = pendingUpdates.consume();
+		_pipeline.process( pending, _chrono.intervalTime(), _chrono.elapsedTime() );
+		_idle = not pendingUpdates.any();
+	}
+	catch ( const std::exception & p_e )
+	{
+		VTX_ERROR( "Application update failed: {}", p_e.what() );
+	}
+	catch ( ... )
+	{
+		VTX_ERROR( "Unknown application update failure" );
+	}
+
+	bool VTXApp::runUntilIdle( const std::optional<std::chrono::milliseconds> p_timeout )
+	{
+		return runUntil( []() { return not PENDING_UPDATES().any(); }, p_timeout );
+	}
+
+	bool VTXApp::_waitForPendingUpdates( const std::optional<std::chrono::steady_clock::time_point> & p_deadline )
+	{
+		std::unique_lock lock( _wakeMutex );
+		const auto		 hasPendingUpdates = []() { return PENDING_UPDATES().any(); };
+		if ( not p_deadline.has_value() )
+		{
+			_wakeCondition.wait( lock, hasPendingUpdates );
+			return true;
+		}
+		return _wakeCondition.wait_until( lock, *p_deadline, hasPendingUpdates );
+	}
+
+	void VTXApp::_wake( void * const p_app ) noexcept
+	{
+		VTXApp * const app = static_cast<VTXApp *>( p_app );
+		try
+		{
+			const std::scoped_lock lock( app->_wakeMutex );
+		}
+		catch ( ... )
+		{
+			LOGGER::logException( "Failed to wake main loop" );
+		}
+		app->_wakeCondition.notify_all();
+	}
 } // namespace VTX::App

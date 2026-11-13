@@ -4,7 +4,6 @@
 #include "app/python_binding/color.hpp"
 #include "app/python_binding/io.hpp"
 #include "app/python_binding/preset.hpp"
-#include "app/python_binding/representation.hpp"
 #include "app/python_binding/scene.hpp"
 #include "app/python_binding/selection.hpp"
 #include "app/python_binding/system.hpp"
@@ -31,7 +30,6 @@ namespace VTX::App::PythonBinding
 		VisibilityBinder().bind( appModule );
 		PresetBinder().bind( appModule );
 		ColorBinder().bind( appModule );
-		RepresentationBinder().bind( appModule );
 		ApplicationBinder().bind( appModule );
 	}
 } // namespace VTX::App::PythonBinding
