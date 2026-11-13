@@ -1,6 +1,7 @@
 #include "app/helper/trajectory.hpp"
 #include "app/trajectory/loader.hpp"
 #include <algorithm>
+#include <io/metadata.hpp>
 #include <io/writer/system.hpp>
 #include <stdexcept>
 
@@ -144,6 +145,18 @@ namespace VTX::App::Helper::Trajectory
 	}
 
 	bool hasMultiFrameTrajectory( const Entity p_entity ) { return REG().any_of<App::Trajectory::Player>( p_entity ); }
+
+	bool hasSystemAcceptingTrajectory()
+	{
+		for ( const Entity entity : REG().view<Core::Struct::Trajectory, VTX::IO::Metadata>() )
+		{
+			if ( not hasMultiFrameTrajectory( entity ) )
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 
 	App::Trajectory::FrameRange getAvailableFrames( const Entity p_entity )
 	{

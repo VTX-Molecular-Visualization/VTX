@@ -2,7 +2,7 @@
 #include "app/constants.hpp"
 #include "app/extractor/mesh.hpp"
 #include "app/extractor/system.hpp"
-#include "app/network/network_manager.hpp"
+#include "app/helper/io.hpp"
 #include <util/action_manager.hpp>
 #if VTX_PYTHON_BINDING
 #include "app/python_binding/interpretor.hpp"
@@ -12,6 +12,7 @@
 #include "app/session.hpp"
 #include "app/system/writer.hpp"
 #include <fmt/format.h>
+#include <io/file_format.hpp>
 #include <io/mesh_reader.hpp>
 #include <memory>
 #include <renderer/renderer.hpp>
@@ -19,7 +20,6 @@
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/resolution.hpp>
-#include <util/string.hpp>
 
 namespace VTX::App::Action::IO
 {
@@ -42,8 +42,7 @@ namespace VTX::App::Action::IO
 
 	void Open::execute( FilePath p_path )
 	{
-		const std::string extension = p_path.extension().string();
-		if ( extension == ".py" || extension == ".vtx" )
+		if ( VTX::IO::isScriptFileFormat( p_path ) )
 		{
 			if ( ARGS().noPython )
 			{
@@ -65,46 +64,24 @@ namespace VTX::App::Action::IO
 		}
 	}
 
-	struct SystemIo
-	{
-		Util::Thread::ThreadData		 thrData;
-		std::optional<Extractor::System> extractor;
-
-		void startExtraction()
-		{
-			assert( extractor );
-			if ( not extractor )
-			{
-				throw std::bad_optional_access();
-			}
-			extractor.value()( thrData.stopToken, thrData.thrRef );
-		}
-	};
-
-	void SystemIoDel::operator()( SystemIo * const p_ ) noexcept { std::default_delete<SystemIo> {}( p_ ); }
-
-	LoadSystem::LoadSystem() : _data( new SystemIo() ) {}
-
-	LoadSystem::LoadSystem( Util::Thread::ThreadData p_ ) : _data( new SystemIo { std::move( p_ ) } ) {}
+	LoadSystem::LoadSystem( Util::Thread::ThreadData p_threadData ) : _threadData( std::move( p_threadData ) ) {}
 
 	void LoadSystem::execute( FilePath p_path )
 	{
-		_data->extractor.emplace( std::move( p_path ) );
-		_data->startExtraction();
+		Extractor::System extractor( std::move( p_path ) );
+		extractor( _threadData.stopToken, _threadData.thrRef );
 	}
 
 	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
 	{
-		_data->extractor.emplace( std::move( p_path ), std::move( p_buffer ) );
-		_data->startExtraction();
+		Extractor::System extractor( std::move( p_path ), std::move( p_buffer ) );
+		extractor( _threadData.stopToken, _threadData.thrRef );
 	}
 
-	LoadMesh::LoadMesh( Util::Thread::StopToken p_stopToken, const Util::Thread::OptionalThreadReference p_threadRef ) :
-		_stopToken( std::move( p_stopToken ) ), _threadRef( p_threadRef )
-	{
-	}
+	LoadMesh::LoadMesh( Util::Thread::ThreadData p_threadData ) : _threadData( std::move( p_threadData ) ) {}
 
-	void LoadMesh::execute( FilePath p_path ) { Extractor::Mesh( std::move( p_path ) )( _stopToken, _threadRef ); }
+	void LoadMesh::execute( FilePath p_path )
+	{ Extractor::Mesh( std::move( p_path ) )( _threadData.stopToken, _threadData.thrRef ); }
 
 	void WriteSelection::execute( FilePath p_path )
 	{
@@ -118,9 +95,8 @@ namespace VTX::App::Action::IO
 		writer();
 	}
 
-	AssociateTrajectory::AssociateTrajectory() : _data( new SystemIo() ) {}
-
-	AssociateTrajectory::AssociateTrajectory( Util::Thread::ThreadData p_ ) : _data( new SystemIo { std::move( p_ ) } )
+	AssociateTrajectory::AssociateTrajectory( Util::Thread::ThreadData p_threadData ) :
+		_threadData( std::move( p_threadData ) )
 	{
 	}
 
@@ -132,8 +108,8 @@ namespace VTX::App::Action::IO
 			return;
 		}
 
-		_data->extractor.emplace( p_entity, std::move( p_path ) );
-		_data->startExtraction();
+		Extractor::System extractor( p_entity, std::move( p_path ) );
+		extractor( _threadData.stopToken, _threadData.thrRef );
 	}
 
 	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
@@ -143,8 +119,8 @@ namespace VTX::App::Action::IO
 			VTX_ERROR( "System entity null." );
 			return;
 		}
-		_data->extractor.emplace( p_e, p_path );
-		_data->startExtraction();
+		Extractor::System extractor( p_e, p_path );
+		extractor( _threadData.stopToken, _threadData.thrRef );
 	}
 
 	void RunPythonScript::execute( const FilePath & p_path )
@@ -157,24 +133,37 @@ namespace VTX::App::Action::IO
 	}
 
 	void DownloadSystem::execute( const std::string & p_systemId )
+	{ execute( Helper::IO::getSystemDownloadUrl( p_systemId ), Helper::IO::getSystemDownloadFilename( p_systemId ) ); }
+
+	DownloadSystem::DownloadSystem( Util::Thread::ThreadData p_threadData ) : _threadData( std::move( p_threadData ) )
 	{
-		execute(
-			Util::String::replaceFirst(
-				std::string( RCSB_PDB_DOWNLOAD_URL_TEMPLATE ), std::string( SYSTEM_REPLACEMENT_TOKEN ), p_systemId
-			),
-			p_systemId + std::string( RCSB_PDB_DOWNLOAD_FILE_EXTENSION )
-		);
 	}
 
 	void DownloadSystem::execute( const std::string & p_url, FilePath p_path )
 	{
-		const std::string filename = p_path.string();
-		NETWORK().downloadFile(
-			p_url,
-			filename,
-			[ path = std::move( p_path ) ]( std::string && p_text ) mutable
-			{ ACTION().execute<Action::IO::LoadSystem>( std::move( path ), std::move( p_text ) ); }
-		);
+		if ( _threadData.thrRef )
+		{
+			_threadData.thrRef->get().setProgressText( "Downloading " + p_path.string() );
+		}
+		const Util::Network::ProgressCallback progress = [ this ]( const size_t p_downloaded, const size_t p_total )
+		{
+			if ( p_total > 0 && _threadData.thrRef )
+			{
+				_threadData.thrRef->get().setProgress(
+					static_cast<float>( p_downloaded ) / static_cast<float>( p_total )
+				);
+			}
+			return not _threadData.stopToken.stop_requested();
+		};
+
+		std::optional<std::string> data = Helper::IO::fetch( p_url, progress );
+		if ( not data )
+		{
+			return;
+		}
+		Helper::IO::writeCache( p_path.string(), *data );
+
+		LoadSystem( _threadData ).execute( std::move( p_path ), std::move( *data ) );
 	}
 
 	void Snapshot::execute()

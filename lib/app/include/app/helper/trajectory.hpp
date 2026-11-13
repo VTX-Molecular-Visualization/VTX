@@ -20,19 +20,23 @@ namespace VTX::App::Helper::Trajectory
 	/**
 	 * @brief Compute the frame window to load around a target frame.
 	 */
-	App::Trajectory::FrameRange getFrameWindow( uint,
-												uint,
-												size_t,
-												App::Trajectory::TRAJECTORY_READ_DIRECTION ) noexcept;
+	App::Trajectory::FrameRange getFrameWindow(
+		uint,
+		uint,
+		size_t,
+		App::Trajectory::TRAJECTORY_READ_DIRECTION
+	) noexcept;
 
 	/**
 	 * @brief Compute the frame storage index.
 	 */
-	std::optional<size_t> resolveStorageFrameIndex( uint,
-													size_t,
-													App::Trajectory::TRAJECTORY_BUFFER_MODE,
-													uint,
-													uint ) noexcept;
+	std::optional<size_t> resolveStorageFrameIndex(
+		uint,
+		size_t,
+		App::Trajectory::TRAJECTORY_BUFFER_MODE,
+		uint,
+		uint
+	) noexcept;
 
 	/**
 	 * @brief Check whether a trajectory frame is currently available.
@@ -58,6 +62,11 @@ namespace VTX::App::Helper::Trajectory
 	 * @brief Check if a system has a multi-frame trajectory.
 	 */
 	bool hasMultiFrameTrajectory( Entity );
+
+	/**
+	 * @brief Check if a system accepting a trajectory is loaded.
+	 */
+	bool hasSystemAcceptingTrajectory();
 
 	/**
 	 * @brief Get the range of currently available frames.

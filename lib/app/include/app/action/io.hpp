@@ -19,28 +19,19 @@ namespace VTX::App::Action::IO
 		void execute( const std::string & p_path );
 	};
 
-	struct SystemIo;
-
-	struct SystemIoDel
-	{
-		void operator()( SystemIo * ) noexcept;
-	};
-
-	using SystemIoPtr = std::unique_ptr<SystemIo, SystemIoDel>;
-
 	/**
 	 * @brief Load a molecular system from disk or buffer.
 	 */
 	struct LoadSystem
 	{
-		LoadSystem();
+		LoadSystem() = default;
 		LoadSystem( Util::Thread::ThreadData );
 
 		void execute( FilePath p_path );
 		void execute( FilePath p_path, std::string && p_buffer );
 
 	  private:
-		SystemIoPtr _data;
+		Util::Thread::ThreadData _threadData;
 	};
 
 	/**
@@ -49,13 +40,12 @@ namespace VTX::App::Action::IO
 	struct LoadMesh
 	{
 		LoadMesh() = default;
-		LoadMesh( Util::Thread::StopToken, Util::Thread::OptionalThreadReference );
+		LoadMesh( Util::Thread::ThreadData );
 
 		void execute( FilePath p_path );
 
 	  private:
-		Util::Thread::StopToken				  _stopToken;
-		Util::Thread::OptionalThreadReference _threadRef;
+		Util::Thread::ThreadData _threadData;
 	};
 
 	/**
@@ -80,15 +70,18 @@ namespace VTX::App::Action::IO
 	 */
 	struct AssociateTrajectory
 	{
-		AssociateTrajectory();
+		AssociateTrajectory() = default;
 		AssociateTrajectory( Util::Thread::ThreadData );
 		void execute( FilePath p_path, const Entity & );
 		void execute( const std::string & p_path, const Entity & );
 
 	  private:
-		SystemIoPtr _data;
+		Util::Thread::ThreadData _threadData;
 	};
 
+	/**
+	 * @brief Run script.
+	 */
 	struct RunPythonScript
 	{
 		void execute( const FilePath & );
@@ -100,8 +93,14 @@ namespace VTX::App::Action::IO
 	struct DownloadSystem
 	{
 	  public:
+		DownloadSystem() = default;
+		DownloadSystem( Util::Thread::ThreadData );
+
 		void execute( const std::string & p_url, FilePath p_path );
 		void execute( const std::string & p_systemId );
+
+	  private:
+		Util::Thread::ThreadData _threadData;
 	};
 
 	/**

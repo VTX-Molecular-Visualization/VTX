@@ -1,5 +1,5 @@
 #include "ui/qt/widget/main_window.hpp"
-#include "app/helper/io.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
@@ -33,6 +33,7 @@
 #include <QMimeData>
 #include <QTimer>
 #include <app/action/io.hpp>
+#include <io/file_format.hpp>
 #include <renderer/renderer.hpp>
 #include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
@@ -287,18 +288,15 @@ namespace VTX::UI::QT::Widget
 	{
 		for ( const auto & url : p_event->mimeData()->urls() )
 		{
-			switch ( App::Helper::IO::whatToDoWithThisFile( url.toLocalFile().toStdString() ) )
+			const FilePath path = url.toLocalFile().toStdString();
+			if ( VTX::IO::isTrajectoryFileFormat( path ) && App::Helper::Trajectory::hasSystemAcceptingTrajectory() )
 			{
-			case App::Helper::IO::FileDropHandling::actionOpen:
-				App::ACTION().execute<App::Action::IO::Open>( url.toLocalFile().toStdString() );
-				break;
-			case App::Helper::IO::FileDropHandling::associateTrajectory:
-			{
-				Dialog::TrajectoryAssociation dialog( url.toLocalFile().toStdString() );
+				Dialog::TrajectoryAssociation dialog( path );
 				dialog.exec();
-				break;
 			}
-			default: App::ACTION().execute<App::Action::IO::Open>( url.toLocalFile().toStdString() );
+			else
+			{
+				App::ACTION().execute<App::Action::IO::Open>( path );
 			}
 		}
 

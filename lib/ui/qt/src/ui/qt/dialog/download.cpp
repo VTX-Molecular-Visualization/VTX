@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 #include <app/action/io.hpp>
 #include <app/constants.hpp>
+#include <app/helper/io.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
 #include <util/action_manager.hpp>
@@ -76,10 +77,10 @@ namespace VTX::UI::QT::Dialog
 				 {
 					 auto pdb = _comboBoxPDB->currentText().toStdString();
 					 pdb	  = Util::String::trim( pdb );
-					 if ( pdb.length() == 4 )
+					 if ( App::Helper::IO::isValidSystemId( pdb ) )
 					 {
-						 const FilePath path = App::SESSION().getCacheDir()
-											   / ( pdb + std::string( VTX::App::RCSB_PDB_DOWNLOAD_FILE_EXTENSION ) );
+						 const FilePath path
+							 = App::SESSION().getCacheDir() / App::Helper::IO::getSystemDownloadFilename( pdb );
 						 if ( std::filesystem::exists( path ) )
 						 {
 							 // Show radio buttons.
@@ -104,9 +105,21 @@ namespace VTX::UI::QT::Dialog
 					 _url = _comboBoxURL->currentText().trimmed();
 					 _pdb = _comboBoxPDB->currentText().trimmed();
 
-					 FilePath path
-						 = App::SESSION().getCacheDir()
-						   / ( _pdb.toStdString() + std::string( VTX::App::RCSB_PDB_DOWNLOAD_FILE_EXTENSION ) );
+					 if ( _pdb.isEmpty() )
+					 {
+						 VTX_ERROR( "PDB id is empty" );
+						 return;
+					 }
+
+					 const std::string pdb = _pdb.toStdString();
+					 if ( not App::Helper::IO::isValidSystemId( pdb ) )
+					 {
+						 VTX_ERROR( "Invalid PDB id: {}", pdb );
+						 return;
+					 }
+
+					 const FilePath filename = App::Helper::IO::getSystemDownloadFilename( pdb );
+					 const FilePath path	 = App::SESSION().getCacheDir() / filename;
 					 if ( std::filesystem::exists( path ) and _radioButtonOpen->isChecked() )
 					 {
 						 App::ACTION().execute<App::Action::IO::LoadSystem>( path );
@@ -119,24 +132,12 @@ namespace VTX::UI::QT::Dialog
 							 return;
 						 }
 
-						 if ( _pdb.isEmpty() )
-						 {
-							 VTX_ERROR( "PDB id is empty" );
-							 return;
-						 }
-
-						 if ( _pdb.length() != 4 )
-						 {
-							 VTX_ERROR( "PDB id must be 4 characters" );
-							 return;
-						 }
 						 const std::string urlTemplate = _url.toStdString();
 						 if ( urlTemplate.find( App::SYSTEM_REPLACEMENT_TOKEN ) != std::string::npos )
 						 {
 							 App::ACTION().execute<App::Action::IO::DownloadSystem>(
-								 Util::String::replaceFirst(
-									 urlTemplate, std::string( App::SYSTEM_REPLACEMENT_TOKEN ), _pdb.toStdString() ),
-								 _pdb.toStdString() + std::string( VTX::App::RCSB_PDB_DOWNLOAD_FILE_EXTENSION ) );
+								 App::Helper::IO::getSystemDownloadUrl( pdb, urlTemplate ), filename
+							 );
 						 }
 						 else
 						 {
