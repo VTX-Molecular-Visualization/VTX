@@ -1,5 +1,5 @@
 #include "python_binding/interpretor.hpp"
-#include "util/app.hpp"
+#include "util/fixture.hpp"
 #include <algorithm>
 #include <catch2/catch_test_macros.hpp>
 #include <fmt/format.h>
@@ -10,13 +10,13 @@
 
 namespace Test
 {
-	struct PommeDapis
+	struct Item
 	{
 		std::string fruit;
-		friend bool operator==( const PommeDapis &, const PommeDapis & ) = default;
+		friend bool operator==( const Item &, const Item & ) = default;
 	};
 
-	PommeDapis convert( const std::string & s ) { return PommeDapis { s }; }
+	Item convert( const std::string & s ) { return Item { s }; }
 
 	struct TestStruct
 	{
@@ -25,18 +25,15 @@ namespace Test
 		std::vector<std::string> strings;
 		std::vector<size_t>		 uint64s;
 		std::vector<uint32_t>	 uint32s;
-		std::vector<PommeDapis>	 items;
-		bool					 containShit = false;
+		std::vector<Item>		 items;
+		bool					 containsFlag = false;
 	};
 
 } // namespace Test
 
 TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 {
-	VTX::App::Test::Util::PythonFixture f;
-
-	pybind11::module_ * mod = nullptr;
-	f.interpretor.getModule().getPythonModule( &mod );
+	VTX::PythonBinding::Test::Fixture f;
 
 	Test::TestStruct test;
 
@@ -45,21 +42,22 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 		[ & ]( const pybind11::kwargs & p_kwargs )
 		{
 			const VTX::PythonBinding::API::PythonKwargs kwargs( p_kwargs );
-			test.size		 = kwargs.size();
-			test.containShit = kwargs.contains( "Shit" );
+			test.size		  = kwargs.size();
+			test.containsFlag = kwargs.contains( "flag" );
 			kwargs.get( "names", test.strings );
 			kwargs.get( "name", test.string );
 			kwargs.get( "numbers", test.uint32s );
 			kwargs.get( "bigNumbers", test.uint64s );
 			kwargs.get( "weird", &Test::convert, test.items );
 		},
-		"Test for keyword arguments" );
+		"Test for keyword arguments"
+	);
 
 	pybind11::exec( fmt::format( "from {} import *", VTX::PythonBinding::vtx_module_name() ) );
 
 	pybind11::exec( "test_kwargs(name='poney')" );
 	CHECK( test.size == 1 );
-	CHECK( test.containShit == false );
+	CHECK( test.containsFlag == false );
 	CHECK( test.string == "poney" );
 	CHECK( test.strings.empty() );
 	CHECK( test.uint64s.empty() );
@@ -68,7 +66,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 
 	pybind11::exec( "test_kwargs(names=('poney', 'horse'))" );
 	CHECK( test.size == 1 );
-	CHECK( test.containShit == false );
+	CHECK( test.containsFlag == false );
 	CHECK( test.string.empty() );
 	CHECK( test.strings.size() == 2 );
 	CHECK( std::find( test.strings.begin(), test.strings.end(), std::string( "poney" ) ) != std::end( test.strings ) );
@@ -79,9 +77,10 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 
 	pybind11::exec(
 		"test_kwargs(name='poney', names=('poney','horse'), numbers=(5,54), bigNumbers=(18446744073709551613, "
-		"18446744073709551610), weird=('pinegrape', 'dragonfruit'), notOverlooked='meh', Shit='none')" );
+		"18446744073709551610), weird=('pinegrape', 'dragonfruit'), notOverlooked='meh', flag='none')"
+	);
 	CHECK( test.size == 7 );
-	CHECK( test.containShit == true );
+	CHECK( test.containsFlag == true );
 	CHECK( test.string == "poney" );
 	CHECK( test.strings.size() == 2 );
 	CHECK( test.uint32s.size() == 2 );
@@ -89,14 +88,12 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 	CHECK( std::find( test.uint64s.begin(), test.uint64s.end(), 18446744073709551613 ) != std::end( test.uint64s ) );
 	CHECK( std::find( test.uint64s.begin(), test.uint64s.end(), 18446744073709551610 ) != std::end( test.uint64s ) );
 	CHECK( test.items.size() == 2 );
-	CHECK( std::find( test.items.begin(), test.items.end(), Test::PommeDapis { "pinegrape" } )
-		   != std::end( test.items ) );
-	CHECK( std::find( test.items.begin(), test.items.end(), Test::PommeDapis { "dragonfruit" } )
-		   != std::end( test.items ) );
+	CHECK( std::find( test.items.begin(), test.items.end(), Test::Item { "pinegrape" } ) != std::end( test.items ) );
+	CHECK( std::find( test.items.begin(), test.items.end(), Test::Item { "dragonfruit" } ) != std::end( test.items ) );
 
 	pybind11::exec( "test_kwargs()" );
 	CHECK( test.size == 0 );
-	CHECK( test.containShit == false );
+	CHECK( test.containsFlag == false );
 	CHECK( test.string.empty() );
 	CHECK( test.strings.empty() );
 	CHECK( test.uint64s.empty() );

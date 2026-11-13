@@ -1,12 +1,10 @@
-
-#include "util/app.hpp"
-#include <catch2/benchmark/catch_benchmark.hpp>
+#include "util/fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <fmt/format.h>
 #include <python_binding/interpretor.hpp>
 #include <util/filesystem.hpp>
 
-TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][binding][pip]" )
+TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[.][python][binding][pip][network]" )
 {
 #ifdef _DEBUG
 	/**
@@ -20,7 +18,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 	return;
 #endif // DEBUG
 	using namespace VTX;
-	const App::Test::Util::PythonFixture f;
+	const PythonBinding::Test::Fixture f;
 
 	const PythonBinding::Interpretor & interpretor = f.interpretor;
 
@@ -49,14 +47,16 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 
 	interpretor.runCommand( fmt::format( "subprocess.run('{} -m pip install numpy', shell=True)", pythonPath ) );
 	bool has_numpy = false;
-	std::ranges::for_each( std::filesystem::directory_iterator( pip_install_dir ),
-						   [ has_numpy = &has_numpy ]( const std::filesystem::path & dir_entry )
-						   {
-							   if ( dir_entry.string().find( "numpy" ) != std::string::npos )
-							   {
-								   *has_numpy = true;
-							   }
-						   } );
+	std::ranges::for_each(
+		std::filesystem::directory_iterator( pip_install_dir ),
+		[ has_numpy = &has_numpy ]( const std::filesystem::path & dir_entry )
+		{
+			if ( dir_entry.string().find( "numpy" ) != std::string::npos )
+			{
+				*has_numpy = true;
+			}
+		}
+	);
 
 	CHECK( has_numpy );
 	// interpretor.runCommand( "import pip" );

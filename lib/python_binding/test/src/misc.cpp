@@ -1,13 +1,11 @@
-#include "util/app.hpp"
-#include <catch2/benchmark/catch_benchmark.hpp>
+#include "util/fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <pybind11/embed.h>
 #include <python_binding/interpretor.hpp>
 #include <util/logger.hpp>
 
 TEST_CASE( "VTX_PYTHON_BINDING - Interpretor runCommand test", "[python][binding][interpretor]" )
 {
-	const VTX::App::Test::Util::PythonFixture f;
+	const VTX::PythonBinding::Test::Fixture f;
 
 	CHECK( f.interpretor.runCommand( "l = (1,2,3)" ).empty() );
 	CHECK( f.interpretor.runCommand( "l" ) == "(1, 2, 3)" );
@@ -23,7 +21,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Interpretor runCommand test", "[python][binding
 
 TEST_CASE( "VTX_PYTHON_BINDING - Python version", "[python][binding][version]" )
 {
-	const VTX::App::Test::Util::PythonFixture f;
+	const VTX::PythonBinding::Test::Fixture f;
 
 	CHECK( f.interpretor.runCommand( "import sys" ).empty() );
 	std::string v = f.interpretor.runCommand( "sys.version" );

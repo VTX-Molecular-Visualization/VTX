@@ -1,28 +1,19 @@
 #include "external_tool/action.hpp"
 #include "external_tool/binding.hpp"
-#include "util/app.hpp"
-#include <catch2/benchmark/catch_benchmark.hpp>
+#include "util/fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
-#include <memory>
-#include <pybind11/embed.h>
-#include <python_binding/binding/vtx_api.hpp>
-#include <python_binding/binding/vtx_module.hpp>
+#include <filesystem>
 #include <python_binding/interpretor.hpp>
 #include <python_binding/wrapper/object.hpp>
-#include <source_location>
+#include <string>
+#include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
-#include <util/logger.hpp>
-
-std::string src_info( const std::source_location location = std::source_location::current() )
-{
-	return std::string( "[" ) + location.file_name() + '(' + std::to_string( location.line() ) + ':'
-		   + std::to_string( location.column() ) + " '" + location.function_name() + "']";
-}
+#include <utility>
 
 TEST_CASE( "VTX_PYTHON_BINDING - Action binding test", "[python][binding][action]" )
 {
 	using namespace VTX;
-	App::Test::Util::PythonFixture f;
+	PythonBinding::Test::Fixture f;
 
 	PythonBinding::Interpretor & interpretor = f.interpretor;
 
@@ -39,7 +30,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
 {
 	using namespace VTX;
 
-	const App::Test::Util::PythonFixture f;
+	const PythonBinding::Test::Fixture f;
 
 	const PythonBinding::Interpretor & interpretor = f.interpretor;
 
@@ -53,98 +44,37 @@ TEST_CASE( "VTX_PYTHON_BINDING - Module loading", "[python][binding][module]" )
 
 	customModule.displayInfo();
 
-	try
-	{
-		customModule.runFunction<std::string>( "testStr" );
-		CHECK( true );
-	}
-	catch ( const std::exception & e )
-	{
-		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
-		CHECK( false );
-	}
+	CHECK_NOTHROW( customModule.runFunction<std::string>( "testStr" ) );
+	CHECK_NOTHROW( customModule.runFunction<std::string>( "testStr", "VTX" ) );
 
-	try
-	{
-		customModule.runFunction<std::string>( "testStr", "VTX" );
-		CHECK( true );
-	}
-	catch ( const std::exception & e )
-	{
-		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
-		CHECK( false );
-	}
+	CHECK_THROWS_AS( customModule.runFunction<int>( "iDontExist", "from VTX" ), PythonWrapperException );
+	CHECK_THROWS_AS(
+		( customModule.runFunction<int, int>(
+			"testStr", 182, std::pair<std::string, float>( "false signature", 4.f )
+		) ),
+		PythonWrapperException
+	);
+	CHECK_THROWS_AS(
+		( customModule.runFunction<std::pair<int, int>>( "testStr", "testStrWithParam" ) ), PythonWrapperException
+	);
 
-	try
-	{
-		customModule.runFunction<int>( "iDontExist", "from VTX" );
-		CHECK( false );
-	}
-	catch ( const PythonWrapperException & )
-	{
-		CHECK( true );
-	}
-	catch ( const std::exception & e )
-	{
-		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
-		CHECK( false );
-	}
+	PythonBinding::Wrapper::Object pythonObj
+		= customModule.runFunction<PythonBinding::Wrapper::Object>( "generatePythonTestClass" );
 
-	try
-	{
-		customModule.runFunction<int, int>( "testStr", 182, std::pair<std::string, float>( "false signature", 4.f ) );
-		CHECK( false );
-	}
-	catch ( const PythonWrapperException & )
-	{
-		CHECK( true );
-	}
-	catch ( const std::exception & e )
-	{
-		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
-		CHECK( false );
-	}
+	pythonObj.call( "print" );
 
-	try
-	{
-		customModule.runFunction<std::pair<int, int>>( "testStr", "testStrWithParam" );
-		CHECK( false );
-	}
-	catch ( const PythonWrapperException & )
-	{
-		CHECK( true );
-	}
-	catch ( const std::exception & e )
-	{
-		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
-		CHECK( false );
-	}
+	int value = pythonObj.call<int>( "get" );
+	CHECK( value == 10 );
 
-	try
-	{
-		PythonBinding::Wrapper::Object pythonObj
-			= customModule.runFunction<PythonBinding::Wrapper::Object>( "generatePythonTestClass" );
+	pythonObj.call( "set", 5 );
+	CHECK( pythonObj.call<int>( "get" ) == 5 );
 
-		pythonObj.call( "print" );
+	value = pythonObj.call<int, int>( "add", 7 );
+	CHECK( value == 12 );
+	CHECK( pythonObj.call<int>( "get" ) == 12 );
 
-		int value = pythonObj.call<int>( "get" );
-		CHECK( value == 10 );
+	CHECK( pythonObj.getMember<int>( "value" ) == 12 );
 
-		pythonObj.call( "set", 5 );
-		CHECK( pythonObj.call<int>( "get" ) == 5 );
-
-		value = pythonObj.call<int, int>( "add", 7 );
-		CHECK( value == 12 );
-		CHECK( pythonObj.call<int>( "get" ) == 12 );
-
-		CHECK( pythonObj.getMember<int>( "value" ) == 12 );
-
-		pythonObj.setMember( "value", 33 );
-		CHECK( pythonObj.getMember<int>( "value" ) == 33 );
-	}
-	catch ( const PythonWrapperException & e )
-	{
-		VTX_ERROR( "<{}> at {}", e.what(), src_info() );
-		CHECK( false );
-	}
-};
+	pythonObj.setMember( "value", 33 );
+	CHECK( pythonObj.getMember<int>( "value" ) == 33 );
+}
