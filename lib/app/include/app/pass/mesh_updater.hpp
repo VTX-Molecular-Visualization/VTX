@@ -17,6 +17,14 @@ namespace VTX::App::Pass
 	class MeshUpdater : public IPass
 	{
 	  public:
+		/**
+		 * @brief Flag that trigger update.
+		 */
+		static constexpr E_PENDING_UPDATE UPDATE_TRIGGERS = E_PENDING_UPDATE::PASSES;
+
+		/**
+		 * @brief Constructor.
+		 */
 		MeshUpdater();
 
 		/**
@@ -43,6 +51,9 @@ namespace VTX::App::Pass
 		void _onUpdateTransform( Registry &, Entity );
 		void _onDestroyMesh( Registry &, Entity );
 
+		/**
+		 * @brief Connections.
+		 */
 		Util::EventHub::ScopedConnection _meshLoadConnection;
 		Util::EventHub::ScopedConnection _transformUpdatedConnection;
 		Util::EventHub::ScopedConnection _meshDestroyedConnection;

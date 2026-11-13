@@ -14,11 +14,19 @@ namespace VTX::App::Pass
 	{
 	  public:
 		/**
+		 * @brief Flag that trigger update.
+		 */
+		static constexpr E_PENDING_UPDATE UPDATE_TRIGGERS = E_PENDING_UPDATE::TRAJECTORY;
+
+		/**
 		 * @brief Contructors.
 		 */
 		TrajectoryUpdater();
 		~TrajectoryUpdater() override;
 
+		/**
+		 * @brief Update each frame.
+		 */
 		void update( float, float );
 
 	  private:
@@ -32,7 +40,17 @@ namespace VTX::App::Pass
 		 */
 		void _stopLoader( Entity );
 
+		/**
+		 * @brief On player change, update mask.
+		 */
+		static void _onPlayerChange( Registry &, Entity );
+
+		/**
+		 * @brief Connections.
+		 */
 		Util::EventHub::ScopedConnection _loaderDestroyedConnection;
+		Util::EventHub::ScopedConnection _playerConstructedConnection;
+		Util::EventHub::ScopedConnection _playerUpdatedConnection;
 	};
 } // namespace VTX::App::Pass
 #endif

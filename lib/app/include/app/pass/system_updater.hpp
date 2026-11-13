@@ -25,6 +25,14 @@ namespace VTX::App::Pass
 	class SystemUpdater : public IPass
 	{
 	  public:
+		/**
+		 * @brief Flag that trigger update.
+		 */
+		static constexpr E_PENDING_UPDATE UPDATE_TRIGGERS = E_PENDING_UPDATE::PASSES;
+
+		/**
+		 * @brief Constructor.
+		 */
 		SystemUpdater();
 
 		/**
@@ -81,6 +89,9 @@ namespace VTX::App::Pass
 		void _onDestroyRepresentationPreset( Registry &, Entity );
 		void _setRepresentations();
 
+		/**
+		 * @brief Connections.
+		 */
 		Util::EventHub::ScopedConnection _systemLoadConnection;
 		Util::EventHub::ScopedConnection _trajectoryFrameChangedConnection;
 		Util::EventHub::ScopedConnection _topologyUpdatedConnection;

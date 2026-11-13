@@ -13,8 +13,19 @@ namespace VTX::App::Pass
 	class SceneUpdater : public IPass
 	{
 	  public:
+		/**
+		 * @brief Flag that trigger update.
+		 */
+		static constexpr E_PENDING_UPDATE UPDATE_TRIGGERS = E_PENDING_UPDATE::NONE;
+
+		/**
+		 * @brief Constructor.
+		 */
 		SceneUpdater( const Entity & );
 
+		/**
+		 * @brief Update each frame.
+		 */
 		void update( const float, const float ) noexcept {}
 
 	  private:
@@ -22,11 +33,6 @@ namespace VTX::App::Pass
 		 * @brief Scene entity.
 		 */
 		const Entity _entity;
-
-		/**
-		 * @brief Update the scene AABB when a system AABB is updated.
-		 */
-		void _onUpdateAABB( Registry &, Entity );
 
 		/**
 		 * @brief Update the scene AABB when a system transform is updated.
@@ -37,11 +43,6 @@ namespace VTX::App::Pass
 		 * @brief Recompute the scene AABB when a scene item is removed.
 		 */
 		void _onSceneItemDestroy( Registry &, Entity );
-
-		/**
-		 * @brief Recompute scene AABB from all scene items.
-		 */
-		void _recomputeSceneAABB( Registry &, Entity p_excluded = InvalidEntity );
 
 		/**
 		 * @brief Update renderer when a preset is instantiated.
@@ -60,7 +61,9 @@ namespace VTX::App::Pass
 		 */
 		void _onUpdateAccessibility( Registry &, Entity );
 
-		Util::EventHub::ScopedConnection _aabbUpdatedConnection;
+		/**
+		 * @brief Connections.
+		 */
 		Util::EventHub::ScopedConnection _transformUpdatedConnection;
 		Util::EventHub::ScopedConnection _systemDestroyedConnection;
 		Util::EventHub::ScopedConnection _meshDestroyedConnection;

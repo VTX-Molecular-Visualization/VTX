@@ -1,4 +1,5 @@
 #include "app/pass/mesh_updater.hpp"
+#include "app/pending_updates.hpp"
 #include "app/services.hpp"
 #include <core/struct/mesh.hpp>
 #include <renderer/renderer.hpp>
@@ -83,6 +84,7 @@ namespace VTX::App::Pass
 		assert( not _meshes.contains( p_event.mesh ) );
 
 		_meshAdded.emplace_back( p_event.mesh );
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::PASSES );
 	}
 
 	void MeshUpdater::_onUpdateTransform( Registry & p_registry, const Entity p_entity )
@@ -108,6 +110,7 @@ namespace VTX::App::Pass
 		}
 
 		_meshRemoved.emplace_back( it->second );
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::PASSES );
 		_meshes.erase( it );
 	}
 } // namespace VTX::App::Pass

@@ -1,4 +1,5 @@
 #include "app/pass/scene_updater.hpp"
+#include "app/helper/aabb.hpp"
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
 #include "app/services.hpp"
@@ -16,7 +17,6 @@ namespace VTX::App::Pass
 		auto & reg = REG();
 
 		// Update functions.
-		_aabbUpdatedConnection = reg.on_update<Util::Math::AABB>().connect<&SceneUpdater::_onUpdateAABB>( this );
 		_transformUpdatedConnection
 			= reg.on_update<Util::Math::Transform>().connect<&SceneUpdater::_onUpdateTransform>( this );
 		_systemDestroyedConnection
@@ -41,17 +41,6 @@ namespace VTX::App::Pass
 			= reg.on_update<Setting::Accessibility>().connect<&SceneUpdater::_onUpdateAccessibility>( this );
 	}
 
-	void SceneUpdater::_onUpdateAABB( Registry & p_r, Entity p_e )
-	{
-		// TODO: use event instead of this.
-		if ( p_e == _entity )
-		{
-			return;
-		}
-
-		_recomputeSceneAABB( p_r );
-	}
-
 	void SceneUpdater::_onUpdateTransform( Registry & p_r, Entity p_e )
 	{
 		// TODO: maybe be used custom event instead of this.
@@ -61,46 +50,11 @@ namespace VTX::App::Pass
 
 		if ( isSceneItem )
 		{
-			_recomputeSceneAABB( p_r );
+			Helper::AABB::invalidateScene();
 		}
 	}
 
-	void SceneUpdater::_onSceneItemDestroy( Registry & p_r, Entity p_e ) { _recomputeSceneAABB( p_r, p_e ); }
-
-	// TODO: remove p_excluded and use custom event to trigger after deletion.
-	void SceneUpdater::_recomputeSceneAABB( Registry & p_r, Entity p_excluded )
-	{
-		p_r.patch<Util::Math::AABB>(
-			_entity,
-			[ &p_r, p_excluded ]( Util::Math::AABB & p_sceneAABB )
-			{
-				p_sceneAABB.invalidate();
-
-				auto systems = p_r.view<Core::Struct::Topology, Util::Math::AABB, Util::Math::Transform>();
-				for ( const Entity system : systems )
-				{
-					if ( system == p_excluded )
-					{
-						continue;
-					}
-
-					const auto & [ aabb, transform ] = systems.get<Util::Math::AABB, Util::Math::Transform>( system );
-					p_sceneAABB.extend( aabb.transformed( transform ) );
-				}
-
-				auto meshes = p_r.view<Core::Struct::Mesh, Util::Math::AABB, Util::Math::Transform>();
-				for ( const Entity mesh : meshes )
-				{
-					if ( mesh == p_excluded )
-					{
-						continue;
-					}
-
-					const auto & [ aabb, transform ] = meshes.get<Util::Math::AABB, Util::Math::Transform>( mesh );
-					p_sceneAABB.extend( aabb.transformed( transform ) );
-				}
-			} );
-	}
+	void SceneUpdater::_onSceneItemDestroy( Registry &, Entity ) { Helper::AABB::invalidateScene(); }
 
 	void SceneUpdater::_onUpdateGraphicsConfig( Registry & p_r, Entity )
 	{

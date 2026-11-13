@@ -1,6 +1,7 @@
 #include "app/pass/trajectory_updater.hpp"
 #include "app/events.hpp"
 #include "app/helper/trajectory.hpp"
+#include "app/pending_updates.hpp"
 #include "app/services.hpp"
 #include "app/trajectory/loader.hpp"
 #include "app/trajectory/player.hpp"
@@ -17,7 +18,13 @@ namespace VTX::App::Pass
 	{
 		_loaderDestroyedConnection
 			= REG().on_destroy<Trajectory::Loader>().connect<&TrajectoryUpdater::_onDestroyLoader>( this );
+		_playerConstructedConnection
+			= REG().on_construct<Trajectory::Player>().connect<&TrajectoryUpdater::_onPlayerChange>();
+		_playerUpdatedConnection = REG().on_update<Trajectory::Player>().connect<&TrajectoryUpdater::_onPlayerChange>();
 	}
+
+	void TrajectoryUpdater::_onPlayerChange( Registry &, Entity )
+	{ PENDING_UPDATES().mark( E_PENDING_UPDATE::TRAJECTORY ); }
 
 	TrajectoryUpdater::~TrajectoryUpdater()
 	{
@@ -57,9 +64,11 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Check if a loaded frame is in the frame window.
 		 */
-		bool isLoadedFrameBatchCurrent( const Trajectory::LoadedFrameBatch &	 p_batch,
-										const Trajectory::TRAJECTORY_BUFFER_MODE p_mode,
-										const uint								 p_requestedFrame ) noexcept
+		bool isLoadedFrameBatchCurrent(
+			const Trajectory::LoadedFrameBatch &	 p_batch,
+			const Trajectory::TRAJECTORY_BUFFER_MODE p_mode,
+			const uint								 p_requestedFrame
+		) noexcept
 		{
 			return p_mode == Trajectory::TRAJECTORY_BUFFER_MODE::FULL
 				   || p_batch.availableFrames.contains( p_requestedFrame );
@@ -68,10 +77,12 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Add loaded frame to storage.
 		 */
-		void applyLoadedFrames( const Entity			   p_entity,
-								Core::Struct::Trajectory & p_trajectory,
-								Trajectory::Loader &	   p_loader,
-								const Trajectory::Player & p_player )
+		void applyLoadedFrames(
+			const Entity			   p_entity,
+			Core::Struct::Trajectory & p_trajectory,
+			Trajectory::Loader &	   p_loader,
+			const Trajectory::Player & p_player
+		)
 		{
 			std::optional<Trajectory::LoadedFrameBatch> batch = p_loader.thread->takeLoadedFrames();
 			if ( not batch )
@@ -103,7 +114,8 @@ namespace VTX::App::Pass
 			REG().patch<Trajectory::Loader>(
 				p_entity,
 				[ availableFrames = batch->availableFrames ]( Trajectory::Loader & p_component )
-				{ p_component.availableFrames = availableFrames; } );
+				{ p_component.availableFrames = availableFrames; }
+			);
 		}
 
 		/**
@@ -115,7 +127,8 @@ namespace VTX::App::Pass
 				p_entity,
 				p_player.requestedFrameIndex,
 				[ p_entity ]( const Core::Struct::FrameView p_frame )
-				{ HUB().trigger<Events::TrajectoryCurrentFrameChange>( { p_entity, p_frame } ); } );
+				{ HUB().trigger<Events::TrajectoryCurrentFrameChange>( { p_entity, p_frame } ); }
+			);
 		}
 
 		/**
@@ -133,8 +146,10 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Get buffer reading direction.
 		 */
-		Trajectory::TRAJECTORY_READ_DIRECTION getReadDirection( const Trajectory::Player & p_player,
-																const uint				   p_targetFrame ) noexcept
+		Trajectory::TRAJECTORY_READ_DIRECTION getReadDirection(
+			const Trajectory::Player & p_player,
+			const uint				   p_targetFrame
+		) noexcept
 		{
 			if ( p_targetFrame != p_player.currentFrameIndex )
 			{
@@ -151,19 +166,21 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Ask a frame window to the loader.
 		 */
-		void requestFrameWindow( Trajectory::Loader &			  loader,
-								 const Core::Struct::Trajectory & p_trajectory,
-								 const Trajectory::Player &		  p_player,
-								 const uint						  p_targetFrame )
+		void requestFrameWindow(
+			Trajectory::Loader &			 loader,
+			const Core::Struct::Trajectory & p_trajectory,
+			const Trajectory::Player &		 p_player,
+			const uint						 p_targetFrame
+		)
 		{
 			const Trajectory::TRAJECTORY_READ_DIRECTION direction = getReadDirection( p_player, p_targetFrame );
 			loader.thread->requestFrameWindow(
-				Helper::Trajectory::getFrameWindow( p_targetFrame,
-													static_cast<uint>( p_trajectory.frameCount ),
-													p_trajectory.frames.size(),
-													direction ),
+				Helper::Trajectory::getFrameWindow(
+					p_targetFrame, static_cast<uint>( p_trajectory.frameCount ), p_trajectory.frames.size(), direction
+				),
 				direction,
-				loader.availableFrames );
+				loader.availableFrames
+			);
 		}
 	} // namespace
 
@@ -193,6 +210,11 @@ namespace VTX::App::Pass
 				auto & player	  = REG().get<Trajectory::Player>( entity );
 				auto & loader	  = REG().get<Trajectory::Loader>( entity );
 				auto & trajectory = REG().get<Core::Struct::Trajectory>( entity );
+
+				if ( not player.paused )
+				{
+					PENDING_UPDATES().mark( E_PENDING_UPDATE::TRAJECTORY );
+				}
 
 				if ( loader.mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR
 					 || loader.availableFrames.getCount() < trajectory.frameCount )

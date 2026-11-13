@@ -1,19 +1,18 @@
 #include "app/pass/system_updater.hpp"
 #include "app/events.hpp"
+#include "app/helper/aabb.hpp"
+#include "app/helper/system.hpp"
 #include "app/helper/trajectory.hpp"
+#include "app/pending_updates.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
-#include <core/chemdb/atom.hpp>
 #include <renderer/renderer.hpp>
 #include <util/exceptions.hpp>
-#include <util/math/aabb.hpp>
-#include <util/math/grid.hpp>
 #include <util/math/transform.hpp>
-#include <util/types.hpp>
 #include <utility>
 
 namespace VTX::App::Pass
@@ -215,29 +214,22 @@ namespace VTX::App::Pass
 	{
 		assert( not _systems.contains( p_event.system ) );
 
-		REG().patch<Util::Math::AABB>( p_event.system, []( Util::Math::AABB & _ ) {} );
+		Helper::AABB::invalidateScene();
 		_systemAdded.emplace_back( p_event.system );
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::PASSES );
 	}
 
 	void SystemUpdater::_onTrajectoryCurrentFrameChange( const Events::TrajectoryCurrentFrameChange & p_event )
 	{
-		assert( _systems.contains( p_event.system ) );
+		const auto systemIt = _systems.find( p_event.system );
+		assert( systemIt != _systems.end() || std::ranges::find( _systemAdded, p_event.system ) != _systemAdded.end() );
 
-		Util::Math::AABB		aabb;
-		Util::Math::Grid<Index> atomGrid;
-		for ( Index atomIndex = 0; atomIndex < static_cast<Index>( p_event.frame.size() ); ++atomIndex )
+		Helper::AABB::invalidate( p_event.system );
+		Helper::System::invalidateAtomGrid( p_event.system );
+		if ( systemIt != _systems.end() )
 		{
-			const Vec3f & position = p_event.frame[ atomIndex ];
-			aabb.extend( position, Core::ChemDB::Atom::VDW_RADIUS_MIN );
-			atomGrid.add( atomIndex, position );
+			RENDERER().setSystemPositions( systemIt->second, p_event.frame );
 		}
-
-		REG().patch<Util::Math::Grid<Index>>(
-			p_event.system,
-			[ &atomGrid ]( Util::Math::Grid<Index> & p_atomGrid ) { p_atomGrid = std::move( atomGrid ); }
-		);
-		REG().patch<Util::Math::AABB>( p_event.system, [ &aabb ]( Util::Math::AABB & p_aabb ) { p_aabb = aabb; } );
-		RENDERER().setSystemPositions( _systems[ p_event.system ], p_event.frame );
 	}
 
 	void SystemUpdater::_onDestroySystem( Registry &, const Entity p_e )
@@ -254,6 +246,7 @@ namespace VTX::App::Pass
 		}
 
 		_systemRemoved.emplace_back( it->second );
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::PASSES );
 		_systems.erase( it );
 	}
 
@@ -310,6 +303,7 @@ namespace VTX::App::Pass
 		assert( not _representations.contains( p_e ) );
 
 		_representationAdded.emplace_back( p_e );
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::PASSES );
 	}
 
 	void SystemUpdater::_onUpdateRepresentationPreset( Registry &, const Entity p_e )
@@ -338,6 +332,7 @@ namespace VTX::App::Pass
 		}
 
 		_representationRemoved.emplace_back( it->second );
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::PASSES );
 		_representations.erase( it );
 	}
 
