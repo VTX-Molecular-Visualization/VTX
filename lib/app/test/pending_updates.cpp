@@ -52,7 +52,7 @@ TEST_CASE( "VTX_APP - PendingUpdates - producers raise their bits", "[integratio
 	CHECK( Util::Enum::hasAnyBit( PENDING_UPDATES().consume(), E_PENDING_UPDATE::INPUT ) );
 	INPUT().consume();
 
-	RENDERER().setNeedUpdate( true );
+	RENDERER().setNeedUpdate();
 	CHECK( Util::Enum::hasAnyBit( PENDING_UPDATES().consume(), E_PENDING_UPDATE::RENDER ) );
 
 	CHECK( app.runUntilIdle() );
@@ -99,23 +99,4 @@ TEST_CASE( "VTX_APP - PendingUpdates - runUntil timeout", "[integration]" )
 
 	CHECK( not app.runUntil( []() { return false; }, std::chrono::milliseconds( 10 ) ) );
 	CHECK( app.runUntil( []() { return true; }, std::chrono::milliseconds( 10 ) ) );
-}
-
-TEST_CASE( "VTX_APP - PendingUpdates - advance consumes pending bits", "[integration]" )
-{
-	using namespace VTX;
-	using namespace VTX::App;
-
-	Fixture app;
-	REQUIRE( app.runUntilIdle() );
-
-	CountingPass * const pass = PASS().addPass<CountingPass>();
-	REQUIRE( pass != nullptr );
-
-	PENDING_UPDATES().mark( E_PENDING_UPDATE::EVENTS );
-	app.advance( 0.f );
-	CHECK( pass->count == 1 );
-
-	PASS().removePass<CountingPass>();
-	CHECK( app.runUntilIdle() );
 }

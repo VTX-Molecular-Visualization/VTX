@@ -46,35 +46,39 @@ require(
     "Unexpected Vec4f",
 )
 
-transform = vtx.Transform()
-transform.position = vec3
-transform.rotation = vtx.Quatf(0.0, 0.0, 0.0)
-transform.scale = vtx.Vec3f(2.0, 2.0, 2.0)
+identity = vtx.Quatf()
 require(
-    almost_equal(transform.position.z, 3.0)
-    and almost_equal(transform.rotation.w, 1.0)
-    and almost_equal(transform.scale.x, 2.0),
-    "Unexpected transform",
+    almost_equal(identity.w, 1.0)
+    and almost_equal(identity.x, 0.0)
+    and almost_equal(identity.y, 0.0)
+    and almost_equal(identity.z, 0.0),
+    "Unexpected default quaternion",
 )
 
-resolution = vtx.Resolution(width=1280, height=720)
+explicit_quat = vtx.Quatf(0.5, 0.5, 0.5, 0.5)
 require(
-    resolution.name == "Custom"
-    and resolution.width == 1280
-    and resolution.height == 720,
-    "Unexpected resolution",
+    almost_equal(explicit_quat.w, 0.5) and almost_equal(explicit_quat.x, 0.5),
+    "Unexpected explicit quaternion",
 )
 
-for attribute, value in (("name", "HD"), ("width", 1920), ("height", 1080)):
-    try:
-        setattr(resolution, attribute, value)
-    except AttributeError:
-        pass
-    else:
-        raise AssertionError(f"Resolution.{attribute} must be read-only")
+half_sqrt2 = 0.5 ** 0.5
+yaw_quat = vtx.Quatf.fromEuler(0.0, 90.0, 0.0)
+require(
+    almost_equal(yaw_quat.w, half_sqrt2, 1e-4)
+    and almost_equal(yaw_quat.x, 0.0, 1e-4)
+    and almost_equal(yaw_quat.y, half_sqrt2, 1e-4)
+    and almost_equal(yaw_quat.z, 0.0, 1e-4),
+    "Unexpected quaternion from Euler angles",
+)
 
-vtx.setColorLayout("jmol")
-vtx.setGraphicsConfig("default")
+pitch_euler = vtx.Quatf.fromEuler(30.0, 0.0, 0.0).euler
+require(
+    almost_equal(pitch_euler.x, 30.0, 1e-3)
+    and almost_equal(pitch_euler.y, 0.0, 1e-3)
+    and almost_equal(pitch_euler.z, 0.0, 1e-3),
+    "Unexpected Euler angles from quaternion",
+)
+
 vtx.getColorLayoutPreset("jmol").apply()
 vtx.getGraphicsConfigPreset("default").apply()
 
@@ -123,13 +127,43 @@ require(
 
 for function_name in (
     "newScene",
-    "deleteSystem",
     "deleteSystemSelected",
     "makeSnapshot",
-    "associateTrajectory",
+    "openFile",
     "download",
+    "getSystem",
+    "getSystems",
+    "setResolution",
+    "getResolution",
 ):
     require(callable(getattr(vtx, function_name)), f"Missing binding: {function_name}")
+
+try:
+    vtx.download("../invalid")
+except ValueError:
+    pass
+else:
+    raise AssertionError("An invalid system id should raise ValueError")
+
+for removed_name in (
+    "setCameraFov",
+    "orientCamera",
+    "getSystemIdByName",
+    "associateTrajectory",
+    "deleteSystem",
+    "select",
+    "getSelectionState",
+    "setVisible",
+    "getVisibleState",
+    "setVisibleSelected",
+    "setColorScheme",
+    "setColorSchemeSelected",
+    "setRepresentation",
+    "setRepresentationSelected",
+    "setColorLayout",
+    "setGraphicsConfig",
+):
+    require(not hasattr(vtx, removed_name), f"Duplicate module binding should be removed: {removed_name}")
 
 for enum_name in (
     "REPRESENTATION_VALUE",
@@ -146,11 +180,10 @@ for enum_name in (
 representation_name = "Python smoke representation"
 vtx.createRepresentationPreset(representation_name)
 representation = vtx.getRepresentationPreset(representation_name.lower())
-representation_id = representation.id
 require(
     representation.name == representation_name
     and any(
-        preset.id == representation.id for preset in vtx.getRepresentationPresets()
+        preset == representation for preset in vtx.getRepresentationPresets()
     ),
     "Unexpected representation preset creation",
 )
@@ -186,11 +219,10 @@ representation_copy.delete()
 color_layout_name = "Python smoke color layout"
 vtx.createColorLayoutPreset(color_layout_name)
 color_layout = vtx.getColorLayoutPreset(color_layout_name.lower())
-color_layout_id = color_layout.id
 require(
     color_layout.name == color_layout_name
     and color_layout.colorCount == len(color_layout)
-    and any(preset.id == color_layout.id for preset in vtx.getColorLayoutPresets()),
+    and any(preset == color_layout for preset in vtx.getColorLayoutPresets()),
     "Unexpected color layout preset creation",
 )
 layout_color = vtx.Rgba(0.15, 0.25, 0.35, 0.45)
@@ -224,11 +256,10 @@ color_layout_copy.delete()
 graphics_config_name = "Python smoke graphics config"
 vtx.createGraphicsConfigPreset(graphics_config_name)
 graphics_config = vtx.getGraphicsConfigPreset(graphics_config_name.lower())
-graphics_config_id = graphics_config.id
 require(
     graphics_config.name == graphics_config_name
     and any(
-        preset.id == graphics_config.id for preset in vtx.getGraphicsConfigPresets()
+        preset == graphics_config for preset in vtx.getGraphicsConfigPresets()
     ),
     "Unexpected graphics config preset creation",
 )
@@ -311,14 +342,14 @@ representation.delete()
 color_layout.delete()
 graphics_config.delete()
 require(
-    all(preset.id != representation_id for preset in vtx.getRepresentationPresets())
-    and all(preset.id != color_layout_id for preset in vtx.getColorLayoutPresets())
-    and all(preset.id != graphics_config_id for preset in vtx.getGraphicsConfigPresets()),
+    all(preset != representation for preset in vtx.getRepresentationPresets())
+    and all(preset != color_layout for preset in vtx.getColorLayoutPresets())
+    and all(preset != graphics_config for preset in vtx.getGraphicsConfigPresets()),
     "Unexpected preset deletion",
 )
 
 position = vtx.Vec3f(1.0, 2.0, 3.0)
-rotation = vtx.Quatf(0.0, 0.0, 0.0)
+rotation = vtx.Quatf.fromEuler(0.0, 90.0, 0.0)
 
 vtx.camera.setPosition(position)
 vtx.camera.setRotation(rotation)
@@ -344,7 +375,9 @@ require(almost_equal(camera_position.x, position.x), "Unexpected camera position
 require(almost_equal(camera_position.y, position.y), "Unexpected camera position y")
 require(almost_equal(camera_position.z, position.z), "Unexpected camera position z")
 require(
-    almost_equal(camera_rotation.w, rotation.w), "Unexpected camera rotation w"
+    almost_equal(camera_rotation.w, rotation.w, 1e-4)
+    and almost_equal(camera_rotation.y, rotation.y, 1e-4),
+    "Unexpected camera rotation",
 )
 require(almost_equal(vtx.camera.fov, 45.0), "Unexpected camera field of view")
 require(almost_equal(vtx.camera.nearClip, 0.1), "Unexpected camera near clipping plane")
@@ -358,24 +391,67 @@ except NameError:
     system_path = "data/1AGA.mmtf"
 
 vtx.openFile(system_path)
-system = vtx.getSystemIdByPdb("1aga")
-require(system == vtx.getSystemIdByFileName("1aga.MMTF"), "File name lookup should ignore case")
-require(system == vtx.getSystemIdByFileName("1AGA"), "File stem lookup should ignore case")
+topology_system = vtx.getSystem("1aga")
+system = topology_system
+require(vtx.getSystem("1aga.MMTF") == system, "File name lookup should ignore case")
+require(vtx.getSystem("1AGA") == system, "File stem lookup should ignore case")
 require(
-    system
-    == vtx.getSystemIdByName(
-        "the agarose double helix and its function in agarose gel structure"
-    ),
+    vtx.getSystem("the agarose double helix and its function in agarose gel structure")
+    == system,
     "System name lookup should ignore case",
 )
-
-topology_system = vtx.getSystem("1aga")
-require(topology_system.id == system, "Unexpected topology system id")
+require(
+    len({topology_system, vtx.getSystem("1AGA")}) == 1,
+    "Systems referencing the same entity should hash and compare equal",
+)
+require(not hasattr(topology_system, "id"), "System must not expose its entity id")
+loaded_systems = vtx.getSystems()
+require(
+    len(loaded_systems) == 1 and loaded_systems[0] == system,
+    "Unexpected loaded systems",
+)
 require(
     topology_system.name.lower()
     == "the agarose double helix and its function in agarose gel structure",
     "Unexpected topology system name",
 )
+system_name = topology_system.name
+topology_system.setName("Python smoke system")
+require(topology_system.name == "Python smoke system", "Unexpected renamed system name")
+require(vtx.getSystem("python smoke system") == topology_system, "Renamed system lookup should ignore case")
+topology_system.setName(system_name)
+require(topology_system.name == system_name, "System name should be restored")
+
+system_position = topology_system.position
+system_rotation = topology_system.rotation
+system_scale = topology_system.scale
+topology_system.setPosition(vtx.Vec3f(1.0, 2.0, 3.0))
+topology_system.setRotation(vtx.Quatf.fromEuler(0.0, 90.0, 0.0))
+topology_system.setScale(vtx.Vec3f(2.0, 2.0, 2.0))
+moved_position = topology_system.position
+moved_rotation = topology_system.rotation
+moved_scale = topology_system.scale
+require(
+    almost_equal(moved_position.x, 1.0)
+    and almost_equal(moved_position.y, 2.0)
+    and almost_equal(moved_position.z, 3.0),
+    "Unexpected system position",
+)
+require(
+    almost_equal(abs(moved_rotation.w), 0.70710678, 1e-4)
+    and almost_equal(abs(moved_rotation.y), 0.70710678, 1e-4),
+    "Unexpected system rotation",
+)
+require(
+    almost_equal(moved_scale.x, 2.0)
+    and almost_equal(moved_scale.y, 2.0)
+    and almost_equal(moved_scale.z, 2.0),
+    "Unexpected system scale",
+)
+topology_system.setPosition(system_position)
+topology_system.setRotation(system_rotation)
+topology_system.setScale(system_scale)
+
 require("1aga" in topology_system.path.lower(), "Unexpected topology system path")
 require(topology_system.pdbIdCode.lower() == "1aga", "Unexpected topology system PDB id")
 require(
@@ -416,7 +492,7 @@ require(len(topology_categories[0:1]) == 1, "Unexpected category collection slic
 
 topology_chain = topology_system.getChain(0)
 require(topology_chain.name != "", "Unexpected chain name")
-require(topology_chain.getSystem().id == system, "Unexpected chain system")
+require(topology_chain.getSystem() == system, "Unexpected chain system")
 require(
     topology_chain.residueCount == len(topology_chain.getResidues())
     and topology_chain.atomCount == len(topology_chain.getAtoms()),
@@ -446,7 +522,7 @@ require(
 )
 topology_residue_category = topology_residue.getCategory()
 require(topology_residue_category.index >= 0, "Unexpected residue category")
-require(topology_residue.getSystem().id == system, "Unexpected residue system")
+require(topology_residue.getSystem() == system, "Unexpected residue system")
 
 topology_atom = topology_residue.getAtom(0)
 require(
@@ -461,7 +537,7 @@ require(
 )
 topology_atom_category = topology_atom.getCategory()
 require(topology_atom_category.index >= 0, "Unexpected atom category")
-require(topology_atom.getSystem().id == system, "Unexpected atom system")
+require(topology_atom.getSystem() == system, "Unexpected atom system")
 topology_atom_position = topology_atom.position
 topology_atom_aabb = topology_residue.getAtoms()[0:1].aabb
 require(
@@ -506,13 +582,21 @@ frame = topology_system.currentFrame
 require(frame.index == 0 and len(frame) == topology_system.atomCount, "Unexpected frame")
 require(trajectory.currentFrame.index == 0, "Unexpected trajectory current frame")
 require(trajectory.getFrame(0).index == 0 and trajectory[0].index == 0, "Unexpected trajectory indexing")
-trajectory.toggleStartPause()
-trajectory.play()
-trajectory.pause()
-trajectory.stop()
-trajectory.jumpTo(0)
-trajectory.setPlayMode(vtx.TRAJECTORY_PLAY_MODE.NONE)
-trajectory.setSpeed(35.0)
+for trajectory_command in (
+    lambda: trajectory.toggleStartPause(),
+    lambda: trajectory.play(),
+    lambda: trajectory.pause(),
+    lambda: trajectory.stop(),
+    lambda: trajectory.jumpTo(0),
+    lambda: trajectory.setPlayMode(vtx.TRAJECTORY_PLAY_MODE.NONE),
+    lambda: trajectory.setSpeed(35.0),
+):
+    try:
+        trajectory_command()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("A single-frame trajectory command should raise ValueError")
 frame_atom_position = frame[topology_atom.index]
 direct_frame_atom_position = frame.getAtomPosition(topology_atom.index)
 require(
@@ -532,10 +616,21 @@ require(
     and topology_category.atomCount == len(topology_category.getAtoms()),
     "Unexpected category metadata",
 )
-require(topology_category.getSystem().id == system, "Unexpected category system")
+require(topology_category.getSystem() == system, "Unexpected category system")
 
 topology_bond = topology_system.getBond(0)
-require(topology_bond.getSystem().id == system, "Unexpected bond system")
+require(topology_bond.getSystem() == system, "Unexpected bond system")
+require(
+    topology_system.getChain(0) == topology_chain
+    and topology_chain.getResidue(0) == topology_residue
+    and topology_residue.getAtom(0) == topology_atom
+    and topology_system.getCategory(0) == topology_category
+    and topology_system.getBond(topology_bond.index) == topology_bond
+    and topology_system.getResidue(1) != topology_residue
+    and topology_system.getChain(0) != topology_system.getResidue(0)
+    and len({topology_atom, topology_residue.getAtom(0)}) == 1,
+    "Unexpected topology handle equality",
+)
 
 for topology_item in (
     topology_system,
@@ -548,7 +643,7 @@ for topology_item in (
     require(topology_item.aabb.valid, "Unexpected topology AABB")
 
 vtx.selectAll()
-require(vtx.getSelectionState(system) == vtx.SELECTION_STATE.FULL, "System should be selected")
+require(topology_system.selectionState == vtx.SELECTION_STATE.FULL, "System should be selected")
 require(
     topology_system.isSelected() and topology_system.isFullySelected(),
     "Topology system should be selected",
@@ -560,8 +655,8 @@ require(
     and len(vtx.selection.getAtoms(topology_system)) == topology_system.atomCount,
     "Unexpected complete selection",
 )
-vtx.clearSelection(system)
-require(vtx.getSelectionState(system) == vtx.SELECTION_STATE.NONE, "System selection should be cleared")
+topology_system.clearSelection()
+require(topology_system.selectionState == vtx.SELECTION_STATE.NONE, "System selection should be cleared")
 require(
     not topology_system.isSelected() and not topology_system.isFullySelected(),
     "Topology system selection should be cleared",
@@ -569,15 +664,26 @@ require(
 require(vtx.selection.isEmpty(topology_system), "System selection should be empty")
 require(len(vtx.selection.getSystems()) == 0, "Selected system collection should be empty")
 
-vtx.select(system, vtx.SYSTEM_ITEM.RESIDUE, [0, 1, 2], True, False)
+topology_system.getResidues([0, 1, 2]).setSelected()
 require(
-    vtx.getSelectionState(system, vtx.SYSTEM_ITEM.RESIDUE, 0) == vtx.SELECTION_STATE.FULL,
+    topology_system.getResidue(0).selectionState == vtx.SELECTION_STATE.FULL,
     "Residue 0 should be selected",
 )
 require(
-    vtx.getSelectionState(system, vtx.SYSTEM_ITEM.RESIDUE, 3) == vtx.SELECTION_STATE.NONE,
+    topology_system.getResidue(3).selectionState == vtx.SELECTION_STATE.NONE,
     "Residue 3 should not be selected",
 )
+require(
+    [residue.index for residue in topology_system.getResidues((0, 2))] == [0, 2]
+    and [atom.index for atom in topology_system.getAtoms(vtx.Range(1, 3))] == [1, 2],
+    "Unexpected collection built from indices",
+)
+try:
+    topology_system.getResidues([topology_system.residueCount])
+except IndexError:
+    pass
+else:
+    raise AssertionError("Out of range residue indices should raise IndexError")
 require(
     topology_residue.isSelected() and topology_residue.isFullySelected(),
     "Topology residue should be selected",
@@ -602,7 +708,7 @@ expected_category_indices = sorted(
 )
 
 require(
-    len(selected_systems) == 1 and selected_systems[0].id == system,
+    len(selected_systems) == 1 and selected_systems[0] == system,
     "Unexpected selected system collection",
 )
 require(not vtx.selection.isEmpty(topology_system), "System selection should not be empty")
@@ -627,42 +733,45 @@ require(
     "Unexpected selected residue collection access",
 )
 
-vtx.setColorScheme(system, vtx.COLOR_SCHEME.CHAIN)
-vtx.setColorScheme(
-    system,
-    vtx.COLOR_SCHEME.RESIDUE,
-    vtx.SYSTEM_ITEM.RESIDUE,
-    vtx.RangeList(vtx.Range(0, 2)),
+topology_system.setColorScheme(vtx.COLOR_SCHEME.CHAIN)
+topology_system.getResidues(vtx.RangeList(vtx.Range(0, 2))).setColorScheme(
+    vtx.COLOR_SCHEME.RESIDUE
 )
-vtx.setColorSchemeSelected(vtx.COLOR_SCHEME.CUSTOM, 228)
-vtx.setColorSchemeSelected(vtx.COLOR_SCHEME.RESIDUE)
-vtx.setSecondaryStructureColorScheme(
-    system, vtx.SECONDARY_STRUCTURE_COLOR_SCHEME.STRUCTURE
+topology_system.getResidues([0, 1]).setColorScheme(vtx.COLOR_SCHEME.CUSTOM, 228)
+topology_chain.setColorScheme(vtx.COLOR_SCHEME.ATOM)
+topology_residue.setColorScheme(vtx.COLOR_SCHEME.RESIDUE)
+topology_atom.setColorScheme(vtx.COLOR_SCHEME.CUSTOM, 228)
+topology_category.setColorScheme(vtx.COLOR_SCHEME.CHAIN)
+try:
+    topology_system.setColorScheme(vtx.COLOR_SCHEME.CUSTOM)
+except ValueError:
+    pass
+else:
+    raise AssertionError("A custom color scheme without color index should raise ValueError")
+vtx.selection.setColorScheme(vtx.COLOR_SCHEME.CUSTOM, 228)
+vtx.selection.setColorScheme(vtx.COLOR_SCHEME.RESIDUE)
+topology_system.setSecondaryStructureColorScheme(
+    vtx.SECONDARY_STRUCTURE_COLOR_SCHEME.STRUCTURE
 )
-vtx.setRepresentation("sticks")
-vtx.setRepresentation(system, "sticks and ribbons")
-vtx.setRepresentation(
-    system,
-    "sticks",
-    vtx.SYSTEM_ITEM.RESIDUE,
-    vtx.RangeList(vtx.Range(0, 2)),
+topology_residues.setSecondaryStructureColorScheme(
+    vtx.SECONDARY_STRUCTURE_COLOR_SCHEME.STRUCTURE
 )
-vtx.setRepresentationSelected("sticks")
+vtx.getRepresentationPreset("sticks").apply()
+topology_system.setRepresentation("sticks and ribbons")
+topology_system.getResidues(vtx.Range(0, 2)).setRepresentation("sticks")
+topology_chain.setRepresentation("sticks")
 representation_preset = vtx.getRepresentationPreset("sticks")
-representation_preset.apply(topology_system)
-representation_preset.apply(
-    topology_system,
-    vtx.SYSTEM_ITEM.RESIDUE,
-    vtx.RangeList(vtx.Range(0, 2)),
-)
+topology_system.setRepresentation(representation_preset)
+topology_system.getResidues(vtx.Range(0, 2)).setRepresentation(representation_preset)
 vtx.selection.setRepresentation("sticks")
 vtx.selection.setRepresentation(representation_preset)
 vtx.selection.show()
 vtx.selection.hide()
 
-vtx.setVisibleSelected(False)
+topology_residue.setRepresentation(representation_preset)
+vtx.selection.hide()
 require(
-    vtx.getVisibleState(system, vtx.SYSTEM_ITEM.RESIDUE, 0) == vtx.VISIBLE_STATE.HIDDEN,
+    topology_system.getResidue(0).visibleState == vtx.VISIBLE_STATE.HIDDEN,
     "Selected residue should be hidden",
 )
 require(
@@ -670,24 +779,24 @@ require(
     "Topology residue should be hidden",
 )
 require(
-    vtx.getVisibleState(system, vtx.SYSTEM_ITEM.RESIDUE, 3) == vtx.VISIBLE_STATE.VISIBLE,
+    topology_system.getResidue(3).visibleState == vtx.VISIBLE_STATE.VISIBLE,
     "Unselected residue should remain visible",
 )
 
-vtx.setVisible(system, vtx.SYSTEM_ITEM.RESIDUE, [0, 1, 2], True)
+topology_system.getResidues([0, 1, 2]).setVisible(True)
 require(
-    vtx.getVisibleState(system, vtx.SYSTEM_ITEM.RESIDUE, 0) == vtx.VISIBLE_STATE.VISIBLE,
+    topology_system.getResidue(0).visibleState == vtx.VISIBLE_STATE.VISIBLE,
     "Residue should be visible",
 )
 
 vtx.hideAll()
-require(vtx.getVisibleState(system) == vtx.VISIBLE_STATE.HIDDEN, "System should be hidden")
+require(topology_system.visibleState == vtx.VISIBLE_STATE.HIDDEN, "System should be hidden")
 require(
     not topology_system.isVisible() and not topology_system.isFullyVisible(),
     "Topology system should be hidden",
 )
 vtx.showAll()
-require(vtx.getVisibleState(system) == vtx.VISIBLE_STATE.VISIBLE, "System should be visible")
+require(topology_system.visibleState == vtx.VISIBLE_STATE.VISIBLE, "System should be visible")
 require(
     topology_system.isVisible() and topology_system.isFullyVisible(),
     "Topology system should be visible",
@@ -698,12 +807,84 @@ vtx.camera.orient(topology_system.aabb)
 vtx.camera.orient(topology_system)
 vtx.camera.orient(topology_chain)
 vtx.camera.orient(topology_residues)
-vtx.orientCamera(topology_system.aabb)
-vtx.camera.straightTravel(position, rotation, 500.0)
+vtx.camera.straightTravel(position, rotation, 200.0)
+travel_position = vtx.camera.position
+require(
+    almost_equal(travel_position.x, position.x, 1e-3)
+    and almost_equal(travel_position.y, position.y, 1e-3)
+    and almost_equal(travel_position.z, position.z, 1e-3),
+    "Animated straight travel should wait for the end of the animation",
+)
+vtx.camera.orient(topology_system, duration=200.0)
 vtx.camera.reset()
 
+viewpoint_count = len(vtx.camera.getViewpoints())
+viewpoint = vtx.camera.saveViewpoint("Python smoke viewpoint")
+require(viewpoint.name == "Python smoke viewpoint", "Unexpected viewpoint name")
+require(vtx.camera.getViewpoint("python smoke viewpoint") == viewpoint, "Viewpoint lookup should ignore case")
+require(len(vtx.camera.getViewpoints()) == viewpoint_count + 1, "Viewpoint should be listed")
+require(
+    len({viewpoint, vtx.camera.getViewpoint("Python smoke viewpoint")}) == 1,
+    "Viewpoints referencing the same entity should hash and compare equal",
+)
+default_viewpoint = vtx.camera.saveViewpoint()
+require(default_viewpoint != viewpoint and default_viewpoint.name == "Viewpoint", "Unexpected default viewpoint")
+default_viewpoint.delete()
+require(len(vtx.camera.getViewpoints()) == viewpoint_count + 1, "Deleted viewpoint should not be listed")
+try:
+    default_viewpoint.goTo()
+except ValueError:
+    pass
+else:
+    raise AssertionError("Deleted viewpoint should raise ValueError")
+
+viewpoint.setName("Python smoke viewpoint renamed")
+viewpoint.setPosition(vtx.Vec3f(4.0, 5.0, 6.0))
+viewpoint.setRotation(vtx.Quatf.fromEuler(0.0, 90.0, 0.0))
+viewpoint_position = viewpoint.position
+viewpoint_rotation = viewpoint.rotation
+require(viewpoint.name == "Python smoke viewpoint renamed", "Unexpected renamed viewpoint")
+require(
+    almost_equal(viewpoint_position.x, 4.0)
+    and almost_equal(viewpoint_position.y, 5.0)
+    and almost_equal(viewpoint_position.z, 6.0),
+    "Unexpected viewpoint position",
+)
+require(
+    almost_equal(abs(viewpoint_rotation.w), 0.70710678, 1e-4)
+    and almost_equal(abs(viewpoint_rotation.y), 0.70710678, 1e-4),
+    "Unexpected viewpoint rotation",
+)
+for duration in (0.0, 200.0):
+    vtx.camera.reset()
+    viewpoint.goTo(duration=duration)
+    goto_position = vtx.camera.position
+    require(
+        almost_equal(goto_position.x, 4.0, 1e-3)
+        and almost_equal(goto_position.y, 5.0, 1e-3)
+        and almost_equal(goto_position.z, 6.0, 1e-3),
+        f"Camera should be at the viewpoint after goTo(duration={duration})",
+    )
+viewpoint.updateFromCamera()
+viewpoint.target
+viewpoint.goTo()
+viewpoint.delete()
+require(len(vtx.camera.getViewpoints()) == viewpoint_count, "Viewpoint should be deleted")
+
+original_resolution = vtx.getResolution()
+vtx.setResolution(640, 480)
+require(vtx.getResolution() == (640, 480), "Unexpected resolution")
+try:
+    vtx.setResolution(0, 480)
+except ValueError:
+    pass
+else:
+    raise AssertionError("A zero resolution should raise ValueError")
+vtx.setResolution(*original_resolution)
+require(vtx.getResolution() == original_resolution, "Resolution should be restored")
+
 vtx.clearSelection()
-require(vtx.getSelectionState(system) == vtx.SELECTION_STATE.NONE, "Selection should be cleared")
+require(topology_system.selectionState == vtx.SELECTION_STATE.NONE, "Selection should be cleared")
 require(vtx.selection.isEmpty(topology_system), "System selection should be empty")
 require(len(vtx.selection.getSystems()) == 0, "Selected system collection should be empty")
 require(len(vtx.selection.getAtoms(topology_system)) == 0, "Selected atom collection should be empty")

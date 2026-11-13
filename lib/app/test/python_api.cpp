@@ -471,7 +471,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	 */
 	using namespace VTX;
 	using namespace VTX::App;
-	const App::Fixture app( Test::pythonArguments() );
+	App::Fixture app( Test::pythonArguments() );
 
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";
@@ -479,12 +479,14 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runScript( scriptPath, promise );
+	REQUIRE( app.runUntilReady( future, App::Fixture::SCRIPT_TIMEOUT ) );
 	CHECK( future.get().success == true );
 	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
 
 	promise										= std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult> badScriptFuture = promise->get_future();
 	App::INTERPRETOR().runScript( badScriptPath, promise );
+	REQUIRE( app.runUntilReady( badScriptFuture, App::Fixture::SCRIPT_TIMEOUT ) );
 	CHECK( badScriptFuture.get().success == false );
 }
 
@@ -492,7 +494,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python binding smoke test", "[python][binding][
 {
 	using namespace VTX;
 	using namespace VTX::App;
-	const App::Fixture app( Test::pythonArguments() );
+	App::Fixture app( Test::pythonArguments() );
 
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "python_binding_smoke.py";
@@ -501,10 +503,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python binding smoke test", "[python][binding][
 	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runScript( scriptPath, promise );
 
-	while ( future.wait_for( std::chrono::milliseconds( 1 ) ) != std::future_status::ready )
-	{
-		THREAD().update();
-	}
+	REQUIRE( app.runUntilReady( future, App::Fixture::SCRIPT_TIMEOUT ) );
 	const AsyncJobResult result = future.get();
 	INFO( result.resultStr );
 	CHECK( result.success == true );
@@ -524,10 +523,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python trajectory binding smoke test", "[python
 	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runScript( scriptPath, promise );
 
-	while ( future.wait_for( std::chrono::milliseconds( 1 ) ) != std::future_status::ready )
-	{
-		THREAD().update();
-	}
+	REQUIRE( app.runUntilReady( future, App::Fixture::SCRIPT_TIMEOUT ) );
 	const AsyncJobResult result = future.get();
 	INFO( result.resultStr );
 	CHECK( result.success == true );

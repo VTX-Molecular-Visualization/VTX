@@ -2,6 +2,8 @@
 #include <app/extractor/system.hpp>
 #include <app/fixture.hpp>
 #include <app/helper/trajectory.hpp>
+#include <app/pass/pass_manager.hpp>
+#include <app/pending_updates.hpp>
 #include <app/services.hpp>
 #include <app/trajectory/loader.hpp>
 #include <app/trajectory/player.hpp>
@@ -48,11 +50,10 @@ namespace
 		Util::EventHub::ScopedConnection _destroyConnection;
 	};
 
-	void associateTrajectory( App::Fixture & p_app, const Entity p_entity, const FilePath & p_path )
+	void associateTrajectory( const Entity p_entity, const FilePath & p_path )
 	{
 		App::Extractor::System extractor( p_entity, p_path );
 		extractor( Util::Thread::StopToken(), std::nullopt );
-		p_app.advance( 0.f );
 	}
 } // namespace
 
@@ -215,17 +216,17 @@ TEST_CASE( "VTX_APP - Trajectory player replacement lifecycle", "[integration][t
 	const TrajectoryPlayerLifecycleObserver observer;
 	const FilePath							dataDirectory = Util::Filesystem::getExecutableDir() / "data";
 
-	associateTrajectory( app, entity, dataDirectory / "1gcn_traj.xtc" );
+	associateTrajectory( entity, dataDirectory / "1gcn_traj.xtc" );
 	CHECK( observer.constructCount == 1 );
 	CHECK( observer.destroyCount == 0 );
 	CHECK( REG().all_of<Trajectory::Player, Trajectory::Loader>( entity ) );
 
-	associateTrajectory( app, entity, dataDirectory / "1gcn_traj.xtc" );
+	associateTrajectory( entity, dataDirectory / "1gcn_traj.xtc" );
 	CHECK( observer.constructCount == 2 );
 	CHECK( observer.destroyCount == 1 );
 	CHECK( REG().all_of<Trajectory::Player, Trajectory::Loader>( entity ) );
 
-	associateTrajectory( app, entity, dataDirectory / "1gcn.pdb" );
+	associateTrajectory( entity, dataDirectory / "1gcn.pdb" );
 	CHECK( observer.constructCount == 2 );
 	CHECK( observer.destroyCount == 2 );
 	CHECK_FALSE( REG().any_of<Trajectory::Player, Trajectory::Loader>( entity ) );
@@ -251,7 +252,6 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 	bufferSettings.circularBufferFrameCount = circularCapacity;
 	Extractor::System extractor( entity, trajectoryPath, IO::READER_OPTION::ALL, bufferSettings );
 	extractor( Util::Thread::StopToken(), std::nullopt );
-	app.advance( 0.f );
 
 	const auto & loader = REG().get<Trajectory::Loader>( entity );
 	CHECK( loader.mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR );
@@ -263,20 +263,20 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 	const Core::Struct::Topology & topology = REG().get<Core::Struct::Topology>( entity );
 	Action::Trajectory::SetPaused().execute( entity, true );
 
-	const uint lastFrame = static_cast<uint>( trajectory.frameCount - 1 );
+	const uint	   lastFrame			 = static_cast<uint>( trajectory.frameCount - 1 );
+	const uint64_t initialRequestVersion = loader.thread->getRequestVersion();
 	Action::Trajectory::JumpTo().execute( entity, lastFrame );
-	app.advance( 0.f );
+	REQUIRE( app.runUntil( [ &loader, initialRequestVersion ]
+						   { return loader.thread->getRequestVersion() > initialRequestVersion; } ) );
 	const uint64_t staleRequestVersion = loader.thread->getRequestVersion();
 	Action::Trajectory::JumpTo().execute( entity, 0 );
-	app.advance( 0.f );
-	CHECK( loader.thread->getRequestVersion() > staleRequestVersion );
+	CHECK( app.runUntil( [ &loader, staleRequestVersion ]
+						 { return loader.thread->getRequestVersion() > staleRequestVersion; } ) );
 	REQUIRE( app.runUntil( [ entity ] { return Helper::Trajectory::isFrameAvailable( entity, 0 ); } ) );
 
 	Action::Trajectory::JumpTo().execute( entity, lastFrame );
-	app.advance( 0.f );
 	REQUIRE( app.runUntil( [ entity, lastFrame ]
-						   { return Helper::Trajectory::isFrameAvailable( entity, lastFrame ); } ) );
-	app.advance( 0.f );
+						   { return REG().get<Trajectory::Player>( entity ).currentFrameIndex == lastFrame; } ) );
 
 	Trajectory::FrameRange availableFrames = loader.availableFrames;
 	CHECK( availableFrames == Trajectory::FrameRange( lastFrame + 1 - circularCapacity, lastFrame + 1 ) );
@@ -291,9 +291,7 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 	CHECK( REG().get<Trajectory::Player>( entity ).currentFrameIndex == lastFrame );
 
 	Action::Trajectory::JumpTo().execute( entity, 0 );
-	app.advance( 0.f );
-	REQUIRE( app.runUntil( [ entity ] { return Helper::Trajectory::isFrameAvailable( entity, 0 ); } ) );
-	app.advance( 0.f );
+	REQUIRE( app.runUntil( [ entity ] { return REG().get<Trajectory::Player>( entity ).currentFrameIndex == 0; } ) );
 
 	availableFrames = loader.availableFrames;
 	CHECK( availableFrames == Trajectory::FrameRange( 0, circularCapacity ) );
@@ -308,13 +306,14 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 	CHECK( REG().get<Trajectory::Player>( entity ).currentFrameIndex == 0 );
 
 	const uint64_t requestVersion = loader.thread->getRequestVersion();
-	app.advance( 1000.f );
+	PASS().update( E_PENDING_UPDATE::TRAJECTORY, 1000.f, 0.f );
 	std::this_thread::sleep_for( std::chrono::milliseconds( 20 ) );
 	CHECK( loader.thread->getRequestVersion() == requestVersion );
 	CHECK( loader.availableFrames == availableFrames );
 
 	Action::Trajectory::JumpTo().execute( entity, lastFrame );
-	app.advance( 0.f );
+	REQUIRE( app.runUntil( [ &loader, requestVersion ]
+						   { return loader.thread->getRequestVersion() > requestVersion; } ) );
 	REG().destroy( entity );
 	CHECK_FALSE( REG().valid( entity ) );
 }
