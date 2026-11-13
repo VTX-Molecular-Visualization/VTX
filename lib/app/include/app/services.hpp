@@ -13,11 +13,6 @@ namespace VTX::App
 		class InputManager;
 	}
 
-	namespace Network
-	{
-		class NetworkManager;
-	}
-
 	namespace Pass
 	{
 		class PassManager;
@@ -80,11 +75,6 @@ namespace VTX::App
 	 * @brief Python interpretor.
 	 */
 	PythonBinding::Interpretor & INTERPRETOR();
-
-	/**
-	 * @brief Network manager.
-	 */
-	Network::NetworkManager & NETWORK();
 
 	/**
 	 * @brief Pass manager.
