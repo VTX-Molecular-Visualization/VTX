@@ -10,6 +10,9 @@
 
 namespace VTX
 {
+	/**
+	 * @brief Custom exception types.
+	 */
 	class Exception : public std::runtime_error
 	{
 	  protected:
@@ -170,18 +173,21 @@ namespace VTX
 	class NotImplementedException : public VTXException
 	{
 	  public:
-		explicit NotImplementedException() : VTXException( "feature not implemented" )
-
-		{
-		}
+		explicit NotImplementedException() : VTXException( "feature not implemented" ) {}
 	};
 } // namespace VTX
 
 namespace VTX::Util
 {
+	/**
+	 * @brief Object that run function and collect first exception, logging others.
+	 */
 	class ExceptionCollector
 	{
 	  public:
+		/**
+		 * @brief Run function.
+		 */
 		template<typename F>
 		void run( const std::string_view p_context, F && p_function ) noexcept
 		{
@@ -195,8 +201,14 @@ namespace VTX::Util
 			}
 		}
 
+		/**
+		 * @brief Get _error and log.
+		 */
 		void collect( std::string_view p_context ) noexcept;
 
+		/**
+		 * @brief Rethrow saved exception.
+		 */
 		void rethrow() const
 		{
 			if ( _error )
@@ -206,6 +218,9 @@ namespace VTX::Util
 		}
 
 	  private:
+		/**
+		 * @brief Saved exception.
+		 */
 		std::exception_ptr _error;
 	};
 } // namespace VTX::Util
