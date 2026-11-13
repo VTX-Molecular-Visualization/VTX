@@ -2,7 +2,10 @@
 #include "python_binding/binding/vtx_module.hpp"
 #include <pybind11/eval.h>
 #include <pybind11/pybind11.h>
+#include <string>
 #include <util/logger.hpp>
+#include <utility>
+#include <vector>
 
 namespace VTX::PythonBinding::Wrapper
 {
@@ -40,22 +43,19 @@ namespace VTX::PythonBinding::Wrapper
 
 		try
 		{
-			pybind11::list pyList
-				= pybind11::eval( fmt::format( "dir({}.Command)", vtx_module_name() ) ).cast<pybind11::list>();
+			const pybind11::list pyList = pybind11::module_::import( "builtins" )
+											  .attr( "dir" )( pybind11::module_::import( vtx_module_name() ) )
+											  .cast<pybind11::list>();
 
 			res.reserve( pyList.size() );
 
 			for ( const auto & value : pyList )
 			{
-				res.emplace_back( value.cast<std::string>() );
-			}
-			pyList = pybind11::eval( fmt::format( "dir({}.API)", vtx_module_name() ) ).cast<pybind11::list>();
-
-			res.reserve( res.size() + pyList.size() );
-
-			for ( const auto & value : pyList )
-			{
-				res.emplace_back( value.cast<std::string>() );
+				std::string name = value.cast<std::string>();
+				if ( not name.starts_with( '_' ) )
+				{
+					res.emplace_back( std::move( name ) );
+				}
 			}
 		}
 		catch ( const pybind11::error_already_set & e )

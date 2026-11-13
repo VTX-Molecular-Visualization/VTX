@@ -17,7 +17,7 @@ PYBIND11_EMBEDDED_MODULE( vtx, m, pybind11::multiple_interpreters::per_interpret
 	// logger makes it weird at app teardown. To solve this behavior without changing how VTX implements singletons, we
 	// integrated the module into the python_binding binary (which is in the main executable binary at the time I write
 	// this contextuel comment)
-	VTX::PythonBinding::Binding::applyModuleCustomization( m );
+	VTX::PythonBinding::Binding::applyVtxApiBinding( m );
 }
 
 namespace VTX::PythonBinding

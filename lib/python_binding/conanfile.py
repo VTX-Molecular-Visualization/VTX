@@ -108,7 +108,7 @@ class VTXPythonBindingRecipe(ConanFile):
 
     generators = "CMakeDeps"
 
-    exports_sources = "CMakeLists.txt", "src/*", "module/*", "include/*", "cmake/*", "python_script/*", "test/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "python_script/*", "test/*"
 
     def _python_version(self):
         return get_python_version(str(self.options.python_version))
