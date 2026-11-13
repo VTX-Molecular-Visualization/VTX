@@ -1,7 +1,8 @@
 #include "ui/qt/dialog/open.hpp"
 #include "ui/qt/settings.hpp"
-#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
+#include <app/services.hpp>
+#include <util/action_manager.hpp>
 
 namespace VTX::UI::QT::Dialog
 {

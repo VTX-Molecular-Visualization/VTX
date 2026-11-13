@@ -11,6 +11,7 @@
 #include <app/generic/name.hpp>
 #include <app/services.hpp>
 #include <memory>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree

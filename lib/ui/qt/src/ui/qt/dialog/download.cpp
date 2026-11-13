@@ -7,10 +7,11 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QVBoxLayout>
-#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/constants.hpp>
+#include <app/services.hpp>
 #include <app/session.hpp>
+#include <util/action_manager.hpp>
 
 namespace
 {

@@ -6,9 +6,10 @@
 #include "ui/qt/widget/actionable_push_button.hpp"
 #include "ui/qt/widget/expandable_tool_bar.hpp"
 #include <QLabel>
-#include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
+#include <app/services.hpp>
 #include <renderer/camera.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget

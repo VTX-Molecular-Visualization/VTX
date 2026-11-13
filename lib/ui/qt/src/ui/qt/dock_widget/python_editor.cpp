@@ -8,6 +8,7 @@
 #include <QToolBar>
 #include <app/action/io.hpp>
 #include <app/services.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
 

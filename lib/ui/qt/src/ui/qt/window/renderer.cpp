@@ -1,10 +1,11 @@
 #include "ui/qt/window/renderer.hpp"
 #include <QGuiApplication>
 #include <QStyleHints>
-#include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/services.hpp>
 #include <array>
+#include <renderer/renderer.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 #include <utility>
 
@@ -48,6 +49,15 @@ namespace VTX::UI::QT::Window
 	{
 		_keyboardLayoutChangedConnection
 			= App::HUB().connect<Events::KeyboardLayoutChanged, &Renderer::_onKBLayoutChange>( this );
+	}
+
+	void Renderer::exposeEvent( QExposeEvent * const p_event )
+	{
+		QWindow::exposeEvent( p_event );
+		if ( isExposed() )
+		{
+			App::RENDERER().setNeedUpdate();
+		}
 	}
 
 	void Renderer::keyPressEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, true ); }

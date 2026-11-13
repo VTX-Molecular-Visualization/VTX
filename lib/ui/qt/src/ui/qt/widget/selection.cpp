@@ -7,7 +7,6 @@
 #include <QPoint>
 #include <QUrl>
 #include <algorithm>
-#include <app/action/action_manager.hpp>
 #include <app/action/system.hpp>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
@@ -15,6 +14,7 @@
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
 #include <io/reader.hpp>
+#include <util/action_manager.hpp>
 #include <util/chrono.hpp>
 
 namespace VTX::UI::QT::Widget

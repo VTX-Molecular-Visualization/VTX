@@ -143,7 +143,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Ask for a render update.
 		 */
-		void setNeedUpdate( const bool ) noexcept { _markDirty( Cache::E_RENDERER_DIRTY::NEED_UPDATE ); }
+		void setNeedUpdate() noexcept { _markDirty( Cache::E_RENDERER_DIRTY::NEED_UPDATE ); }
 
 		/**
 		 * @brief Force update each frame.

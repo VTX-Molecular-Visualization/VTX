@@ -7,11 +7,11 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPushButton>
-#include <app/action/action_manager.hpp>
 #include <app/action/graphics_config.hpp>
 #include <app/services.hpp>
 #include <array>
 #include <optional>
+#include <util/action_manager.hpp>
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 {

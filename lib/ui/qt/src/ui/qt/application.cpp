@@ -71,13 +71,9 @@ namespace VTX::UI::QT
 		);
 
 		// Connect the main loop.
-		connect(
-			&_timer,
-			&QTimer::timeout,
-			[ this ]() noexcept { _app.update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
-		);
-		LOGGER::setCallback( [ &hub = App::HUB() ]( const Util::LogInfo & p_logInfo )
-							 { hub.enqueue<Util::LogInfo>( p_logInfo ); } );
+		_timer.setSingleShot( true );
+		_timer.setTimerType( Qt::PreciseTimer );
+		connect( &_timer, &QTimer::timeout, [ this ]() noexcept { _app.update(); } );
 	}
 
 	Application::~Application()
@@ -218,8 +214,7 @@ namespace VTX::UI::QT
 
 			_splashScreen->finish( &MAIN_WINDOW() );
 
-			_timer.start( 0 );
-			_durationTimer.start();
+			_app.setFrameScheduler( &Application::_onWake, this );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -230,6 +225,28 @@ namespace VTX::UI::QT
 		{
 			VTX_ERROR( "Unknown exception during startup" );
 			QCoreApplication::exit( EXIT_FAILURE );
+		}
+	}
+
+	void Application::_scheduleFrame()
+	{
+		if ( not _timer.isActive() )
+		{
+			_timer.start( 0 );
+		}
+	}
+
+	void Application::_onWake( void * const p_application ) noexcept
+	{
+		try
+		{
+			QMetaObject::invokeMethod(
+				static_cast<Application *>( p_application ), &Application::_scheduleFrame, Qt::QueuedConnection
+			);
+		}
+		catch ( ... )
+		{
+			LOGGER::logException( "Failed to schedule frame" );
 		}
 	}
 } // namespace VTX::UI::QT

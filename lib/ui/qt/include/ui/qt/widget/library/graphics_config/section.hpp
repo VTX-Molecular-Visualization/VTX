@@ -3,9 +3,9 @@
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/hideable_goupe_box.hpp"
-#include <app/action/action_manager.hpp>
 #include <app/action/graphics_config.hpp>
 #include <app/services.hpp>
+#include <util/action_manager.hpp>
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 {

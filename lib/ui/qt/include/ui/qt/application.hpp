@@ -9,7 +9,6 @@
 #include <app/events.hpp>
 #include <app/vtx_app.hpp>
 #include <memory>
-#include <util/chrono.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT
@@ -65,11 +64,6 @@ namespace VTX::UI::QT
 		QTimer _timer;
 
 		/**
-		 * @brief Computes elapsed time and interval time between frames.
-		 */
-		VTX::Util::Chrono _durationTimer;
-
-		/**
 		 * @brief Splash screen displayed during startup.
 		 */
 		std::unique_ptr<QSplashScreen> _splashScreen;
@@ -79,7 +73,20 @@ namespace VTX::UI::QT
 		 */
 		void _postQtStartup();
 
+		/**
+		 * @brief Run a frame.
+		 */
+		void _scheduleFrame();
+
+		/**
+		 * @brief Stop connection.
+		 */
 		VTX::Util::EventHub::ScopedConnection _applicationStopConnection;
+
+		/**
+		 * @brief Invoke frame request on main thread.
+		 */
+		static void _onWake( void * p_application ) noexcept;
 	};
 
 	/**

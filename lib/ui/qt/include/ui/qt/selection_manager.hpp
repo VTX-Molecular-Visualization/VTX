@@ -4,11 +4,11 @@
 #include <QAbstractItemView>
 #include <QItemSelectionModel>
 #include <QObject>
-#include <app/action/action_manager.hpp>
 #include <app/action/selection.hpp>
 #include <app/ecs.hpp>
 #include <app/services.hpp>
 #include <core/struct/topology.hpp>
+#include <util/action_manager.hpp>
 #include <util/types.hpp>
 
 namespace VTX::UI::QT

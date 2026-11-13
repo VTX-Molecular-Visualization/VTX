@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <app/action/representation.hpp>
 #include <app/events.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Library

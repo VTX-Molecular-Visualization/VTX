@@ -9,6 +9,7 @@
 #include <app/action/io.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree

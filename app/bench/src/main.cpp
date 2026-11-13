@@ -98,7 +98,7 @@ int main( int, char ** )
 			}
 			if ( frameInputs.restoreRequested )
 			{
-				renderer.setNeedUpdate( true );
+				renderer.setNeedUpdate();
 			}
 			if ( frameInputs.translation != VEC3I_ZERO )
 			{

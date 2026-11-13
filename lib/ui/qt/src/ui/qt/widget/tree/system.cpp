@@ -8,7 +8,6 @@
 #include "ui/qt/menu/selection.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
-#include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/color.hpp>
 #include <app/action/representation.hpp>
@@ -16,6 +15,7 @@
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
 #include <optional>
+#include <util/action_manager.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {

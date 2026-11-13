@@ -3,12 +3,12 @@
 #include <QEvent>
 #include <QFormLayout>
 #include <QHBoxLayout>
-#include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
 #include <app/services.hpp>
 #include <app/trajectory/player.hpp>
 #include <core/struct/trajectory.hpp>
 #include <memory>
+#include <util/action_manager.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {

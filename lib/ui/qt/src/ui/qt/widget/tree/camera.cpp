@@ -5,13 +5,13 @@
 #include <QStringList>
 #include <QTreeWidgetItem>
 #include <QVariant>
-#include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/events.hpp>
 #include <app/generic/name.hpp>
 #include <app/scene/viewpoint.hpp>
 #include <app/services.hpp>
 #include <memory>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree

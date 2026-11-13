@@ -3,12 +3,12 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QVariant>
-#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/ecs.hpp>
 #include <app/services.hpp>
 #include <io/metadata.hpp>
 #include <qboxlayout.h>
+#include <util/action_manager.hpp>
 
 Q_DECLARE_METATYPE( VTX::Entity ) // used to allow QVariant conversion
 

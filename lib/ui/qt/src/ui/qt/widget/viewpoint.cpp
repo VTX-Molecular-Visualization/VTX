@@ -3,11 +3,11 @@
 #include <QGroupBox>
 #include <QPushButton>
 #include <QSignalBlocker>
-#include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/events.hpp>
 #include <app/generic/name.hpp>
 #include <app/services.hpp>
+#include <util/action_manager.hpp>
 #include <util/math/transform.hpp>
 
 namespace VTX::UI::QT::Widget

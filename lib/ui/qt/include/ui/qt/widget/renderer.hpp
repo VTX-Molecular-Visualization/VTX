@@ -52,7 +52,7 @@ namespace VTX::UI::QT::Widget
 		*/
 
 		/**
-		 * @brief Constructor.
+		 * @brief Constructors.
 		 */
 		Renderer( QWidget * );
 		~Renderer() override;
@@ -88,6 +88,9 @@ namespace VTX::UI::QT::Widget
 		bool eventFilter( QObject *, QEvent * ) override;
 
 	  protected:
+		/**
+		 * @brief Events.
+		 */
 		void paintEvent( QPaintEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
@@ -172,6 +175,9 @@ namespace VTX::UI::QT::Widget
 		void _onRendererResize( const App::Events::RendererResize & );
 		void _onRendererReady( const App::Events::RendererReady & );
 
+		/**
+		 * @brief Connection.
+		 */
 		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
 		VTX::Util::EventHub::ScopedConnection _rendererReadyConnection;
 	};

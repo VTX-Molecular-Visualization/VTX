@@ -5,10 +5,10 @@
 #include <QLabel>
 #include <QSignalBlocker>
 #include <QVBoxLayout>
-#include <app/action/action_manager.hpp>
 #include <app/action/controller.hpp>
 #include <app/services.hpp>
 #include <app/setting/controller.hpp>
+#include <util/action_manager.hpp>
 
 namespace VTX::UI::QT::Widget
 {

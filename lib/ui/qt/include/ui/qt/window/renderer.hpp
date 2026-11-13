@@ -2,6 +2,7 @@
 #define VTX_UI_QT_WINDOW_RENDERER_HPP
 
 #include "ui/qt/events.hpp"
+#include <QExposeEvent>
 #include <QFocusEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -44,6 +45,7 @@ namespace VTX::UI::QT::Window
 		/**
 		 * @brief Override events.
 		 */
+		void exposeEvent( QExposeEvent * ) override;
 		void keyPressEvent( QKeyEvent * ) override;
 		void keyReleaseEvent( QKeyEvent * ) override;
 		void focusInEvent( QFocusEvent * ) override;

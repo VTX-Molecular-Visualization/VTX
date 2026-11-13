@@ -2,11 +2,11 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QScrollBar>
-#include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/ecs.hpp>
 #include <app/helper/system.hpp>
 #include <app/scene/color_layout.hpp>
+#include <app/services.hpp>
 #include <app/system/selection.hpp>
 #include <core/chemdb/residue.hpp>
 #include <core/struct/topology.hpp>
@@ -21,6 +21,7 @@
 #include <ui/qt/selection_manager.hpp>
 #include <ui/qt/services.hpp>
 #include <ui/qt/widget/sequence.hpp>
+#include <util/action_manager.hpp>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::Widget

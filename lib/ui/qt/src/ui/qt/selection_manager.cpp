@@ -4,9 +4,9 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include <QGuiApplication>
-#include <app/action/action_manager.hpp>
 #include <app/action/selection.hpp>
 #include <app/services.hpp>
+#include <util/action_manager.hpp>
 
 namespace
 {

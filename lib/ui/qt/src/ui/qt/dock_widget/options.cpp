@@ -16,7 +16,6 @@
 #include <QGroupBox>
 #include <QPushButton>
 #include <app/action/accessibility.hpp>
-#include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
@@ -24,6 +23,7 @@
 #include <memory>
 #include <string>
 #include <ui/qt/widget/sequence.hpp>
+#include <util/action_manager.hpp>
 #include <util/enum.hpp>
 #include <util/event_hub.hpp>
 #include <util/string.hpp>
@@ -332,7 +332,9 @@ namespace VTX::UI::QT::DockWidget
 		// Settings.
 		const QSignalBlocker b( _checkBoxVSync ); // Do not emit, opengl widget already knows.
 		_checkBoxVSync->setChecked( SETTINGS().value( SETTING_KEY_VSYNC, Renderer::VSYNC_DEFAULT ).toBool() );
+		const QSignalBlocker bSavePower( _checkBoxSavePower );
 		_checkBoxSavePower->setChecked( SETTINGS().value( SETTING_KEY_SAVE_POWER, SAVE_POWER_DEFAULT ).toBool() );
+		App::ACTION().execute<App::Action::Application::SetSavePower>( _checkBoxSavePower->isChecked() );
 
 		connect(
 			this,

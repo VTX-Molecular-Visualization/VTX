@@ -32,9 +32,9 @@
 #include <QMessageBox>
 #include <QMimeData>
 #include <QTimer>
-#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <renderer/renderer.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -75,7 +75,6 @@ namespace VTX::UI::QT::Widget
 		createMenu<Menu::Camera>();
 		createMenu<Menu::Tool>();
 		createMenu<Menu::View>();
-		// createMenu<Menu::Theme>();
 		createMenu<Menu::Help>();
 
 		// Toolbars.
@@ -86,7 +85,6 @@ namespace VTX::UI::QT::Widget
 
 		// Main area : opengl widget.
 		auto * renderer = Helper::makeQObject<Renderer>( this );
-		// renderer->createToolBar<ToolBar::Selection>( Renderer::HUD_POSITION::TOP_RIGHT );
 		setCentralWidget( renderer );
 
 		// Dock widgets.
@@ -111,7 +109,8 @@ namespace VTX::UI::QT::Widget
 		resizeDocks(
 			{ dwScene, dwInspector, dwOptions },
 			{ Style::DEFAULT_LATERAL_DOCK_WIDTH, Style::DEFAULT_LATERAL_DOCK_WIDTH, Style::DEFAULT_LATERAL_DOCK_WIDTH },
-			Qt::Horizontal );
+			Qt::Horizontal
+		);
 		resizeDocks( { dwConsole }, { Style::DEFAULT_CONSOLE_HEIGHT }, Qt::Vertical );
 
 		// Status bar.
@@ -128,7 +127,8 @@ namespace VTX::UI::QT::Widget
 			= App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
 		_blockingOperationProgressConnection
 			= App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>(
-				this );
+				this
+			);
 		_blockingOperationEndConnection
 			= App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
 		_updateAvailableConnection
@@ -152,7 +152,7 @@ namespace VTX::UI::QT::Widget
 			case QEvent::LayoutRequest:
 			case QEvent::UpdateRequest:
 			case QEvent::WindowStateChange:
-				QTimer::singleShot( 0, this, []() { App::RENDERER().setNeedUpdate( true ); } );
+				QTimer::singleShot( 0, this, []() { App::RENDERER().setNeedUpdate(); } );
 				if ( p_event->type() == QEvent::WindowStateChange )
 				{
 					UI_ACTIONS().setChecked( Action::View::FULLSCREEN, isFullScreen() );

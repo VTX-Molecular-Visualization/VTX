@@ -5,10 +5,11 @@
 #include <QLabel>
 #include <QPointer>
 #include <QStatusBar>
-#include <QTimer>
 #include <QToolButton>
 #include <app/events.hpp>
+#include <util/chrono.hpp>
 #include <util/event_hub.hpp>
+#include <util/types.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -27,6 +28,11 @@ namespace VTX::UI::QT::Widget
 
 	  private:
 		/**
+		 * @brief Refresh timer.
+		 */
+		static constexpr float FPS_REFRESH_INTERVAL = 1000.f;
+
+		/**
 		 * @brief FPS counter.
 		 */
 		QPointer<QLabel> _fps;
@@ -42,10 +48,23 @@ namespace VTX::UI::QT::Widget
 		bool _rendering = false;
 
 		/**
+		 * @brief Count.
+		 */
+		uint _frameCount = 0;
+
+		/**
+		 * @brief Chrono.
+		 */
+		VTX::Util::Chrono _fpsChrono;
+
+		/**
 		 * @brief Python version.
 		 */
 		QPointer<QLabel> _python;
 
+		/**
+		 * @brief Vendor name.
+		 */
 		QPointer<QLabel> _vendor;
 
 		/**
@@ -57,6 +76,9 @@ namespace VTX::UI::QT::Widget
 		void _pythonInitialized( const App::Events::PythonInitialized & );
 		void _rendererReady( const App::Events::RendererReady & );
 
+		/**
+		 * @brief Connections.
+		 */
 		VTX::Util::EventHub::ScopedConnection _postRenderConnection;
 		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
 		VTX::Util::EventHub::ScopedConnection _rendererReadyConnection;

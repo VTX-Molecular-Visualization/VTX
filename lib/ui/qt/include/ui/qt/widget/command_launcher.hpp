@@ -5,6 +5,8 @@
 #include <QCompleter>
 #include <QLineEdit>
 #include <QPointer>
+#include <app/events.hpp>
+#include <util/event_hub.hpp>
 #include <util/history_browser.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -20,21 +22,50 @@ namespace VTX::UI::QT::Widget
 
 		/**
 		 * @brief Send a commmand to the command launcher, as if some user would have typed it and hit enter.
-		 * @param
 		 */
 		void launchCommand( std::string );
 
 	  protected:
+		/**
+		 * @brief Events.
+		 */
 		void keyPressEvent( QKeyEvent * event ) override;
 
 	  private:
+		/**
+		 * @brief Auto completion.
+		 */
+		QPointer<QCompleter> _completer;
+
+		/**
+		 * @brief History.
+		 */
+		VTX::Util::HistoryBrowser _history;
+
+		/**
+		 * @brief Copnnection.
+		 */
+		VTX::Util::EventHub::ScopedConnection _pythonInitializedConnection;
+
+		/**
+		 * @brief Retrieve all python functions.
+		 */
 		void _setupCompleter();
+
+		/**
+		 * @brief Run a command.
+		 */
 		void _launchCommand();
 
+		/**
+		 * @brief Execute the last command in the history.
+		 */
 		void _executeLastHistoryEntry();
 
-		QPointer<QCompleter>		_completer;
-		::VTX::Util::HistoryBrowser _history;
+		/**
+		 * @brief Activate widget.
+		 */
+		void _pythonInitialized( const App::Events::PythonInitialized & );
 	};
 } // namespace VTX::UI::QT::Widget
 #endif

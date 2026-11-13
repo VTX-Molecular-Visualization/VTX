@@ -4,12 +4,11 @@
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include <QMenu>
-#include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/services.hpp>
 #include <renderer/renderer.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
-#include <util/monitoring/stats.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -22,7 +21,6 @@ namespace VTX::UI::QT::Widget
 
 		// FPS status.
 		_fps = Helper::makeQObject<QLabel>( this );
-		//_fps->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 
 		// Resolution widget.
 		_resolution = Helper::makeQObject<ToolButton::ResolutionSelector>( this );
@@ -41,7 +39,6 @@ namespace VTX::UI::QT::Widget
 		// Labels.
 		_vendor = Helper::makeQObject<QLabel>( this );
 		_vendor->setText( "No renderer" );
-		// vendorLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 
 		QWidget * spacer = Helper::makeQObject<QWidget>( this );
 		spacer->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
@@ -67,11 +64,6 @@ namespace VTX::UI::QT::Widget
 		// Update vendor when renderer is available.
 		_rendererReadyConnection = App::HUB().connect<App::Events::RendererReady, &StatusBar::_rendererReady>( this );
 
-		// Update FPS each second.
-		auto * timer = Helper::makeQObject<QTimer>( this );
-		connect( timer, &QTimer::timeout, this, &StatusBar::_setCurrentFPS );
-		timer->start( 1000 );
-
 		// Update renderering mode.
 		_postRenderConnection = App::HUB().connect<App::Events::PostRender, &StatusBar::_updateGPUState>( this );
 		_rendererResizeConnection
@@ -82,15 +74,21 @@ namespace VTX::UI::QT::Widget
 
 	void StatusBar::_updateGPUState( const App::Events::PostRender & p_e )
 	{
-		if ( _rendering == p_e.rendered )
+		if ( p_e.rendered )
 		{
-			return;
+			if ( not _rendering )
+			{
+				_rendering	= true;
+				_frameCount = 0;
+				_fpsChrono.start();
+			}
+			++_frameCount;
+			_setCurrentFPS();
 		}
 
-		_rendering = p_e.rendered;
-
-		if ( not _rendering )
+		if ( p_e.idle && _rendering )
 		{
+			_rendering = false;
 			_fps->setText( QString( "-idle-" ) );
 		}
 	}
@@ -103,11 +101,17 @@ namespace VTX::UI::QT::Widget
 
 	void StatusBar::_setCurrentFPS()
 	{
-		if ( _rendering )
+		const float elapsed = _fpsChrono.elapsedTime();
+		if ( elapsed < FPS_REFRESH_INTERVAL )
 		{
-			const float tickrate = App::ECS::getCtx<Util::Monitoring::Stats>().average();
-			_fps->setText( QString( "%1 FPS" ).arg( static_cast<uint>( 1000.0 / tickrate ) ) );
+			return;
 		}
+
+		_fps->setText(
+			QString( "%1 FPS" ).arg( static_cast<uint>( static_cast<float>( _frameCount ) * 1000.f / elapsed ) )
+		);
+		_frameCount = 0;
+		_fpsChrono.start();
 	}
 
 	void StatusBar::_pythonInitialized( const App::Events::PythonInitialized & p_e )

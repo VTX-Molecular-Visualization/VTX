@@ -6,9 +6,9 @@
 #include <QPushButton>
 #include <QTextBrowser>
 #include <QVBoxLayout>
-#include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <app/services.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Dialog

@@ -14,10 +14,10 @@
 #include <QPalette>
 #include <QScopedValueRollback>
 #include <algorithm>
-#include <app/action/action_manager.hpp>
 #include <app/action/application.hpp>
 #include <memory>
 #include <qpa/qplatformnativeinterface.h>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget

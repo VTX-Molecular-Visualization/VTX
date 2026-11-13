@@ -6,7 +6,6 @@
 #include "ui/qt/style/style_manager.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
 #include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
@@ -14,6 +13,7 @@
 #include <app/trajectory/player.hpp>
 #include <core/struct/trajectory.hpp>
 #include <memory>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 #include <util/thread/thread_manager.hpp>
 

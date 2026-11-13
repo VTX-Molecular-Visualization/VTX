@@ -9,6 +9,7 @@
 #include <core/chemdb/residue.hpp>
 #include <memory>
 #include <renderer/color.hpp>
+#include <util/action_manager.hpp>
 
 namespace VTX::UI::QT::Widget::Library
 {

@@ -21,6 +21,7 @@
 #include <app/generic/name.hpp>
 #include <app/services.hpp>
 #include <optional>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 #include <utility>
 #include <vector>

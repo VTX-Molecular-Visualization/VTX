@@ -16,6 +16,7 @@
 #include <array>
 #include <renderer/renderer.hpp>
 #include <string_view>
+#include <util/action_manager.hpp>
 #include <util/image.hpp>
 #include <util/resolution.hpp>
 #include <utility>
