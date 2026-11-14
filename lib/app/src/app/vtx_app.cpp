@@ -58,7 +58,7 @@ namespace VTX::App
 		void runScriptUntilDone( VTXApp & p_app, const FilePath & p_path )
 		{
 			const auto promise = std::make_shared<std::promise<PythonBinding::Interpretor::AsyncJobResult>>();
-			std::future<PythonBinding::Interpretor::AsyncJobResult> future = promise->get_future();
+			const std::future<PythonBinding::Interpretor::AsyncJobResult> future = promise->get_future();
 			INTERPRETOR().runScript( p_path, promise );
 
 			std::ignore = p_app.runUntilReady( future );

@@ -14,7 +14,6 @@
 #include <fmt/format.h>
 #include <io/file_format.hpp>
 #include <io/mesh_reader.hpp>
-#include <memory>
 #include <renderer/renderer.hpp>
 #include <string>
 #include <util/chrono.hpp>
@@ -66,13 +65,13 @@ namespace VTX::App::Action::IO
 
 	LoadSystem::LoadSystem( Util::Thread::ThreadData p_threadData ) : _threadData( std::move( p_threadData ) ) {}
 
-	void LoadSystem::execute( FilePath p_path )
+	void LoadSystem::execute( FilePath p_path ) const
 	{
 		Extractor::System extractor( std::move( p_path ) );
 		extractor( _threadData.stopToken, _threadData.thrRef );
 	}
 
-	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
+	void LoadSystem::execute( FilePath p_path, std::string && p_buffer ) const
 	{
 		Extractor::System extractor( std::move( p_path ), std::move( p_buffer ) );
 		extractor( _threadData.stopToken, _threadData.thrRef );

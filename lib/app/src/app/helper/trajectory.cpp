@@ -148,14 +148,10 @@ namespace VTX::App::Helper::Trajectory
 
 	bool hasSystemAcceptingTrajectory()
 	{
-		for ( const Entity entity : REG().view<Core::Struct::Trajectory, VTX::IO::Metadata>() )
-		{
-			if ( not hasMultiFrameTrajectory( entity ) )
-			{
-				return true;
-			}
-		}
-		return false;
+		return std::ranges::any_of(
+			REG().view<Core::Struct::Trajectory, VTX::IO::Metadata>(),
+			[]( const Entity p_entity ) { return not hasMultiFrameTrajectory( p_entity ); }
+		);
 	}
 
 	App::Trajectory::FrameRange getAvailableFrames( const Entity p_entity )

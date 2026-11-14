@@ -8,7 +8,6 @@
 #include <python_binding/wrapper/arg.hpp>
 #include <string>
 #include <util/image.hpp>
-#include <utility>
 
 namespace VTX::App::PythonBinding
 {

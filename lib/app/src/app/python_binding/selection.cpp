@@ -14,7 +14,6 @@
 #include <pybind11/stl.h>
 #include <python_binding/binding/helper.hpp>
 #include <renderer/color.hpp>
-#include <renderer/representation.hpp>
 #include <string>
 #include <vector>
 
@@ -116,7 +115,7 @@ namespace VTX::App::PythonBinding
 				p_system,
 				[]( const Core::Struct::Topology & p_topology, const Index p_atom )
 				{
-					return Index(
+					return static_cast<Index>(
 						toUnderlying( p_topology.getResidueCategory( p_topology.getAtomResidueIndex( p_atom ) ) )
 					);
 				}

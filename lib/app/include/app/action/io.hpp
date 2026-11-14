@@ -27,8 +27,8 @@ namespace VTX::App::Action::IO
 		LoadSystem() = default;
 		LoadSystem( Util::Thread::ThreadData );
 
-		void execute( FilePath p_path );
-		void execute( FilePath p_path, std::string && p_buffer );
+		void execute( FilePath p_path ) const;
+		void execute( FilePath p_path, std::string && p_buffer ) const;
 
 	  private:
 		Util::Thread::ThreadData _threadData;

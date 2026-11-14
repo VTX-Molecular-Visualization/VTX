@@ -140,7 +140,7 @@ namespace VTX::App::Pass
 		struct Entry
 		{
 			UpdateDelegate	 delegate;
-			E_PENDING_UPDATE triggers;
+			E_PENDING_UPDATE triggers {};
 		};
 
 		/**
