@@ -42,7 +42,7 @@ namespace VTX::App::Action::IO
 		LoadMesh() = default;
 		LoadMesh( Util::Thread::ThreadData );
 
-		void execute( FilePath p_path );
+		void execute( FilePath p_path ) const;
 
 	  private:
 		Util::Thread::ThreadData _threadData;
@@ -72,8 +72,8 @@ namespace VTX::App::Action::IO
 	{
 		AssociateTrajectory() = default;
 		AssociateTrajectory( Util::Thread::ThreadData );
-		void execute( FilePath p_path, const Entity & );
-		void execute( const std::string & p_path, const Entity & );
+		void execute( FilePath p_path, const Entity & ) const;
+		void execute( const std::string & p_path, const Entity & ) const;
 
 	  private:
 		Util::Thread::ThreadData _threadData;

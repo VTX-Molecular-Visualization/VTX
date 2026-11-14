@@ -79,7 +79,7 @@ namespace VTX::App::Action::IO
 
 	LoadMesh::LoadMesh( Util::Thread::ThreadData p_threadData ) : _threadData( std::move( p_threadData ) ) {}
 
-	void LoadMesh::execute( FilePath p_path )
+	void LoadMesh::execute( FilePath p_path ) const
 	{ Extractor::Mesh( std::move( p_path ) )( _threadData.stopToken, _threadData.thrRef ); }
 
 	void WriteSelection::execute( FilePath p_path )
@@ -99,7 +99,7 @@ namespace VTX::App::Action::IO
 	{
 	}
 
-	void AssociateTrajectory::execute( FilePath p_path, const Entity & p_entity )
+	void AssociateTrajectory::execute( FilePath p_path, const Entity & p_entity ) const
 	{
 		if ( p_entity == InvalidEntity )
 		{
@@ -111,7 +111,7 @@ namespace VTX::App::Action::IO
 		extractor( _threadData.stopToken, _threadData.thrRef );
 	}
 
-	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
+	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e ) const
 	{
 		if ( p_e == InvalidEntity )
 		{
