@@ -269,12 +269,12 @@ namespace VTX::App::Action::Selection
 		struct SystemData
 		{
 			// Holds all data associated with a loaded system
-			Entity						 entity;
-			std::span<const Vec3f>		 positions;
-			App::System::Selection &	 selection;
-			Util::Math::Grid<Index> &	 grid;
-			App::System::Visibility &	 visibility;
-			Core::Struct::IndexRangeList toSelect;
+			Entity							entity;
+			std::span<const Vec3f>			positions;
+			App::System::Selection &		selection;
+			const Util::Math::Grid<Index> & grid;
+			App::System::Visibility &		visibility;
+			Core::Struct::IndexRangeList	toSelect;
 		};
 
 		void unselecMaskedItems()
@@ -363,7 +363,7 @@ namespace VTX::App::Action::Selection
 				system,
 				positions,
 				REG().get<App::System::Selection>( system ),
-				REG().get<Util::Math::Grid<Index>>( system ),
+				Helper::System::getAtomGrid( system ),
 				REG().get<App::System::Visibility>( system )
 			);
 		}
@@ -465,7 +465,7 @@ namespace VTX::App::Action::Selection
 				system,
 				positions,
 				REG().get<App::System::Selection>( system ),
-				REG().get<Util::Math::Grid<Index>>( system ),
+				Helper::System::getAtomGrid( system ),
 				REG().get<App::System::Visibility>( system ),
 				Core::Struct::IndexRangeList {}
 			);

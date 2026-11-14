@@ -79,9 +79,7 @@ namespace VTX::Util::Math
 		}
 
 		constexpr size_t denseIndex( const uint p_x, const uint p_y, const uint p_z ) const noexcept
-		{
-			return denseIndex( CellPosition( p_x, p_y, p_z ) );
-		}
+		{ return denseIndex( CellPosition( p_x, p_y, p_z ) ); }
 
 		/**
 		 * @brief Get the number of cells in the grid (fixed).
@@ -176,8 +174,11 @@ namespace VTX::Util::Math
 		 * @brief Visitor function to iterate over all neighbour cells.
 		 */
 		template<typename F>
-		void forEachNeighbourCell( const CellPosition & p_gridPosition, F && p_func, const int p_neighbourDist = 1 )
-			const
+		void forEachNeighbourCell(
+			const CellPosition & p_gridPosition,
+			F &&				 p_func,
+			const int			 p_neighbourDist = 1
+		) const
 		{
 			auto && func = std::forward<F>( p_func );
 
@@ -201,9 +202,7 @@ namespace VTX::Util::Math
 
 		template<typename F>
 		void forEachNeighbourCellAt( const Vec3f & p_worldPosition, F && p_func ) const
-		{
-			forEachNeighbourCell( gridPosition( p_worldPosition ), std::forward<F>( p_func ) );
-		}
+		{ forEachNeighbourCell( gridPosition( p_worldPosition ), std::forward<F>( p_func ) ); }
 
 		/**
 		 * @brief Get the grid size derived from occupied cells bounds.
@@ -228,6 +227,11 @@ namespace VTX::Util::Math
 		const CellPosition & getMaxCell() const noexcept { return _maxCell; }
 
 		/**
+		 * @brief Get cell size.
+		 */
+		const Vec3f & getCellSize() const noexcept { return _cellSize; }
+
+		/**
 		 * @brief Get the dense index of a cell position in the grid.
 		 * Useful to store in 1D array.
 		 */
@@ -243,9 +247,7 @@ namespace VTX::Util::Math
 		 * @brief Add a value to the grid at the given world position.
 		 */
 		void add( const T & p_value, const Vec3f & p_worldPosition )
-		{
-			add( p_value, gridPosition( p_worldPosition ) );
-		}
+		{ add( p_value, gridPosition( p_worldPosition ) ); }
 
 		void add( const T & p_value, const CellPosition & p_gridPosition )
 		{
