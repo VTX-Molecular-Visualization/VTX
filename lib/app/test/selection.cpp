@@ -1,7 +1,13 @@
+#include "app/action/action_manager.hpp"
+#include "app/helper/scene.hpp"
+#include "app/services.hpp"
+#include <app/action/scene.hpp>
 #include <app/action/selection.hpp>
+#include <app/action/visibility.hpp>
 #include <app/fixture.hpp>
 #include <app/helper/system.hpp>
 #include <app/services.hpp>
+#include <bitset>
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/topology.hpp>
 #include <optional>
@@ -14,12 +20,16 @@ namespace
 	using namespace Core::Struct;
 	using namespace App;
 	using namespace App::Action::Selection;
+	using namespace App::Action::Visibility;
 	using namespace App::Helper::System;
+	using namespace App::Helper::Scene;
 	using namespace App::System;
 
-	void _checkAtomRangeSelection( const VTX::Util::Math::BitSet & p_selection,
-								   const IndexRange &			   p_range,
-								   const bool					   p_selected )
+	void _checkAtomRangeSelection(
+		const VTX::Util::Math::BitSet & p_selection,
+		const IndexRange &				p_range,
+		const bool						p_selected
+	)
 	{
 		for ( const VTX::Index atom : p_range )
 		{
@@ -27,8 +37,10 @@ namespace
 		}
 	}
 
-	std::optional<VTX::Index> _findResidueWithMinimumAtomCount( const Topology & p_topology,
-																const VTX::Index p_minCount )
+	std::optional<VTX::Index> _findResidueWithMinimumAtomCount(
+		const Topology & p_topology,
+		const VTX::Index p_minCount
+	)
 	{
 		for ( VTX::Index residue = 0; residue < p_topology.getResidueCount(); ++residue )
 		{
@@ -41,6 +53,256 @@ namespace
 		return std::nullopt;
 	}
 } // namespace
+
+TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelection][selection]" )
+{
+	using namespace VTX;
+	App::Fixture app;
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" ) );
+	Entity		 system1	= getSystemByFileName( "1AGA.mmtf" );
+	const auto & selection1 = App::REG().get<App::System::Selection>( system1 );
+
+	// Testing extendSelectionFromSelec
+	Index toMask { 120 };
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
+
+	Index toSelect { 125 };
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system1, toSelect );
+
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "2qwo.pdb" ) );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.f );
+
+	int count { 0 };
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		const auto & selection = App::REG().get<App::System::Selection>( system );
+		for ( size_t j : selection.atoms )
+		{
+			count++;
+		}
+	}
+	CHECK( count == 13 );
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask );
+
+	App::ACTION().execute<Clear>();
+
+	// Testing extendSelectionFromNonSelec
+	Entity					 system2	= getSystemByFileName( "2qwo.pdb" );
+	const auto &			 selection2 = App::REG().get<App::System::Selection>( system2 );
+	Core::Struct::IndexRange range { 1, static_cast<Index>( selection2.atoms.size() ) };
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system2, range );
+
+	toMask = 46;
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 5.f );
+
+	count = 0;
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		const auto & selection = App::REG().get<App::System::Selection>( system );
+		for ( size_t j : selection.atoms )
+		{
+			count++;
+		}
+	}
+	CHECK( count == 4171 );
+
+	App::ACTION().execute<Clear>();
+
+	range = { 1, static_cast<Index>( selection1.atoms.size() ) };
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system1, range );
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, range, false );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.f );
+
+	count = 0;
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		const auto & selection = App::REG().get<App::System::Selection>( system );
+		for ( size_t j : selection.atoms )
+		{
+			count++;
+		}
+	}
+	CHECK( count == 0 );
+
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		App::ACTION().execute<App::Action::Scene::DeleteSystem>( system );
+	}
+
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "test1.pdb" ) );
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "test2.pdb" ) );
+	Entity system3	  = getSystemByFileName( "test1.pdb" );
+	Entity system4	  = getSystemByFileName( "test2.pdb" );
+	auto & selection3 = App::REG().get<App::System::Selection>( system3 );
+	auto & visible3	  = App::REG().get<App::System::Visibility>( system3 );
+	auto & selection4 = App::REG().get<App::System::Selection>( system4 );
+	auto & visible4	  = App::REG().get<App::System::Visibility>( system4 );
+
+	// Testing extendSelectionFromSelec 4.0 angstrom
+	selection3.atoms.set( 0 );
+	visible3.atoms.reset( 8 );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.f );
+
+	Util::Math::BitSet			  expected1 = Util::Math::BitSet( 10, false );
+	Util::Math::BitSet			  expected2 = Util::Math::BitSet( 5, false );
+	VTX::Util::Math::Range<Index> atomList { 0, 8 };
+	expected1.set( atomList );
+	atomList = { 0, 2 };
+	expected2.set( atomList );
+
+	CHECK( selection3.atoms == expected1 );
+	CHECK( selection4.atoms == expected2 );
+
+	// Testing extendSelectionFromSelec 5.0 angstrom
+	atomList = { 1, 8 };
+	selection3.atoms.reset( atomList );
+	atomList = { 0, 2 };
+	selection4.atoms.reset( atomList );
+	expected2.set( 2 );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 5.f );
+
+	CHECK( selection3.atoms == expected1 );
+	CHECK( selection4.atoms == expected2 );
+
+	// Testing extendSelectionFromNonSelec
+	selection3.atoms.reset( 4 );
+	atomList = { 0, 5 };
+	selection4.atoms.reset( atomList );
+	atomList = { 3, 4 };
+	expected2.set( atomList );
+	App::ACTION().execute<App::Action::Selection::ExtendSelection>( 4.f );
+
+	CHECK( selection3.atoms == expected1 );
+	CHECK( selection4.atoms == expected2 );
+}
+
+TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelectionResidue][selection]" )
+{
+	using namespace VTX;
+	App::Fixture app;
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" ) );
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "2qwo.pdb" ) );
+	Entity system1 = getSystemByFileName( "1AGA.mmtf" );
+	Entity system2 = getSystemByFileName( "2qwo.pdb" );
+
+	Index toSelect { 118 };
+	Index toMask { 119 };
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system1, toSelect );
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
+
+	toSelect = 1802;
+	toMask	 = 1799;
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system2, toSelect );
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system2, toMask, false );
+
+	App::ACTION().execute<App::Action::Selection::ExtendSelectionRes>();
+
+	int count { 0 };
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		const auto & selection = App::REG().get<App::System::Selection>( system );
+		for ( size_t j : selection.atoms )
+		{
+			count++;
+		}
+	}
+	CHECK( count == 19 );
+
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		App::ACTION().execute<App::Action::Scene::DeleteSystem>( system );
+	}
+
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "test1.pdb" ) );
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "test2.pdb" ) );
+	Entity system3	  = getSystemByFileName( "test1.pdb" );
+	Entity system4	  = getSystemByFileName( "test2.pdb" );
+	auto & selection3 = App::REG().get<App::System::Selection>( system3 );
+	auto & visible3	  = App::REG().get<App::System::Visibility>( system3 );
+	auto & selection4 = App::REG().get<App::System::Selection>( system4 );
+	auto & visible4	  = App::REG().get<App::System::Visibility>( system4 );
+
+	Util::Math::BitSet			  expected1 = Util::Math::BitSet( 10, false );
+	Util::Math::BitSet			  expected2 = Util::Math::BitSet( 5, false );
+	VTX::Util::Math::Range<Index> atomList { 0, 4 };
+
+	selection3.atoms.set( 0 );
+	selection4.atoms.set( 0 );
+	visible3.atoms.reset( 4 );
+	expected1.set( atomList );
+	atomList = { 0, 5 };
+	expected2.set( atomList );
+
+	App::ACTION().execute<App::Action::Selection::ExtendSelectionRes>();
+
+	CHECK( selection3.atoms == expected1 );
+	CHECK( selection4.atoms == expected2 );
+}
+
+TEST_CASE( "VTX_APP - Selection - RevertSelection", "[revertSelection][selection]" )
+{
+	using namespace VTX;
+	App::Fixture app;
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" ) );
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "2qwo.pdb" ) );
+	Entity		 system1	= getSystemByFileName( "1AGA.mmtf" );
+	Entity		 system2	= getSystemByFileName( "2qwo.pdb" );
+	const auto & selection1 = App::REG().get<App::System::Selection>( system1 );
+
+	Core::Struct::IndexRange range { 1, static_cast<Index>( selection1.atoms.size() - 10 ) };
+	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system1, range );
+
+	Index toMask { 1 };
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system2, toMask, false );
+
+	toMask = static_cast<Index>( selection1.atoms.size() - 1 );
+	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
+
+	App::ACTION().execute<App::Action::Selection::RevertSelection>();
+
+	int count { 0 };
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		const auto & selection = App::REG().get<App::System::Selection>( system );
+		for ( size_t j : selection.atoms )
+		{
+			count++;
+		}
+	}
+	CHECK( count == 4153 );
+
+	for ( auto system : App::REG().view<Core::Struct::Topology>() )
+	{
+		App::ACTION().execute<App::Action::Scene::DeleteSystem>( system );
+	}
+
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "test1.pdb" ) );
+	app.loadSystem( VTX::FilePath( Util::Filesystem::getExecutableDir() / "data" / "test2.pdb" ) );
+	Entity system3	  = getSystemByFileName( "test1.pdb" );
+	Entity system4	  = getSystemByFileName( "test2.pdb" );
+	auto & selection3 = App::REG().get<App::System::Selection>( system3 );
+	auto & visible3	  = App::REG().get<App::System::Visibility>( system3 );
+	auto & selection4 = App::REG().get<App::System::Selection>( system4 );
+	auto & visible4	  = App::REG().get<App::System::Visibility>( system4 );
+
+	Util::Math::BitSet			  expected1 = Util::Math::BitSet( 10, false );
+	Util::Math::BitSet			  expected2 = Util::Math::BitSet( 5, false );
+	VTX::Util::Math::Range<Index> atomList { 0, 5 };
+
+	selection3.atoms.set( atomList );
+	visible3.atoms.reset( 5 );
+	atomList = { 6, 10 };
+	expected1.set( atomList );
+	atomList = { 1, 5 };
+	visible4.atoms.reset( 0 );
+	expected2.set( atomList );
+
+	App::ACTION().execute<App::Action::Selection::RevertSelection>();
+
+	CHECK( selection3.atoms == expected1 );
+	CHECK( selection4.atoms == expected2 );
+}
 
 TEST_CASE( "VTX_APP - Selection - Loaded system starts empty", "[integration][selection]" )
 {
