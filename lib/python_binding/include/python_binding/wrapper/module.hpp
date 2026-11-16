@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_BINDING_WRAPPER_MODULE__
-#define __VTX_PYTHON_BINDING_WRAPPER_MODULE__
+#ifndef VTX_PYTHON_BINDING_WRAPPER_MODULE_HPP
+#define VTX_PYTHON_BINDING_WRAPPER_MODULE_HPP
 
 #include "python_binding/wrapper/function.hpp"
 #include "python_binding/wrapper/object.hpp"
@@ -35,12 +35,12 @@ namespace VTX::PythonBinding
 			template<typename Action, typename... ActionArgs, typename... Extras>
 			void bindAction( const std::string & p_name, const std::string & p_desc = "", Extras &&... p_extras )
 			{
-				std::function<void( ActionArgs... )> runActionFunc = []( ActionArgs... p_args )
+				const std::function<void( const ActionArgs &... )> runActionFunc = []( const ActionArgs &... p_args )
 				{
 					Action action;
 					action.execute( p_args... );
 				};
-				def( p_name.c_str(), runActionFunc, p_desc.c_str(), std::forward<Extras>( p_extras )... );
+				def( p_name, runActionFunc, p_desc, std::forward<Extras>( p_extras )... );
 			}
 
 			template<typename Func>
@@ -65,7 +65,7 @@ namespace VTX::PythonBinding
 			}
 
 			template<typename T, typename... Args>
-			T runFunction( const std::string & p_funcName, Args... p_args ) const
+			T runFunction( const std::string & p_funcName, const Args &... p_args ) const
 			{
 				Wrapper::Function funcWrapper = Wrapper::Function( *this, p_funcName );
 				funcWrapper.run( p_args... );
@@ -78,17 +78,17 @@ namespace VTX::PythonBinding
 
 			void displayInfo() const;
 
-			const std::string & getModulePath() const { return _modulePath; }
+			const std::string & getModulePath() const noexcept { return _modulePath; }
 
-			std::vector<std::string> getFunctionList() const;
+			static std::vector<std::string> getFunctionList();
 
-			inline pybind11::module_ & pyModule() noexcept { return _pyModule; }
+			pybind11::module_ & pyModule() noexcept { return _pyModule; }
 
-			inline void getPythonModule( pybind11::module_ ** p_in ) noexcept { *p_in = &_pyModule; }
+			void getPythonModule( pybind11::module_ ** p_in ) noexcept { *p_in = &_pyModule; }
 
 		  private:
-			Module( pybind11::module_ & p_module, const std::string & p_modulePath ) :
-				_pyModule( p_module ), _modulePath( p_modulePath )
+			Module( pybind11::module_ & p_module, std::string p_modulePath ) :
+				_pyModule( p_module ), _modulePath( std::move( p_modulePath ) )
 			{
 			}
 

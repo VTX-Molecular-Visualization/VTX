@@ -210,4 +210,4 @@ namespace bcs
 
 #include "bcs/cuda/memory.inl"
 
-#endif // BCS_CUDAMEMORY_CUH
+#endif // BCS_CUDA_MEMORY_CUH

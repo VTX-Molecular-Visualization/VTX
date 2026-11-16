@@ -1,6 +1,7 @@
 #include "app/controller/freefly.hpp"
 #include "app/events.hpp"
 #include "app/input/input_manager.hpp"
+#include "app/pending_updates.hpp"
 #include "app/services.hpp"
 #include <util/constants.hpp>
 #include <util/event_hub.hpp>
@@ -22,8 +23,8 @@ namespace VTX::App::Controller
 		const float rotationSpeed = p_settings.rotationSpeed * Setting::ROTATION_SPEED_MULTIPLIER;
 
 		//  Rotation.
-		Vec2i rotation		= input.rotate();
-		Vec3f localRotation = VEC3F_ZERO;
+		const Vec2i rotation	  = input.rotate();
+		Vec3f		localRotation = VEC3F_ZERO;
 		if ( rotation.x || rotation.y )
 		{
 			localRotation = Vec3f(
@@ -31,8 +32,8 @@ namespace VTX::App::Controller
 			);
 		}
 
-		Vec2i rotationAlt  = input.rotateAlt();
-		float rollRotation = 0.f;
+		const Vec2i rotationAlt	 = input.rotateAlt();
+		float		rollRotation = 0.f;
 		if ( rotationAlt.x || rotationAlt.y )
 		{
 			rollRotation = -rotationSpeed * rotationAlt.x;
@@ -41,9 +42,9 @@ namespace VTX::App::Controller
 		// Translation.
 		const Vec3i translationAxis = input.translationAxis();
 		Vec3f		translation		= VEC3F_ZERO;
-		translation.x				= float( translationAxis.x );
-		translation.y				= float( translationAxis.y );
-		translation.z				= float( translationAxis.z );
+		translation.x				= static_cast<float>( translationAxis.x );
+		translation.y				= static_cast<float>( translationAxis.y );
+		translation.z				= static_cast<float>( translationAxis.z );
 
 		if ( translation != VEC3F_ZERO )
 		{
@@ -82,6 +83,11 @@ namespace VTX::App::Controller
 			p_target			 = p_transform.getPosition() + front * distance;
 
 			HUB().trigger<Events::CameraTransformChange>();
+		}
+
+		if ( translationAxis != Vec3i( 0 ) )
+		{
+			PENDING_UPDATES().mark( E_PENDING_UPDATE::ANIMATION );
 		}
 
 		return true;

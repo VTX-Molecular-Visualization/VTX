@@ -1,8 +1,9 @@
-#ifndef __VTX_RENDERER_GRAPH_BUILDER__
-#define __VTX_RENDERER_GRAPH_BUILDER__
+#ifndef VTX_RENDERER_GRAPH_BUILDER_HPP
+#define VTX_RENDERER_GRAPH_BUILDER_HPP
 
 #include "descriptors.hpp"
 #include <cstring>
+#include <string_view>
 #include <util/color/rgba.hpp>
 
 namespace VTX::Renderer
@@ -58,11 +59,9 @@ namespace VTX::Renderer
 	 * @brief Create a uniform value.
 	 */
 	template<typename T>
-	Desc::UniformValue makeUniform(
-		const Desc::Key &							   p_name,
-		const T &									   p_value,
-		const std::optional<std::pair<double, double>> p_range = std::nullopt
-	)
+	Desc::UniformValue makeUniform( const Desc::Key &							   p_name,
+									const T &									   p_value,
+									const std::optional<std::pair<double, double>> p_range = std::nullopt )
 	{
 		Desc::UniformValue u {};
 		u.name = p_name;
@@ -80,12 +79,10 @@ namespace VTX::Renderer
 	}
 
 	template<typename T>
-	Desc::UniformValue makeUniformArray(
-		const Desc::Key &							   p_name,
-		const T &									   p_value,
-		const std::uint32_t							   p_count,
-		const std::optional<std::pair<double, double>> p_range = std::nullopt
-	)
+	Desc::UniformValue makeUniformArray( const Desc::Key &								p_name,
+										 const T &										p_value,
+										 const std::uint32_t							p_count,
+										 const std::optional<std::pair<double, double>> p_range = std::nullopt )
 	{
 		Desc::UniformValue u = makeUniform<T>( p_name, p_value, p_range );
 		u.arrayCount		 = p_count;
@@ -95,7 +92,7 @@ namespace VTX::Renderer
 	/**
 	 * @brief Name of the default sampler used to avoid repetition.
 	 */
-	const Desc::Key DEFAULT_SAMPLER_NAME = "Default";
+	static constexpr std::string_view DEFAULT_SAMPLER_NAME = "Default";
 
 	/**
 	 * @brief Forward declarations.
@@ -119,24 +116,20 @@ namespace VTX::Renderer
 		/**
 		 * @brief texture().
 		 */
-		GraphBuilder & texture(
-			const Desc::Key &,
-			const Desc::E_FORMAT,
-			const Desc::Size2D &		 = std::monostate {},
-			const Desc::E_TEXTURE_TARGET = Desc::E_TEXTURE_TARGET::TEXTURE_2D,
-			const bool					 = false
-		);
+		GraphBuilder & texture( const Desc::Key &,
+								Desc::E_FORMAT,
+								const Desc::Size2D &   = std::monostate {},
+								Desc::E_TEXTURE_TARGET = Desc::E_TEXTURE_TARGET::TEXTURE_2D,
+								bool				   = false );
 
 		/**
 		 * @brief texture().
 		 */
 		template<typename T>
-		GraphBuilder & texture(
-			const Desc::Key &	   p_name,
-			const Desc::E_FORMAT   p_format,
-			const std::vector<T> & p_data,
-			const Desc::Size2D &   p_size = std::monostate {}
-		)
+		GraphBuilder & texture( const Desc::Key &	   p_name,
+								const Desc::E_FORMAT   p_format,
+								const std::vector<T> & p_data,
+								const Desc::Size2D &   p_size = std::monostate {} )
 		{
 			Desc::Texture tex;
 			tex.format = p_format;
@@ -151,29 +144,25 @@ namespace VTX::Renderer
 		/**
 		 * @brief sampler().
 		 */
-		GraphBuilder & sampler(
-			const Desc::Key & p_name,
-			const Desc::E_WRAPPING	= Desc::E_WRAPPING::CLAMP_TO_EDGE,
-			const Desc::E_WRAPPING	= Desc::E_WRAPPING::CLAMP_TO_EDGE,
-			const Desc::E_FILTERING = Desc::E_FILTERING::NEAREST,
-			const Desc::E_FILTERING = Desc::E_FILTERING::NEAREST
-		);
+		GraphBuilder & sampler( const Desc::Key & p_name,
+								Desc::E_WRAPPING  = Desc::E_WRAPPING::CLAMP_TO_EDGE,
+								Desc::E_WRAPPING  = Desc::E_WRAPPING::CLAMP_TO_EDGE,
+								Desc::E_FILTERING = Desc::E_FILTERING::NEAREST,
+								Desc::E_FILTERING = Desc::E_FILTERING::NEAREST );
 
 		/**
 		 * @brief sampler().
 		 */
-		inline GraphBuilder & defaultSampler(
-			const Desc::E_WRAPPING	p_wrapS		= Desc::E_WRAPPING::CLAMP_TO_EDGE,
-			const Desc::E_WRAPPING	p_wrapT		= Desc::E_WRAPPING::CLAMP_TO_EDGE,
-			const Desc::E_FILTERING p_minFilter = Desc::E_FILTERING::NEAREST,
-			const Desc::E_FILTERING p_magFilter = Desc::E_FILTERING::NEAREST
-		)
-		{ return sampler( DEFAULT_SAMPLER_NAME, p_wrapS, p_wrapT, p_minFilter, p_magFilter ); }
+		GraphBuilder & defaultSampler( const Desc::E_WRAPPING  p_wrapS	   = Desc::E_WRAPPING::CLAMP_TO_EDGE,
+									   const Desc::E_WRAPPING  p_wrapT	   = Desc::E_WRAPPING::CLAMP_TO_EDGE,
+									   const Desc::E_FILTERING p_minFilter = Desc::E_FILTERING::NEAREST,
+									   const Desc::E_FILTERING p_magFilter = Desc::E_FILTERING::NEAREST )
+		{ return sampler( Desc::Key { DEFAULT_SAMPLER_NAME }, p_wrapS, p_wrapT, p_minFilter, p_magFilter ); }
 
 		/**
 		 * @brief vertexStream().
 		 */
-		GraphBuilder & vertexLayout( const Desc::Key &, const std::initializer_list<Desc::VertexAttribute> );
+		GraphBuilder & vertexLayout( const Desc::Key &, std::initializer_list<Desc::VertexAttribute> );
 
 		/**
 		 * @brief vertexStream().
@@ -183,16 +172,14 @@ namespace VTX::Renderer
 		/**
 		 * @brief buffer().
 		 */
-		GraphBuilder & buffer(
-			const Desc::Key &,
-			const Desc::E_BUFFER_USAGE,
-			const Desc::E_UPDATE_FREQUENCY					= Desc::E_UPDATE_FREQUENCY::STATIC,
-			const Desc::E_BUFFER_ALLOCATION					= Desc::E_BUFFER_ALLOCATION::SINGLE,
-			const Desc::E_BUFFER_MUTABILITY					= Desc::E_BUFFER_MUTABILITY::MUTABLE,
-			const Desc::E_BUFFER_ACCESS						= Desc::E_BUFFER_ACCESS::NONE,
-			const std::optional<uint32_t>					= std::nullopt,
-			const std::initializer_list<Desc::UniformValue> = {}
-		);
+		GraphBuilder & buffer( const Desc::Key &,
+							   Desc::E_BUFFER_USAGE,
+							   Desc::E_UPDATE_FREQUENCY					 = Desc::E_UPDATE_FREQUENCY::STATIC,
+							   Desc::E_BUFFER_ALLOCATION				 = Desc::E_BUFFER_ALLOCATION::SINGLE,
+							   Desc::E_BUFFER_MUTABILITY				 = Desc::E_BUFFER_MUTABILITY::MUTABLE,
+							   Desc::E_BUFFER_ACCESS					 = Desc::E_BUFFER_ACCESS::NONE,
+							   std::optional<uint32_t>					 = std::nullopt,
+							   std::initializer_list<Desc::UniformValue> = {} );
 
 		/**
 		 * @brief geometry().
@@ -202,28 +189,21 @@ namespace VTX::Renderer
 		/**
 		 * @brief geometry().
 		 */
-		GraphBuilder & geometry(
-			const Desc::Key &,
-			const Desc::Key &,
-			const std::optional<Desc::Key> = {},
-			const std::optional<Desc::Key> = {}
-		);
+		GraphBuilder & geometry( const Desc::Key &,
+								 const Desc::Key &,
+								 const std::optional<Desc::Key> & = std::nullopt,
+								 const std::optional<Desc::Key> & = std::nullopt );
 
 		/**
 		 * @brief pass().
 		 */
-		PassBuilder pass(
-			const Desc::Key &,
-			const Desc::E_PASS_TYPE		 = Desc::E_PASS_TYPE::GRAPHICS,
-			const Desc::E_PASS_EXECUTION = Desc::E_PASS_EXECUTION::EVERY_FRAME
-		);
+		PassBuilder pass( const Desc::Key &,
+						  Desc::E_PASS_TYPE		 = Desc::E_PASS_TYPE::GRAPHICS,
+						  Desc::E_PASS_EXECUTION = Desc::E_PASS_EXECUTION::EVERY_FRAME );
 
-		PassBuilder computePass(
-			const Desc::Key &,
-			const Desc::E_PASS_EXECUTION = Desc::E_PASS_EXECUTION::EVERY_FRAME
-		);
+		PassBuilder computePass( const Desc::Key &, Desc::E_PASS_EXECUTION = Desc::E_PASS_EXECUTION::EVERY_FRAME );
 
-		PassBuilder externalPass( const Desc::Key &, const Desc::E_PASS_EXECUTION = Desc::E_PASS_EXECUTION::ON_DIRTY );
+		PassBuilder externalPass( const Desc::Key &, Desc::E_PASS_EXECUTION = Desc::E_PASS_EXECUTION::ON_DIRTY );
 	};
 
 	/**
@@ -260,34 +240,28 @@ namespace VTX::Renderer
 		/**
 		 * @brief draw().
 		 */
-		ProgramBuilder & draw( const Desc::Key &, const Desc::E_PRIMITIVE );
-		ProgramBuilder & draw( const Desc::Key &, const Desc::E_PRIMITIVE, const Desc::DrawCall::RangesVariant & );
+		ProgramBuilder & draw( const Desc::Key &, Desc::E_PRIMITIVE );
+		ProgramBuilder & draw( const Desc::Key &, Desc::E_PRIMITIVE, const Desc::DrawCall::RangesVariant & );
 
 		/**
 		 * @brief dispatch().
 		 */
 		ProgramBuilder & dispatch( const Desc::Dispatch & );
-		ProgramBuilder & dispatch(
-			const uint32_t,
-			const uint32_t				 = 1,
-			const uint32_t				 = 1,
-			const Desc::E_MEMORY_BARRIER = Desc::E_MEMORY_BARRIER::NONE
-		);
-		ProgramBuilder & dispatchIndirect(
-			const Desc::Key &,
-			const uint32_t				 = 0,
-			const Desc::E_MEMORY_BARRIER = Desc::E_MEMORY_BARRIER::NONE
-		);
+		ProgramBuilder & dispatch( uint32_t,
+								   uint32_t				  = 1,
+								   uint32_t				  = 1,
+								   Desc::E_MEMORY_BARRIER = Desc::E_MEMORY_BARRIER::NONE );
+		ProgramBuilder & dispatchIndirect( const Desc::Key &,
+										   uint32_t				  = 0,
+										   Desc::E_MEMORY_BARRIER = Desc::E_MEMORY_BARRIER::NONE );
 
 		/**
 		 * @brief uniform().
 		 */
 		template<typename T>
-		ProgramBuilder & uniform(
-			const Desc::Key &							   p_name,
-			const T &									   p_value,
-			const std::optional<std::pair<double, double>> p_range = std::nullopt
-		)
+		ProgramBuilder & uniform( const Desc::Key &								 p_name,
+								  const T &										 p_value,
+								  const std::optional<std::pair<double, double>> p_range = std::nullopt )
 		{
 			program.uniforms.push_back( makeUniform( p_name, p_value, p_range ) );
 			return *this;
@@ -317,20 +291,16 @@ namespace VTX::Renderer
 		/**
 		 * @brief Constructor.
 		 */
-		PassBuilder( GraphBuilder &, const Desc::Key &, const Desc::E_PASS_TYPE, const Desc::E_PASS_EXECUTION );
+		PassBuilder( GraphBuilder &, const Desc::Key &, Desc::E_PASS_TYPE, Desc::E_PASS_EXECUTION );
 
-		PassBuilder & type( const Desc::E_PASS_TYPE );
-		PassBuilder & execution( const Desc::E_PASS_EXECUTION );
+		PassBuilder & type( Desc::E_PASS_TYPE );
+		PassBuilder & execution( Desc::E_PASS_EXECUTION );
 
 		/**
 		 * @brief in().
 		 */
 		// Generic binding.
-		PassBuilder & in(
-			const Desc::E_RESOURCE_TYPE,
-			const Desc::Key &,
-			const std::optional<Desc::Key> = std::nullopt
-		);
+		PassBuilder & in( Desc::E_RESOURCE_TYPE, const Desc::Key &, const std::optional<Desc::Key> & = std::nullopt );
 
 		// Convenience overload: defaults to TEXTURE.
 		PassBuilder & in( const Desc::Key &, const std::optional<Desc::Key> & = std::nullopt );
@@ -339,11 +309,7 @@ namespace VTX::Renderer
 		 * @brief out().
 		 */
 		// Generic binding.
-		PassBuilder & out(
-			const Desc::E_RESOURCE_TYPE,
-			const Desc::Key &,
-			const std::optional<Desc::Key> = std::nullopt
-		);
+		PassBuilder & out( Desc::E_RESOURCE_TYPE, const Desc::Key &, const std::optional<Desc::Key> & = std::nullopt );
 
 		// Convenience overload: defaults to TEXTURE.
 		PassBuilder & out( const Desc::Key & );
@@ -351,7 +317,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief settings().
 		 */
-		PassBuilder & settings( const std::initializer_list<Desc::E_SETTING> );
+		PassBuilder & settings( std::initializer_list<Desc::E_SETTING> );
 
 		/**
 		 * @brief program().

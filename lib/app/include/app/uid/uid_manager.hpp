@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CORE_UID_UID_MANAGER__
-#define __VTX_APP_CORE_UID_UID_MANAGER__
+#ifndef VTX_APP_UID_UID_MANAGER_HPP
+#define VTX_APP_UID_UID_MANAGER_HPP
 
 #include <util/uid.hpp>
 
@@ -12,7 +12,14 @@ namespace VTX::App::Uid
 	class UIDManager
 	{
 	  public:
-		inline Util::Uid::Pool<UID32> & getPickingPool() { return _pickingPool; }
+		UIDManager()								 = default;
+		UIDManager( const UIDManager & )			 = delete;
+		UIDManager & operator=( const UIDManager & ) = delete;
+		UIDManager( UIDManager && )					 = delete;
+		UIDManager & operator=( UIDManager && )		 = delete;
+		~UIDManager()								 = default;
+
+		Util::Uid::Pool<UID32> & getPickingPool() noexcept { return _pickingPool; }
 
 	  private:
 		/**

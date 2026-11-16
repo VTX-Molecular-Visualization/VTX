@@ -1,10 +1,11 @@
-#ifndef __VTX_RENDERER_CONTEXT_GL_CONTEXT__
-#define __VTX_RENDERER_CONTEXT_GL_CONTEXT__
+#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_CONTEXT_HPP
+#define VTX_RENDERER_CONTEXT_BACKEND_GL_CONTEXT_HPP
 
 #include "include_opengl.hpp"
 #include <cstdio>
 #include <sstream>
 #include <stdexcept>
+#include <type_traits>
 
 // ============================================================
 // WGL (Windows)
@@ -21,7 +22,9 @@ namespace VTX::Renderer::Context::Backend::GL
 	class WGLContextWrapper
 	{
 	  public:
-		WGLContextWrapper() = default;
+		WGLContextWrapper()										   = default;
+		WGLContextWrapper( const WGLContextWrapper & )			   = delete;
+		WGLContextWrapper & operator=( const WGLContextWrapper & ) = delete;
 
 		~WGLContextWrapper() { destroy(); }
 
@@ -126,7 +129,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			{
 				pixelFormat = _choosePixelFormat( wglChoosePixelFormatARB, pfd );
 			}
-			catch ( const std::exception & )
+			catch ( ... )
 			{
 				wglDeleteContext( tempContext );
 				ReleaseDC( bootstrapWindow, bootstrapDc );
@@ -167,7 +170,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			return p;
 		}
 
-		void * getProcAddress() { return reinterpret_cast<void *>( &_wglLoader ); }
+		static void * getProcAddress() { return reinterpret_cast<void *>( &_wglLoader ); }
 
 		void makeCurrent() const
 		{
@@ -177,11 +180,11 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		void swapBuffers() const { SwapBuffers( _hdc ); }
+		void swapBuffers() const noexcept { SwapBuffers( _hdc ); }
 
 		bool isDefaultFramebufferSrgb() const { return _defaultFramebufferSrgb; }
 
-		void setSwapInterval( const int p_interval )
+		static void setSwapInterval( const int p_interval )
 		{
 			auto wglSwapIntervalEXT
 				= reinterpret_cast<PFNWGLSWAPINTERVALEXTPROC>( wglGetProcAddress( "wglSwapIntervalEXT" ) );
@@ -229,8 +232,8 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 
 		int _choosePixelFormat(
-			const PFNWGLCHOOSEPIXELFORMATARBPROC p_choosePixelFormat,
-			PIXELFORMATDESCRIPTOR &				 p_pfd
+			std::remove_pointer_t<PFNWGLCHOOSEPIXELFORMATARBPROC> * const p_choosePixelFormat,
+			PIXELFORMATDESCRIPTOR &										  p_pfd
 		)
 		{
 			int pixelFormat = 0;
@@ -275,9 +278,9 @@ namespace VTX::Renderer::Context::Backend::GL
 							"[WGL] Using ARB pixel format {} (color={}, depth={}, stencil={}, double_buffer={}, "
 							"srgb={})",
 							pixelFormat,
-							int( p_pfd.cColorBits ),
-							int( p_pfd.cDepthBits ),
-							int( p_pfd.cStencilBits ),
+							static_cast<int>( p_pfd.cColorBits ),
+							static_cast<int>( p_pfd.cDepthBits ),
+							static_cast<int>( p_pfd.cStencilBits ),
 							( p_pfd.dwFlags & PFD_DOUBLEBUFFER ) != 0,
 							selectedSrgb
 						);
@@ -326,15 +329,13 @@ namespace VTX::Renderer::Context::Backend::GL
 		~MacOSGLContextWrapper() { destroy(); }
 
 		void init( const Desc::NativeContextInfo &, const uint32_t, const uint32_t )
-		{
-			throw std::runtime_error( "macOS OpenGL context creation is not implemented yet" );
-		}
+		{ throw std::runtime_error( "macOS OpenGL context creation is not implemented yet" ); }
 
 		void * getProcAddress() { return nullptr; }
 
 		void makeCurrent() const { throw std::runtime_error( "macOS OpenGL context is not initialized" ); }
 
-		void swapBuffers() const {}
+		void swapBuffers() const noexcept {}
 
 		bool isDefaultFramebufferSrgb() const { return false; }
 
@@ -366,7 +367,9 @@ namespace VTX::Renderer::Context::Backend::GL
 	class EGLContextWrapper
 	{
 	  public:
-		EGLContextWrapper() = default;
+		EGLContextWrapper()										   = default;
+		EGLContextWrapper( const EGLContextWrapper & )			   = delete;
+		EGLContextWrapper & operator=( const EGLContextWrapper & ) = delete;
 
 		~EGLContextWrapper() { destroy(); }
 
@@ -376,7 +379,7 @@ namespace VTX::Renderer::Context::Backend::GL
 				"[EGL] Creating context for surface {} with display {} and platform {}",
 				p_contextInfo.surface,
 				p_contextInfo.display,
-				int( p_contextInfo.plateform )
+				static_cast<int>( p_contextInfo.plateform )
 			);
 
 			_nativeDisplay = reinterpret_cast<void *>( p_contextInfo.display );
@@ -550,7 +553,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			if ( _context == EGL_NO_CONTEXT )
 			{
-				EGLint			   err = eglGetError();
+				const EGLint	   err = eglGetError();
 				std::ostringstream oss;
 				oss << "EGL context error: 0x" << std::hex << std::uppercase << err;
 				throw std::runtime_error( oss.str() );
@@ -562,9 +565,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 
 		static void * _eglLoader( const char * p_name )
-		{
-			return reinterpret_cast<void *>( eglGetProcAddress( p_name ) );
-		}
+		{ return reinterpret_cast<void *>( eglGetProcAddress( p_name ) ); }
 
 		void * getProcAddress() { return reinterpret_cast<void *>( &_eglLoader ); }
 
@@ -578,7 +579,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			VTX_TRACE( "[EGL] eglMakeCurrent succeeded" );
 		}
 
-		void swapBuffers() const { eglSwapBuffers( _display, _surface ); }
+		void swapBuffers() const noexcept { eglSwapBuffers( _display, _surface ); }
 
 		bool isDefaultFramebufferSrgb() const { return _defaultFramebufferSrgb; }
 
@@ -630,7 +631,7 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 
 	  private:
-		enum class Platform
+		enum class Platform : uint8_t
 		{
 			Default,
 			X11,

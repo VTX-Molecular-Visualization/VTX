@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TREE_CAMERA__
-#define __VTX_UI_QT_WIDGET_TREE_CAMERA__
+#ifndef VTX_UI_QT_WIDGET_TREE_CAMERA_HPP
+#define VTX_UI_QT_WIDGET_TREE_CAMERA_HPP
 
 #include "ui/qt/widget/tree/base_tree.hpp"
 #include <unordered_map>
@@ -24,15 +24,9 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Constructor.
 		 */
-		Camera( const Entity p_entity, QWidget * p_parent );
-		~Camera() override;
+		Camera( Entity p_entity, QWidget * p_parent );
 
 	  private:
-		/**
-		 * @brief Camera entitie.
-		 */
-		const Entity _entity;
-
 		/**
 		 * @brief Map viewpoint entities to tree items.
 		 */
@@ -41,8 +35,8 @@ namespace VTX::UI::QT::Widget::Tree
 		/**
 		 * @brief Connections to App.
 		 */
-		Util::EventHub::Connection _onConstructConnection;
-		Util::EventHub::Connection _onDestroyConnection;
+		VTX::Util::EventHub::ScopedConnection _onConstructConnection;
+		VTX::Util::EventHub::ScopedConnection _onDestroyConnection;
 
 		/**
 		 * @brief Handle viewpoint addition to update the tree.
@@ -58,6 +52,8 @@ namespace VTX::UI::QT::Widget::Tree
 		 * @brief Handle viewpoint rename to update the tree.
 		 */
 		void _onViewPointRenamed( const App::Events::ViewPointRenamed & p_event );
+
+		VTX::Util::EventHub::ScopedConnection _viewPointRenamedConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

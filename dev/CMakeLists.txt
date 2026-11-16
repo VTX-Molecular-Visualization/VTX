@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.28)
+
 set(DIR_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 set(DIR_APPS ${CMAKE_CURRENT_SOURCE_DIR}/../app)
 set(DIR_TOOLS ${CMAKE_CURRENT_SOURCE_DIR}/../tool)
@@ -7,15 +9,13 @@ include("${DIR_LIBS}/renderer/cmake/vtx_link_cuda.cmake")
 
 set(PYBIND11_FINDPYTHON ON)
 
-message("vtx")
-cmake_minimum_required(VERSION 3.23)
+message(STATUS "VTX - vtx")
 
 project(vtx)
 
 find_package(glm CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
-find_package(nlohmann_json CONFIG REQUIRED)
 find_package(cpr CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 find_package(chemfiles CONFIG REQUIRED)

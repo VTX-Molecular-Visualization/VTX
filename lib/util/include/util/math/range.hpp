@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_MATH_RANGE__
-#define __VTX_UTIL_MATH_RANGE__
+#ifndef VTX_UTIL_MATH_RANGE_HPP
+#define VTX_UTIL_MATH_RANGE_HPP
 
 #include "util/constants.hpp"
 #include <cassert>
@@ -20,7 +20,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Enum to specify range edge.
 		 */
-		enum class E_EDGE
+		enum class E_EDGE : uint8_t
 		{
 			FIRST,
 			LAST
@@ -415,7 +415,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief To std vector.
 		 */
-		std::vector<T> toStdVector() const
+		constexpr std::vector<T> toStdVector() const
 		{
 			const size_t   count = static_cast<size_t>( getCount() );
 			std::vector<T> vec( count );

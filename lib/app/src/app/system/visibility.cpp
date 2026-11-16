@@ -1,10 +1,9 @@
 #include <app/ecs.hpp>
-#include <app/services.hpp>
 #include <app/system/visibility.hpp>
 
 namespace VTX::App::System
 {
-	bool isAnythingVisible() noexcept
+	bool isAnythingVisible()
 	{
 		bool somethingVisible = false;
 		for ( auto entity : App::REG().view<Visibility>() )

@@ -1,5 +1,6 @@
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/application.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include <QActionGroup>
@@ -15,7 +16,7 @@
 namespace VTX::UI::QT
 {
 
-	QAction * ActionRegistry::registerAction( const App::UI::DescAction & p_action, const ActionHandler p_handler )
+	QAction * ActionRegistry::registerAction( const App::UI::DescAction & p_action, ActionHandler p_handler )
 	{
 		const std::string actionId = key( p_action );
 		if ( actionId.empty() )
@@ -24,7 +25,7 @@ namespace VTX::UI::QT
 			return nullptr;
 		}
 
-		const bool hasHandler = bool( p_handler );
+		const bool hasHandler = static_cast<bool>( p_handler );
 		if ( hasHandler )
 		{
 			_handlers[ actionId ] = std::move( p_handler );
@@ -48,7 +49,7 @@ namespace VTX::UI::QT
 	}
 
 	QAction * ActionRegistry::getAction( const std::string_view p_key ) const
-	{ return Q_APP()->findChild<QAction *>( QString::fromUtf8( p_key.data(), int( p_key.size() ) ) ); }
+	{ return Q_APP()->findChild<QAction *>( QString::fromUtf8( p_key.data(), static_cast<int>( p_key.size() ) ) ); }
 
 	void ActionRegistry::trigger( const std::string_view p_key, ActionParams p_params ) const
 	{
@@ -65,7 +66,7 @@ namespace VTX::UI::QT
 
 	bool ActionRegistry::isChecked( const std::string_view p_key ) const
 	{
-		QAction * const action = getAction( p_key );
+		const QAction * const action = getAction( p_key );
 		if ( action == nullptr )
 		{
 			VTX_ERROR( "Unable to read checked state of unregistered UI action: {}", p_key );
@@ -100,7 +101,7 @@ namespace VTX::UI::QT
 		}
 	}
 
-	QAction * ActionRegistry::addTo( QWidget & p_widget, const std::string_view p_key )
+	QAction * ActionRegistry::addTo( QWidget & p_widget, const std::string_view p_key ) const
 	{
 		QAction * const action = getAction( p_key );
 		if ( action == nullptr )
@@ -113,7 +114,7 @@ namespace VTX::UI::QT
 		return action;
 	}
 
-	QAction * ActionRegistry::addTo( QMenu & p_menu, const std::string_view p_key )
+	QAction * ActionRegistry::addTo( QMenu & p_menu, const std::string_view p_key ) const
 	{
 		QAction * const action = getAction( p_key );
 		if ( action == nullptr )
@@ -126,7 +127,7 @@ namespace VTX::UI::QT
 		return action;
 	}
 
-	QAction * ActionRegistry::addTo( QToolBar & p_toolbar, const std::string_view p_key )
+	QAction * ActionRegistry::addTo( QToolBar & p_toolbar, const std::string_view p_key ) const
 	{
 		QAction * const action = getAction( p_key );
 		if ( action == nullptr )
@@ -143,8 +144,8 @@ namespace VTX::UI::QT
 
 	QAction * ActionRegistry::_createAction( const App::UI::DescAction & p_action, const std::string_view p_key )
 	{
-		auto * const qAction = new QAction( Q_APP() );
-		qAction->setObjectName( QString::fromUtf8( p_key.data(), int( p_key.size() ) ) );
+		auto * const qAction = Helper::makeQObject<QAction>( Q_APP() );
+		qAction->setObjectName( QString::fromUtf8( p_key.data(), static_cast<int>( p_key.size() ) ) );
 
 		VTX_TRACE( "UI action created: {}", p_key );
 
@@ -156,7 +157,7 @@ namespace VTX::UI::QT
 			auto * qActionGroup = Q_APP()->findChild<QActionGroup *>( QString::fromStdString( *p_action.group ) );
 			if ( not qActionGroup )
 			{
-				qActionGroup = new QActionGroup( Q_APP() );
+				qActionGroup = Helper::makeQObject<QActionGroup>( Q_APP() );
 				qActionGroup->setObjectName( QString::fromStdString( *p_action.group ) );
 			}
 

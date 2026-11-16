@@ -1,13 +1,15 @@
-#ifndef __VTX_UI_QT_WIDGET_STATUS_BAR__
-#define __VTX_UI_QT_WIDGET_STATUS_BAR__
+#ifndef VTX_UI_QT_WIDGET_STATUS_BAR_HPP
+#define VTX_UI_QT_WIDGET_STATUS_BAR_HPP
 
 #include "ui/qt/tool_button/resolution_selector.hpp"
 #include <QLabel>
 #include <QPointer>
 #include <QStatusBar>
-#include <QTimer>
 #include <QToolButton>
 #include <app/events.hpp>
+#include <util/chrono.hpp>
+#include <util/event_hub.hpp>
+#include <util/types.hpp>
 
 namespace VTX::UI::QT::Widget
 {
@@ -26,6 +28,11 @@ namespace VTX::UI::QT::Widget
 
 	  private:
 		/**
+		 * @brief Refresh timer.
+		 */
+		static constexpr float FPS_REFRESH_INTERVAL = 1000.f;
+
+		/**
 		 * @brief FPS counter.
 		 */
 		QPointer<QLabel> _fps;
@@ -41,9 +48,24 @@ namespace VTX::UI::QT::Widget
 		bool _rendering = false;
 
 		/**
+		 * @brief Count.
+		 */
+		uint _frameCount = 0;
+
+		/**
+		 * @brief Chrono.
+		 */
+		VTX::Util::Chrono _fpsChrono;
+
+		/**
 		 * @brief Python version.
 		 */
 		QPointer<QLabel> _python;
+
+		/**
+		 * @brief Vendor name.
+		 */
+		QPointer<QLabel> _vendor;
 
 		/**
 		 * @brief Update functions.
@@ -52,6 +74,15 @@ namespace VTX::UI::QT::Widget
 		void _updateResolution( const App::Events::RendererResize & p_e );
 		void _setCurrentFPS();
 		void _pythonInitialized( const App::Events::PythonInitialized & );
+		void _rendererReady( const App::Events::RendererReady & );
+
+		/**
+		 * @brief Connections.
+		 */
+		VTX::Util::EventHub::ScopedConnection _postRenderConnection;
+		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
+		VTX::Util::EventHub::ScopedConnection _rendererReadyConnection;
+		VTX::Util::EventHub::ScopedConnection _pythonInitializedConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget

@@ -5,20 +5,15 @@
 namespace VTX::PythonBinding::Wrapper
 {
 	Function::Function( const Module & p_module, const std::string & p_funcName ) :
-		_funcHandle( _getFunctionAccessor( p_module, p_funcName ) ),
-		_functionPath( p_module.getModulePath() + "." + p_funcName )
-	{
-	}
-	Function::Function( const Object & p_object, const std::string & p_funcName ) :
-		_funcHandle( _getFunctionAccessor( p_object, p_funcName ) ),
-		_functionPath( p_object.getObjectName() + "." + p_funcName )
+		_functionPath( p_module.getModulePath() + "." + p_funcName ),
+		_funcHandle( _getFunctionAccessor( p_module, p_funcName ) )
 	{
 	}
 
-	Object Function::_getReturnValue()
+	Function::Function( const Object & p_object, const std::string & p_funcName ) :
+		_functionPath( p_object.getObjectName() + "." + p_funcName ),
+		_funcHandle( _getFunctionAccessor( p_object, p_funcName ) )
 	{
-		Object res = Object( _returnObj );
-		return res;
 	}
 
 	pybind11::detail::str_attr_accessor Function::_getFunctionAccessor( const Module &		p_module,
@@ -30,13 +25,14 @@ namespace VTX::PythonBinding::Wrapper
 		{
 			funcHandle.ptr();
 		}
-		catch ( const std::exception e )
+		catch ( const std::exception & )
 		{
 			throw( PythonWrapperException( "Function " + _functionPath + " not found." ) );
 		}
 
 		return funcHandle;
 	}
+
 	pybind11::detail::str_attr_accessor Function::_getFunctionAccessor( const Object &		p_object,
 																		const std::string & p_funcName ) const
 	{
@@ -46,7 +42,7 @@ namespace VTX::PythonBinding::Wrapper
 		{
 			funcHandle.ptr();
 		}
-		catch ( const std::exception e )
+		catch ( const std::exception & )
 		{
 			throw( PythonWrapperException( "Function " + _functionPath + " not found." ) );
 		}

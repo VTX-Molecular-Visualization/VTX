@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_MENU_VIEW__
-#define __VTX_UI_QT_MENU_VIEW__
+#ifndef VTX_UI_QT_MENU_VIEW_HPP
+#define VTX_UI_QT_MENU_VIEW_HPP
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
@@ -12,7 +12,7 @@ namespace VTX::UI::QT::Menu
 	class View : public Widget::BaseWidget<View, QMenu>
 	{
 	  public:
-		View( QWidget * p_parent ) : BaseWidget( p_parent )
+		View( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setTitle( "View" );
 			connect( this, &QMenu::aboutToShow, this, [ this ]() { MAIN_WINDOW().populateViewMenu( *this ); } );

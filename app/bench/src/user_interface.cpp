@@ -1,16 +1,12 @@
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-
 #include "user_interface.hpp"
 #include "camera_controller.hpp"
 #include "scene.hpp"
+#include <algorithm>
 #include <cstring>
 #include <imgui.h>
 #include <imnodes/imnodes.h>
 #include <renderer/color.hpp>
-#include <util/enum.hpp>
 #include <util/image.hpp>
-#include <util/logger.hpp>
-#include <util/string.hpp>
 
 namespace VTX::Bench
 {
@@ -23,15 +19,15 @@ namespace VTX::Bench
 			throw std::runtime_error( "Failed to init SDL: " + std::string( SDL_GetError() ) );
 		}
 
-		SDL_PropertiesID windowProps = SDL_CreateProperties();
+		const SDL_PropertiesID windowProps = SDL_CreateProperties();
 		if ( windowProps == 0 )
 		{
 			throw std::runtime_error( "Failed to create SDL window properties" );
 		}
 
 		SDL_SetStringProperty( windowProps, SDL_PROP_WINDOW_CREATE_TITLE_STRING, "VTX_RENDERER_BENCH" );
-		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, Sint64( p_width ) );
-		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, Sint64( p_height ) );
+		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, static_cast<Sint64>( p_width ) );
+		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, static_cast<Sint64>( p_height ) );
 		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_X_NUMBER, SDL_WINDOWPOS_CENTERED );
 		SDL_SetNumberProperty( windowProps, SDL_PROP_WINDOW_CREATE_Y_NUMBER, SDL_WINDOWPOS_CENTERED );
 		SDL_SetBooleanProperty( windowProps, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true );
@@ -85,7 +81,7 @@ namespace VTX::Bench
 		CameraController * const   p_camera,
 		Scene * const			   p_scene,
 		Renderer::Renderer * const p_renderer
-	)
+	) const
 	{
 		// ImGui_ImplSDL3_NewFrame();
 		// ImGui::NewFrame();
@@ -134,14 +130,14 @@ namespace VTX::Bench
 			SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WIN32_HWND_POINTER, nullptr )
 		);
 #elif defined( __linux__ )
-		if ( getNativePlatform() == uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
+		if ( getNativePlatform() == static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
 		{
 			return reinterpret_cast<uintptr_t>(
 				SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WAYLAND_SURFACE_POINTER, nullptr )
 			);
 		}
 
-		return uintptr_t( SDL_GetNumberProperty( windowProps, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0 ) );
+		return static_cast<uintptr_t>( SDL_GetNumberProperty( windowProps, SDL_PROP_WINDOW_X11_WINDOW_NUMBER, 0 ) );
 #else
 		return 0;
 #endif
@@ -163,7 +159,7 @@ namespace VTX::Bench
 #ifdef _WIN32
 		return 0;
 #elif defined( __linux__ )
-		if ( getNativePlatform() == uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
+		if ( getNativePlatform() == static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND ) )
 		{
 			return reinterpret_cast<uintptr_t>(
 				SDL_GetPointerProperty( windowProps, SDL_PROP_WINDOW_WAYLAND_DISPLAY_POINTER, nullptr )
@@ -181,20 +177,20 @@ namespace VTX::Bench
 	uint8_t UserInterface::getNativePlatform() const
 	{
 #ifdef _WIN32
-		return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WINDOWS );
+		return static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::WINDOWS );
 #elif defined( __linux__ )
 		const char * const videoDriver = SDL_GetCurrentVideoDriver();
 		if ( videoDriver != nullptr && std::strcmp( videoDriver, "wayland" ) == 0 )
 		{
-			return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND );
+			return static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::WAYLAND );
 		}
 		if ( videoDriver != nullptr && std::strcmp( videoDriver, "x11" ) == 0 )
 		{
-			return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::X11 );
+			return static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::X11 );
 		}
-		return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::UNKNOWN );
+		return static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::UNKNOWN );
 #else
-		return uint8_t( Renderer::Desc::E_NATIVE_PLATEFORM::UNKNOWN );
+		return static_cast<uint8_t>( Renderer::Desc::E_NATIVE_PLATEFORM::UNKNOWN );
 #endif
 	}
 
@@ -245,19 +241,13 @@ namespace VTX::Bench
 				if ( ImGui::MenuItem( "Random" ) )
 				{
 					Renderer::Color::Layout colorLayout;
-					std::generate(
-						colorLayout.colors.begin(), colorLayout.colors.end(), [] { return Util::Color::Rgba::random(); }
-					);
+					std::ranges::generate( colorLayout.colors, [] { return Util::Color::Rgba::random(); } );
 					// p_scene->setColorLayout( colorLayout );
 				}
 				if ( ImGui::MenuItem( "Random pastel" ) )
 				{
 					Renderer::Color::Layout colorLayout;
-					std::generate(
-						colorLayout.colors.begin(),
-						colorLayout.colors.end(),
-						[] { return Util::Color::Rgba::randomPastel(); }
-					);
+					std::ranges::generate( colorLayout.colors, [] { return Util::Color::Rgba::randomPastel(); } );
 					// p_scene->setColorLayout( colorLayout );
 				}
 
@@ -293,14 +283,7 @@ namespace VTX::Bench
 			}
 			if ( ImGui::Button( "Disable" ) )
 			{
-				try
-				{
-					// p_renderer->disableGraphicAPI();
-				}
-				catch ( const std::exception & e )
-				{
-					VTX_ERROR( "{}", e.what() );
-				}
+				// p_renderer->disableGraphicAPI();
 			}
 
 			ImGui::Checkbox( "UI", &_drawUi );
@@ -314,7 +297,7 @@ namespace VTX::Bench
 
 			// ImGui::Checkbox( "Force update", &p_renderer->forceUpdate );
 
-			ImGui::Text( fmt::format( "{} FPS", int( ImGui::GetIO().Framerate ) ).c_str() );
+			ImGui::TextUnformatted( fmt::format( "{} FPS", static_cast<int>( ImGui::GetIO().Framerate ) ).c_str() );
 
 			ImGui::EndMainMenuBar();
 		}
@@ -379,7 +362,8 @@ namespace VTX::Bench
 	{
 		if ( ImGui::Begin( "Renderer" ) )
 		{
-			size_t sizeAtoms = 0, sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
+			// const size_t sizeAtoms = 0;
+			// const size_t		 sizeBonds = 0, sizeRibbons = 0, sizeVoxels = 0;
 			/*
 			for ( auto count : p_renderer->drawRangeSpheres.counts )
 			{
@@ -502,8 +486,8 @@ namespace VTX::Bench
 				// p_scene->removeAllSystems( p_renderer );
 			}
 
-			size_t idSystem = 0;
-			int	   toDelete = -1;
+			// const size_t idSystem = 0;
+			const int toDelete = -1;
 
 			/*
 			for ( auto & proxySystem : p_scene->getProxiesSystems() )
@@ -590,14 +574,7 @@ namespace VTX::Bench
 			}
 			if ( ImGui::Button( "Build" ) )
 			{
-				try
-				{
-					// p_renderer->build();
-				}
-				catch ( const std::exception & e )
-				{
-					VTX_ERROR( "{}", e.what() );
-				}
+				// p_renderer->build();
 			}
 			if ( ImGui::Button( "X" ) )
 			{
@@ -781,7 +758,7 @@ namespace VTX::Bench
 			ImNodes::PushAttributeFlag( ImNodesAttributeFlags_EnableLinkDetachWithDragClick );
 			// uint idFinalOuput = id;
 			// ImNodes::BeginInputAttribute( id++ );
-			ImGui::Text( "out" );
+			ImGui::TextUnformatted( "out" );
 			ImNodes::EndInputAttribute();
 			ImNodes::PopAttributeFlag();
 

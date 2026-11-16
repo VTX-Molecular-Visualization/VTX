@@ -1,9 +1,8 @@
 #include "ui/qt/widget/main_window.hpp"
-#include "app/helper/io.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
-#include "ui/qt/application.hpp"
 #include "ui/qt/dialog/progress.hpp"
 #include "ui/qt/dialog/trajectory_association.hpp"
 #include "ui/qt/dialog/updater.hpp"
@@ -21,7 +20,6 @@
 #include "ui/qt/menu/file.hpp"
 #include "ui/qt/menu/help.hpp"
 #include "ui/qt/menu/selection.hpp"
-#include "ui/qt/menu/theme.hpp"
 #include "ui/qt/menu/tool.hpp"
 #include "ui/qt/menu/view.hpp"
 #include "ui/qt/settings.hpp"
@@ -34,9 +32,10 @@
 #include <QMessageBox>
 #include <QMimeData>
 #include <QTimer>
-#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
+#include <io/file_format.hpp>
 #include <renderer/renderer.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget
@@ -45,8 +44,8 @@ namespace VTX::UI::QT::Widget
 	MainWindow::MainWindow() : BaseWidget( nullptr )
 	{
 		// Size.
-		QRect geometry = screen()->availableGeometry();
-		QSize size	   = geometry.size();
+		const QRect geometry = screen()->availableGeometry();
+		QSize		size	 = geometry.size();
 		size *= Style::DEFAULT_SIZE_SCALE;
 		resize( size );
 
@@ -77,7 +76,6 @@ namespace VTX::UI::QT::Widget
 		createMenu<Menu::Camera>();
 		createMenu<Menu::Tool>();
 		createMenu<Menu::View>();
-		// createMenu<Menu::Theme>();
 		createMenu<Menu::Help>();
 
 		// Toolbars.
@@ -87,8 +85,7 @@ namespace VTX::UI::QT::Widget
 		createToolBar<ToolBar::Snapshot>();
 
 		// Main area : opengl widget.
-		auto * renderer = new Renderer( this );
-		// renderer->createToolBar<ToolBar::Selection>( Renderer::HUD_POSITION::TOP_RIGHT );
+		auto * renderer = Helper::makeQObject<Renderer>( this );
 		setCentralWidget( renderer );
 
 		// Dock widgets.
@@ -118,19 +115,27 @@ namespace VTX::UI::QT::Widget
 		resizeDocks( { dwConsole }, { Style::DEFAULT_CONSOLE_HEIGHT }, Qt::Vertical );
 
 		// Status bar.
-		_statusBar = new StatusBar( this );
+		_statusBar = Helper::makeQObject<StatusBar>( this );
 		setStatusBar( _statusBar );
 
 		// Focus central widgetrend to enable shortcuts.
 		centralWidget()->setFocus();
 
 		// Connect events.
-		App::HUB().connect<App::Events::ApplicationError, &MainWindow::_onApplicationError>( this );
-		App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
-		App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>( this );
-		App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
-		App::HUB().connect<App::Events::UpdateAvailable, &MainWindow::_onUpdateAvailable>( this );
-		App::HUB().connect<App::Events::RendererResize, &MainWindow::_onRendererResize>( this );
+		_applicationErrorConnection
+			= App::HUB().connect<App::Events::ApplicationError, &MainWindow::_onApplicationError>( this );
+		_blockingOperationStartConnection
+			= App::HUB().connect<App::Events::BlockingOperationStart, &MainWindow::_onBlockingOperationStart>( this );
+		_blockingOperationProgressConnection
+			= App::HUB().connect<App::Events::BlockingOperationProgress, &MainWindow::_onBlockingOperationProgress>(
+				this
+			);
+		_blockingOperationEndConnection
+			= App::HUB().connect<App::Events::BlockingOperationEnd, &MainWindow::_onBlockingOperationEnd>( this );
+		_updateAvailableConnection
+			= App::HUB().connect<App::Events::UpdateAvailable, &MainWindow::_onUpdateAvailable>( this );
+		_rendererResizeConnection
+			= App::HUB().connect<App::Events::RendererResize, &MainWindow::_onRendererResize>( this );
 	}
 
 	MainWindow::~MainWindow()
@@ -148,7 +153,7 @@ namespace VTX::UI::QT::Widget
 			case QEvent::LayoutRequest:
 			case QEvent::UpdateRequest:
 			case QEvent::WindowStateChange:
-				QTimer::singleShot( 0, this, []() { App::RENDERER().setNeedUpdate( true ); } );
+				QTimer::singleShot( 0, this, []() { App::RENDERER().setNeedUpdate(); } );
 				if ( p_event->type() == QEvent::WindowStateChange )
 				{
 					UI_ACTIONS().setChecked( Action::View::FULLSCREEN, isFullScreen() );
@@ -187,7 +192,7 @@ namespace VTX::UI::QT::Widget
 			}
 		}
 
-		QToolBar * const toolbar = new QToolBar( p_toolbar.data(), this );
+		QToolBar * const toolbar = Helper::makeQObject<QToolBar>( p_toolbar.data(), this );
 		toolbar->setObjectName( toolbar->windowTitle() );
 		addToolBar( toolbar );
 		UI_ACTIONS().addTo( *toolbar, p_actionId );
@@ -211,21 +216,21 @@ namespace VTX::UI::QT::Widget
 
 	uintptr_t MainWindow::getNativeSurface() const
 	{
-		const auto * widget = static_cast<const Renderer *>( centralWidget() );
+		const auto * widget = qobject_cast<const Renderer *>( centralWidget() );
 		assert( widget != nullptr );
 		return widget->getNativeSurface();
 	}
 
 	uintptr_t MainWindow::getNativeDisplay() const
 	{
-		const auto * widget = static_cast<const Renderer *>( centralWidget() );
+		const auto * widget = qobject_cast<const Renderer *>( centralWidget() );
 		assert( widget != nullptr );
 		return widget->getNativeDisplay();
 	}
 
 	uint8_t MainWindow::getNativePlatform() const
 	{
-		const auto * widget = static_cast<const Renderer *>( centralWidget() );
+		const auto * widget = qobject_cast<const Renderer *>( centralWidget() );
 		assert( widget != nullptr );
 		return widget->getNativePlatform();
 	}
@@ -236,7 +241,7 @@ namespace VTX::UI::QT::Widget
 
 		QAction * const panelsLabel = p_menu.addAction( "Panels" );
 		panelsLabel->setEnabled( false );
-		for ( QDockWidget * const dock : findChildren<QDockWidget *>() )
+		for ( const QDockWidget * const dock : findChildren<QDockWidget *>() )
 		{
 			p_menu.addAction( dock->toggleViewAction() );
 		}
@@ -244,7 +249,7 @@ namespace VTX::UI::QT::Widget
 		p_menu.addSeparator();
 		QAction * const toolbarsLabel = p_menu.addAction( "Toolbars" );
 		toolbarsLabel->setEnabled( false );
-		for ( QToolBar * const toolbar : findChildren<QToolBar *>() )
+		for ( const QToolBar * const toolbar : findChildren<QToolBar *>() )
 		{
 			if ( toolBarArea( toolbar ) == Qt::NoToolBarArea )
 			{
@@ -265,7 +270,7 @@ namespace VTX::UI::QT::Widget
 
 	QMenu * MainWindow::createPopupMenu()
 	{
-		QMenu * const menu = new QMenu( this );
+		QMenu * const menu = Helper::makeQObject<QMenu>( this );
 		menu->setTitle( "View" );
 		populateViewMenu( *menu );
 		return menu;
@@ -283,18 +288,15 @@ namespace VTX::UI::QT::Widget
 	{
 		for ( const auto & url : p_event->mimeData()->urls() )
 		{
-			switch ( App::Helper::IO::whatToDoWithThisFile( url.toLocalFile().toStdString() ) )
+			const FilePath path = url.toLocalFile().toStdString();
+			if ( VTX::IO::isTrajectoryFileFormat( path ) && App::Helper::Trajectory::hasSystemAcceptingTrajectory() )
 			{
-			case App::Helper::IO::FileDropHandling::actionOpen:
-				App::ACTION().execute<App::Action::IO::Open>( url.toLocalFile().toStdString() );
-				break;
-			case App::Helper::IO::FileDropHandling::associateTrajectory:
-			{
-				Dialog::TrajectoryAssociation dialog( url.toLocalFile().toStdString() );
+				Dialog::TrajectoryAssociation dialog( path );
 				dialog.exec();
-				break;
 			}
-			default: App::ACTION().execute<App::Action::IO::Open>( url.toLocalFile().toStdString() );
+			else
+			{
+				App::ACTION().execute<App::Action::IO::Open>( path );
 			}
 		}
 
@@ -309,16 +311,14 @@ namespace VTX::UI::QT::Widget
 
 	void MainWindow::_onBlockingOperationStart( const App::Events::BlockingOperationStart & p_e )
 	{
-		_progressDialog = new Dialog::Progress( p_e.message );
+		_progressDialog = Helper::makeQObject<Dialog::Progress>( p_e.message );
 		_progressDialog->show();
 		// Need to process events to display the dialog immediately, because main thread is busy.
 		QCoreApplication::processEvents( QEventLoop::ExcludeUserInputEvents );
 	}
 
 	void MainWindow::_onBlockingOperationProgress( const App::Events::BlockingOperationProgress & p_e )
-	{
-		_progressDialog->setValue( p_e.progress );
-	}
+	{ _progressDialog->setValue( p_e.progress ); }
 
 	void MainWindow::_onBlockingOperationEnd( const App::Events::BlockingOperationEnd & )
 	{
@@ -332,7 +332,7 @@ namespace VTX::UI::QT::Widget
 
 	void MainWindow::_onUpdateAvailable( const App::Events::UpdateAvailable & p_e )
 	{
-		Dialog::Updater * const dialog = new Dialog::Updater( p_e );
+		Dialog::Updater * const dialog = Helper::makeQObject<Dialog::Updater>( p_e );
 		dialog->setAttribute( Qt::WA_DeleteOnClose, true );
 		dialog->setModal( true );
 		dialog->open();

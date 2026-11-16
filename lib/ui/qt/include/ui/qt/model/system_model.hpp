@@ -1,5 +1,5 @@
-﻿#ifndef __VTX_UI_QT_MODEL__
-#define __VTX_UI_QT_MODEL__
+﻿#ifndef VTX_UI_QT_MODEL_SYSTEM_MODEL_HPP
+#define VTX_UI_QT_MODEL_SYSTEM_MODEL_HPP
 
 #include <QAbstractItemModel>
 #include <QString>
@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Model
 	class SystemModel : public QAbstractItemModel
 	{
 	  public:
-		enum struct ViewMode : int
+		enum struct ViewMode : uint8_t
 		{
 			ByChain,
 			ByCategory
@@ -26,6 +26,8 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Roles for data retrieval.
 		 */
+		// Qt item roles must be a plain int enum.
+		// NOLINTNEXTLINE(performance-enum-size,cppcoreguidelines-use-enum-class)
 		enum Roles
 		{
 			// SYSTEM, CHAIN, RESIDUE, ATOM.
@@ -43,7 +45,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Constructor.
 		 */
-		SystemModel( const Entity, QObject * = nullptr );
+		SystemModel( Entity, QObject * = nullptr );
 
 		/**
 		 * @brief Number of columns is always 1.
@@ -58,7 +60,7 @@ namespace VTX::UI::QT::Model
 		/**
 		 * @brief Data retrieval (display, roles, etc.).
 		 */
-		QVariant data( const QModelIndex & p_index, int p_role = Qt::DisplayRole ) const override;
+		QVariant data( const QModelIndex & p_index, int p_role ) const override;
 
 		/**
 		 * @brief Create index for given row/column/parent.
@@ -70,24 +72,24 @@ namespace VTX::UI::QT::Model
 		 */
 		QModelIndex parent( const QModelIndex & p_index ) const override;
 
-		void setViewMode( const ViewMode p_mode );
+		void setViewMode( ViewMode p_mode );
 
-		inline ViewMode getViewMode() const { return _viewMode; }
+		ViewMode getViewMode() const { return _viewMode; }
 
 		/**
 		 * @brief Public index creation.
 		 */
-		QModelIndex makeIndex( const int p_row, const Core::Struct::E_SYSTEM_ITEM, const Index ) const;
+		QModelIndex makeIndex( int p_row, Core::Struct::E_SYSTEM_ITEM, Index ) const;
 
 		/**
 		 * @brief Pack minimum information to identify an item in the model into a single uint64.
 		 */
-		static quintptr pack( const Core::Struct::E_SYSTEM_ITEM, const Index );
+		static quintptr pack( Core::Struct::E_SYSTEM_ITEM, Index );
 
 		/**
 		 * @brief Unpack quintptr.
 		 */
-		static void unpack( const quintptr, Core::Struct::E_SYSTEM_ITEM &, Index & );
+		static void unpack( quintptr, Core::Struct::E_SYSTEM_ITEM &, Index & );
 
 	  private:
 		/**
@@ -96,8 +98,8 @@ namespace VTX::UI::QT::Model
 		const Entity _system;
 		ViewMode	 _viewMode = ViewMode::ByChain;
 
-		Index _categoryFromRow( const int p_row ) const;
-		int	  _categoryRow( const Index p_category ) const;
+		Index _categoryFromRow( int p_row ) const;
+		int	  _categoryRow( Index p_category ) const;
 	};
 
 } // namespace VTX::UI::QT::Model

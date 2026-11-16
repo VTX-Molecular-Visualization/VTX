@@ -40,11 +40,10 @@ TEST_CASE( "VTX_TOOL_MdPrep - listForcefields empty_dir", "[listForcefields][emp
 
 bool is_ff_in_list( const std::vector<VTX::Tool::Mdprep::backends::Gromacs::forcefield> & list, std::string_view name )
 {
-	return std::find_if(
-			   list.begin(),
-			   list.end(),
-			   [ & ]( const VTX::Tool::Mdprep::backends::Gromacs::forcefield & ff ) { return ff.getName() == name; }
-		   )
+	return std::find_if( list.begin(),
+						 list.end(),
+						 [ & ]( const VTX::Tool::Mdprep::backends::Gromacs::forcefield & ff )
+						 { return ff.getName() == name; } )
 		   != list.end();
 }
 
@@ -56,8 +55,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - listForcefields top_dir", "[listForcefields][top_d
 	//  this test is designed to be still true if gromacs maintainers add forcefields.
 	//  therefore,the size of the collection shall not be tested
 	auto ffs = VTX::Tool::Mdprep::backends::Gromacs::listForcefields(
-		VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath()
-	);
+		VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
 	CHECK( !ffs.empty() );
 	CHECK( is_ff_in_list( ffs, "amber03" ) );
 	CHECK( is_ff_in_list( ffs, "amber94" ) );
@@ -153,10 +151,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - one line", "[pdb2gmx][par
 	CHECK( args == expectedArgs );
 }
 
-TEST_CASE(
-	"VTX_TOOL_MdPrep - parsePdb2gmxUserScript - one line, no line feed",
-	"[pdb2gmx][parsePdb2gmxUserScript][one_line]"
-)
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - one line, no line feed",
+		   "[pdb2gmx][parsePdb2gmxUserScript][one_line]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	Pdb2gmxInputs args;
@@ -187,10 +183,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - 1", "[pdb2gmx][parsePdb2g
 	CHECK( args == expectedArgs );
 }
 
-TEST_CASE(
-	"VTX_TOOL_MdPrep - parsePdb2gmxUserScript - carriage_return",
-	"[pdb2gmx][parsePdb2gmxUserScript][carriage_return]"
-)
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - carriage_return",
+		   "[pdb2gmx][parsePdb2gmxUserScript][carriage_return]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	Pdb2gmxInputs args;
@@ -283,10 +277,8 @@ TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - error 2", "[pdb2gmx][pars
 	CHECK( report.message.empty() == false );
 }
 
-TEST_CASE(
-	"VTX_TOOL_MdPrep - parsePdb2gmxUserScript - error bad residue name",
-	"[pdb2gmx][parsePdb2gmxUserScript][error]"
-)
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - error bad residue name",
+		   "[pdb2gmx][parsePdb2gmxUserScript][error]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	Pdb2gmxInputs args;
@@ -300,10 +292,8 @@ TEST_CASE(
 	CHECK( report.message.empty() == false );
 }
 
-TEST_CASE(
-	"VTX_TOOL_MdPrep - parsePdb2gmxUserScript - chain name too long",
-	"[pdb2gmx][parsePdb2gmxUserScript][error]"
-)
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - chain name too long",
+		   "[pdb2gmx][parsePdb2gmxUserScript][error]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;
 	Pdb2gmxInputs args;

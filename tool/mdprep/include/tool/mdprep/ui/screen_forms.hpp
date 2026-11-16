@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_SCREEN_FORMS__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_SCREEN_FORMS__
+#ifndef VTX_TOOL_MDPREP_UI_SCREEN_FORMS_HPP
+#define VTX_TOOL_MDPREP_UI_SCREEN_FORMS_HPP
 
 #include "tool/mdprep/ui/md_engine_factory.hpp"
 #include <functional>
@@ -22,7 +22,7 @@ namespace VTX::Tool::Mdprep::ui
 	class ReportManager;
 	class MdEngineFieldPlacer;
 	class MdEngineSpecificFieldPlacer;
-	enum class E_FIELD_SECTION;
+	enum class E_FIELD_SECTION : uint8_t;
 
 	// Class responsible for setting up the form screens, allowing user to fill it and start the processing
 	class ScreenForms
@@ -37,7 +37,7 @@ namespace VTX::Tool::Mdprep::ui
 		using EngineCollection
 			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
 
-		Gateway::MdParameters * _dataPtr = nullptr;
+		[[maybe_unused]] Gateway::MdParameters * _dataPtr = nullptr;
 
 		QComboBox *	  _w_mdEngine	 = nullptr;
 		QWidget *	  _formContainer = nullptr;
@@ -53,16 +53,16 @@ namespace VTX::Tool::Mdprep::ui
 		VTX::Tool::Mdprep::ui::MdEngineFieldPlacer			_formEngine;
 		Util::EventHub::ScopedConnection					_preparationEndConnection;
 
-		void _updateMdEngine( int idx ) noexcept;
-		void _setupUi( QWidget * p_parent ) noexcept;
-		void _updateForm() noexcept;
-		void _setFormBasic() noexcept;
-		void _setFormAdvanced() noexcept;
-		void _startPreparation() noexcept;
-		void _preparationEnd() noexcept;
-		void _setupSlots() noexcept;
+		void _updateMdEngine( int idx );
+		void _setupUi( QWidget * p_parent );
+		void _updateForm();
+		void _setFormBasic();
+		void _setFormAdvanced();
+		void _startPreparation();
+		void _preparationEnd();
+		void _setupSlots();
 
-		std::function<MdEngineSpecificFieldPlacer( const E_FIELD_SECTION & )> _SpecificFieldPlacerGetter() noexcept;
+		std::function<MdEngineSpecificFieldPlacer( const E_FIELD_SECTION & )> SpecificFieldPlacerGetter();
 	};
 } // namespace VTX::Tool::Mdprep::ui
 

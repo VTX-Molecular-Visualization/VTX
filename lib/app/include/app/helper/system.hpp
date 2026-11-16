@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_HELPER_SYSTEM__
-#define __VTX_APP_HELPER_SYSTEM__
+#ifndef VTX_APP_HELPER_SYSTEM_HPP
+#define VTX_APP_HELPER_SYSTEM_HPP
 
 #include "app/ecs.hpp"
 #include "app/scene/tag_root.hpp"
@@ -7,6 +7,7 @@
 #include "app/system/selection.hpp"
 #include "app/system/visibility.hpp"
 #include <core/struct/topology.hpp>
+#include <util/math/grid.hpp>
 #include <util/type_traits.hpp>
 
 /**
@@ -160,15 +161,25 @@ namespace VTX::App::Helper::System
 	 */
 	struct SystemItemView
 	{
-		Entity						entity;
-		Core::Struct::E_SYSTEM_ITEM item  = Core::Struct::E_SYSTEM_ITEM::SYSTEM;
-		std::optional<Index>		index = std::nullopt;
+		Entity						entity = InvalidEntity;
+		Core::Struct::E_SYSTEM_ITEM item   = Core::Struct::E_SYSTEM_ITEM::SYSTEM;
+		std::optional<Index>		index  = std::nullopt;
 	};
 
 	/**
 	 * @brief Get current atom position in system-local coordinates.
 	 */
-	Vec3f getAtomPosition( const Entity p_entity, const Index p_atom );
+	Vec3f getAtomPosition( Entity p_entity, Index p_atom );
+
+	/**
+	 * @brief Get system atom grid.
+	 */
+	const Util::Math::Grid<Index> & getAtomGrid( Entity p_entity );
+
+	/**
+	 * @brief Mark system grid as invalid.
+	 */
+	void invalidateAtomGrid( Entity p_entity );
 
 	/**
 	 * @brief Get the visibility state of an item.

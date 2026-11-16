@@ -1,5 +1,23 @@
 #include <catch2/catch_test_macros.hpp>
+#include <stdexcept>
 #include <util/players.hpp>
+
+TEST_CASE( "Player propagates callback exceptions", "[players][constexpr-audit]" )
+{
+	struct ThrowingPlayer : VTX::Util::Players::Forward
+	{
+		ThrowingPlayer() : Forward( 3 ) {}
+
+		void increment() { throw std::runtime_error( "increment" ); }
+
+		void increment( const VTX::uint & ) { throw std::runtime_error( "increment" ); }
+	};
+
+	VTX::Util::Player player( ThrowingPlayer {} );
+	CHECK_THROWS_AS( player.increment(), std::runtime_error );
+	CHECK_THROWS_AS( player.increment( 2 ), std::runtime_error );
+}
+
 TEST_CASE( "Util::Players", "[players][forward]" )
 {
 	using namespace VTX;

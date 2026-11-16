@@ -1,5 +1,4 @@
 #include "ui/qt/style/style_manager.hpp"
-#include "ui/qt/actions.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/services.hpp"
 #include <QIcon>
@@ -72,11 +71,11 @@ namespace VTX::UI::QT::Style
 		// ("windows11", "windowsvista", "Windows", "Fusion")
 		Q_APP()->setStyle( "Fusion" );
 
-		QFontDatabase::addApplicationFont( FONT_MATERIAL_SYMBOLS.data() );
-		QFontDatabase::addApplicationFont( FONT_INTER.data() );
-		QFontDatabase::addApplicationFont( FONT_LIBERATION_MONO.data() );
-		QFontDatabase::addApplicationFont( FONT_CASCADIA_CODE.data() );
-		QFontDatabase::addApplicationFont( FONT_OPEN_DYSLEXIC.data() );
+		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_MATERIAL_SYMBOLS ) );
+		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_INTER ) );
+		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_LIBERATION_MONO ) );
+		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_CASCADIA_CODE ) );
+		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_OPEN_DYSLEXIC ) );
 
 		// Linux only?
 		// QIcon::setThemeName( "Material Symbols Outlined" );
@@ -87,20 +86,34 @@ namespace VTX::UI::QT::Style
 		_themePalettes[ toUnderlying( E_THEME::DARK ) ]	  = _makeDarkPalette();
 
 		// Load theme from settings.
+		bool restored = false;
 		try
 		{
-			QString		  themeName = SETTINGS().value( SETTING_KEY_THEME, "" ).toString();
+			const QString themeName = SETTINGS().value( SETTING_KEY_THEME, "" ).toString();
 			const E_THEME theme
 				= themeName.isEmpty() ? DEFAULT_THEME : Util::Enum::enumCast<E_THEME>( themeName.toStdString() );
 			const bool forceDyslexicFont = App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont;
-			QString fontName = forceDyslexicFont ? DYSLEXIC_FONT_FAMILY
-												 : SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
-			setFontFamily( fontName );
+			if ( forceDyslexicFont )
+			{
+				setFontFamily( DYSLEXIC_FONT_FAMILY );
+			}
+			else
+			{
+				setFontFamily( SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY.toString() ).toString() );
+			}
 			setTheme( theme );
+			restored = true;
 		}
 		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "Failed to restore style from settings: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Failed to restore style from settings: unknown exception" );
+		}
+		if ( not restored )
+		{
 			setFontFamily( DEFAULT_FONT_FAMILY );
 			setTheme( DEFAULT_THEME );
 		}
@@ -108,11 +121,22 @@ namespace VTX::UI::QT::Style
 
 	StyleManager::~StyleManager()
 	{
-		const QString themeName = Util::Enum::enumName( _currentTheme ).data();
-		SETTINGS().setValue( SETTING_KEY_THEME, themeName );
-		if ( not App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont )
+		try
 		{
-			SETTINGS().setValue( SETTING_KEY_FONT, getCurrentFontFamily() );
+			const QString themeName = QString::fromUtf8( Util::Enum::enumName( _currentTheme ) );
+			SETTINGS().setValue( SETTING_KEY_THEME, themeName );
+			if ( not App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont )
+			{
+				SETTINGS().setValue( SETTING_KEY_FONT, getCurrentFontFamily() );
+			}
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Failed to save style to settings: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Failed to save style to settings: unknown exception" );
 		}
 	}
 
@@ -127,9 +151,9 @@ namespace VTX::UI::QT::Style
 		_currentTheme = p_theme;
 	}
 
-	void StyleManager::setFontFamily( const QString & p_fontName )
+	void StyleManager::setFontFamily( const QAnyStringView p_fontName )
 	{
-		QFont appFont( p_fontName, DEFAULT_FONT_SIZE );
+		QFont appFont( p_fontName.toString(), DEFAULT_FONT_SIZE );
 		appFont.setStyleHint( QFont::Monospace );
 		Q_APP()->setFont( appFont );
 	}

@@ -1,4 +1,3 @@
-#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
 #include <app/action/visibility.hpp>
 #include <app/fixture.hpp>
@@ -15,10 +14,10 @@ TEST_CASE( "VTX_APP - System - Load", "[arguments]" )
 
 	// Preping arguments
 
-	std::string	   execPathStr	 = Util::Filesystem::getExecutableDir().string();
-	std::string	   systemPathStr = ( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" ).string();
-	const char *   argv[]		 = { execPathStr.c_str(), systemPathStr.c_str() };
-	ArgumentParser parser( 2, argv );
+	const std::string execPathStr	= Util::Filesystem::getExecutableDir().string();
+	const std::string systemPathStr = ( Util::Filesystem::getExecutableDir() / "data" / "1AGA.mmtf" ).string();
+	const char *	  argv[]		= { execPathStr.c_str(), systemPathStr.c_str() };
+	ArgumentParser	  parser( 2, argv );
 	parser.parse();
 
 	Arguments args;

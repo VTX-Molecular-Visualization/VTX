@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_CONTROLLER_ANIMATION__
-#define __VTX_APP_CONTROLLER_ANIMATION__
+#ifndef VTX_APP_CONTROLLER_ANIMATION_HPP
+#define VTX_APP_CONTROLLER_ANIMATION_HPP
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
@@ -23,6 +23,14 @@ namespace VTX::App::Controller
 	using InterpRotationFunc = Quatf ( * )( const Quatf &, const Quatf &, float );
 
 	/**
+	 * @brief Tag to indicate that the camera is currently animating.
+	 * Useful for python script to wait for animation end.
+	 */
+	struct CameraAnimating
+	{
+	};
+
+	/**
 	 * @brief Object that manages a camera animation to a target position and rotation.
 	 */
 	class Animation : public IController
@@ -34,7 +42,7 @@ namespace VTX::App::Controller
 		Animation(
 			const AnimationData &,
 			const AnimationData &,
-			const float,
+			float,
 			const InterpPositionFunc &,
 			const InterpRotationFunc &
 		);
@@ -42,7 +50,7 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Called each frame.
 		 */
-		bool update( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
+		bool update( float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
 
 		/**
 		 * @brief Stop camera movement.

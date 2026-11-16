@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_FORM_ADVANCED_SHARED__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_FORM_ADVANCED_SHARED__
+#ifndef VTX_TOOL_MDPREP_UI_FORM_ADVANCED_SHARED_HPP
+#define VTX_TOOL_MDPREP_UI_FORM_ADVANCED_SHARED_HPP
 
 class QLineEdit;
 class QComboBox;
@@ -26,6 +26,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		QDoubleSpinBox * _fieldMinimizationStepSize		   = nullptr;
 		QDoubleSpinBox * _fieldMinimizationStopThreshold   = nullptr;
 		QLineEdit *		 _fieldProductionNstxoutCompressed = nullptr;
+
 		struct FieldSet
 		{
 			QFormLayout *	 layout		  = nullptr;
@@ -33,6 +34,7 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 			QDoubleSpinBox * dt			  = nullptr;
 			QLineEdit *		 saveInterval = nullptr;
 		};
+
 		FieldSet _equilibrationNvt;
 		FieldSet _equilibrationNpt;
 		FieldSet _production;

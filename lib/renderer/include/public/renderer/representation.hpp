@@ -1,12 +1,12 @@
-#ifndef __VTX_RENDERER_REPRESENTATION__
-#define __VTX_RENDERER_REPRESENTATION__
+#ifndef VTX_RENDERER_REPRESENTATION_HPP
+#define VTX_RENDERER_REPRESENTATION_HPP
 
 #include <util/enum.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer
 {
-	enum struct E_REPRESENTATION_VALUES
+	enum struct E_REPRESENTATION_VALUES : uint8_t
 	{
 		HAS_SPHERE,
 		RADIUS_SPHERE_FIXED,

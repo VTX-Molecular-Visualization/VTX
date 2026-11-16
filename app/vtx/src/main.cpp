@@ -1,8 +1,12 @@
 #include <app/arguments.hpp>
 #include <app/session.hpp>
+#include <cstdio>
+#include <cstdlib>
+#include <exception>
+#include <iostream>
 #include <string>
-#include <util/types.hpp>
-#include <vector>
+#include <tuple>
+#include <util/logger.hpp>
 
 // Conditional includes.
 #if VTX_UI_QT
@@ -33,36 +37,109 @@ extern "C"
 }
 #endif
 
-/**
- * @brief On windows, the console returns before the text is returned. The behavior is tight to the Windows OS : a
-
- * * console starts a new process and returns, then the process writes stuff in the console. It makes the help text
- * appear
- * after where the user expect the cursor to be, making it look like it is stuck even though it is not. To
- * work around this, we add an "enter" input after we flush the stdcout to have a fresh cursor after the help text. All
- * this stuff is pointless on linux as the console waits for the process to finish before returning hand.
- */
-void unblockParentConsole() noexcept
+namespace
 {
-#ifdef _WIN32
-	std::cout.flush();
-	// Inject Enter to unblock the cmd.exe prompt that fired before our output.
-	INPUT_RECORD ir						= {};
-	ir.EventType						= KEY_EVENT;
-	ir.Event.KeyEvent.bKeyDown			= TRUE;
-	ir.Event.KeyEvent.wRepeatCount		= 1;
-	ir.Event.KeyEvent.wVirtualKeyCode	= VK_RETURN;
-	ir.Event.KeyEvent.wVirtualScanCode	= MapVirtualKey( VK_RETURN, MAPVK_VK_TO_VSC );
-	ir.Event.KeyEvent.uChar.UnicodeChar = L'\r';
+	[[noreturn]] void onTerminate() noexcept
+	{
+		const auto report = []( const char * const p_reason ) noexcept
+		{
+			std::ignore = std::fputs( "Fatal error: std::terminate called (", stderr );
+			std::ignore = std::fputs( p_reason, stderr );
+			std::ignore = std::fputs( ")\n", stderr );
+			std::ignore = std::fflush( stderr );
+			if ( VTX::Util::Logger::isInitialized() )
+			{
+				VTX::VTX_CRITICAL( "Fatal error: std::terminate called ({})", p_reason );
+			}
+		};
 
-	DWORD written;
-	WriteConsoleInput( GetStdHandle( STD_INPUT_HANDLE ), &ir, 1, &written );
+		try
+		{
+			if ( const std::exception_ptr error = std::current_exception() )
+			{
+				std::rethrow_exception( error );
+			}
+			report( "no active exception" );
+		}
+		catch ( const std::exception & p_e )
+		{
+			report( p_e.what() );
+		}
+		catch ( ... )
+		{
+			report( "unknown exception" );
+		}
+
+		if ( VTX::Util::Logger::isInitialized() )
+		{
+			try
+			{
+				VTX::Util::Logger::stop();
+			}
+			catch ( ... )
+			{
+				std::ignore = std::fputs( "Failed to stop logger\n", stderr );
+			}
+		}
+		std::abort();
+	}
+
+#ifdef _WIN32
+	void redirectStdStreams() noexcept
+	{
+		FILE * stream = nullptr;
+		std::ignore	  = freopen_s( &stream, "CONOUT$", "w", stdout );
+		std::ignore	  = freopen_s( &stream, "CONOUT$", "w", stderr );
+		std::ignore	  = freopen_s( &stream, "CONIN$", "r", stdin );
+	}
+
+	/**
+	 * @brief On windows, the console returns before the text is returned. The behavior is tight to the Windows OS : a
+
+	 * * console starts a new process and returns, then the process writes stuff in the console. It makes the help text
+	 * appear
+	 * after where the user expect the cursor to be, making it look like it is stuck even though it is not. To
+	 * work around this, we add an "enter" input after we flush the stdcout to have a fresh cursor after the help text.
+	 All
+	 * this stuff is pointless on linux as the console waits for the process to finish before returning hand.
+	 */
+	void unblockParentConsole()
+	{
+		std::cout.flush();
+		// Inject Enter to unblock the cmd.exe prompt that fired before our output.
+		INPUT_RECORD ir = {};
+		// INPUT_RECORD is a Win32 union.
+		// NOLINTBEGIN(cppcoreguidelines-pro-type-union-access)
+		ir.EventType						= KEY_EVENT;
+		ir.Event.KeyEvent.bKeyDown			= TRUE;
+		ir.Event.KeyEvent.wRepeatCount		= 1;
+		ir.Event.KeyEvent.wVirtualKeyCode	= VK_RETURN;
+		ir.Event.KeyEvent.wVirtualScanCode	= MapVirtualKey( VK_RETURN, MAPVK_VK_TO_VSC );
+		ir.Event.KeyEvent.uChar.UnicodeChar = L'\r';
+		// NOLINTEND(cppcoreguidelines-pro-type-union-access)
+
+		DWORD written {};
+		WriteConsoleInput( GetStdHandle( STD_INPUT_HANDLE ), &ir, 1, &written );
+	}
 #endif
-}
+} // namespace
 
 int main( int p_argc, char * p_argv[] )
 {
 	using namespace VTX;
+
+	std::set_terminate( &onTerminate );
+
+#ifdef _WIN32
+#pragma comment( linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup" )
+	// Attach to parent console if launched from CLI (cmd/PowerShell).
+	// Falls through silently if launched from Explorer (no parent console).
+	const bool hasParentConsole = AttachConsole( ATTACH_PARENT_PROCESS );
+	if ( hasParentConsole )
+	{
+		redirectStdStreams();
+	}
+#endif
 
 	try
 	{
@@ -85,25 +162,16 @@ int main( int p_argc, char * p_argv[] )
 #endif
 
 #ifdef _WIN32
-#pragma comment( linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup" )
-		// Attach to parent console if launched from CLI (cmd/PowerShell).
-		// Falls through silently if launched from Explorer (no parent console).
-		bool hasParentConsole = AttachConsole( ATTACH_PARENT_PROCESS );
 		if ( not hasParentConsole && argss.debug )
 		{
 			AllocConsole();
-		}
-		if ( hasParentConsole || argss.debug )
-		{
-			freopen_s( (FILE **)stdout, "CONOUT$", "w", stdout );
-			freopen_s( (FILE **)stderr, "CONOUT$", "w", stderr );
-			freopen_s( (FILE **)stdin, "CONIN$", "r", stdin );
+			redirectStdStreams();
 		}
 #endif
 
 		if ( help )
 		{
-			std::cout << std::endl << *help;
+			std::cout << '\n' << *help;
 #ifdef _WIN32
 			if ( hasParentConsole )
 			{
@@ -132,8 +200,7 @@ int main( int p_argc, char * p_argv[] )
 #if VTX_TOOL_TOPOLOGY_EDITOR
 			app.addTool<Tool::TopologyEditor::TopologyEditor>();
 #endif
-			app.start();
-			return EXIT_SUCCESS;
+			return app.start();
 		}
 #endif
 
@@ -153,8 +220,14 @@ int main( int p_argc, char * p_argv[] )
 	}
 	catch ( const std::exception & p_e )
 	{
-		const std::string error = p_e.what();
-		std::cerr << "Unhandled exception: " << error;
+		std::ignore = std::fputs( "Unhandled exception: ", stderr );
+		std::ignore = std::fputs( p_e.what(), stderr );
+		std::ignore = std::fputs( "\n", stderr );
+		return EXIT_FAILURE;
+	}
+	catch ( ... )
+	{
+		std::ignore = std::fputs( "Unhandled unknown exception\n", stderr );
 		return EXIT_FAILURE;
 	}
 }

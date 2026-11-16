@@ -1,5 +1,5 @@
-#ifndef __VTX_BENCH_USER_INTERFACE__
-#define __VTX_BENCH_USER_INTERFACE__
+#ifndef VTX_BENCH_USER_INTERFACE_HPP
+#define VTX_BENCH_USER_INTERFACE_HPP
 
 #include "camera_controller.hpp"
 #include <SDL3/SDL.h>
@@ -11,27 +11,30 @@
 namespace VTX::Bench
 {
 	class Scene;
-	class Camera;
 
 	class UserInterface
 	{
 	  public:
-		UserInterface( const size_t p_width, const size_t p_height );
+		UserInterface( size_t p_width, size_t p_height );
+		UserInterface( const UserInterface & )			   = delete;
+		UserInterface & operator=( const UserInterface & ) = delete;
 		~UserInterface();
 
-		inline double getTime() const { return double( SDL_GetTicks() ); }
-		inline float  getDeltaTime() const { return ImGui::GetIO().DeltaTime; }
-		inline void	  setVSync( const bool p_vsync ) { _vsync = p_vsync; }
+		double getTime() const noexcept { return static_cast<double>( SDL_GetTicks() ); }
+
+		float getDeltaTime() const noexcept { return ImGui::GetIO().DeltaTime; }
+
+		void setVSync( const bool p_vsync ) { _vsync = p_vsync; }
 
 		uintptr_t getNativeSurface() const;
 		uintptr_t getNativeDisplay() const;
 		uint8_t	  getNativePlatform() const;
 
-		void draw( CameraController * const p_camera, Scene * const p_scene, Renderer::Renderer * const p_renderer );
+		void draw( CameraController * p_camera, Scene * p_scene, Renderer::Renderer * p_renderer ) const;
 
-		inline bool getEvent( SDL_Event & p_event ) const
+		bool getEvent( SDL_Event & p_event ) const
 		{
-			bool hasEvent = SDL_PollEvent( &p_event );
+			const bool hasEvent = SDL_PollEvent( &p_event );
 
 			if ( hasEvent )
 			{
@@ -46,17 +49,13 @@ namespace VTX::Bench
 		bool		 _vsync	 = true;
 		bool		 _drawUi = true;
 
-		void _drawMenuBar(
-			CameraController * const   p_camera,
-			Renderer::Renderer * const p_renderer,
-			Scene * const			   p_scene
-		);
-		void _drawCamera( CameraController * const p_camera ) const;
-		void _drawRenderer( Renderer::Renderer * const p_renderer );
-		void _drawDurations( Renderer::Renderer * const p_renderer ) const;
-		void _drawScene( Scene * const p_scene, Renderer::Renderer * const p_renderer );
+		void _drawMenuBar( CameraController * p_camera, Renderer::Renderer * p_renderer, Scene * p_scene );
+		void _drawCamera( CameraController * p_camera ) const;
+		void _drawRenderer( Renderer::Renderer * p_renderer );
+		void _drawDurations( Renderer::Renderer * p_renderer ) const;
+		void _drawScene( Scene * p_scene, Renderer::Renderer * p_renderer );
 		void _drawUniforms() const;
-		void _drawNodeEditor( Renderer::Renderer * const p_renderer ) const;
+		void _drawNodeEditor( Renderer::Renderer * p_renderer ) const;
 
 		/*
 		template<typename T>

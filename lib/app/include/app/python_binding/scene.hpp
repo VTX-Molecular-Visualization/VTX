@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHONBINDING_SCENE__
-#define __VTX_APP_PYTHONBINDING_SCENE__
+#ifndef VTX_APP_PYTHON_BINDING_SCENE_HPP
+#define VTX_APP_PYTHON_BINDING_SCENE_HPP
 
 #include "app/python_binding/module.hpp"
 

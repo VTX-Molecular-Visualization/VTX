@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_COLOR_SCHEME__
-#define __VTX_APP_ACTION_COLOR_SCHEME__
+#ifndef VTX_APP_ACTION_COLOR_HPP
+#define VTX_APP_ACTION_COLOR_HPP
 
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
@@ -22,23 +22,20 @@ namespace VTX::App::Action::Color
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
 		{
-			auto &						 reg	= REG();
-			const auto &				 system = reg.get<Core::Struct::Topology>( p_ent );
-			Core::Struct::IndexRangeList atoms	= Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
-			const bool					 isCustomScheme
+			auto &						  reg	 = REG();
+			[[maybe_unused]] const auto & system = reg.get<Core::Struct::Topology>( p_ent );
+			Core::Struct::IndexRangeList  atoms	 = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
+			const bool					  isCustomScheme
 				= p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM || p_scheme == Renderer::E_COLOR_SCHEME::CARBON_CUSTOM;
 
 			assert(
 				( isCustomScheme && p_colorIndex.has_value() ) || ( not isCustomScheme && not p_colorIndex.has_value() )
 			);
 
-			reg.patch<System::Color>(
+			reg.patch<App::System::Color>(
 				p_ent,
-				[ &atoms, &system, p_scheme, p_colorIndex ]( System::Color & p_color )
+				[ & ]( App::System::Color & p_color )
 				{
-					const bool isCustomScheme = p_scheme == Renderer::E_COLOR_SCHEME::CUSTOM
-												|| p_scheme == Renderer::E_COLOR_SCHEME::CARBON_CUSTOM;
-
 					if ( isCustomScheme )
 					{
 						assert( p_colorIndex.has_value() );
@@ -93,7 +90,7 @@ namespace VTX::App::Action::Color
 						p_color.colorSchemeAtoms.emplace( p_scheme, Core::Struct::IndexRangeList() );
 					}
 
-					size_t count = 0;
+					[[maybe_unused]] size_t count = 0;
 					for ( auto & [ scheme, rangeList ] : p_color.colorSchemeAtoms )
 					{
 						if ( scheme == p_scheme )
@@ -214,9 +211,9 @@ namespace VTX::App::Action::Color
 			const std::optional<Renderer::ColorIndex> p_colorIndex = std::nullopt
 		)
 		{
-			REG().view<System::Selection, System::Color>().each(
+			REG().view<App::System::Selection, App::System::Color>().each(
 				[ p_scheme, p_colorIndex ](
-					const Entity p_ent, const System::Selection & p_selection, const System::Color & p_color
+					const Entity p_ent, const App::System::Selection & p_selection, const App::System::Color & p_color
 				)
 				{
 					const Core::Struct::IndexRangeList ranges = p_selection.atoms.toRangeList<Index>();
@@ -241,21 +238,19 @@ namespace VTX::App::Action::Color
 			const std::optional<Renderer::ColorIndex>		   p_colorIndex = std::nullopt
 		)
 		{
-			auto &						 reg	  = REG();
-			const auto &				 system	  = reg.get<Core::Struct::Topology>( p_ent );
-			Core::Struct::IndexRangeList residues = Helper::System::getResidueRangeList<ITEM>( p_ent, p_ranges );
-			const bool isCustomScheme			  = p_scheme == Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::CUSTOM;
+			auto &						  reg	   = REG();
+			[[maybe_unused]] const auto & system   = reg.get<Core::Struct::Topology>( p_ent );
+			Core::Struct::IndexRangeList  residues = Helper::System::getResidueRangeList<ITEM>( p_ent, p_ranges );
+			const bool isCustomScheme			   = p_scheme == Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::CUSTOM;
 
 			assert(
 				( isCustomScheme && p_colorIndex.has_value() ) || ( not isCustomScheme && not p_colorIndex.has_value() )
 			);
 
-			reg.patch<System::Color>(
+			reg.patch<App::System::Color>(
 				p_ent,
-				[ &residues, &system, p_scheme, p_colorIndex ]( System::Color & p_color )
+				[ & ]( App::System::Color & p_color )
 				{
-					const bool isCustomScheme = p_scheme == Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::CUSTOM;
-
 					if ( isCustomScheme )
 					{
 						assert( p_colorIndex.has_value() );
@@ -302,7 +297,7 @@ namespace VTX::App::Action::Color
 						);
 					}
 
-					size_t count = 0;
+					[[maybe_unused]] size_t count = 0;
 					for ( auto & [ scheme, rangeList ] : p_color.colorSchemeSecondaryStructureResidues )
 					{
 						if ( scheme == p_scheme )

@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_CONCEPTS__
-#define __VTX_UTIL_CONCEPTS__
+#ifndef VTX_UTIL_CONCEPTS_HPP
+#define VTX_UTIL_CONCEPTS_HPP
 
 #include <concepts>
 #include <type_traits>

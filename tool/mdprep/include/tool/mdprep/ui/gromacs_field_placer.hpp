@@ -1,6 +1,7 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_GROMACS_FIELD_PLACER__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_GROMACS_FIELD_PLACER__
+#ifndef VTX_TOOL_MDPREP_UI_GROMACS_FIELD_PLACER_HPP
+#define VTX_TOOL_MDPREP_UI_GROMACS_FIELD_PLACER_HPP
 
+#include "tool/mdprep/ui/shared.hpp"
 #include <array>
 #include <optional>
 
@@ -12,14 +13,17 @@ namespace VTX::UI::QT::Util
 {
 	class ObjectOwnership;
 }
+
 namespace VTX::Tool::Mdprep::Gateway::Gromacs
 {
 	struct MdSettings;
 }
+
 namespace VTX::Tool::Mdprep::Gateway
 {
 	struct EngineSpecificCommonInformation;
 } // namespace VTX::Tool::Mdprep::Gateway
+
 namespace VTX::Tool::Mdprep::ui
 {
 	using namespace VTX::Tool::Mdprep::Gateway;
@@ -34,12 +38,12 @@ namespace VTX::Tool::Mdprep::ui
 		GromacsFieldPlacer( Gateway::Gromacs::MdSettings & );
 
 		void assign( FormLayouts p_layouts ) noexcept;
-		void activate() noexcept;
-		void deactivate() noexcept;
+		void activate();
+		void deactivate();
 
 	  private:
 		std::array<VTX::UI::QT::Util::ObjectOwnership, 2> _toDeleteObjects;
-		Gateway::Gromacs::MdSettings *					  _specificData;
+		[[maybe_unused]] Gateway::Gromacs::MdSettings *	  _specificData;
 		std::optional<FormLayouts>						  _layouts;
 
 		struct UiObjects

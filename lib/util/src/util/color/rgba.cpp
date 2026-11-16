@@ -8,7 +8,7 @@ namespace VTX::Util::Color
 {
 	namespace
 	{
-		float _sqDistance( const Rgba & p_a, const Rgba & p_b )
+		float _sqDistance( const Rgba & p_a, const Rgba & p_b ) noexcept
 		{
 			const float dr = p_a.r() - p_b.r();
 			const float dg = p_a.g() - p_b.g();
@@ -17,45 +17,36 @@ namespace VTX::Util::Color
 		}
 
 		// IEC 61966-2-1.
-		float _srgbToLinear( const float p_channel )
+		float _srgbToLinear( const float p_channel ) noexcept
 		{
 			return p_channel <= 0.04045f ? p_channel / 12.92f
 										 : Util::Math::pow( ( p_channel + 0.055f ) / 1.055f, 2.4f );
 		}
 
 		// IEC 61966-2-1.
-		float _linearToSrgb( const float p_channel )
+		float _linearToSrgb( const float p_channel ) noexcept
 		{
 			return p_channel <= 0.0031308f ? p_channel * 12.92f
 										   : 1.055f * Util::Math::pow( p_channel, 1.f / 2.4f ) - 0.055f;
 		}
 	} // namespace
 
-	std::ostream & operator<<( std::ostream & p_os, const Rgba & p_c )
-	{
-		p_os << p_c.x() << " - " << p_c.y() << " - " << p_c.z() << " - " << p_c.w() << std::endl;
-		return p_os;
-	}
-
-	Rgba Rgba::mixedWith( const Rgba & p_other, const float p_factor ) const
+	Rgba Rgba::mixedWith( const Rgba & p_other, const float p_factor ) const noexcept
 	{
 		const float factor = Util::Math::clamp( p_factor, 0.f, 1.f );
-		return Rgba(
-			Util::Math::lerp( r(), p_other.r(), factor ),
-			Util::Math::lerp( g(), p_other.g(), factor ),
-			Util::Math::lerp( b(), p_other.b(), factor ),
-			a()
-		);
+		return Rgba( Util::Math::lerp( r(), p_other.r(), factor ),
+					 Util::Math::lerp( g(), p_other.g(), factor ),
+					 Util::Math::lerp( b(), p_other.b(), factor ),
+					 a() );
 	}
 
-	Rgba Rgba::toLinear() const
-	{
-		return Rgba( _srgbToLinear( r() ), _srgbToLinear( g() ), _srgbToLinear( b() ), a() );
-	}
+	Rgba Rgba::toLinear() const noexcept
+	{ return Rgba( _srgbToLinear( r() ), _srgbToLinear( g() ), _srgbToLinear( b() ), a() ); }
 
-	Rgba Rgba::toSRGB() const { return Rgba( _linearToSrgb( r() ), _linearToSrgb( g() ), _linearToSrgb( b() ), a() ); }
+	Rgba Rgba::toSRGB() const noexcept
+	{ return Rgba( _linearToSrgb( r() ), _linearToSrgb( g() ), _linearToSrgb( b() ), a() ); }
 
-	Rgba Rgba::withMinBrightness( const float p_minBrightness ) const
+	Rgba Rgba::withMinBrightness( const float p_minBrightness ) const noexcept
 	{
 		const float current = brightness();
 		if ( current >= p_minBrightness )
@@ -69,17 +60,16 @@ namespace VTX::Util::Color
 		return result;
 	}
 
-	Rgba Rgba::withSaturation( const float p_factor ) const
+	Rgba Rgba::withSaturation( const float p_factor ) const noexcept
 	{
 		const float grey = brightness();
 		Rgba		result(
-			   grey + ( r() - grey ) * p_factor, grey + ( g() - grey ) * p_factor, grey + ( b() - grey ) * p_factor, a()
-		   );
+			grey + ( r() - grey ) * p_factor, grey + ( g() - grey ) * p_factor, grey + ( b() - grey ) * p_factor, a() );
 		result.saturate();
 		return result;
 	}
 
-	Rgba Rgba::toHighContrast() const
+	Rgba Rgba::toHighContrast() const noexcept
 	{
 		if ( a() == 0.f )
 		{
@@ -98,16 +88,21 @@ namespace VTX::Util::Color
 		return result;
 	}
 
-	Rgba Rgba::toColorblind() const
+	Rgba Rgba::toColorblind() const noexcept
 	{
 		if ( a() == 0.f )
 		{
 			return *this;
 		}
 
-		constexpr std::array<Rgba, 8> palette
-			= { Rgba( 0, 114, 178 ),  Rgba( 230, 159, 0 ), Rgba( 0, 158, 115 ),	 Rgba( 204, 121, 167 ),
-				Rgba( 86, 180, 233 ), Rgba( 213, 94, 0 ),  Rgba( 240, 228, 66 ), Rgba( 153, 153, 153 ) };
+		constexpr auto palette = std::to_array<Rgba>( { Rgba( 0, 114, 178 ),
+														Rgba( 230, 159, 0 ),
+														Rgba( 0, 158, 115 ),
+														Rgba( 204, 121, 167 ),
+														Rgba( 86, 180, 233 ),
+														Rgba( 213, 94, 0 ),
+														Rgba( 240, 228, 66 ),
+														Rgba( 153, 153, 153 ) } );
 
 		const float brightnessValue = brightness();
 		if ( brightnessValue < 0.08f )
@@ -140,21 +135,21 @@ namespace VTX::Util::Color
 		return Rgba( result.r(), result.g(), result.b(), a() );
 	}
 
-	void Rgba::saturate()
+	void Rgba::saturate() noexcept
 	{
 		_v.x = Util::Math::clamp( _v.x, 0.f, 1.f );
 		_v.y = Util::Math::clamp( _v.y, 0.f, 1.f );
 		_v.z = Util::Math::clamp( _v.z, 0.f, 1.f );
 	}
 
-	void Rgba::applyGamma( const float & p_gamma )
+	void Rgba::applyGamma( const float & p_gamma ) noexcept
 	{
 		_v.x = Util::Math::pow( _v.x, p_gamma );
 		_v.y = Util::Math::pow( _v.y, p_gamma );
 		_v.z = Util::Math::pow( _v.z, p_gamma );
 	}
 
-	void Rgba::oppose()
+	void Rgba::oppose() noexcept
 	{
 		_v.x = 1.f - _v.x;
 		_v.y = 1.f - _v.y;
@@ -162,8 +157,6 @@ namespace VTX::Util::Color
 	}
 
 	Rgba Rgba::random()
-	{
-		return Rgba( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() );
-	}
+	{ return Rgba( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() ); }
 
 } // namespace VTX::Util::Color

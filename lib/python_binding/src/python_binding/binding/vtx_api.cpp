@@ -1,49 +1,29 @@
 #include "python_binding/binding/vtx_api.hpp"
-#include "python_binding/binding/helper.hpp"
-#include "python_binding/interpretor.hpp"
 #include "python_binding/log_redirection.hpp"
-#include <memory>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
-#include <string>
 #include <util/color/rgba.hpp>
+#include <util/math.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/range.hpp>
 #include <util/math/range_list.hpp>
-#include <util/math/transform.hpp>
-#include <util/resolution.hpp>
 #include <util/types.hpp>
 
 namespace VTX::PythonBinding::Binding
 {
 
-	void applyVtxLocalCommandBinding( VTX::PythonBinding::Interpretor & p_interpretor )
+	void applyVtxApiBinding( pybind11::module_ & p_apiModule )
 	{
-		pybind11::module_ * commandModule = nullptr;
-		p_interpretor.getPythonModule( &commandModule );
-		commandModule->def(
-			"runScript", [ &interpretor = p_interpretor ]( const std::string & r ) { interpretor.runScript( r ); }
-		);
-	}
-
-	void applyModuleCustomization( pybind11::module_ & p_module )
-	{
-		p_module.doc()
+		p_apiModule.doc()
 			= "VTX Python module. Will contain every functions and classes provided by VTX to interact with the "
 			  "renderer and its underlying data. Please use the function help([Anything]) on any element of the module "
 			  "to get help message."; // optional module docstring
 
 		// Class to redirect Python prints
-		pybind11::class_<LogRedirection>( p_module, "LogRedirection", pybind11::module_local() )
+		pybind11::class_<LogRedirection>( p_apiModule, "LogRedirection", pybind11::module_local() )
 			.def_static( "write", &LogRedirection::write )
 			.def_static( "flush", &LogRedirection::flush );
 
-		Binding::applyVtxApiBinding( p_module );
-	}
-
-	void applyVtxApiBinding( pybind11::module_ & p_apiModule )
-	{
 		// Check PYBIND11_MAKE_OPAQUE
 		// Util
 		pybind11::class_<Vec2f>( p_apiModule, "Vec2f", pybind11::module_local() )
@@ -85,49 +65,34 @@ namespace VTX::PythonBinding::Binding
 			.def_readwrite( "w", &Vec4f::w );
 
 		pybind11::class_<Quatf>( p_apiModule, "Quatf", pybind11::module_local() )
-			.def( pybind11::init<>() )
+			.def( pybind11::init( []() { return Quatf( 1.f, 0.f, 0.f, 0.f ); } ) )
 			.def(
-				pybind11::init( []( const float p_x, const float p_y, const float p_z )
-								{ return Quatf( 1.f, p_x, p_y, p_z ); } ),
+				pybind11::init( []( const float p_w, const float p_x, const float p_y, const float p_z )
+								{ return Quatf( p_w, p_x, p_y, p_z ); } ),
+				pybind11::arg( "w" ),
 				pybind11::arg( "x" ),
 				pybind11::arg( "y" ),
 				pybind11::arg( "z" )
+			)
+			.def_static(
+				"fromEuler",
+				[]( const float p_x, const float p_y, const float p_z )
+				{ return Quatf( Util::Math::radians( Vec3f( p_x, p_y, p_z ) ) ); },
+				"Build a rotation from Euler angles in degrees (pitch, yaw, roll).",
+				pybind11::arg( "x" ),
+				pybind11::arg( "y" ),
+				pybind11::arg( "z" )
+			)
+			.def_property_readonly(
+				"euler",
+				[]( const Quatf & p_quat )
+				{ return Vec3f( Util::Math::degrees( Util::Math::eulerAngles( p_quat ) ) ); },
+				"Euler angles in degrees (pitch, yaw, roll)."
 			)
 			.def_readwrite( "x", &Quatf::x )
 			.def_readwrite( "y", &Quatf::y )
 			.def_readwrite( "z", &Quatf::z )
 			.def_readwrite( "w", &Quatf::w );
-
-		using Transform = Util::Math::Transform;
-		pybind11::class_<Transform>( p_apiModule, "Transform", pybind11::module_local() )
-			.def( pybind11::init<>() )
-			.def_property(
-				"position",
-				[]( const Transform & p_transform ) { return p_transform.getPosition(); },
-				[]( Transform & p_transform, const Vec3f & p_position ) { p_transform.setPosition( p_position ); }
-			)
-			.def_property(
-				"rotation",
-				[]( const Transform & p_transform ) { return p_transform.getRotation(); },
-				[]( Transform & p_transform, const Quatf & p_rotation ) { p_transform.setRotation( p_rotation ); }
-			)
-			.def_property(
-				"scale",
-				[]( const Transform & p_transform ) { return p_transform.getScale(); },
-				[]( Transform & p_transform, const Vec3f & p_scale ) { p_transform.setScale( p_scale ); }
-			);
-
-		pybind11::class_<Util::Resolution>( p_apiModule, "Resolution", pybind11::module_local() )
-			.def(
-				pybind11::init( []( const std::string & p_name, const size_t p_width, const size_t p_height )
-								{ return Util::Resolution { p_name, p_width, p_height }; } ),
-				pybind11::arg( "name" ),
-				pybind11::arg( "width" ),
-				pybind11::arg( "height" )
-			)
-			.def_readwrite( "name", &Util::Resolution::name )
-			.def_readwrite( "width", &Util::Resolution::width )
-			.def_readwrite( "height", &Util::Resolution::height );
 
 		pybind11::class_<Util::Color::Rgba>( p_apiModule, "Rgba", pybind11::module_local() )
 			.def( pybind11::init<>() )
@@ -206,6 +171,9 @@ namespace VTX::PythonBinding::Binding
 				[]( const RangeList & p_ranges )
 				{ return std::vector<Range>( p_ranges.rangeBegin(), p_ranges.rangeEnd() ); }
 			);
+		pybind11::implicitly_convertible<Range, RangeList>();
+		pybind11::implicitly_convertible<pybind11::list, RangeList>();
+		pybind11::implicitly_convertible<pybind11::tuple, RangeList>();
 
 		using AABB = Util::Math::AABB;
 		pybind11::class_<AABB>( p_apiModule, "AABB", pybind11::module_local() )

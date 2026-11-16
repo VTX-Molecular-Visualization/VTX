@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_TYPES__
-#define __VTX_UTIL_TYPES__
+#ifndef VTX_UTIL_TYPES_HPP
+#define VTX_UTIL_TYPES_HPP
 
 #include <cstdint>
 #include <glm/detail/qualifier.hpp>

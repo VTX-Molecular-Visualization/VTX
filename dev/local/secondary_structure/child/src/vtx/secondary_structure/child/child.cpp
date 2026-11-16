@@ -26,17 +26,15 @@ namespace pdb100
 					std::this_thread::sleep_for( std::chrono::seconds( shm::livingProof::tolerenceTime / 2 ) );
 					{
 						LazyLock<shm::livingProof::MUTEX>		   lock;
-						boost::interprocess::managed_shared_memory sharedSegment(
-							boost::interprocess::open_only, pdb100::shm::livingProof::SEGNAME
-						);
-						auto livingProofMapPair
+						boost::interprocess::managed_shared_memory sharedSegment( boost::interprocess::open_only,
+																				  pdb100::shm::livingProof::SEGNAME );
+						auto									   livingProofMapPair
 							= sharedSegment.find<LivingProofMap>( pdb100::shm::livingProof::OBJNAME );
 
 						livingProofMapPair.first->at( processId ) = getTimeStamp();
 					}
 				}
-			}
-		);
+			} );
 	}
 
 	/**
@@ -46,17 +44,19 @@ namespace pdb100
 	{
 		uint64_t								   processId = boost::process::current_pid();
 		LazyLock<shm::livingProof::MUTEX>		   lock;
-		boost::interprocess::managed_shared_memory sharedSegment(
-			boost::interprocess::open_only, pdb100::shm::livingProof::SEGNAME
-		);
+		boost::interprocess::managed_shared_memory sharedSegment( boost::interprocess::open_only,
+																  pdb100::shm::livingProof::SEGNAME );
 		auto livingProofMapPair = sharedSegment.find<LivingProofMap>( pdb100::shm::livingProof::OBJNAME );
 
 		if ( not livingProofMapPair.first->contains( processId ) )
+		{
 			livingProofMapPair.first->emplace( processId, getTimeStamp() );
+		}
 	}
 } // namespace pdb100
 
 #include <iostream>
+
 int main()
 {
 	/* Process meant to be spawned by the secondary structure parent. It goes as follow :

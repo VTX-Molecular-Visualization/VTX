@@ -57,12 +57,12 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 		{
 			VTX::App::INTERPRETOR().runCommand( "select(system_names='1AGA').getAtoms()", promise );
 		}
-		catch ( CommandException & e )
+		catch ( const CommandException & e )
 		{
 			VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 			CHECK( false );
 		}
-		catch ( std::exception & e )
+		catch ( const std::exception & e )
 		{
 			VTX_ERROR( "Anonymous exception raised in python command and catched in the UT : {}", e.what() );
 			CHECK( false );
@@ -82,7 +82,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 			if ( _future.valid() )
 				rslt = _future.get();
 		}
-		catch ( std::exception & e )
+		catch ( const std::exception & e )
 		{
 			VTX_ERROR( "Anonymous exception raised in the future get in the UT : {}", e.what() );
 			CHECK( false );
@@ -116,7 +116,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionAtom" ) != rslt.resultStr.npos );
 	}
-	catch ( CommandException & e )
+	catch ( const CommandException & e )
 	{
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
@@ -140,7 +140,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionResidue" ) != rslt.resultStr.npos );
 	}
-	catch ( CommandException & e )
+	catch ( const CommandException & e )
 	{
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
@@ -164,7 +164,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionChain" ) != rslt.resultStr.npos );
 	}
-	catch ( CommandException & e )
+	catch ( const CommandException & e )
 	{
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
@@ -188,7 +188,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python]
 			rslt = _future.get();
 		CHECK( rslt.resultStr.find( "CollectionSystem" ) != rslt.resultStr.npos );
 	}
-	catch ( CommandException & e )
+	catch ( const CommandException & e )
 	{
 		VTX_ERROR( "Command exception raised in python command and catched in the UT : {}", e.what() );
 		CHECK( false );
@@ -479,12 +479,14 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via interpretor", "[python][bi
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runScript( scriptPath, promise );
+	REQUIRE( app.runUntilReady( future, App::Fixture::SCRIPT_TIMEOUT ) );
 	CHECK( future.get().success == true );
 	const FilePath badScriptPath = internalDataDir / "bad_script_test.py";
 
 	promise										= std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult> badScriptFuture = promise->get_future();
 	App::INTERPRETOR().runScript( badScriptPath, promise );
+	REQUIRE( app.runUntilReady( badScriptFuture, App::Fixture::SCRIPT_TIMEOUT ) );
 	CHECK( badScriptFuture.get().success == false );
 }
 
@@ -501,10 +503,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python binding smoke test", "[python][binding][
 	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runScript( scriptPath, promise );
 
-	while ( future.wait_for( std::chrono::milliseconds( 1 ) ) != std::future_status::ready )
-	{
-		THREAD().update();
-	}
+	REQUIRE( app.runUntilReady( future, App::Fixture::SCRIPT_TIMEOUT ) );
 	const AsyncJobResult result = future.get();
 	INFO( result.resultStr );
 	CHECK( result.success == true );
@@ -524,10 +523,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python trajectory binding smoke test", "[python
 	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runScript( scriptPath, promise );
 
-	while ( future.wait_for( std::chrono::milliseconds( 1 ) ) != std::future_status::ready )
-	{
-		THREAD().update();
-	}
+	REQUIRE( app.runUntilReady( future, App::Fixture::SCRIPT_TIMEOUT ) );
 	const AsyncJobResult result = future.get();
 	INFO( result.resultStr );
 	CHECK( result.success == true );
@@ -541,7 +537,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothin
 	 */
 	using namespace VTX;
 	using namespace VTX::App;
-	App::Fixture								  app( Test::pythonArguments() );
+	const App::Fixture							  app( Test::pythonArguments() );
 	std::shared_ptr<std::promise<AsyncJobResult>> promise = std::make_shared<std::promise<AsyncJobResult>>();
 	std::future<AsyncJobResult>					  future  = promise->get_future();
 	App::INTERPRETOR().runCommand( "s = 1", promise );
@@ -556,7 +552,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][bindin
 	 */
 	using namespace VTX;
 	using namespace VTX::App;
-	App::Fixture app( Test::pythonArguments() );
+	const App::Fixture app( Test::pythonArguments() );
 
 	const FilePath internalDataDir = Util::Filesystem::getExecutableDir() / "data";
 	const FilePath scriptPath	   = internalDataDir / "script_test.py";

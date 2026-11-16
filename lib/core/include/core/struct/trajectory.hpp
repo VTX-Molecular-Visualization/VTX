@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_STRUCT_TRAJECTORY__
-#define __VTX_CORE_STRUCT_TRAJECTORY__
+#ifndef VTX_CORE_STRUCT_TRAJECTORY_HPP
+#define VTX_CORE_STRUCT_TRAJECTORY_HPP
 
 #include <cstddef>
 #include <span>
@@ -32,6 +32,19 @@ namespace VTX::Core::Struct
 		 * @brief Storage.
 		 */
 		std::vector<Frame> frames;
+
+		/**
+		 * @brief Get atom count.
+		 */
+		size_t getAtomCount() const noexcept
+		{
+			if ( frames.empty() )
+			{
+				return 0;
+			}
+
+			return frames[ 0 ].size();
+		}
 	};
 
 } // namespace VTX::Core::Struct

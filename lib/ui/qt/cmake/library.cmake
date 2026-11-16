@@ -5,7 +5,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/vtx_qt_copy_runtime.cmake")
 vtx_qt_configure()
 add_library(vtx_ui_qt)
 add_library(vtx_ui_qt::vtx_ui_qt ALIAS vtx_ui_qt)
-vtx_configure_target(vtx_ui_qt)
+vtx_configure_target(vtx_ui_qt PCH "${CMAKE_CURRENT_LIST_DIR}/vtx_ui_qt_pch.hpp")
 
 file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_LIST_DIR}/../include/*)
 file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_LIST_DIR}/../src/*)

@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CACHES__
-#define __VTX_RENDERER_CACHES__
+#ifndef VTX_RENDERER_CACHES_HPP
+#define VTX_RENDERER_CACHES_HPP
 
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
@@ -41,9 +41,9 @@ namespace VTX::Renderer::Cache
 	struct Camera
 	{
 		VTX::Renderer::Camera camera;
-		Vec3f				  position;
-		Mat4f				  matView;
-		Mat4f				  matProj;
+		Vec3f				  position { 0.f };
+		Mat4f				  matView { 1.f };
+		Mat4f				  matProj { 1.f };
 	};
 
 	struct ColorLayout
@@ -62,7 +62,7 @@ namespace VTX::Renderer::Cache
 		std::vector<Vec3f> maxs;
 	};
 
-	enum struct E_SYSTEM_DIRTY : uint16_t
+	enum struct E_SYSTEM_DIRTY : uint8_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
 		NONE		   = 0,
@@ -111,27 +111,27 @@ namespace VTX::Renderer::Cache
 	struct System
 	{
 		// Owned.
-		Mat4f transform;
+		Mat4f transform { 1.f };
 
 		// Views.
 		struct Data
 		{
-			const Core::Struct::Topology * topology;
+			const Core::Struct::Topology * topology {};
 			std::span<const Vec3f>		   trajectory;
 			// TODO: delete and use gpu buffer?
-			const Util::Math::Range<UID32> *						   atomUids;
-			const Util::Math::Range<UID32> *						   residueUids;
-			const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> * colorSchemeAtoms;
-			const std::unordered_map<ColorIndex, IndexRangeList> *	   customColorAtoms;
-			const std::unordered_map<ColorIndex, IndexRangeList> *	   carbonCustomColorAtoms;
+			const Util::Math::Range<UID32> *						   atomUids {};
+			const Util::Math::Range<UID32> *						   residueUids {};
+			const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> * colorSchemeAtoms {};
+			const std::unordered_map<ColorIndex, IndexRangeList> *	   customColorAtoms {};
+			const std::unordered_map<ColorIndex, IndexRangeList> *	   carbonCustomColorAtoms {};
 			const std::unordered_map<E_COLOR_SCHEME_SECONDARY_STRUCTURE, IndexRangeList> *
-																   colorSchemeSecondaryStructureResidues;
-			const std::unordered_map<ColorIndex, IndexRangeList> * customSecondaryStructureColorResidues;
+																   colorSchemeSecondaryStructureResidues {};
+			const std::unordered_map<ColorIndex, IndexRangeList> * customSecondaryStructureColorResidues {};
 			// Ugly.
-			const std::unordered_map<Entity, Desc::Handle> *				 representationHandles;
-			const std::unordered_map<Entity, Core::Struct::IndexRangeList> * presetAtoms;
-			const Util::Math::BitSet *										 visibility;
-			const Util::Math::BitSet *										 selection;
+			const std::unordered_map<Entity, Desc::Handle> *				 representationHandles {};
+			const std::unordered_map<Entity, Core::Struct::IndexRangeList> * presetAtoms {};
+			const Util::Math::BitSet *										 visibility {};
+			const Util::Math::BitSet *										 selection {};
 		};
 
 		Data data;
@@ -142,7 +142,7 @@ namespace VTX::Renderer::Cache
 
 	struct Mesh
 	{
-		Mat4f transform;
+		Mat4f transform { 1.f };
 
 		const Core::Struct::Mesh * data = nullptr;
 

@@ -8,7 +8,7 @@
 
 namespace VTX::Tool::Mdprep::backends::Gromacs
 {
-	std::string string( const E_EDITCONF_BOX_SHAPE & p_ ) noexcept
+	std::string string( const E_EDITCONF_BOX_SHAPE & p_ )
 	{
 		switch ( p_ )
 		{
@@ -21,7 +21,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		return "";
 	}
 
-	std::string string( const E_EDITCONF_BOX_DIMENSION_MODE & p_ ) noexcept
+	std::string string( const E_EDITCONF_BOX_DIMENSION_MODE & p_ )
 	{
 		switch ( p_ )
 		{
@@ -31,29 +31,28 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	}
 
-	std::string format( const double & p_ ) noexcept { return fmt::format( "{:.1f}", p_ ); }
-
-	void prepareJob(
-		const CumulativeOuputFiles & p_previousJobsOutputs,
-		const FilePath &			 p_root,
-		const std::string_view &	 p_folderName,
-		EditconfInstructions &		 p_instructions
-	) noexcept
+	namespace
 	{
-		if ( fs::exists( p_root ) && fs::is_directory( p_root ) == false )
+		std::string format( const double & p_ ) { return fmt::format( "{:.1f}", p_ ); }
+	} // namespace
+
+	void prepareJob( const CumulativeOuputFiles & p_previousJobsOutputs,
+					 const FilePath &			  p_root,
+					 const std::string_view &	  p_folderName,
+					 EditconfInstructions &		  p_instructions )
+	{
+		if ( fs::exists( p_root ) && not fs::is_directory( p_root ) )
 		{
 			return; // This scenario shouldn't happen
 		}
-		FilePath jobDir = p_root / p_folderName;
+		const FilePath jobDir = p_root / p_folderName;
 		fs::create_directories( jobDir );
 
 		if ( p_instructions.purpose == E_EDITCONF_PURPOSE::setup_box )
 		{
-			auto lastGroFile = std::find_if(
-				p_previousJobsOutputs.fileStringPtrs.begin(),
-				p_previousJobsOutputs.fileStringPtrs.end(),
-				[]( const std::string * p_ ) { return p_->ends_with( ".gro" ); }
-			);
+			auto lastGroFile
+				= std::ranges::find_if( p_previousJobsOutputs.fileStringPtrs,
+										[]( const std::string * const p_ ) { return p_->ends_with( ".gro" ); } );
 			if ( lastGroFile != std::end( p_previousJobsOutputs.fileStringPtrs ) )
 			{
 				p_instructions.in = *lastGroFile.operator*();
@@ -62,7 +61,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		else
 		{
-			if ( auto fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".tpr" ) )
+			if ( const auto * const fileStrPtr = getFirstFileOfType( p_previousJobsOutputs, ".tpr" ) )
 			{
 				p_instructions.in = *fileStrPtr;
 			}
@@ -70,36 +69,36 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 	}
 
-	void convert( const EditconfInstructions & in, GromacsJobData & out ) noexcept
+	void convert( const EditconfInstructions & in, GromacsJobData & out )
 	{
 		if ( in.in.empty() || in.out.empty() )
 		{
 			return;
 		}
 
-		out.arguments.push_back( "editconf" );
-		out.arguments.push_back( "-f" );
+		out.arguments.emplace_back( "editconf" );
+		out.arguments.emplace_back( "-f" );
 		out.arguments.push_back( FilePath( in.in ).make_preferred().string() );
-		out.arguments.push_back( "-o" );
+		out.arguments.emplace_back( "-o" );
 		out.arguments.push_back( FilePath( in.out ).make_preferred().string() );
 		setLastArgumentAsExpectedOutputFile( out );
 		if ( in.purpose == E_EDITCONF_PURPOSE::setup_box )
 		{
-			out.arguments.push_back( "-bt" );
+			out.arguments.emplace_back( "-bt" );
 			out.arguments.push_back( string( in.bt ) );
 			if ( in.dimensionMode == E_EDITCONF_BOX_DIMENSION_MODE::distance )
 			{
-				out.arguments.push_back( "-d" );
+				out.arguments.emplace_back( "-d" );
 				out.arguments.push_back( format( in.d ) );
 				return;
 			}
-			out.arguments.push_back( "-box" );
+			out.arguments.emplace_back( "-box" );
 			out.arguments.push_back( format( in.box[ 0 ] ) );
 			if ( in.bt == E_EDITCONF_BOX_SHAPE::triclinic )
 			{
 				out.arguments.push_back( format( in.box[ 1 ] ) );
 				out.arguments.push_back( format( in.box[ 2 ] ) );
-				out.arguments.push_back( "-angles" );
+				out.arguments.emplace_back( "-angles" );
 				out.arguments.push_back( format( in.angles[ 0 ] ) );
 				out.arguments.push_back( format( in.angles[ 1 ] ) );
 				out.arguments.push_back( format( in.angles[ 2 ] ) );
@@ -107,7 +106,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		}
 		if ( in.purpose == E_EDITCONF_PURPOSE::producing_pdb )
 		{
-			out.arguments.push_back( "-conect" );
+			out.arguments.emplace_back( "-conect" );
 		}
 	}
 } // namespace VTX::Tool::Mdprep::backends::Gromacs

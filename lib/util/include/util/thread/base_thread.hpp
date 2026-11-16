@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_THREAD_BASE_THREAD__
-#define __VTX_UTIL_THREAD_BASE_THREAD__
+#ifndef VTX_UTIL_THREAD_BASE_THREAD_HPP
+#define VTX_UTIL_THREAD_BASE_THREAD_HPP
 
 #include <atomic>
 #include <concepts>
@@ -56,27 +56,37 @@ namespace VTX::Util::Thread
 		/**
 		 * @brief Checks if the thread has ended.
 		 */
-		inline bool isFinished() const { return _finished.load( std::memory_order_acquire ); }
+		bool isFinished() const noexcept { return _finished.load( std::memory_order_acquire ); }
 
 		/**
 		 * @brief Checks if the thread has been manually stopped.
 		 */
-		inline bool isManuallyStopped() const { return _stopped.load(); }
+		bool isManuallyStopped() const noexcept { return _stopped.load(); }
+
+		/**
+		 * @brief Check failed state.
+		 */
+		bool hasFailed() const noexcept { return _failed.load( std::memory_order_acquire ); }
+
+		/**
+		 * @brief Set failed state.
+		 */
+		void setFailed() noexcept { _failed.store( true, std::memory_order_release ); }
 
 		/**
 		 * @brief Returns the id.
 		 */
-		inline ID getId() const { return _id; }
+		ID getId() const noexcept { return _id; }
 
 		/**
 		 * @brief Returns the progress.
 		 */
-		inline float getProgress() const { return _progress.load( std::memory_order_relaxed ); }
+		float getProgress() const noexcept { return _progress.load( std::memory_order_relaxed ); }
 
 		/**
 		 * @brief Set the progress.
 		 */
-		void setProgress( const float p_value );
+		void setProgress( float p_value ) noexcept;
 
 		/**
 		 * @brief Progress text accessors.
@@ -137,6 +147,11 @@ namespace VTX::Util::Thread
 		std::atomic<bool> _stopped = false;
 
 		/**
+		 * @brief Flag as failed.
+		 */
+		std::atomic<bool> _failed = false;
+
+		/**
 		 * @brief Mutex for progress text.
 		 */
 		mutable std::mutex _progressTextMutex;
@@ -161,11 +176,11 @@ namespace VTX::Util::Thread
 		{ p_thread.start() } -> std::same_as<void>;
 	};
 
+	/**
+	 * @brief Short-hand for types that are usually used together.
+	 */
 	using OptionalThreadReference = std::optional<std::reference_wrapper<BaseThread>>;
 
-	/**
-	 * @brief Short-hand for types that are usually used together
-	 */
 	struct ThreadData
 	{
 		StopToken				stopToken;

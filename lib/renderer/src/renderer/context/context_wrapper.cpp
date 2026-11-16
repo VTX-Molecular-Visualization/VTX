@@ -51,7 +51,7 @@ namespace VTX::Renderer::Context
 			// Rebuild executor to match the new backend.
 			if constexpr ( std::is_same_v<B, Backend::OpenGL> )
 			{
-				if ( auto * executor = std::get_if<Executor::OpenGL>( &p_executor ) )
+				if ( std::holds_alternative<Executor::OpenGL>( p_executor ) )
 				{
 					p_executor.emplace<Executor::OpenGL>( std::get<Backend::OpenGL>( p_backend ) );
 				}
@@ -66,7 +66,7 @@ namespace VTX::Renderer::Context
 		{
 			if constexpr ( std::is_same_v<E, Executor::OpenGL> )
 			{
-				if ( auto * backend = std::get_if<Backend::OpenGL>( &p_backend ) )
+				if ( const auto * backend = std::get_if<Backend::OpenGL>( &p_backend ) )
 				{
 					p_executor.emplace<Executor::OpenGL>( *backend );
 					return;
@@ -77,22 +77,35 @@ namespace VTX::Renderer::Context
 		}
 
 		template<E_COMMAND C, typename Executor>
-		void _executePayload( const Executor & p_executor, const CommandBuffer & p_commands, const Command & p_command )
+		void _executePayload(
+			const Executor &	  p_executor,
+			const CommandBuffer & p_commands,
+			const Command &		  p_command
+		) noexcept
 		{
 			using Payload = PayloadT<C>;
 
 			if constexpr ( std::is_empty_v<Payload> )
 			{
+				static_assert( noexcept( p_executor.execute( Payload {} ) ), "Executor commands must be noexcept." );
 				p_executor.execute( Payload {} );
 			}
 			else
 			{
+				static_assert(
+					noexcept( p_executor.execute( p_commands.getPayload<Payload>( p_command.payloadOffset ) ) ),
+					"Executor commands must be noexcept."
+				);
 				p_executor.execute( p_commands.getPayload<Payload>( p_command.payloadOffset ) );
 			}
 		}
 
 		template<typename Executor>
-		void _executeCommand( const Executor & p_executor, const CommandBuffer & p_commands, const Command & p_command )
+		void _executeCommand(
+			const Executor &	  p_executor,
+			const CommandBuffer & p_commands,
+			const Command &		  p_command
+		) noexcept
 		{
 			switch ( p_command.type )
 			{
@@ -134,7 +147,7 @@ namespace VTX::Renderer::Context
 			const Executor &	  p_executor,
 			const CommandBuffer & p_commands,
 			const CommandRange &  p_range
-		)
+		) noexcept
 		{
 			const CommandID end = p_range.first + p_range.count;
 			assert( end <= p_commands.commands.size() );
@@ -211,22 +224,31 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	void ContextWrapper::execute( std::span<const PassID> p_passIDs ) const noexcept
+	void ContextWrapper::execute( const std::span<const PassID> p_passIDs ) const noexcept
 	{
-		std::visit(
-			[ & ]( const auto & p_exec )
+		assert( not _impl->executor.valueless_by_exception() );
+
+		const auto executePasses = [ & ]( const auto & p_exec ) noexcept
+		{
+			for ( const PassID passID : p_passIDs )
 			{
-				using T = std::remove_cvref_t<decltype( p_exec )>;
-				if constexpr ( not std::is_same_v<T, std::monostate> )
-				{
-					for ( const PassID passID : p_passIDs )
-					{
-						_executeRange( p_exec, _impl->commands, _impl->commands.passRange( passID ).commands );
-					}
-				}
-			},
-			_impl->executor
-		);
+				_executeRange( p_exec, _impl->commands, _impl->commands.passRange( passID ).commands );
+			}
+		};
+
+		// Avoid std::visit to stay noexcept.
+		if ( const auto * executor = std::get_if<Executor::OpenGL>( &_impl->executor ) )
+		{
+			executePasses( *executor );
+		}
+		else if ( const auto * nullExecutor = std::get_if<Executor::Null>( &_impl->executor ) )
+		{
+			executePasses( *nullExecutor );
+		}
+		else if ( _impl->executor.valueless_by_exception() )
+		{
+			VTX_ERROR( "Cannot execute render commands: executor has no value" );
+		}
 	}
 
 	void ContextWrapper::build( const Desc::RenderQueue & p_renderQueue, const Desc::Resources & p_resources )
@@ -257,7 +279,7 @@ namespace VTX::Renderer::Context
 
 		assert( commands.count == 1 );
 
-		Command & command = _impl->commands.commands[ commands.first ];
+		const Command & command = _impl->commands.commands[ commands.first ];
 		assert( command.type == E_COMMAND::EXTERNAL );
 
 		PayloadExternal & payload = _impl->commands.getPayload<PayloadExternal>( command.payloadOffset );
@@ -266,9 +288,7 @@ namespace VTX::Renderer::Context
 	}
 
 	bool ContextWrapper::containsPass( const Desc::Key & p_pass ) const
-	{
-		return _impl->commands.containsPass( p_pass );
-	}
+	{ return _impl->commands.containsPass( p_pass ); }
 
 	void ContextWrapper::markPassDirty( const Desc::Key & p_pass ) { _impl->commands.markPassDirty( p_pass ); }
 
@@ -294,7 +314,7 @@ namespace VTX::Renderer::Context
 
 	void ContextWrapper::setBuffer( const Desc::BufferRef & p_ref, SpanBytes p_bytes, const size_t p_offset )
 	{
-		if ( p_bytes.size() == 0 )
+		if ( p_bytes.empty() )
 		{
 			return;
 		}
@@ -355,8 +375,12 @@ namespace VTX::Renderer::Context
 		const Desc::BufferRef &	  p_ref
 	)
 	{
-		std::array<Desc::BufferRef, 1> refs { p_ref };
-		auto						   mappings = mapInteropBuffers( p_api, refs );
+		auto refs	  = std::to_array<Desc::BufferRef>( { p_ref } );
+		auto mappings = mapInteropBuffers( p_api, refs );
+		if ( mappings.empty() )
+		{
+			throw GraphicException( "Could not map interop buffer '{}'", p_ref.key );
+		}
 		assert( mappings.size() == 1 );
 		return std::move( mappings.front() );
 	}
@@ -388,7 +412,7 @@ namespace VTX::Renderer::Context
 		const Desc::InteropBufferMapping & p_mapping
 	)
 	{
-		std::array<Desc::InteropBufferMapping, 1> mappings { p_mapping };
+		auto mappings = std::to_array<Desc::InteropBufferMapping>( { p_mapping } );
 		unmapInteropBuffers( p_api, mappings );
 	}
 
@@ -445,9 +469,7 @@ namespace VTX::Renderer::Context
 	}
 
 	bool ContextWrapper::isInteropAvailable( const Desc::E_INTEROP_API p_api ) const
-	{
-		return interopAvailability( p_api ).available();
-	}
+	{ return interopAvailability( p_api ).available(); }
 
 	std::vector<std::byte> ContextWrapper::getTextureData(
 		const Desc::Key &			  p_key,
@@ -472,7 +494,7 @@ namespace VTX::Renderer::Context
 
 	void ContextWrapper::setTextureData(
 		const Desc::Key &	  p_key,
-		SpanBytes			  p_bytes,
+		SpanBytes			  p_data,
 		std::optional<size_t> p_width,
 		std::optional<size_t> p_height
 	)
@@ -483,7 +505,7 @@ namespace VTX::Renderer::Context
 				using T = std::remove_cvref_t<decltype( p_backend )>;
 				if constexpr ( not std::is_same_v<T, std::monostate> )
 				{
-					p_backend.setTextureData( p_key, p_bytes, p_width, p_height );
+					p_backend.setTextureData( p_key, p_data, p_width, p_height );
 				}
 			},
 			_impl->backend
@@ -535,7 +557,7 @@ namespace VTX::Renderer::Context
 		);
 	}
 
-	const CommandBuffer & ContextWrapper::commands() const { return _impl->commands; }
+	const CommandBuffer & ContextWrapper::commands() const noexcept { return _impl->commands; }
 
 	void ContextWrapper::clear()
 	{

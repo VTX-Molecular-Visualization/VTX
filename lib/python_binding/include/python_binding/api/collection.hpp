@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_API_COLECTION__
-#define __VTX_PYTHON_API_COLECTION__
+#ifndef VTX_PYTHON_BINDING_API_COLLECTION_HPP
+#define VTX_PYTHON_BINDING_API_COLLECTION_HPP
 
 #include <concepts>
 #include <cstddef>
@@ -35,16 +35,21 @@ namespace VTX::PythonBinding::API
 			using reference			= value_type &; // or also value_type&
 
 			reference operator*() { return _obj; }
-			pointer	  operator->() { return &_obj; }
+
+			pointer operator->() { return &_obj; }
 
 			// Prefix increment
 			Iterator & operator++()
 			{
 				_idx++;
 				if ( _idx < _incr->size() )
+				{
 					_obj = _incr->at( _idx );
+				}
 				else
+				{
 					_obj = T();
+				}
 				return *this;
 			}
 
@@ -55,12 +60,15 @@ namespace VTX::PythonBinding::API
 				++( *this );
 				return tmp;
 			}
+
 			size_t operator-( const Iterator & p_other ) const noexcept { return _idx - p_other._idx; }
 
 			friend bool operator==( const Iterator & a, const Iterator & b ) { return a._idx == b._idx; };
+
 			friend bool operator!=( const Iterator & a, const Iterator & b ) { return a._idx != b._idx; };
 
 			Iterator() = default;
+
 			Iterator( T p_obj, size_t p_idx, _interface & p_incr ) :
 				_obj( std::move( p_obj ) ), _idx( std::move( p_idx ) ), _incr( &p_incr )
 			{
@@ -72,16 +80,21 @@ namespace VTX::PythonBinding::API
 			_interface * _incr = nullptr;
 		};
 
-		inline Iterator begin()
+		Iterator begin()
 		{
 			if ( _ptr )
+			{
 				return _ptr->begin();
+			}
 			return {};
 		}
-		inline Iterator end()
+
+		Iterator end()
 		{
 			if ( _ptr )
+			{
 				return _ptr->end();
+			}
 			return {};
 		}
 
@@ -89,10 +102,12 @@ namespace VTX::PythonBinding::API
 		 * @brief Return the size of the collection or the max uint64 value if the collection is defaulted
 		 * @return
 		 */
-		inline size_t size()
+		size_t size()
 		{
 			if ( _ptr )
+			{
 				return _ptr->size();
+			}
 			return 0xffffffffffffffff;
 		}
 
@@ -100,10 +115,12 @@ namespace VTX::PythonBinding::API
 		 * @brief Return the element at given position or default constructed element if the collection is defaulted.
 		 * Assumes the index is within [0,size).
 		 */
-		T operator[]( const size_t & p_ ) noexcept
+		T operator[]( const size_t & p_ )
 		{
 			if ( _ptr )
+			{
 				return _ptr->at( p_ );
+			}
 			return {};
 		}
 
@@ -126,11 +143,16 @@ namespace VTX::PythonBinding::API
 
 		  public:
 			_wrapper( TT && p_ ) : _obj( std::forward<TT>( p_ ) ) {}
-			virtual T		 at( const size_t & p_idx ) override { return { _obj.at( p_idx ) }; }
+
+			virtual T at( const size_t & p_idx ) override { return { _obj.at( p_idx ) }; }
+
 			virtual Iterator begin() override { return Iterator( T( _obj[ 0 ] ), 0, *this ); }
+
 			virtual Iterator end() override { return Iterator( T(), _obj.size(), *this ); }
-			virtual size_t	 size() override { return _obj.size(); }
+
+			virtual size_t size() override { return _obj.size(); }
 		};
+
 		std::shared_ptr<_interface> _ptr = nullptr;
 
 	  public:

@@ -1,6 +1,7 @@
-#ifndef __VTX_UI_QT_UTIL__
-#define __VTX_UI_QT_UTIL__
+#ifndef VTX_UI_QT_UTIL_HPP
+#define VTX_UI_QT_UTIL_HPP
 
+#include "ui/qt/helper.hpp"
 #include <QBitmap>
 #include <QColor>
 #include <QComboBox>
@@ -29,26 +30,27 @@ namespace VTX::UI::QT::Util
 		Q_OBJECT
 
 	  public:
-		EventEater( QEvent::Type p_type, QWidget * p_parent = nullptr ) : QObject( p_parent )
-		{
-			_filteredTypes.emplace( p_type );
-		}
-		EventEater( std::set<QEvent::Type> p_types, QWidget * p_parent = nullptr ) :
-			QObject( p_parent ), _filteredTypes( p_types )
+		EventEater( QEvent::Type p_type, QWidget * const p_parent = nullptr ) : QObject( p_parent )
+		{ _filteredTypes.emplace( p_type ); }
+
+		EventEater( std::set<QEvent::Type> p_types, QWidget * const p_parent = nullptr ) :
+			QObject( p_parent ), _filteredTypes( std::move( p_types ) )
 		{
 		}
 
-	  protected:
 		bool eventFilter( QObject * p_obj, QEvent * p_event ) override
 		{
-			if ( _filteredTypes.find( p_event->type() ) != _filteredTypes.end() )
+			if ( _filteredTypes.contains( p_event->type() ) )
+			{
 				return true;
+			}
 			return QObject::eventFilter( p_obj, p_event );
 		}
 
 	  private:
-		std::set<QEvent::Type> _filteredTypes = std::set<QEvent::Type>();
+		std::set<QEvent::Type> _filteredTypes;
 	};
+
 	/*
 	static QVariant widgetKeyToQVariant( const UI::Core::WidgetKey & p_key )
 	{
@@ -60,14 +62,12 @@ namespace VTX::UI::QT::Util
 	}
 	*/
 
-	void fillComboBox( QComboBox * const p_comboBox, const std::vector<std::string> & p_values );
-	void fillComboBox( QComboBox * const p_comboBox, const std::vector<QString> & p_values );
-	void fillMenu(
-		QMenu &							 p_menu,
-		const int						 p_enumSize,
-		const std::vector<std::string> & p_names,
-		const bool						 p_actionCheckable = false
-	);
+	void fillComboBox( QComboBox * p_comboBox, const std::vector<std::string> & p_values );
+	void fillComboBox( QComboBox * p_comboBox, const std::vector<QString> & p_values );
+	void fillMenu( QMenu &							p_menu,
+				   int								p_enumSize,
+				   const std::vector<std::string> & p_names,
+				   bool								p_actionCheckable = false );
 
 	static void appendColorHtmlTag( QString & p_txt, const VTX::Util::Color::Rgba & p_color )
 	{
@@ -76,6 +76,7 @@ namespace VTX::UI::QT::Util
 
 		p_txt.append( tag );
 	}
+
 	static void appendEndColorHtmlTag( QString & p_txt ) { p_txt.append( "</font>" ); }
 
 	static void setDynamicProperty( QWidget * const p_widget, const char * const p_property, const QVariant & p_value )
@@ -86,59 +87,54 @@ namespace VTX::UI::QT::Util
 		p_widget->style()->unpolish( p_widget );
 		p_widget->style()->polish( p_widget );
 	}
-	static void setDynamicProperty( QWidget * const p_widget, const char * const p_property )
-	{
-		setDynamicProperty( p_widget, p_property, true );
-	}
 
-	static Qt::CheckState getCheckState( const bool p_boolValue )
-	{
-		return p_boolValue ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
-	}
+	static void setDynamicProperty( QWidget * const p_widget, const char * const p_property )
+	{ setDynamicProperty( p_widget, p_property, true ); }
+
+	static constexpr Qt::CheckState getCheckState( const bool p_boolValue )
+	{ return p_boolValue ? Qt::CheckState::Checked : Qt::CheckState::Unchecked; }
 
 	static void filterEventOnWidget( QWidget * const p_widget, const QEvent::Type & p_eventType )
 	{
-		EventEater * const eater = new EventEater( p_eventType, p_widget );
+		EventEater * const eater = Helper::makeQObject<EventEater>( p_eventType, p_widget );
 		p_widget->installEventFilter( eater );
 	}
+
 	static void filterEventOnWidget( QWidget * const p_widget, const std::set<QEvent::Type> & p_eventTypes )
 	{
-		EventEater * const eater = new EventEater( p_eventTypes, p_widget );
+		EventEater * const eater = Helper::makeQObject<EventEater>( p_eventTypes, p_widget );
 		p_widget->installEventFilter( eater );
 	}
 
 	static QColor RgbToQColor( const VTX::Util::Color::Rgba & p_rgb )
-	{
-		return QColor( p_rgb.r() * 255, p_rgb.g() * 255, p_rgb.b() * 255 );
-	}
+	{ return QColor( p_rgb.r() * 255, p_rgb.g() * 255, p_rgb.b() * 255 ); }
 
 	static QBitmap generateAlphaMask( const QString & p_filepath )
-	{
-		return QBitmap::fromPixmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) );
-	}
+	{ return QBitmap::fromPixmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) ); }
 
 	// Class responsible for creating a label with tooltip as a question mark ? button next to it.
 	// Implicitly convert in QWidget pointer which refers to the container of both the label and the question mark.
 	class LabelWithHelper
 	{
 	  public:
-		enum class E_QUESTIONMARK_POSITION
+		enum class E_QUESTIONMARK_POSITION : uint8_t
 		{
 			left,
 			right
 		};
+
 		LabelWithHelper() = default;
 		LabelWithHelper( const char * p_label, const char * p_helper, const E_QUESTIONMARK_POSITION & p_postion );
 		QPointer<QWidget> container = nullptr;
 		QLabel *		  label		= nullptr;
-						  operator QWidget *();
+						  operator QWidget *() const;
 	};
 
 	// Create a standardized separator with a slightly larger label on its left. Aim to split form sections.
-	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label ) noexcept;
+	void addLabeledHLineSeparator( QBoxLayout * p_dest, const char * p_label );
 
 	// The idea is to create a lineEdit field with a validator that enforce the UInt64 size input
-	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip ) noexcept;
+	QLineEdit * addUInt64Field( QFormLayout * p_dest, const char * p_label, const char * p_tooltip );
 
 	// Class responsible for deleting a widget on deletion. This class will follow ownership transfer for move
 	// sementics and won't be copyable.
@@ -148,10 +144,10 @@ namespace VTX::UI::QT::Util
 
 	  public:
 		ObjectOwnership() = default;
-		ObjectOwnership( QObject * ) noexcept;
+		ObjectOwnership( QObject * );
 		void release() noexcept;
 
-		ObjectOwnership & operator=( QObject * ) noexcept;
+		ObjectOwnership & operator=( QObject * );
 
 		~ObjectOwnership();
 		ObjectOwnership( ObjectOwnership && ) noexcept;
@@ -162,7 +158,7 @@ namespace VTX::UI::QT::Util
 
 	// Extract uint64 number from input textbox, or UINT64_MAX if the number couldn't be red. Do nothing if src is
 	// nullptr.
-	void get( const QLineEdit * p_src, uint64_t & p_dest ) noexcept;
+	void get( const QLineEdit * p_src, uint64_t & p_dest );
 
 } // namespace VTX::UI::QT::Util
 

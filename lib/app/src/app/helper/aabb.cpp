@@ -1,9 +1,12 @@
 #include "app/helper/aabb.hpp"
+#include "app/generic/stale.hpp"
 #include "app/helper/trajectory.hpp"
-#include "app/services.hpp"
+#include "app/scene/tag_root.hpp"
 #include <core/chemdb/atom.hpp>
+#include <core/struct/mesh.hpp>
 #include <cstddef>
 #include <stdexcept>
+#include <util/math/transform.hpp>
 
 namespace VTX::App::Helper::AABB
 {
@@ -56,12 +59,64 @@ namespace VTX::App::Helper::AABB
 
 	Util::Math::AABB get( const Entity p_entity )
 	{
-		if ( not REG().all_of<Util::Math::AABB>( p_entity ) )
+		Registry & registry = REG();
+		if ( not registry.all_of<Util::Math::AABB>( p_entity ) )
 		{
 			throw std::runtime_error( "System AABB is unavailable." );
 		}
 
-		return REG().get<Util::Math::AABB>( p_entity );
+		if ( registry.all_of<Generic::StaleAABB>( p_entity ) )
+		{
+			Util::Math::AABB aabb;
+			if ( not App::Helper::Trajectory::visitCurrentFrame(
+					 p_entity, [ &aabb ]( const Core::Struct::FrameView p_positions ) { aabb = compute( p_positions ); }
+				 ) )
+			{
+				throw std::out_of_range( "Trajectory frame is unavailable." );
+			}
+			registry.replace<Util::Math::AABB>( p_entity, aabb );
+			registry.remove<Generic::StaleAABB>( p_entity );
+		}
+
+		return registry.get<Util::Math::AABB>( p_entity );
+	}
+
+	Util::Math::AABB getScene()
+	{
+		Registry &	 registry = REG();
+		const Entity scene	  = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot, Util::Math::AABB>();
+		if ( registry.all_of<Generic::StaleAABB>( scene ) )
+		{
+			Util::Math::AABB sceneAABB;
+			for ( const Entity system :
+				  registry.view<Core::Struct::Topology, Util::Math::AABB, Util::Math::Transform>() )
+			{
+				sceneAABB.extend( get( system ).transformed( registry.get<Util::Math::Transform>( system ) ) );
+			}
+			for ( const Entity mesh : registry.view<Core::Struct::Mesh, Util::Math::AABB, Util::Math::Transform>() )
+			{
+				sceneAABB.extend( get( mesh ).transformed( registry.get<Util::Math::Transform>( mesh ) ) );
+			}
+			registry.replace<Util::Math::AABB>( scene, sceneAABB );
+			registry.remove<Generic::StaleAABB>( scene );
+		}
+
+		return registry.get<Util::Math::AABB>( scene );
+	}
+
+	void invalidate( const Entity p_entity )
+	{
+		REG().emplace_or_replace<Generic::StaleAABB>( p_entity );
+		invalidateScene();
+	}
+
+	void invalidateScene()
+	{
+		Registry & registry = REG();
+		for ( const Entity scene : registry.view<App::Scene::TagRoot, Util::Math::AABB>() )
+		{
+			registry.emplace_or_replace<Generic::StaleAABB>( scene );
+		}
 	}
 
 	Util::Math::AABB get( const Entity p_entity, const Util::Math::BitSet & p_atoms )

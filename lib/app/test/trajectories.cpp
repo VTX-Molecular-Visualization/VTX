@@ -3,6 +3,7 @@
 #include <app/fixture.hpp>
 #include <app/helper/trajectory.hpp>
 #include <app/pass/pass_manager.hpp>
+#include <app/pending_updates.hpp>
 #include <app/services.hpp>
 #include <app/trajectory/loader.hpp>
 #include <app/trajectory/player.hpp>
@@ -12,12 +13,12 @@
 #include <chrono>
 #include <core/struct/topology.hpp>
 #include <core/struct/trajectory.hpp>
-#include <functional>
 #include <memory>
 #include <optional>
 #include <string_view>
 #include <thread>
 #include <util/ecs.hpp>
+#include <util/event_hub.hpp>
 #include <util/filesystem.hpp>
 #include <util/thread/thread_manager.hpp>
 #include <utility>
@@ -30,22 +31,12 @@ namespace
 	{
 		TrajectoryPlayerLifecycleObserver()
 		{
-			App::REG().on_construct<App::Trajectory::Player>().connect<&TrajectoryPlayerLifecycleObserver::onConstruct>(
-				this
-			);
-			App::REG().on_destroy<App::Trajectory::Player>().connect<&TrajectoryPlayerLifecycleObserver::onDestroy>(
-				this
-			);
-		}
-
-		~TrajectoryPlayerLifecycleObserver()
-		{
-			App::REG()
-				.on_construct<App::Trajectory::Player>()
-				.disconnect<&TrajectoryPlayerLifecycleObserver::onConstruct>( this );
-			App::REG().on_destroy<App::Trajectory::Player>().disconnect<&TrajectoryPlayerLifecycleObserver::onDestroy>(
-				this
-			);
+			_constructConnection = App::REG()
+									   .on_construct<App::Trajectory::Player>()
+									   .connect<&TrajectoryPlayerLifecycleObserver::onConstruct>( this );
+			_destroyConnection	 = App::REG()
+									   .on_destroy<App::Trajectory::Player>()
+									   .connect<&TrajectoryPlayerLifecycleObserver::onDestroy>( this );
 		}
 
 		void onConstruct( Registry &, const Entity ) { constructCount++; }
@@ -54,28 +45,15 @@ namespace
 
 		uint constructCount = 0;
 		uint destroyCount	= 0;
-	};
 
-	bool waitUntil( const std::function<bool()> & p_predicate )
-	{
-		const auto timeout = std::chrono::steady_clock::now() + std::chrono::seconds( 5 );
-		while ( not p_predicate() && std::chrono::steady_clock::now() < timeout )
-		{
-			std::this_thread::sleep_for( std::chrono::milliseconds( 5 ) );
-		}
-		return p_predicate();
-	}
+		Util::EventHub::ScopedConnection _constructConnection;
+		Util::EventHub::ScopedConnection _destroyConnection;
+	};
 
 	void associateTrajectory( const Entity p_entity, const FilePath & p_path )
 	{
-		auto					   extractor		= std::make_shared<App::Extractor::System>( p_entity, p_path );
-		Util::Thread::BaseThread & extractionThread = App::THREAD().createThread(
-			[ extractor ]( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread )
-			{ return ( *extractor )( std::move( p_stopToken ), std::ref( p_thread ) ); }
-		);
-		extractionThread.wait();
-		App::PASS().update( 0.f, 0.f );
-		extractor->wait();
+		App::Extractor::System extractor( p_entity, p_path );
+		extractor( Util::Thread::StopToken(), std::nullopt );
 	}
 } // namespace
 
@@ -235,8 +213,8 @@ TEST_CASE( "VTX_APP - Trajectory player replacement lifecycle", "[integration][t
 	REQUIRE( systems.begin() != systems.end() );
 	const Entity entity = *systems.begin();
 
-	TrajectoryPlayerLifecycleObserver observer;
-	const FilePath					  dataDirectory = Util::Filesystem::getExecutableDir() / "data";
+	const TrajectoryPlayerLifecycleObserver observer;
+	const FilePath							dataDirectory = Util::Filesystem::getExecutableDir() / "data";
 
 	associateTrajectory( entity, dataDirectory / "1gcn_traj.xtc" );
 	CHECK( observer.constructCount == 1 );
@@ -272,16 +250,8 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 	Extractor::TrajectoryBufferSettings bufferSettings;
 	bufferSettings.maxFullBufferByteSize	= 0;
 	bufferSettings.circularBufferFrameCount = circularCapacity;
-	auto extractor
-		= std::make_shared<Extractor::System>( entity, trajectoryPath, IO::READER_OPTION::ALL, bufferSettings );
-
-	Util::Thread::BaseThread & extractionThread = THREAD().createThread(
-		[ extractor ]( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread )
-		{ return ( *extractor )( std::move( p_stopToken ), std::ref( p_thread ) ); }
-	);
-	extractionThread.wait();
-	PASS().update( 0.f, 0.f );
-	extractor->wait();
+	Extractor::System extractor( entity, trajectoryPath, IO::READER_OPTION::ALL, bufferSettings );
+	extractor( Util::Thread::StopToken(), std::nullopt );
 
 	const auto & loader = REG().get<Trajectory::Loader>( entity );
 	CHECK( loader.mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR );
@@ -293,31 +263,20 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 	const Core::Struct::Topology & topology = REG().get<Core::Struct::Topology>( entity );
 	Action::Trajectory::SetPaused().execute( entity, true );
 
-	const uint lastFrame = static_cast<uint>( trajectory.frameCount - 1 );
+	const uint	   lastFrame			 = static_cast<uint>( trajectory.frameCount - 1 );
+	const uint64_t initialRequestVersion = loader.thread->getRequestVersion();
 	Action::Trajectory::JumpTo().execute( entity, lastFrame );
-	PASS().update( 0.f, 0.f );
+	REQUIRE( app.runUntil( [ &loader, initialRequestVersion ]
+						   { return loader.thread->getRequestVersion() > initialRequestVersion; } ) );
 	const uint64_t staleRequestVersion = loader.thread->getRequestVersion();
 	Action::Trajectory::JumpTo().execute( entity, 0 );
-	PASS().update( 0.f, 0.f );
-	CHECK( loader.thread->getRequestVersion() > staleRequestVersion );
-	REQUIRE( waitUntil(
-		[ entity ]
-		{
-			PASS().update( 0.f, 0.f );
-			return Helper::Trajectory::isFrameAvailable( entity, 0 );
-		}
-	) );
+	CHECK( app.runUntil( [ &loader, staleRequestVersion ]
+						 { return loader.thread->getRequestVersion() > staleRequestVersion; } ) );
+	REQUIRE( app.runUntil( [ entity ] { return Helper::Trajectory::isFrameAvailable( entity, 0 ); } ) );
 
 	Action::Trajectory::JumpTo().execute( entity, lastFrame );
-	PASS().update( 0.f, 0.f );
-	REQUIRE( waitUntil(
-		[ entity, lastFrame ]
-		{
-			PASS().update( 0.f, 0.f );
-			return Helper::Trajectory::isFrameAvailable( entity, lastFrame );
-		}
-	) );
-	PASS().update( 0.f, 0.f );
+	REQUIRE( app.runUntil( [ entity, lastFrame ]
+						   { return REG().get<Trajectory::Player>( entity ).currentFrameIndex == lastFrame; } ) );
 
 	Trajectory::FrameRange availableFrames = loader.availableFrames;
 	CHECK( availableFrames == Trajectory::FrameRange( lastFrame + 1 - circularCapacity, lastFrame + 1 ) );
@@ -332,15 +291,7 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 	CHECK( REG().get<Trajectory::Player>( entity ).currentFrameIndex == lastFrame );
 
 	Action::Trajectory::JumpTo().execute( entity, 0 );
-	PASS().update( 0.f, 0.f );
-	REQUIRE( waitUntil(
-		[ entity ]
-		{
-			PASS().update( 0.f, 0.f );
-			return Helper::Trajectory::isFrameAvailable( entity, 0 );
-		}
-	) );
-	PASS().update( 0.f, 0.f );
+	REQUIRE( app.runUntil( [ entity ] { return REG().get<Trajectory::Player>( entity ).currentFrameIndex == 0; } ) );
 
 	availableFrames = loader.availableFrames;
 	CHECK( availableFrames == Trajectory::FrameRange( 0, circularCapacity ) );
@@ -355,13 +306,14 @@ TEST_CASE( "VTX_APP - Circular trajectory loading", "[integration][trajectory]" 
 	CHECK( REG().get<Trajectory::Player>( entity ).currentFrameIndex == 0 );
 
 	const uint64_t requestVersion = loader.thread->getRequestVersion();
-	PASS().update( 1000.f, 0.f );
+	PASS().update( E_PENDING_UPDATE::TRAJECTORY, 1000.f, 0.f );
 	std::this_thread::sleep_for( std::chrono::milliseconds( 20 ) );
 	CHECK( loader.thread->getRequestVersion() == requestVersion );
 	CHECK( loader.availableFrames == availableFrames );
 
 	Action::Trajectory::JumpTo().execute( entity, lastFrame );
-	PASS().update( 0.f, 0.f );
+	REQUIRE( app.runUntil( [ &loader, requestVersion ]
+						   { return loader.thread->getRequestVersion() > requestVersion; } ) );
 	REG().destroy( entity );
 	CHECK_FALSE( REG().valid( entity ) );
 }

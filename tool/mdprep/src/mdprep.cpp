@@ -2,28 +2,23 @@
 #include <QDockWidget>
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QPointer>
 #include <QPushButton>
 #include <QTextDocument>
+#include <ui/qt/helper.hpp>
 //
-#include "util/sentry.hpp"
-#include <util/event_hub.hpp>
-#include <util/logger.hpp>
 //
 #include "tool/mdprep/gateway/engine_job_manager.hpp"
 #include "tool/mdprep/gateway/form_data.hpp"
-#include "tool/mdprep/gateway/shared.hpp"
 #include "tool/mdprep/ui/input_checker.hpp"
 #include "tool/mdprep/ui/shared.hpp"
 //
 #include "tool/mdprep/ui/report.hpp"
 //
-#include <app/tool/base_tool.hpp>
 #include <string_view>
 #include <ui/qt/action_registry.hpp>
-#include <ui/qt/application.hpp>
 #include <ui/qt/dock_widget/base_dock_widget.hpp>
 #include <ui/qt/services.hpp>
-#include <ui/qt/util.hpp>
 #include <ui/qt/widget/main_window.hpp>
 //
 #include "tool/mdprep/mdprep.hpp"
@@ -38,8 +33,8 @@
 #include "tool/mdprep/ui/form_advanced/form_advanced.hpp"
 #include "tool/mdprep/ui/form_basic/form_basic.hpp"
 #include "tool/mdprep/ui/screen_forms.hpp"
+
 //
-#include "tool/mdprep/ui/form.hpp"
 
 //
 
@@ -48,74 +43,74 @@ namespace VTX::Tool::Mdprep
 	namespace
 	{
 		constexpr std::string_view ACTION_OPEN_MDPREP = "tool.mdprep.open";
-	}
 
-	// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
-	// specifics.
-	class MainWindow : public UI::QT::DockWidget::BaseDockWidget<MainWindow>
-	{
-	  public:
-		inline static const QSize PREFERRED_SIZE { 500, 720 };
-
-	  private:
-		using EngineCollection
-			= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
-		QComboBox * _w_mdEngine	   = nullptr;
-		QWidget *	_formContainer = nullptr;
-
-		VTX::Tool::Mdprep::Gateway::MdParameters		  _paramaeters;
-		std::optional<VTX::Tool::Mdprep::ui::ScreenForms> _screen;
-
-	  public:
-		MainWindow( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Molecular Dynamics Preparation" )
+		// Class responsible for managing the mdprep main window by coordinating the common form and the md engine
+		// specifics.
+		class MainWindow : public UI::QT::DockWidget::BaseDockWidget<MainWindow>
 		{
-			this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
+		  public:
+			inline static const QSize PREFERRED_SIZE { 500, 720 };
 
-			QWidget * screenWidget = new QWidget;
-			_layout->addWidget( screenWidget );
+		  private:
+			using EngineCollection
+				= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
+			[[maybe_unused]] QComboBox * _w_mdEngine	= nullptr;
+			[[maybe_unused]] QWidget *	 _formContainer = nullptr;
 
-			setWindowState( Qt::WindowState::WindowActive );
-			resize( PREFERRED_SIZE );
-			_screen.emplace( screenWidget, _paramaeters );
-		}
-	};
+			VTX::Tool::Mdprep::Gateway::MdParameters		  _paramaeters;
+			std::optional<VTX::Tool::Mdprep::ui::ScreenForms> _screen;
 
-	App::UI::DescAction openMdPrepAction()
-	{
-		App::UI::DescAction action;
-		action.key		= ACTION_OPEN_MDPREP;
-		action.name		= "MdPrep";
-		action.tip		= "Prepare Molecular Dynamic Simulation";
-		action.icon		= "sprite/icon_tool_mdprep_mainButton.png";
-		action.shortcut = "ctrl+alt+M";
-		return action;
-	}
+		  public:
+			MainWindow( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Molecular Dynamics Preparation" )
+			{
+				this->setWindowIcon( QIcon( ":/sprite/icon_tool_mdprep_mainButton.png" ) );
 
-	void openMdPrep()
-	{
-		static MainWindow * win			= nullptr;
-		bool				justCreated = false;
-		if ( win == nullptr )
+				QWidget * screenWidget = VTX::UI::QT::Helper::makeQObject<QWidget>( _layout->parentWidget() );
+				_layout->addWidget( screenWidget );
+
+				setWindowState( Qt::WindowState::WindowActive );
+				resize( PREFERRED_SIZE );
+				_screen.emplace( screenWidget, _paramaeters );
+			}
+		};
+
+		App::UI::DescAction openMdPrepAction()
 		{
-			auto & mainWindow = UI::QT::MAIN_WINDOW();
-			win				  = mainWindow.createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
-			justCreated		  = true;
+			App::UI::DescAction action;
+			action.key		= ACTION_OPEN_MDPREP;
+			action.name		= "MdPrep";
+			action.tip		= "Prepare Molecular Dynamic Simulation";
+			action.icon		= "sprite/icon_tool_mdprep_mainButton.png";
+			action.shortcut = "ctrl+alt+M";
+			return action;
 		}
 
-		if ( win->isHidden() or justCreated ) // A justCreated window is not hidden but we need to size it and show
-		// it properly
+		void openMdPrep()
 		{
-			win->resize( win->PREFERRED_SIZE );
-			win->show();
-			QTimer::singleShot(
-				0, [ win = win ] { win->raise(); }
-			); // The widget is not raised consistently on the same loop
+			static QPointer<MainWindow> win;
+			bool						justCreated = false;
+			if ( win.isNull() )
+			{
+				auto & mainWindow = UI::QT::MAIN_WINDOW();
+				win				  = mainWindow.createDockWidget<MainWindow>( Qt::RightDockWidgetArea );
+				justCreated		  = true;
+			}
+
+			if ( win->isHidden() or justCreated ) // A justCreated window is not hidden but we need to size it and show
+			// it properly
+			{
+				win->resize( win->PREFERRED_SIZE );
+				win->show();
+				QTimer::singleShot(
+					0, win.data(), [ win = win ] { win->raise(); }
+				); // The widget is not raised consistently on the same loop
+			}
+			else
+			{
+				win->hide();
+			}
 		}
-		else
-		{
-			win->hide();
-		}
-	}
+	} // namespace
 
 	MdPrep::MdPrep() = default;
 

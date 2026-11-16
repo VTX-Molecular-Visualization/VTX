@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_APPLICATION__
-#define __VTX_UI_QT_APPLICATION__
+#ifndef VTX_UI_QT_APPLICATION_HPP
+#define VTX_UI_QT_APPLICATION_HPP
 
 #include "QSplashScreen"
 #include "settings.hpp"
@@ -8,7 +8,8 @@
 #include <QTimer>
 #include <app/events.hpp>
 #include <app/vtx_app.hpp>
-#include <util/chrono.hpp>
+#include <memory>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT
 {
@@ -27,12 +28,12 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Destructor.
 		 */
-		~Application();
+		~Application() override;
 
 		/**
 		 * @brief Run the main loop.
 		 */
-		void start();
+		int start();
 
 		/**
 		 * @brief Exit the main loop.
@@ -42,16 +43,14 @@ namespace VTX::UI::QT
 		/**
 		 * @brief Handles exceptions in Qt event loop.
 		 */
-		bool notify( QObject * const, QEvent * const ) override;
+		bool notify( QObject *, QEvent * ) noexcept override;
 
 		/**
 		 * @brief Forward tool.
 		 */
 		template<typename T>
 		void addTool()
-		{
-			_app.addTool<T>();
-		}
+		{ _app.addTool<T>(); }
 
 	  private:
 		/**
@@ -65,26 +64,35 @@ namespace VTX::UI::QT
 		QTimer _timer;
 
 		/**
-		 * @brief Computes elapsed time and interval time between frames.
-		 */
-		VTX::Util::Chrono _durationTimer;
-
-		/**
 		 * @brief Splash screen displayed during startup.
 		 */
-		QPointer<QSplashScreen> _splashScreen;
+		std::unique_ptr<QSplashScreen> _splashScreen;
 
 		/**
 		 * @brief Init application after Qt startup (create main window, OpenGL context, etc.).
 		 */
 		void _postQtStartup();
 
+		/**
+		 * @brief Run a frame.
+		 */
+		void _scheduleFrame();
+
+		/**
+		 * @brief Stop connection.
+		 */
+		VTX::Util::EventHub::ScopedConnection _applicationStopConnection;
+
+		/**
+		 * @brief Invoke frame request on main thread.
+		 */
+		static void _onWake( void * p_application ) noexcept;
 	};
 
 	/**
 	 * @brief Get the QApplication instance.
 	 */
-	inline static QApplication * const Q_APP() { return qApp; }
+	inline static QApplication * Q_APP() { return qApp; }
 } // namespace VTX::UI::QT
 
 #endif

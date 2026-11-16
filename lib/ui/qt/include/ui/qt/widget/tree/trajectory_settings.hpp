@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_SETTINGS__
-#define __VTX_UI_QT_WIDGET_TRAJECTORY_SETTINGS__
+#ifndef VTX_UI_QT_WIDGET_TREE_TRAJECTORY_SETTINGS_HPP
+#define VTX_UI_QT_WIDGET_TREE_TRAJECTORY_SETTINGS_HPP
 
 #include <QComboBox>
 #include <QPointer>
@@ -7,6 +7,7 @@
 #include <QSpinBox>
 #include <QWidget>
 #include <app/ecs.hpp>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -21,9 +22,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 	  public:
 		explicit TrajectorySettings( Entity p_system, QWidget * p_parent = nullptr );
-		~TrajectorySettings() override;
 
-	  protected:
 		bool eventFilter( QObject * p_watched, QEvent * p_event ) override;
 
 	  private:
@@ -44,6 +43,8 @@ namespace VTX::UI::QT::Widget::Tree
 		void _onTrajectoryUpdated( Registry &, Entity p_entity );
 
 		void _refresh();
+
+		VTX::Util::EventHub::ScopedConnection _trajectoryUpdatedConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree

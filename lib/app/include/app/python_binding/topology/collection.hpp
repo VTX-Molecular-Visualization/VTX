@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION__
-#define __VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION__
+#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION_HPP
+#define VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION_HPP
 
 #include "app/helper/aabb.hpp"
 #include "app/python_binding/topology/actions.hpp"
@@ -40,7 +40,7 @@ namespace VTX::App::PythonBinding::Topology
 	inline size_t resolveIndex( const pybind11::ssize_t p_index, const size_t p_size )
 	{
 		// Python can use negative indices to access elements from the end of a collection.
-		const pybind11::ssize_t signedSize = pybind11::ssize_t( p_size );
+		const pybind11::ssize_t signedSize = static_cast<pybind11::ssize_t>( p_size );
 		const pybind11::ssize_t index	   = p_index < 0 ? signedSize + p_index : p_index;
 
 		if ( index < 0 || index >= signedSize )
@@ -48,7 +48,7 @@ namespace VTX::App::PythonBinding::Topology
 			throw pybind11::index_error( "Index out of bounds" );
 		}
 
-		return size_t( index );
+		return static_cast<size_t>( index );
 	}
 
 	/**
@@ -91,7 +91,7 @@ namespace VTX::App::PythonBinding::Topology
 	 * @brief Bind a collection of handles.
 	 */
 	template<typename T>
-	void bindCollection(
+	pybind11::class_<Collection<T>> bindCollection(
 		pybind11::module_ &				p_module,
 		const char * const				p_name,
 		const std::optional<SystemItem> p_item = std::nullopt
@@ -105,11 +105,14 @@ namespace VTX::App::PythonBinding::Topology
 		cls.def( "__len__", []( const CollectionType & p_collection ) { return p_collection.ranges.size(); } )
 			.def_property_readonly(
 				"aabb",
-				[ p_item ]( const CollectionType & p_collection )
-				{
-					return p_item ? Helper::AABB::get( p_collection.entity, *p_item, p_collection.ranges )
-								  : Helper::AABB::getBonds( p_collection.entity, p_collection.ranges );
-				}
+				synchronized(
+					[ p_item ]( const CollectionType & p_collection )
+					{
+						getTopology( p_collection.entity );
+						return p_item ? Helper::AABB::get( p_collection.entity, *p_item, p_collection.ranges )
+									  : Helper::AABB::getBonds( p_collection.entity, p_collection.ranges );
+					}
+				)
 			)
 			.def(
 				"__iter__",
@@ -154,7 +157,15 @@ namespace VTX::App::PythonBinding::Topology
 					py::arg( "selected" ) = true,
 					py::arg( "append" )	  = false
 				);
+
+			bindStyle(
+				cls,
+				[ p_item ]( const CollectionType & p_collection )
+				{ return Target { p_collection.entity, *p_item, p_collection.ranges }; }
+			);
 		}
+
+		return cls;
 	}
 } // namespace VTX::App::PythonBinding::Topology
 

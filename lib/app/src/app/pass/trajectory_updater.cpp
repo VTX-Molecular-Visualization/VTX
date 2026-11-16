@@ -1,27 +1,51 @@
 #include "app/pass/trajectory_updater.hpp"
 #include "app/events.hpp"
 #include "app/helper/trajectory.hpp"
+#include "app/pending_updates.hpp"
 #include "app/services.hpp"
 #include "app/trajectory/loader.hpp"
 #include "app/trajectory/player.hpp"
 #include <cmath>
 #include <core/struct/trajectory.hpp>
 #include <optional>
+#include <util/exceptions.hpp>
+#include <util/logger.hpp>
 #include <utility>
 
 namespace VTX::App::Pass
 {
 	TrajectoryUpdater::TrajectoryUpdater()
 	{
-		REG().on_destroy<Trajectory::Loader>().connect<&TrajectoryUpdater::_onDestroyLoader>( this );
+		_loaderDestroyedConnection
+			= REG().on_destroy<Trajectory::Loader>().connect<&TrajectoryUpdater::_onDestroyLoader>( this );
+		_playerConstructedConnection
+			= REG().on_construct<Trajectory::Player>().connect<&TrajectoryUpdater::_onPlayerChange>();
+		_playerUpdatedConnection = REG().on_update<Trajectory::Player>().connect<&TrajectoryUpdater::_onPlayerChange>();
 	}
+
+	void TrajectoryUpdater::_onPlayerChange( Registry &, Entity )
+	{ PENDING_UPDATES().mark( E_PENDING_UPDATE::TRAJECTORY ); }
 
 	TrajectoryUpdater::~TrajectoryUpdater()
 	{
-		REG().on_destroy<Trajectory::Loader>().disconnect<&TrajectoryUpdater::_onDestroyLoader>( this );
-		for ( const Entity entity : REG().view<Trajectory::Loader>() )
+		_loaderDestroyedConnection.release();
+		try
 		{
-			_stopLoader( entity );
+			for ( const Entity entity : REG().view<Trajectory::Loader>() )
+			{
+				try
+				{
+					_stopLoader( entity );
+				}
+				catch ( ... )
+				{
+					VTX_ERROR( "Failed to stop a trajectory loader during cleanup." );
+				}
+			}
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Failed to enumerate trajectory loaders during cleanup." );
 		}
 	}
 
@@ -178,77 +202,92 @@ namespace VTX::App::Pass
 		//
 		// Paused time is never accumulated, so resuming cannot skip frames to catch up with the pause duration.
 
+		Util::ExceptionCollector errors;
 		for ( const Entity entity : REG().view<Core::Struct::Trajectory, Trajectory::Player, Trajectory::Loader>() )
 		{
-			auto & player	  = REG().get<Trajectory::Player>( entity );
-			auto & loader	  = REG().get<Trajectory::Loader>( entity );
-			auto & trajectory = REG().get<Core::Struct::Trajectory>( entity );
-
-			if ( loader.mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR
-				 || loader.availableFrames.getCount() < trajectory.frameCount )
+			try
 			{
-				applyLoadedFrames( entity, trajectory, loader, player );
-			}
+				auto & player	  = REG().get<Trajectory::Player>( entity );
+				auto & loader	  = REG().get<Trajectory::Loader>( entity );
+				auto & trajectory = REG().get<Core::Struct::Trajectory>( entity );
 
-			const Trajectory::FrameRange			 availableFrames = loader.availableFrames;
-			const Trajectory::TRAJECTORY_BUFFER_MODE mode			 = loader.mode;
-
-			// Nothing available.
-			assert( not availableFrames.isEmpty() );
-
-			uint nextStep			 = player.requestedFrameIndex;
-			uint autoplayUpdateCount = 0;
-
-			// Run autoplay.
-			if ( nextStep == player.currentFrameIndex && not player.paused )
-			{
-				player.frameElapsedTime += p_delta;
-				autoplayUpdateCount = autoplayNextFrameCount( player );
-				player.player.next( autoplayUpdateCount, nextStep );
-				if ( autoplayUpdateCount > 0 )
+				if ( not player.paused )
 				{
-					player.player.increment( autoplayUpdateCount );
-					player.requestedFrameIndex = nextStep;
+					PENDING_UPDATES().mark( E_PENDING_UPDATE::TRAJECTORY );
 				}
-			}
 
-			// Patch and load next if needed.
-			if ( nextStep != player.currentFrameIndex )
-			{
-				if ( not availableFrames.contains( nextStep ) )
+				if ( loader.mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR
+					 || loader.availableFrames.getCount() < trajectory.frameCount )
 				{
-					if ( mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR )
+					applyLoadedFrames( entity, trajectory, loader, player );
+				}
+
+				const Trajectory::FrameRange			 availableFrames = loader.availableFrames;
+				const Trajectory::TRAJECTORY_BUFFER_MODE mode			 = loader.mode;
+
+				// Nothing available.
+				assert( not availableFrames.isEmpty() );
+
+				uint nextStep			 = player.requestedFrameIndex;
+				uint autoplayUpdateCount = 0;
+
+				// Run autoplay.
+				if ( nextStep == player.currentFrameIndex && not player.paused )
+				{
+					player.frameElapsedTime += p_delta;
+					autoplayUpdateCount = autoplayNextFrameCount( player );
+					player.player.next( autoplayUpdateCount, nextStep );
+					if ( autoplayUpdateCount > 0 )
 					{
-						requestFrameWindow( loader, trajectory, player, nextStep );
+						player.player.increment( autoplayUpdateCount );
+						player.requestedFrameIndex = nextStep;
 					}
+				}
+
+				// Patch and load next if needed.
+				if ( nextStep != player.currentFrameIndex )
+				{
+					if ( not availableFrames.contains( nextStep ) )
+					{
+						if ( mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR )
+						{
+							requestFrameWindow( loader, trajectory, player, nextStep );
+						}
+						continue;
+					}
+
+					REG().patch<Trajectory::Player>(
+						entity,
+						[ entity ]( Trajectory::Player & p_player )
+						{
+							if ( tryUpdateFrame( entity, p_player ) )
+							{
+								p_player.currentFrameIndex = p_player.requestedFrameIndex;
+								p_player.frameElapsedTime  = 0;
+							}
+						}
+					);
 					continue;
 				}
 
-				REG().patch<Trajectory::Player>(
-					entity,
-					[ entity ]( Trajectory::Player & p_player )
-					{
-						if ( tryUpdateFrame( entity, p_player ) )
-						{
-							p_player.currentFrameIndex = p_player.requestedFrameIndex;
-							p_player.frameElapsedTime  = 0;
-						}
-					}
-				);
-				continue;
+				// Load other frames if circular.
+				if ( mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR && not player.paused )
+				{
+					requestFrameWindow( loader, trajectory, player, player.currentFrameIndex );
+				}
+				// Stop.
+				else if ( mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR )
+				{
+					loader.thread->cancelFrameRequest();
+				}
 			}
-
-			// Load other frames if circular.
-			if ( mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR && not player.paused )
+			catch ( ... )
 			{
-				requestFrameWindow( loader, trajectory, player, player.currentFrameIndex );
-			}
-			// Stop.
-			else if ( mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR )
-			{
-				loader.thread->cancelFrameRequest();
+				errors.collect( "Trajectory update failed" );
 			}
 		}
+
+		errors.rethrow();
 	}
 
 } // namespace VTX::App::Pass

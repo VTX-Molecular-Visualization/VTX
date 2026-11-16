@@ -1,5 +1,7 @@
 #include "util/filesystem.hpp"
 #include "util/exceptions.hpp"
+#include "util/string.hpp"
+#include <algorithm>
 #include <filesystem>
 #include <fstream>
 #include <sago/platform_folders.h>
@@ -10,7 +12,7 @@
 #elif defined( __APPLE__ )
 #include <mach-o/dyld.h>
 #elif defined( __linux__ )
-#include <limits.h>
+#include <climits>
 #include <unistd.h>
 #endif
 
@@ -30,7 +32,7 @@ namespace VTX::Util::Filesystem
 		// Windows specific
 		// Partly copied from https://stackoverflow.com/questions/50889647/best-way-to-get-exe-folder-path
 		wchar_t szPath[ MAX_PATH ];
-		GetModuleFileNameW( NULL, szPath, MAX_PATH );
+		GetModuleFileNameW( nullptr, szPath, MAX_PATH );
 
 		return std::filesystem::path { szPath }; // to finish the folder path with (back)slash
 #elif defined( __APPLE__ )
@@ -54,8 +56,8 @@ namespace VTX::Util::Filesystem
 		return std::filesystem::current_path();
 #elif defined( __linux__ )
 		// Linux specific
-		char	szPath[ PATH_MAX ];
-		ssize_t len = readlink( "/proc/self/exe", szPath, sizeof( szPath ) - 1 );
+		char		  szPath[ PATH_MAX ];
+		const ssize_t len = readlink( "/proc/self/exe", szPath, sizeof( szPath ) - 1 );
 		if ( len != -1 )
 		{
 			szPath[ len ] = '\0';
@@ -96,7 +98,7 @@ namespace VTX::Util::Filesystem
 
 	FilePath getSaveGamesFolder2() { return FilePath( sago::getSaveGamesFolder2() ); }
 
-	const std::string readPath( const FilePath & p_filePath )
+	std::string readPath( const FilePath & p_filePath )
 	{
 		std::ifstream inputFile( p_filePath );
 
@@ -131,8 +133,8 @@ namespace VTX::Util::Filesystem
 
 	void generateUniqueFileName( FilePath & p_filePath )
 	{
-		FilePath parentPath = p_filePath.parent_path();
-		uint	 counter	= 2;
+		const FilePath parentPath = p_filePath.parent_path();
+		uint		   counter	  = 2;
 		while ( std::filesystem::exists( p_filePath ) )
 		{
 			p_filePath = parentPath
@@ -154,6 +156,16 @@ namespace VTX::Util::Filesystem
 		{
 			throw IOException( p_e.what() );
 		}
+	}
+
+	bool hasExtension( const FilePath & p_filePath, const std::initializer_list<std::string_view> p_extensions )
+	{
+		const std::string extension = p_filePath.extension().string();
+		return std::ranges::any_of(
+			p_extensions,
+			[ &extension ]( const std::string_view p_extension )
+			{ return String::equalsIgnoreCase( p_extension, extension ); }
+		);
 	}
 
 } // namespace VTX::Util::Filesystem

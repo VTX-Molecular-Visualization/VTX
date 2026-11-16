@@ -1,7 +1,7 @@
 #include "io/writer/chemfiles.hpp"
-#include <algorithm>
 #include <list>
 #include <map>
+#include <memory>
 #include <unordered_map>
 #include <util/exceptions.hpp>
 #include <util/string.hpp>
@@ -31,57 +31,60 @@ namespace VTX::IO::Writer
 	 * @brief data struct used by the Atom to share information with a part of its client. Only callers that knows this
 	 * definition can actually use this.
 	 */
-	struct _AtomInfo
+	struct AtomInfo
 	{
-		_Atom * dataPtr;
+		AtomImpl * dataPtr;
 	};
 
-	struct _Atom
+	struct AtomImpl
 	{
 		AtomId		externalId;
 		std::string name;
 		std::string symbol;
 	};
 
-	using AtomCollection			= std::map<AtomId, _Atom>;
-	using AtomCoordinatesCollection = std::unordered_map<const _Atom *, AtomCoordinates>;
-	using AtomPtrCollection			= std::list<const _Atom *>;
+	using AtomCollection			= std::map<AtomId, AtomImpl>;
+	using AtomCoordinatesCollection = std::unordered_map<const AtomImpl *, AtomCoordinates>;
+	using AtomPtrCollection			= std::list<const AtomImpl *>;
 
-	struct _Residue
+	struct ResidueImpl
 	{
-		int				   resid;
+		int				   resid {};
 		std::string		   symbol;
 		PropertyCollection properties;
 		AtomPtrCollection  atoms;
 	};
 
-	using ResidueCollection = std::list<_Residue>;
+	using ResidueCollection = std::list<ResidueImpl>;
 
-	struct _Chain
+	struct ChainImpl
 	{
 		std::string name;
 		std::string id;
 	};
 
-	using ChainCollection = std::list<_Chain>; // Used for constant time insertion and memory efficiency
+	using ChainCollection = std::list<ChainImpl>; // Used for constant time insertion and memory efficiency
 
-	struct _Frame
+	struct FrameImpl
 	{
 		AtomCoordinatesCollection coordinates;
 	};
 
-	using FrameCollection = std::list<_Frame>; // Used for constant time insertion and memory efficiency
+	using FrameCollection = std::list<FrameImpl>; // Used for constant time insertion and memory efficiency
 
-	struct _Bond
+	namespace
 	{
-		AtomId		 a1;
-		AtomId		 a2;
-		E_BOND_ORDER bondOrder;
-	};
+		struct Bond
+		{
+			AtomId		 a1;
+			AtomId		 a2;
+			E_BOND_ORDER bondOrder;
+		};
+	} // namespace
 
-	using BondCollection = std::list<_Bond>; // Used for constant time insertion and memory efficiency
+	using BondCollection = std::list<Bond>; // Used for constant time insertion and memory efficiency
 
-	struct _System
+	struct SystemImpl
 	{
 		PropertyCollection properties;
 		AtomCollection	   atoms;
@@ -226,11 +229,11 @@ namespace VTX::IO::Writer
 		{ cf.set( key, value ); }
 
 		template<typename T>
-		void transferProperties( T & cf, const PropertyCollection & props ) noexcept
+		void transferProperties( T & cf, const PropertyCollection & props )
 		{
-			for ( auto & prop : props )
+			for ( const auto & prop : props )
 			{
-				std::visit( [ & ]( auto v ) { setProperty<T>( cf, prop.first, v ); }, prop.second );
+				std::visit( [ & ]( const auto & v ) { setProperty<T>( cf, prop.first, v ); }, prop.second );
 			}
 		}
 
@@ -257,7 +260,7 @@ namespace VTX::IO::Writer
 			}
 		}
 
-		void writeFile( const FilePath & dest, const E_FILE_FORMATS & format, _System & system )
+		void writeFile( const FilePath & dest, SystemImpl & system )
 		{
 			// TODO I disabled the format things as chemfiles has a format guessing adequat enough
 			::chemfiles::Trajectory cf_traj( dest.string(), 'w' /*, string( format )*/ );
@@ -284,7 +287,7 @@ namespace VTX::IO::Writer
 
 					for ( auto & it_atom : it_residue.atoms )
 					{
-						AtomCoordinates		  coords = it_frame.coordinates.at( it_atom );
+						const AtomCoordinates coords = it_frame.coordinates.at( it_atom );
 						::chemfiles::Vector3D cf_coords;
 						convert( coords, cf_coords );
 						cf_frame.add_atom( ::chemfiles::Atom( it_atom->name, it_atom->symbol ), cf_coords );
@@ -319,26 +322,27 @@ namespace VTX::IO::Writer
 
 	} // namespace
 
-	class ChemfilesTrajectory::_Impl
+	class ChemfilesTrajectory::Impl
 	{
 		FilePath	   _dest;
 		E_FILE_FORMATS _format = E_FILE_FORMATS::none;
-		_System		   _system;
+		SystemImpl	   _system;
 
 	  public:
-		inline void setWriteDestination( FilePath && p_ ) noexcept { _dest = std::move( p_ ); }
+		void setWriteDestination( FilePath && p_ ) noexcept { _dest = std::move( p_ ); }
 
-		inline void setWriteFormat( E_FILE_FORMATS && p_ ) noexcept { _format = std::move( p_ ); }
+		void setWriteFormat( const E_FILE_FORMATS p_ ) noexcept { _format = p_; }
 
-		inline System system() noexcept { return _system; }
+		System system() noexcept { return _system; }
 
-		_Impl()							   = default;
-		_Impl( const _Impl & )			   = delete;
-		_Impl( _Impl && )				   = delete;
-		_Impl & operator=( const _Impl & ) = delete;
-		_Impl & operator=( _Impl && )	   = delete;
+		Impl()							 = default;
+		Impl( const Impl & )			 = delete;
+		Impl( Impl && )					 = delete;
+		Impl & operator=( const Impl & ) = delete;
+		Impl & operator=( Impl && )		 = delete;
+		~Impl()							 = default;
 
-		~_Impl()
+		void close()
 		{
 			if ( _system.frames.empty() )
 			{
@@ -354,14 +358,15 @@ namespace VTX::IO::Writer
 			// if ( _format == E_FILE_FORMATS::none )
 			//	return;
 
-			writeFile( _dest, _format, _system );
+			writeFile( _dest, _system );
+			_dest.clear();
 		}
 	};
 
 	// Atom
-	Atom::Atom( _Atom & p_ ) : _data( &p_ ) {}
+	Atom::Atom( AtomImpl & p_ ) noexcept : _data( &p_ ) {}
 
-	void Atom::get( _AtomInfo & p_out ) const noexcept { p_out = _AtomInfo { .dataPtr = _data }; }
+	void Atom::get( AtomInfo & p_out ) const noexcept { p_out = AtomInfo { .dataPtr = _data }; }
 
 	void Atom::setName( std::string name ) noexcept
 	{
@@ -382,9 +387,9 @@ namespace VTX::IO::Writer
 	}
 
 	// Residue
-	Residue::Residue( _Residue & p_ ) : _data( &p_ ) {}
+	Residue::Residue( ResidueImpl & p_ ) noexcept : _data( &p_ ) {}
 
-	void Residue::set( Property p_ ) noexcept
+	void Residue::set( const Property & p_ )
 	{
 		if ( _data == nullptr )
 		{
@@ -408,7 +413,7 @@ namespace VTX::IO::Writer
 			return;
 		}
 
-		_data->resid = std::move( p_ );
+		_data->resid = p_;
 	}
 
 	void Residue::setSymbol( std::string p_symbol ) noexcept
@@ -421,21 +426,21 @@ namespace VTX::IO::Writer
 		_data->symbol = std::move( p_symbol );
 	}
 
-	void Residue::add( Atom & p_ ) noexcept
+	void Residue::add( Atom & p_ )
 	{
 		if ( _data == nullptr )
 		{
 			return;
 		}
 
-		_AtomInfo atomInfo;
+		AtomInfo atomInfo {};
 		p_.get( atomInfo );
 
 		_data->atoms.emplace_back( atomInfo.dataPtr );
 	}
 
 	// Chain
-	Chain::Chain( _Chain & p_ ) : _data( &p_ ) {}
+	Chain::Chain( ChainImpl & p_ ) noexcept : _data( &p_ ) {}
 
 	void Chain::setName( std::string p_ ) noexcept
 	{
@@ -455,7 +460,7 @@ namespace VTX::IO::Writer
 		_data->id = std::move( p_ );
 	}
 
-	void Chain::add( Residue & p_res ) noexcept
+	void Chain::add( Residue & p_res )
 	{
 		if ( _data == nullptr )
 		{
@@ -467,16 +472,16 @@ namespace VTX::IO::Writer
 	}
 
 	// Frame
-	Frame::Frame( _Frame & p_ ) : _data( &p_ ) {}
+	Frame::Frame( FrameImpl & p_ ) noexcept : _data( &p_ ) {}
 
-	void Frame::set( const Atom & p_atom, AtomCoordinates p_atomCoordinates ) noexcept
+	void Frame::set( const Atom & p_atom, AtomCoordinates p_atomCoordinates )
 	{
 		if ( _data == nullptr )
 		{
 			return;
 		}
 
-		_AtomInfo atomInfo;
+		AtomInfo atomInfo {};
 		p_atom.get( atomInfo );
 		if ( atomInfo.dataPtr == nullptr )
 		{
@@ -485,18 +490,18 @@ namespace VTX::IO::Writer
 
 		if ( not _data->coordinates.contains( atomInfo.dataPtr ) )
 		{
-			_data->coordinates.emplace( std::make_pair( atomInfo.dataPtr, std::move( p_atomCoordinates ) ) );
+			_data->coordinates.emplace( std::make_pair( atomInfo.dataPtr, p_atomCoordinates ) );
 		}
 		else
 		{
-			_data->coordinates.at( atomInfo.dataPtr ) = std::move( p_atomCoordinates );
+			_data->coordinates.at( atomInfo.dataPtr ) = p_atomCoordinates;
 		}
 	}
 
 	// System
-	System::System( _System & p_ ) : _data( &p_ ) {}
+	System::System( SystemImpl & p_ ) noexcept : _data( &p_ ) {}
 
-	void System::set( Property p_ ) noexcept
+	void System::set( Property p_ ) const
 	{
 		if ( _data == nullptr )
 		{
@@ -512,7 +517,7 @@ namespace VTX::IO::Writer
 		}
 	}
 
-	Atom System::newAtom( AtomId p_atomId ) noexcept
+	Atom System::newAtom( const AtomId p_atomId ) const
 	{
 		if ( _data == nullptr )
 		{
@@ -520,7 +525,7 @@ namespace VTX::IO::Writer
 		}
 		if ( not _data->atoms.contains( p_atomId ) )
 		{
-			_data->atoms.emplace( std::make_pair( p_atomId, _Atom { .externalId = p_atomId } ) );
+			_data->atoms.emplace( std::make_pair( p_atomId, AtomImpl { .externalId = p_atomId } ) );
 		}
 
 		return Atom( _data->atoms.at( p_atomId ) );
@@ -532,7 +537,7 @@ namespace VTX::IO::Writer
 		{ throw VTXException( "Couldn't create bond because atom <{}> wasn't declared", atom.value ); }
 	} // namespace
 
-	void System::bind( const AtomId & p_l, const AtomId & p_r, E_BOND_ORDER p_bondOrder )
+	void System::bind( const AtomId & p_l, const AtomId & p_r, const E_BOND_ORDER p_bondOrder ) const
 	{
 		if ( _data == nullptr )
 		{
@@ -549,10 +554,10 @@ namespace VTX::IO::Writer
 			vtxBondThrow( p_r );
 		}
 
-		_data->bonds.emplace_back( _Bond { .a1 = p_l, .a2 = p_r, .bondOrder = std::move( p_bondOrder ) } );
+		_data->bonds.emplace_back( Bond { .a1 = p_l, .a2 = p_r, .bondOrder = p_bondOrder } );
 	}
 
-	Chain System::newChain() noexcept
+	Chain System::newChain() const
 	{
 		if ( _data == nullptr )
 		{
@@ -562,7 +567,7 @@ namespace VTX::IO::Writer
 		return Chain( _data->chains.back() );
 	}
 
-	Residue System::newResidue() noexcept
+	Residue System::newResidue() const
 	{
 		if ( _data == nullptr )
 		{
@@ -572,7 +577,7 @@ namespace VTX::IO::Writer
 		return Residue( _data->residues.back() );
 	}
 
-	Frame System::newFrame() noexcept
+	Frame System::newFrame() const
 	{
 		if ( _data == nullptr )
 		{
@@ -583,22 +588,23 @@ namespace VTX::IO::Writer
 		return Frame( _data->frames.back() );
 	}
 
-	bool System::fetch( Atom & p_out, const AtomId & id ) noexcept
+	bool System::fetch( Atom & p_out, const AtomId & id ) const noexcept
 	{
 		if ( _data == nullptr )
 		{
 			return false;
 		}
 
-		if ( _data->atoms.contains( id ) )
+		const auto it = _data->atoms.find( id );
+		if ( it != _data->atoms.end() )
 		{
-			p_out = Atom( _data->atoms.at( id ) );
+			p_out = Atom( it->second );
 			return true;
 		}
 		return false;
 	}
 
-	bool System::fetch( Frame & p_out, const size_t & p_index ) noexcept
+	bool System::fetch( Frame & p_out, const size_t & p_index ) const noexcept
 	{
 		if ( _data == nullptr )
 		{
@@ -616,13 +622,16 @@ namespace VTX::IO::Writer
 
 	// Pimpl pattern method forwarding vv
 
-	void ChemfilesTrajectory::Del::operator()( ChemfilesTrajectory::_Impl * p_ ) noexcept { delete p_; }
+	void ChemfilesTrajectory::Del::operator()( ChemfilesTrajectory::Impl * const p_ ) noexcept
+	{ std::default_delete<ChemfilesTrajectory::Impl> {}( p_ ); }
 
-	ChemfilesTrajectory::ChemfilesTrajectory() : _( new _Impl ) {}
+	ChemfilesTrajectory::ChemfilesTrajectory() : _( new Impl ) {}
+
+	void ChemfilesTrajectory::close() { _->close(); }
 
 	void ChemfilesTrajectory::setWriteDestination( FilePath p_ ) noexcept { _->setWriteDestination( std::move( p_ ) ); }
 
-	void ChemfilesTrajectory::setWriteFormat( E_FILE_FORMATS p_ ) noexcept { _->setWriteFormat( std::move( p_ ) ); }
+	void ChemfilesTrajectory::setWriteFormat( const E_FILE_FORMATS p_ ) noexcept { _->setWriteFormat( p_ ); }
 
 	System ChemfilesTrajectory::system() noexcept { return _->system(); }
 

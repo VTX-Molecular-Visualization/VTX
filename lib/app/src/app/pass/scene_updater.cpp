@@ -1,4 +1,5 @@
 #include "app/pass/scene_updater.hpp"
+#include "app/helper/aabb.hpp"
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
 #include "app/services.hpp"
@@ -16,30 +17,28 @@ namespace VTX::App::Pass
 		auto & reg = REG();
 
 		// Update functions.
-		reg.on_update<Util::Math::AABB>().connect<&SceneUpdater::_onUpdateAABB>( this );
-		reg.on_update<Util::Math::Transform>().connect<&SceneUpdater::_onUpdateTransform>( this );
-		reg.on_destroy<Core::Struct::Topology>().connect<&SceneUpdater::_onSceneItemDestroy>( this );
-		reg.on_destroy<Core::Struct::Mesh>().connect<&SceneUpdater::_onSceneItemDestroy>( this );
+		_transformUpdatedConnection
+			= reg.on_update<Util::Math::Transform>().connect<&SceneUpdater::_onUpdateTransform>( this );
+		_systemDestroyedConnection
+			= reg.on_destroy<Core::Struct::Topology>().connect<&SceneUpdater::_onSceneItemDestroy>( this );
+		_meshDestroyedConnection
+			= reg.on_destroy<Core::Struct::Mesh>().connect<&SceneUpdater::_onSceneItemDestroy>( this );
 		// TODO: Keep only construct and use custom event to update each value at once.
-		reg.on_construct<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
-		reg.on_update<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
-		reg.on_construct<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
-		reg.on_update<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
+		_graphicsConfigConstructedConnection
+			= reg.on_construct<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
+		_graphicsConfigUpdatedConnection
+			= reg.on_update<Scene::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfig>( this );
+		_colorLayoutConstructedConnection
+			= reg.on_construct<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
+		_colorLayoutUpdatedConnection
+			= reg.on_update<Scene::ColorLayout>().connect<&SceneUpdater::_onUpdateColorLayout>( this );
 
-		reg.on_update<Renderer::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfigPreset>( this );
-		reg.on_update<Renderer::Color::Layout>().connect<&SceneUpdater::_onUpdateColorLayoutPreset>( this );
-		reg.on_update<Setting::Accessibility>().connect<&SceneUpdater::_onUpdateAccessibility>( this );
-	}
-
-	void SceneUpdater::_onUpdateAABB( Registry & p_r, Entity p_e )
-	{
-		// TODO: use event instead of this.
-		if ( p_e == _entity )
-		{
-			return;
-		}
-
-		_recomputeSceneAABB( p_r );
+		_graphicsConfigPresetUpdatedConnection
+			= reg.on_update<Renderer::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfigPreset>( this );
+		_colorLayoutPresetUpdatedConnection
+			= reg.on_update<Renderer::Color::Layout>().connect<&SceneUpdater::_onUpdateColorLayoutPreset>( this );
+		_accessibilityUpdatedConnection
+			= reg.on_update<Setting::Accessibility>().connect<&SceneUpdater::_onUpdateAccessibility>( this );
 	}
 
 	void SceneUpdater::_onUpdateTransform( Registry & p_r, Entity p_e )
@@ -51,47 +50,11 @@ namespace VTX::App::Pass
 
 		if ( isSceneItem )
 		{
-			_recomputeSceneAABB( p_r );
+			Helper::AABB::invalidateScene();
 		}
 	}
 
-	void SceneUpdater::_onSceneItemDestroy( Registry & p_r, Entity p_e ) { _recomputeSceneAABB( p_r, p_e ); }
-
-	// TODO: remove p_excluded and use custom event to trigger after deletion.
-	void SceneUpdater::_recomputeSceneAABB( Registry & p_r, Entity p_excluded )
-	{
-		p_r.patch<Util::Math::AABB>(
-			_entity,
-			[ &p_r, p_excluded ]( Util::Math::AABB & p_sceneAABB )
-			{
-				p_sceneAABB.invalidate();
-
-				auto systems = p_r.view<Core::Struct::Topology, Util::Math::AABB, Util::Math::Transform>();
-				for ( const Entity system : systems )
-				{
-					if ( system == p_excluded )
-					{
-						continue;
-					}
-
-					const auto & [ aabb, transform ] = systems.get<Util::Math::AABB, Util::Math::Transform>( system );
-					p_sceneAABB.extend( aabb.transformed( transform ) );
-				}
-
-				auto meshes = p_r.view<Core::Struct::Mesh, Util::Math::AABB, Util::Math::Transform>();
-				for ( const Entity mesh : meshes )
-				{
-					if ( mesh == p_excluded )
-					{
-						continue;
-					}
-
-					const auto & [ aabb, transform ] = meshes.get<Util::Math::AABB, Util::Math::Transform>( mesh );
-					p_sceneAABB.extend( aabb.transformed( transform ) );
-				}
-			}
-		);
-	}
+	void SceneUpdater::_onSceneItemDestroy( Registry &, Entity ) { Helper::AABB::invalidateScene(); }
 
 	void SceneUpdater::_onUpdateGraphicsConfig( Registry & p_r, Entity )
 	{

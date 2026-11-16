@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_PYTHON_EDITOR__
-#define __VTX_UI_QT_DOCK_WIDGET_PYTHON_EDITOR__
+#ifndef VTX_UI_QT_DOCK_WIDGET_PYTHON_EDITOR_HPP
+#define VTX_UI_QT_DOCK_WIDGET_PYTHON_EDITOR_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/events.hpp"
@@ -8,6 +8,7 @@
 #include <QPointer>
 #include <QRegularExpression>
 #include <QSyntaxHighlighter>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -23,11 +24,11 @@ namespace VTX::UI::QT::DockWidget
 			keyword.setForeground( QColor( "#569CD6" ) );
 			keyword.setFontWeight( QFont::Bold );
 
-			QStringList keywords
+			const QStringList keywords
 				= { "def",	  "class", "import",  "from",	"if",	"elif", "else", "for",	 "and",	 "or", "while",
 					"return", "try",   "require", "except", "with", "as",	"True", "False", "None", "vtx" };
 
-			for ( auto & k : keywords )
+			for ( const auto & k : keywords )
 			{
 				_rules.emplace_back( "\\b" + k + "\\b", keyword );
 			}
@@ -64,11 +65,10 @@ namespace VTX::UI::QT::DockWidget
 	/**
 	 * @brief Python script editor.
 	 */
-	class PythonEditor : public BaseDockWidget<PythonEditor, 1, 1>
+	class PythonEditor : public BaseDockWidget<PythonEditor, true, true>
 	{
 	  public:
-		PythonEditor( QWidget * const p_parent );
-		~PythonEditor() override;
+		PythonEditor( QWidget * p_parent );
 
 	  private:
 		/**
@@ -93,6 +93,8 @@ namespace VTX::UI::QT::DockWidget
 
 		void _onScriptSelected( const Events::ScriptSelected & p_event );
 		void _saveAndRun();
+
+		VTX::Util::EventHub::ScopedConnection _scriptSelectedConnection;
 	};
 } // namespace VTX::UI::QT::DockWidget
 

@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_MATERIAL__
-#define __VTX_RENDERER_MATERIAL__
+#ifndef VTX_RENDERER_MATERIAL_HPP
+#define VTX_RENDERER_MATERIAL_HPP
 
 #include <cstddef>
 #include <optional>
@@ -67,22 +67,29 @@ namespace VTX::Renderer
 
 		uint32_t textureMask() const noexcept
 		{
-			return ( uint32_t( albedoTexture.has_value() ) << uint8_t( E_TEXTURE::ALBEDO ) )
-				   | ( uint32_t( normalTexture.has_value() ) << uint8_t( E_TEXTURE::NORMAL ) )
-				   | ( uint32_t( metallicTexture.has_value() ) << uint8_t( E_TEXTURE::METALLIC ) )
-				   | ( uint32_t( roughnessTexture.has_value() ) << uint8_t( E_TEXTURE::ROUGHNESS ) )
-				   | ( uint32_t( ambientOcclusionTexture.has_value() ) << uint8_t( E_TEXTURE::AMBIENT_OCCLUSION ) )
-				   | ( uint32_t( emissiveTexture.has_value() ) << uint8_t( E_TEXTURE::EMISSIVE ) );
+			return ( static_cast<uint32_t>( albedoTexture.has_value() ) << static_cast<uint8_t>( E_TEXTURE::ALBEDO ) )
+				   | ( static_cast<uint32_t>( normalTexture.has_value() ) << static_cast<uint8_t>( E_TEXTURE::NORMAL ) )
+				   | ( static_cast<uint32_t>( metallicTexture.has_value() )
+					   << static_cast<uint8_t>( E_TEXTURE::METALLIC ) )
+				   | ( static_cast<uint32_t>( roughnessTexture.has_value() )
+					   << static_cast<uint8_t>( E_TEXTURE::ROUGHNESS ) )
+				   | ( static_cast<uint32_t>( ambientOcclusionTexture.has_value() )
+					   << static_cast<uint8_t>( E_TEXTURE::AMBIENT_OCCLUSION ) )
+				   | ( static_cast<uint32_t>( emissiveTexture.has_value() )
+					   << static_cast<uint8_t>( E_TEXTURE::EMISSIVE ) );
 		}
 	};
 
 	namespace Materials
 	{
-		inline const Material DEFAULT { .name = "Default" };
-		inline const Material MATTE { .name = "Matte", .metallic = 0.f, .roughness = 0.9f };
-		inline const Material PLASTIC { .name = "Plastic", .metallic = 0.f, .roughness = 0.35f };
-		inline const Material POLISHED_METAL { .name = "Polished metal", .metallic = 1.f, .roughness = 0.1f };
-		inline const Material BRUSHED_METAL { .name = "Brushed metal", .metallic = 1.f, .roughness = 0.55f };
+		inline constexpr auto DEFAULT = [] { return Material { .name = "Default" }; };
+		inline constexpr auto MATTE	  = [] { return Material { .name = "Matte", .metallic = 0.f, .roughness = 0.9f }; };
+		inline constexpr auto PLASTIC
+			= [] { return Material { .name = "Plastic", .metallic = 0.f, .roughness = 0.35f }; };
+		inline constexpr auto POLISHED_METAL
+			= [] { return Material { .name = "Polished metal", .metallic = 1.f, .roughness = 0.1f }; };
+		inline constexpr auto BRUSHED_METAL
+			= [] { return Material { .name = "Brushed metal", .metallic = 1.f, .roughness = 0.55f }; };
 	} // namespace Materials
 } // namespace VTX::Renderer
 

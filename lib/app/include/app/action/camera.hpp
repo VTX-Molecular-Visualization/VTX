@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_CAMERA__
-#define __VTX_APP_ACTION_CAMERA__
+#ifndef VTX_APP_ACTION_CAMERA_HPP
+#define VTX_APP_ACTION_CAMERA_HPP
 
 #include "app/controller/animation.hpp"
 #include "app/controller/freefly.hpp"
@@ -8,6 +8,7 @@
 #include "app/events.hpp"
 #include "app/scene/viewpoint.hpp"
 #include "app/services.hpp"
+#include <cstdint>
 #include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
 #include <util/math/aabb.hpp>
@@ -37,7 +38,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct SetFov
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -45,7 +46,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct SetNearClip
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -53,7 +54,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct SetFarClip
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -88,10 +89,12 @@ namespace VTX::App::Action::Camera
 		 * @brief Orient on current selection, or scene AABB if no selection.
 		 */
 		void execute();
+		void execute( float p_duration );
 		/**
 		 * @brief Orient on given AABB.
 		 */
 		void execute( const Util::Math::AABB & p_target );
+		void execute( const Util::Math::AABB & p_target, float p_duration );
 	};
 
 	/**
@@ -99,7 +102,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct StraightTravel
 	{
-		void execute( const Vec3f & p_position, const Quatf & p_rotation, const float p_duration );
+		void execute( const Vec3f & p_position, const Quatf & p_rotation, float p_duration );
 	};
 
 	/**
@@ -115,7 +118,7 @@ namespace VTX::App::Action::Camera
 	/**
 	 * @brief Available camera interpolators.
 	 */
-	enum struct E_CAMERA_INTERPOLATOR
+	enum struct E_CAMERA_INTERPOLATOR : uint8_t
 	{
 		LINEAR,
 		EASE_IN_OUT
@@ -127,17 +130,13 @@ namespace VTX::App::Action::Camera
 	template<E_CAMERA_INTERPOLATOR I = E_CAMERA_INTERPOLATOR::EASE_IN_OUT>
 	struct Animate
 	{
-		void execute(
-			const Vec3f & p_position,
-			const Quatf & p_rotation,
-			const float	  p_duration = ANIMATION_DURATION_DEFAULT_MS
-		)
+		void execute( const Vec3f & p_position,
+					  const Quatf & p_rotation,
+					  const float	p_duration = ANIMATION_DURATION_DEFAULT_MS )
 		{ execute( App::Controller::AnimationData { p_position, p_rotation }, p_duration ); }
 
-		void execute(
-			const App::Controller::AnimationData & p_end,
-			const float							   p_duration = ANIMATION_DURATION_DEFAULT_MS
-		)
+		void execute( const App::Controller::AnimationData & p_end,
+					  const float							 p_duration = ANIMATION_DURATION_DEFAULT_MS )
 		{
 			using namespace Util;
 			using namespace App::Controller;
@@ -145,15 +144,22 @@ namespace VTX::App::Action::Camera
 			const auto [ entCamera, _, transform ]
 				= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
 
-			AnimationData	   start { transform.getPosition(), transform.getRotation() };
-			InterpPositionFunc interpPositionFunc = nullptr;
-			InterpRotationFunc interpRotationFunc = nullptr;
+			const AnimationData start { transform.getPosition(), transform.getRotation() };
+			InterpPositionFunc	interpPositionFunc = nullptr;
+			InterpRotationFunc	interpRotationFunc = nullptr;
+
+			if ( p_duration <= 0.f )
+			{
+				transform.setPosition( p_end.position );
+				transform.setRotation( p_end.rotation );
+				HUB().trigger<Events::CameraTransformChange>();
+				return;
+			}
 
 			// Check if animation is needed.
 			if ( Math::distance( start.position, p_end.position ) < ANIMATION_TRANSLATION_THRESHOLD
 				 && start.rotation == p_end.rotation )
 			{
-				// HUB().trigger<Events::CameraAnimationEnd>();
 				return;
 			}
 
@@ -175,8 +181,7 @@ namespace VTX::App::Action::Camera
 
 			// Run animation.
 			HUB().trigger<Events::CameraAnimationStart>(
-				start, p_end, p_duration, interpPositionFunc, interpRotationFunc
-			);
+				start, p_end, p_duration, interpPositionFunc, interpRotationFunc );
 		}
 	};
 
@@ -198,7 +203,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct SetViewPointPosition
 	{
-		void execute( const Entity, const Vec3f & );
+		void execute( Entity, const Vec3f & );
 	};
 
 	/**
@@ -206,7 +211,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct SetViewPointRotation
 	{
-		void execute( const Entity, const Quatf & );
+		void execute( Entity, const Quatf & );
 	};
 
 	/**
@@ -214,7 +219,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct UpdateViewPointFromCamera
 	{
-		void execute( const Entity );
+		void execute( Entity );
 	};
 
 	/**
@@ -222,7 +227,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct RenameViewPoint
 	{
-		void execute( const Entity, const std::string_view );
+		void execute( Entity, std::string_view );
 	};
 
 	/**
@@ -230,7 +235,7 @@ namespace VTX::App::Action::Camera
 	 */
 	struct DeleteViewPoint
 	{
-		void execute( const Entity );
+		void execute( Entity );
 	};
 
 	/**
@@ -238,7 +243,8 @@ namespace VTX::App::Action::Camera
 	 */
 	struct GoToViewPoint
 	{
-		void execute( const Entity );
+		void execute( Entity );
+		void execute( Entity, float );
 	};
 
 } // namespace VTX::App::Action::Camera

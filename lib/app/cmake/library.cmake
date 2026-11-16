@@ -1,7 +1,11 @@
 # Lib.
 add_library(vtx_app)
 add_library(vtx_app::vtx_app ALIAS vtx_app)
-vtx_configure_target(vtx_app)
+if (VTX_PYTHON_BINDING)
+	vtx_configure_target(vtx_app PCH "${CMAKE_CURRENT_LIST_DIR}/vtx_app_pch.hpp")
+else()
+	vtx_configure_target(vtx_app)
+endif()
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
@@ -12,11 +16,13 @@ target_sources(vtx_app
 	PRIVATE FILE_SET vendors_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor" FILES ${HEADERS_VENDORS}
 )
 
+target_include_directories(vtx_app SYSTEM PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor")
+
 # Tests.
 file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*.cpp")
 add_executable(vtx_app_test ${SOURCES_TEST})
 set_property(TARGET vtx_app_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_app_test)
+vtx_configure_target(vtx_app_test NO_LINTER)
 
 target_link_libraries(vtx_app PUBLIC vtx_util::vtx_util)
 target_link_libraries(vtx_app PUBLIC vtx_core::vtx_core)

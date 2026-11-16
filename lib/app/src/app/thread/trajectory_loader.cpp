@@ -1,4 +1,6 @@
 #include "app/thread/trajectory_loader.hpp"
+#include "app/pending_updates.hpp"
+#include "app/services.hpp"
 #include <fmt/format.h>
 #include <util/logger.hpp>
 #include <utility>
@@ -15,8 +17,8 @@ namespace VTX::App::Thread
 
 	void TrajectoryLoader::start()
 	{
-		BaseThread::_start( [ this ]( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread )
-							{ return _run( std::move( p_stopToken ), p_thread ); } );
+		BaseThread::_start( [ this ]( const Util::Thread::StopToken & p_stopToken, Util::Thread::BaseThread & p_thread )
+							{ return _run( p_stopToken, p_thread ); } );
 	}
 
 	void TrajectoryLoader::stop()
@@ -102,16 +104,18 @@ namespace VTX::App::Thread
 		return frame;
 	}
 
-	uint TrajectoryLoader::_run( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread )
+	uint TrajectoryLoader::_run( const Util::Thread::StopToken & p_stopToken, Util::Thread::BaseThread & p_thread )
 	{
 		_reader.set( p_stopToken );
 
-		return _mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR
-				   ? _loadCircularBuffer( std::move( p_stopToken ), p_thread )
-				   : _loadFullBuffer( std::move( p_stopToken ), p_thread );
+		return _mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR ? _loadCircularBuffer( p_stopToken, p_thread )
+																	 : _loadFullBuffer( p_stopToken, p_thread );
 	}
 
-	uint TrajectoryLoader::_loadFullBuffer( Util::Thread::StopToken p_stopToken, Util::Thread::BaseThread & p_thread )
+	uint TrajectoryLoader::_loadFullBuffer(
+		const Util::Thread::StopToken & p_stopToken,
+		Util::Thread::BaseThread &		p_thread
+	)
 	{
 		p_thread.setProgressText( "Reading trajectory ..." );
 		const size_t frameCount = _reader.frameCount();
@@ -139,6 +143,7 @@ namespace VTX::App::Thread
 				_loadedFrames->availableFrames = Trajectory::FrameRange::fromFirstCount( 0, frameIndex + 1 );
 			}
 
+			PENDING_UPDATES().mark( E_PENDING_UPDATE::TRAJECTORY );
 			VTX_DEBUG( "Trajectory frame {} loaded", frameIndex );
 			p_thread.setProgress( static_cast<float>( frameIndex + 1 ) / static_cast<float>( frameCount ) );
 		}
@@ -146,8 +151,8 @@ namespace VTX::App::Thread
 	}
 
 	uint TrajectoryLoader::_loadCircularBuffer(
-		Util::Thread::StopToken	   p_stopToken,
-		Util::Thread::BaseThread & p_thread
+		const Util::Thread::StopToken & p_stopToken,
+		Util::Thread::BaseThread &		p_thread
 	)
 	{
 		p_thread.setProgressText( "Reading trajectory ..." );
@@ -156,7 +161,7 @@ namespace VTX::App::Thread
 		{
 			Trajectory::FrameRange				  requestedFrameWindow;
 			Trajectory::FrameRange				  availableFrames;
-			Trajectory::TRAJECTORY_READ_DIRECTION direction;
+			Trajectory::TRAJECTORY_READ_DIRECTION direction = Trajectory::TRAJECTORY_READ_DIRECTION::FORWARD;
 			uint64_t							  currentRequestVersion = 0;
 			{
 				std::unique_lock lock( _frameMutex );
@@ -239,6 +244,7 @@ namespace VTX::App::Thread
 				_loadedFrames = std::move( loadedBatch );
 				_requestedFrames.reset();
 			}
+			PENDING_UPDATES().mark( E_PENDING_UPDATE::TRAJECTORY );
 		}
 
 		return 0;

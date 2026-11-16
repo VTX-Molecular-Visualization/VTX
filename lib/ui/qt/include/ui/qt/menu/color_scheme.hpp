@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_MENU_COLOR_SCHEME__
-#define __VTX_UI_QT_MENU_COLOR_SCHEME__
+#ifndef VTX_UI_QT_MENU_COLOR_SCHEME_HPP
+#define VTX_UI_QT_MENU_COLOR_SCHEME_HPP
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
@@ -24,21 +24,20 @@ namespace VTX::UI::QT::Menu
 	  public:
 		struct Selected
 		{
-			Renderer::E_COLOR_SCHEME			scheme;
+			Renderer::E_COLOR_SCHEME			scheme {};
 			std::optional<Renderer::ColorIndex> index = std::nullopt;
 		};
 
 		struct SecondaryStructureSelected
 		{
-			Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE scheme;
+			Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE scheme {};
 			std::optional<Renderer::ColorIndex>			 index = std::nullopt;
 		};
 
-		ColorScheme(
-			QWidget *														  p_parent,
-			const std::optional<Renderer::E_COLOR_SCHEME>					  p_scheme					 = std::nullopt,
-			const std::optional<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE> p_secondaryStructureScheme = std::nullopt
-		) : BaseWidget( p_parent )
+		ColorScheme( QWidget * const												   p_parent,
+					 const std::optional<Renderer::E_COLOR_SCHEME>					   p_scheme = std::nullopt,
+					 const std::optional<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE> p_secondaryStructureScheme
+					 = std::nullopt ) : BaseWidget( p_parent )
 		{
 			using namespace Renderer;
 
@@ -54,8 +53,7 @@ namespace VTX::UI::QT::Menu
 
 							   const QString &					   p_label,
 							   const Selected &					   p_data,
-							   const std::optional<E_COLOR_SCHEME> p_currentScheme
-						   )
+							   const std::optional<E_COLOR_SCHEME> p_currentScheme )
 			{
 				QAction * a = QMenu::addAction( p_label );
 				if ( p_currentScheme )
@@ -76,7 +74,7 @@ namespace VTX::UI::QT::Menu
 				auto * subMenu = QMenu::addMenu( p_label );
 				for ( ColorIndex i = 0; i < Color::LAYOUT_COUNT_CUSTOM; ++i )
 				{
-					auto * wa	= new QWidgetAction( subMenu );
+					auto * wa	= Helper::makeQObject<QWidgetAction>( subMenu );
 					auto * item = new ColorItem( QT::Helper::toQColor( colorlayout.getCustomColor( i ) ) );
 					item->setMinimumSize( 120, 24 );
 					const Selected selected = { p_scheme, static_cast<ColorIndex>( Color::LAYOUT_OFFSET_CUSTOM + i ) };
@@ -95,11 +93,9 @@ namespace VTX::UI::QT::Menu
 				QMenu::addSection( "Secondary structure" );
 
 				auto addSecondaryStructureSubItem
-					= [ this ](
-						  const QString &										  p_label,
-						  const E_COLOR_SCHEME_SECONDARY_STRUCTURE				  p_scheme,
-						  const std::optional<E_COLOR_SCHEME_SECONDARY_STRUCTURE> p_currentScheme
-					  )
+					= [ this ]( const QString &											p_label,
+								const E_COLOR_SCHEME_SECONDARY_STRUCTURE				p_scheme,
+								const std::optional<E_COLOR_SCHEME_SECONDARY_STRUCTURE> p_currentScheme )
 				{
 					QAction * a = QMenu::addAction( p_label );
 					if ( p_currentScheme )
@@ -107,41 +103,34 @@ namespace VTX::UI::QT::Menu
 						a->setCheckable( true );
 						a->setChecked( *p_currentScheme == p_scheme );
 					}
-					connect(
-						a,
-						&QAction::triggered,
-						this,
-						[ this, p_scheme ]()
-						{ emit secondaryStructureSelected( SecondaryStructureSelected { p_scheme } ); }
-					);
+					connect( a,
+							 &QAction::triggered,
+							 this,
+							 [ this, p_scheme ]()
+							 { emit secondaryStructureSelected( SecondaryStructureSelected { p_scheme } ); } );
 				};
 
 				addSecondaryStructureSubItem(
-					"Type", E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE, p_secondaryStructureScheme
-				);
+					"Type", E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE, p_secondaryStructureScheme );
 				addSecondaryStructureSubItem(
-					"Chain", E_COLOR_SCHEME_SECONDARY_STRUCTURE::CHAIN, p_secondaryStructureScheme
-				);
+					"Chain", E_COLOR_SCHEME_SECONDARY_STRUCTURE::CHAIN, p_secondaryStructureScheme );
 				addSecondaryStructureSubItem(
-					"Residue", E_COLOR_SCHEME_SECONDARY_STRUCTURE::RESIDUE, p_secondaryStructureScheme
-				);
+					"Residue", E_COLOR_SCHEME_SECONDARY_STRUCTURE::RESIDUE, p_secondaryStructureScheme );
 
 				auto * const customSecondaryStructureMenu = QMenu::addMenu( "Custom" );
 				for ( ColorIndex i = 0; i < Color::LAYOUT_COUNT_CUSTOM; ++i )
 				{
-					auto * wa	= new QWidgetAction( customSecondaryStructureMenu );
+					auto * wa	= Helper::makeQObject<QWidgetAction>( customSecondaryStructureMenu );
 					auto * item = new ColorItem( QT::Helper::toQColor( colorlayout.getCustomColor( i ) ) );
 					item->setMinimumSize( 120, 24 );
 					const SecondaryStructureSelected selected
 						= { E_COLOR_SCHEME_SECONDARY_STRUCTURE::CUSTOM,
 							static_cast<ColorIndex>( Color::LAYOUT_OFFSET_CUSTOM + i ) };
 					wa->setDefaultWidget( item );
-					connect(
-						wa,
-						&QAction::triggered,
-						this,
-						[ this, selected ]() { emit this->secondaryStructureSelected( selected ); }
-					);
+					connect( wa,
+							 &QAction::triggered,
+							 this,
+							 [ this, selected ]() { emit this->secondaryStructureSelected( selected ); } );
 					customSecondaryStructureMenu->addAction( wa );
 				}
 			}
@@ -158,10 +147,8 @@ namespace VTX::UI::QT::Menu
 		class ColorItem : public QWidget
 		{
 		  public:
-			ColorItem( const QColor & c, QWidget * parent = nullptr ) : QWidget( parent ), _color( c )
-			{
-				setMinimumHeight( 24 );
-			}
+			ColorItem( const QColor & c, QWidget * const parent = nullptr ) : QWidget( parent ), _color( c )
+			{ setMinimumHeight( 24 ); }
 
 		  protected:
 			void paintEvent( QPaintEvent * ) override

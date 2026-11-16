@@ -1,11 +1,13 @@
-#ifndef __VTX_RENDERER_CONTEXT_EXECUTOR_OPENGL45__
-#define __VTX_RENDERER_CONTEXT_EXECUTOR_OPENGL45__
+#ifndef VTX_RENDERER_CONTEXT_EXECUTOR_OPENGL_HPP
+#define VTX_RENDERER_CONTEXT_EXECUTOR_OPENGL_HPP
 
 #include "renderer/context/backend/gl/debug.hpp"
 #include "renderer/context/backend/opengl.hpp"
 #include "renderer/context/command_buffer.hpp"
+#include <util/constants.hpp>
 #include <util/hashing.hpp>
 #include <util/type_traits.hpp>
+#include <utility>
 
 namespace VTX::Renderer::Context::Executor
 {
@@ -33,6 +35,9 @@ namespace VTX::Renderer::Context::Executor
 		void execute( const PayloadBeginPass & p_payload ) const noexcept
 		{
 			using namespace Desc;
+
+			assert( p_payload.width <= static_cast<uint32_t>( TypeMax<GLsizei> ) );
+			assert( p_payload.height <= static_cast<uint32_t>( TypeMax<GLsizei> ) );
 
 			// Bind framebuffer.
 			_backend.framebuffer( p_payload.framebuffer ).bind();
@@ -104,15 +109,15 @@ namespace VTX::Renderer::Context::Executor
 		void execute( const PayloadDraw & p_payload ) const noexcept
 		{
 			assert( p_payload.count > 0 );
+			assert( p_payload.first <= static_cast<uint64_t>( TypeMax<GLint> ) );
+			assert( p_payload.count <= static_cast<uint64_t>( TypeMax<GLsizei> ) );
 
 			_backend.vertexArray( p_payload.pipeline ).bind();
 			_backend.program( p_payload.program ).use();
 			_backend.vertexArray( p_payload.pipeline )
-				.drawArrays(
-					_toGL( p_payload.primitive ),
-					static_cast<uint32_t>( p_payload.first ),
-					static_cast<uint32_t>( p_payload.count )
-				);
+				.drawArrays( _toGL( p_payload.primitive ),
+							 static_cast<GLint>( p_payload.first ),
+							 static_cast<GLsizei>( p_payload.count ) );
 
 			_dumpGLError();
 		}
@@ -120,18 +125,19 @@ namespace VTX::Renderer::Context::Executor
 		void execute( const PayloadDrawIndexed & p_payload ) const noexcept
 		{
 			assert( p_payload.count > 0 );
+			assert( p_payload.count <= static_cast<uint64_t>( TypeMax<GLsizei> ) );
+			assert( p_payload.first <= TypeMax<uintptr_t> / sizeof( uint32_t ) );
 
-			auto & vao = _backend.vertexArray( p_payload.pipeline );
+			const auto & vao = _backend.vertexArray( p_payload.pipeline );
 			vao.bind();
 			vao.bindElementBuffer( _backend.buffer( p_payload.indexBuffer ) );
 			_backend.program( p_payload.program ).use();
 			_backend.vertexArray( p_payload.pipeline )
 				.drawElements(
 					_toGL( p_payload.primitive ),
-					static_cast<uint32_t>( p_payload.count ),
+					static_cast<GLsizei>( p_payload.count ),
 					GL_UNSIGNED_INT,
-					reinterpret_cast<const void *>( uintptr_t( p_payload.first * sizeof( uint32_t ) ) )
-				);
+					reinterpret_cast<const void *>( static_cast<uintptr_t>( p_payload.first * sizeof( uint32_t ) ) ) );
 
 			_dumpGLError();
 		}
@@ -154,11 +160,10 @@ namespace VTX::Renderer::Context::Executor
 			_backend.vertexArray( p_payload.pipeline )
 				.multiDrawArraysIndirectCount(
 					_toGL( p_payload.primitive ),
-					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
+					reinterpret_cast<const void *>( static_cast<uintptr_t>( p_payload.commandOffset ) ),
 					p_payload.countOffset,
 					drawCapacity,
-					static_cast<GLsizei>( p_payload.commandStride )
-				);
+					static_cast<GLsizei>( p_payload.commandStride ) );
 
 			_dumpGLError();
 		}
@@ -182,11 +187,10 @@ namespace VTX::Renderer::Context::Executor
 			_backend.vertexArray( p_payload.pipeline )
 				.multiDrawArraysIndirectCount(
 					_toGL( p_payload.primitive ),
-					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
+					reinterpret_cast<const void *>( static_cast<uintptr_t>( p_payload.commandOffset ) ),
 					p_payload.countOffset,
 					drawCapacity,
-					static_cast<GLsizei>( p_payload.commandStride )
-				);
+					static_cast<GLsizei>( p_payload.commandStride ) );
 
 			_dumpGLError();
 		}
@@ -202,7 +206,7 @@ namespace VTX::Renderer::Context::Executor
 				return;
 			}
 
-			auto & vao = _backend.vertexArray( p_payload.pipeline );
+			const auto & vao = _backend.vertexArray( p_payload.pipeline );
 			vao.bind();
 			vao.bindElementBuffer( _backend.buffer( p_payload.indiceBuffer ) );
 			indirectBuffer.bind( GL_DRAW_INDIRECT_BUFFER );
@@ -212,11 +216,10 @@ namespace VTX::Renderer::Context::Executor
 				.multiDrawElementsIndirectCount(
 					_toGL( p_payload.primitive ),
 					GL_UNSIGNED_INT,
-					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
+					reinterpret_cast<const void *>( static_cast<uintptr_t>( p_payload.commandOffset ) ),
 					p_payload.countOffset,
 					drawCapacity,
-					static_cast<GLsizei>( p_payload.commandStride )
-				);
+					static_cast<GLsizei>( p_payload.commandStride ) );
 
 			_dumpGLError();
 		}
@@ -232,7 +235,7 @@ namespace VTX::Renderer::Context::Executor
 				return;
 			}
 
-			auto & vao = _backend.vertexArray( p_payload.pipeline );
+			const auto & vao = _backend.vertexArray( p_payload.pipeline );
 			vao.bind();
 			vao.bindElementBuffer( _backend.buffer( p_payload.indiceBuffer ) );
 			indirectBuffer.bind( GL_DRAW_INDIRECT_BUFFER );
@@ -243,11 +246,10 @@ namespace VTX::Renderer::Context::Executor
 				.multiDrawElementsIndirectCount(
 					_toGL( p_payload.primitive ),
 					GL_UNSIGNED_INT,
-					reinterpret_cast<const void *>( uintptr_t( p_payload.commandOffset ) ),
+					reinterpret_cast<const void *>( static_cast<uintptr_t>( p_payload.commandOffset ) ),
 					p_payload.countOffset,
 					drawCapacity,
-					static_cast<GLsizei>( p_payload.commandStride )
-				);
+					static_cast<GLsizei>( p_payload.commandStride ) );
 
 			_dumpGLError();
 		}
@@ -271,7 +273,7 @@ namespace VTX::Renderer::Context::Executor
 			_dumpGLError();
 		}
 
-		void execute( const PayloadExternal & p_payload ) const noexcept
+		static void execute( const PayloadExternal & p_payload ) noexcept
 		{
 			if ( p_payload.function == 0 )
 			{
@@ -280,10 +282,17 @@ namespace VTX::Renderer::Context::Executor
 
 			using ExternalFunction = void ( * )( uintptr_t );
 			auto function		   = reinterpret_cast<ExternalFunction>( p_payload.function );
-			function( p_payload.context );
+			try
+			{
+				function( p_payload.context );
+			}
+			catch ( ... )
+			{
+				VTX_ERROR( "External render pass failed" );
+			}
 		}
 
-		void execute( const PayloadEndPass & p_payload ) const noexcept
+		static void execute( const PayloadEndPass & p_payload ) noexcept
 		{
 			using namespace Desc;
 
@@ -400,7 +409,7 @@ namespace VTX::Renderer::Context::Executor
 		{
 			using namespace Desc;
 
-			E_PRIMITIVE p = static_cast<E_PRIMITIVE>( p_primitive );
+			const E_PRIMITIVE p = static_cast<E_PRIMITIVE>( p_primitive );
 
 			switch ( p )
 			{
@@ -429,16 +438,14 @@ namespace VTX::Renderer::Context::Executor
 			return GL_INVALID_INDEX;
 		}
 
-		static GLsizei _drawCapacity(
-			const Backend::GL::Buffer & p_indirectBuffer,
-			const uint32_t				p_commandOffset,
-			const uint32_t				p_commandStride
-		) noexcept
+		static GLsizei _drawCapacity( const Backend::GL::Buffer & p_indirectBuffer,
+									  const uint32_t			  p_commandOffset,
+									  const uint32_t			  p_commandStride ) noexcept
 		{
 			assert( p_commandStride > 0 );
 
 			const GLsizei bufferSize = p_indirectBuffer.size();
-			if ( p_commandOffset >= static_cast<uint32_t>( bufferSize ) )
+			if ( std::cmp_greater_equal( p_commandOffset, bufferSize ) )
 			{
 				return 0;
 			}

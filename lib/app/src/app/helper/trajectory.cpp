@@ -1,10 +1,9 @@
 #include "app/helper/trajectory.hpp"
-#include "app/services.hpp"
 #include "app/trajectory/loader.hpp"
 #include <algorithm>
+#include <io/metadata.hpp>
 #include <io/writer/system.hpp>
 #include <stdexcept>
-#include <util/thread/thread_manager.hpp>
 
 namespace VTX::App::Helper::Trajectory
 {
@@ -22,7 +21,7 @@ namespace VTX::App::Helper::Trajectory
 		}
 
 		const uint windowFrameCount = static_cast<uint>(
-			std::min( static_cast<size_t>( p_frameCount ), std::max( size_t( 1 ), p_windowFrameCount ) )
+			std::min( static_cast<size_t>( p_frameCount ), std::max( static_cast<size_t>( 1 ), p_windowFrameCount ) )
 		);
 		if ( p_direction == App::Trajectory::TRAJECTORY_READ_DIRECTION::FORWARD )
 		{
@@ -114,43 +113,46 @@ namespace VTX::App::Helper::Trajectory
 
 	Core::Struct::Frame getFrame( const Entity p_entity, const uint p_frame )
 	{
-		return THREAD().synchronize(
-			[ p_entity, p_frame ]
-			{
-				if ( not REG().valid( p_entity ) )
-				{
-					throw std::invalid_argument( "Invalid trajectory entity." );
-				}
+		if ( not REG().valid( p_entity ) )
+		{
+			throw std::invalid_argument( "Invalid trajectory entity." );
+		}
 
-				const auto * const trajectory = REG().try_get<Core::Struct::Trajectory>( p_entity );
-				if ( trajectory == nullptr || p_frame >= trajectory->frameCount )
-				{
-					throw std::out_of_range( "Trajectory frame index out of range." );
-				}
+		const auto * const trajectory = REG().try_get<Core::Struct::Trajectory>( p_entity );
+		if ( trajectory == nullptr || p_frame >= trajectory->frameCount )
+		{
+			throw std::out_of_range( "Trajectory frame index out of range." );
+		}
 
-				Core::Struct::Frame frame;
-				if ( visitFrame(
-						 p_entity,
-						 p_frame,
-						 [ &frame ]( const Core::Struct::FrameView p_positions )
-						 { frame.assign( p_positions.begin(), p_positions.end() ); }
-					 ) )
-				{
-					return frame;
-				}
+		Core::Struct::Frame frame;
+		if ( visitFrame(
+				 p_entity,
+				 p_frame,
+				 [ &frame ]( const Core::Struct::FrameView p_positions )
+				 { frame.assign( p_positions.begin(), p_positions.end() ); }
+			 ) )
+		{
+			return frame;
+		}
 
-				const auto * const loader = REG().try_get<App::Trajectory::Loader>( p_entity );
-				if ( loader == nullptr )
-				{
-					throw std::runtime_error( "Trajectory frame is unavailable." );
-				}
+		const auto * const loader = REG().try_get<App::Trajectory::Loader>( p_entity );
+		if ( loader == nullptr )
+		{
+			throw std::runtime_error( "Trajectory frame is unavailable." );
+		}
 
-				return loader->thread->readFrame( p_frame );
-			}
-		);
+		return loader->thread->readFrame( p_frame );
 	}
 
 	bool hasMultiFrameTrajectory( const Entity p_entity ) { return REG().any_of<App::Trajectory::Player>( p_entity ); }
+
+	bool hasSystemAcceptingTrajectory()
+	{
+		return std::ranges::any_of(
+			REG().view<Core::Struct::Trajectory, VTX::IO::Metadata>(),
+			[]( const Entity p_entity ) { return not hasMultiFrameTrajectory( p_entity ); }
+		);
+	}
 
 	App::Trajectory::FrameRange getAvailableFrames( const Entity p_entity )
 	{
@@ -165,26 +167,29 @@ namespace VTX::App::Helper::Trajectory
 				   : App::Trajectory::FrameRange {};
 	}
 
-	class FrameGetter
+	namespace
 	{
-	  public:
-		FrameGetter( const Entity p_entity ) : _entity( p_entity ), _frames( getAvailableFrames( p_entity ) ) {}
-
-		inline uint frameCount() const { return static_cast<uint>( _frames.getCount() ); }
-
-		inline bool visitAtomPositions(
-			const uint													 p_index,
-			const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor
-		) const
+		class FrameGetter
 		{
-			return p_index < _frames.getCount()
-				   && visitFrame( _entity, static_cast<uint>( _frames.getFirst() + p_index ), p_visitor );
-		}
+		  public:
+			FrameGetter( const Entity p_entity ) : _entity( p_entity ), _frames( getAvailableFrames( p_entity ) ) {}
 
-	  private:
-		Entity						_entity;
-		App::Trajectory::FrameRange _frames;
-	};
+			uint frameCount() const { return static_cast<uint>( _frames.getCount() ); }
+
+			bool visitAtomPositions(
+				const uint													 p_index,
+				const VTX::IO::Writer::TrajectoryFrameGetter::FrameVisitor & p_visitor
+			) const
+			{
+				return p_index < _frames.getCount()
+					   && visitFrame( _entity, static_cast<uint>( _frames.getFirst() + p_index ), p_visitor );
+			}
+
+		  private:
+			Entity						_entity;
+			App::Trajectory::FrameRange _frames;
+		};
+	} // namespace
 
 	void get( const Entity p_entity, VTX::IO::Writer::TrajectoryFrameGetter & p_trajectory )
 	{ p_trajectory = FrameGetter( p_entity ); }

@@ -24,7 +24,7 @@ namespace VTX::Renderer
 		return true;
 	}
 
-	const Desc::RenderQueue RenderGraph::build()
+	Desc::RenderQueue RenderGraph::build()
 	{
 		using namespace Desc;
 
@@ -154,7 +154,7 @@ namespace VTX::Renderer
 		}
 
 		// Check last pass = no output (going to fbo).
-		if ( queue.back()->outputs.size() > 0 )
+		if ( not queue.back()->outputs.empty() )
 		{
 			// throw GraphicException( "Last pass '{}' must have exactly one output", queue.back()->name );
 		}
@@ -176,26 +176,26 @@ namespace VTX::Renderer
 		// Resources.
 		for ( const auto & [ key, texture ] : p_builder.resources.textures )
 		{
-			auto [ it, inserted ] = _resources.textures.emplace( key, texture );
+			[[maybe_unused]] auto [ it, inserted ] = _resources.textures.emplace( key, texture );
 			assert( inserted );
 		}
 		for ( const auto & [ key, vertexStream ] : p_builder.resources.vertexStreams )
 		{
-			auto [ it, inserted ] = _resources.vertexStreams.emplace( key, vertexStream );
+			[[maybe_unused]] auto [ it, inserted ] = _resources.vertexStreams.emplace( key, vertexStream );
 			assert( inserted );
 		}
 		for ( const auto & [ key, buffer ] : p_builder.resources.buffers )
 		{
-			auto [ it, inserted ] = _resources.buffers.emplace( key, buffer );
+			[[maybe_unused]] auto [ it, inserted ] = _resources.buffers.emplace( key, buffer );
 			assert( inserted );
 		}
 		for ( const auto & [ key, sampler ] : p_builder.resources.samplers )
 		{
-			auto [ it, inserted ] = _resources.samplers.emplace( key, sampler );
+			[[maybe_unused]] auto [ it, inserted ] = _resources.samplers.emplace( key, sampler );
 		}
 		for ( const auto & [ key, geometry ] : p_builder.resources.geometries )
 		{
-			auto [ it, inserted ] = _resources.geometries.emplace( key, geometry );
+			[[maybe_unused]] auto [ it, inserted ] = _resources.geometries.emplace( key, geometry );
 			assert( inserted );
 		}
 		// Passes.

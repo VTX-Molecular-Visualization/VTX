@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_MENU_CAMERA__
-#define __VTX_UI_QT_MENU_CAMERA__
+#ifndef VTX_UI_QT_MENU_CAMERA_HPP
+#define VTX_UI_QT_MENU_CAMERA_HPP
 
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
@@ -19,21 +19,23 @@ namespace VTX::UI::QT::Menu
 	class Camera : public Widget::BaseWidget<Camera, QMenu>
 	{
 	  public:
-		Camera( QWidget * p_parent ) : BaseWidget( p_parent )
+		Camera( QWidget * const p_parent ) :
+			BaseWidget( p_parent ), _aPerspective( UI_ACTIONS().addTo( *this, Action::Camera::PERSPECTIVE ) ),
+			_aOrtho( UI_ACTIONS().addTo( *this, Action::Camera::ORTHOGRAPHIC ) ),
+			_aTrackball( UI_ACTIONS().addTo( *this, Action::Camera::TRACKBALL ) ),
+			_aFreefly( UI_ACTIONS().addTo( *this, Action::Camera::FREEFLY ) )
 		{
 			setTitle( "Camera" );
-			_aPerspective = UI_ACTIONS().addTo( *this, Action::Camera::PERSPECTIVE );
-			_aOrtho		  = UI_ACTIONS().addTo( *this, Action::Camera::ORTHOGRAPHIC );
-			addSeparator();
-			_aTrackball = UI_ACTIONS().addTo( *this, Action::Camera::TRACKBALL );
-			_aFreefly	= UI_ACTIONS().addTo( *this, Action::Camera::FREEFLY );
+			insertSeparator( _aTrackball );
 			addSeparator();
 			UI_ACTIONS().addTo( *this, Action::Camera::ORIENT );
 			UI_ACTIONS().addTo( *this, Action::Camera::RESET );
 
 			// Connect.
-			App::REG().on_update<Renderer::Camera>().connect<&Camera::_onProjectionChanged>( this );
-			App::REG().on_update<App::Setting::Controller>().connect<&Camera::_onControllerChanged>( this );
+			_projectionChangedConnection
+				= App::REG().on_update<Renderer::Camera>().connect<&Camera::_onProjectionChanged>( this );
+			_controllerChangedConnection
+				= App::REG().on_update<App::Setting::Controller>().connect<&Camera::_onControllerChanged>( this );
 		}
 
 	  private:
@@ -62,7 +64,7 @@ namespace VTX::UI::QT::Menu
 
 			const auto & setting = App::REG().get<Controller>( p_e );
 
-			E_CONTROLLER type = static_cast<E_CONTROLLER>( setting.current );
+			const E_CONTROLLER type = static_cast<E_CONTROLLER>( setting.current );
 
 			switch ( type )
 			{
@@ -71,6 +73,9 @@ namespace VTX::UI::QT::Menu
 			default: break;
 			}
 		}
+
+		VTX::Util::EventHub::ScopedConnection _projectionChangedConnection;
+		VTX::Util::EventHub::ScopedConnection _controllerChangedConnection;
 	};
 
 } // namespace VTX::UI::QT::Menu

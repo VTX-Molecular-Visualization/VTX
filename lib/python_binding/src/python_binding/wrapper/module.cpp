@@ -1,8 +1,11 @@
 #include "python_binding/wrapper/module.hpp"
 #include "python_binding/binding/vtx_module.hpp"
-#include <pybind11/embed.h>
+#include <pybind11/eval.h>
 #include <pybind11/pybind11.h>
+#include <string>
 #include <util/logger.hpp>
+#include <utility>
+#include <vector>
 
 namespace VTX::PythonBinding::Wrapper
 {
@@ -13,9 +16,10 @@ namespace VTX::PythonBinding::Wrapper
 
 		return Module( module, modulePath );
 	}
+
 	Module Module::getSubmodule( const std::string & p_submoduleName )
 	{
-		const std::string submodulePath = _modulePath + "." + std::string( p_submoduleName.c_str() );
+		const std::string submodulePath = _modulePath + "." + p_submoduleName;
 		pybind11::module_ module		= _pyModule.import( submodulePath.c_str() );
 
 		return Module( module, submodulePath );
@@ -33,31 +37,32 @@ namespace VTX::PythonBinding::Wrapper
 		}
 	}
 
-	std::vector<std::string> Module::getFunctionList() const
+	std::vector<std::string> Module::getFunctionList()
 	{
 		std::vector<std::string> res = std::vector<std::string>();
 
 		try
 		{
-			pybind11::list pyList
-				= pybind11::eval( fmt::format( "dir({}.Command)", vtx_module_name() ) ).cast<pybind11::list>();
+			const pybind11::list pyList = pybind11::module_::import( "builtins" )
+											  .attr( "dir" )( pybind11::module_::import( vtx_module_name() ) )
+											  .cast<pybind11::list>();
 
 			res.reserve( pyList.size() );
 
 			for ( const auto & value : pyList )
 			{
-				res.emplace_back( value.cast<std::string>() );
-			}
-			pyList = pybind11::eval( fmt::format( "dir({}.API)", vtx_module_name() ) ).cast<pybind11::list>();
-
-			res.reserve( res.size() + pyList.size() );
-
-			for ( const auto & value : pyList )
-			{
-				res.emplace_back( value.cast<std::string>() );
+				std::string name = value.cast<std::string>();
+				if ( not name.starts_with( '_' ) )
+				{
+					res.emplace_back( std::move( name ) );
+				}
 			}
 		}
 		catch ( const pybind11::error_already_set & e )
+		{
+			VTX_ERROR( "getFunctionList fail : {}", e.what() );
+		}
+		catch ( const pybind11::cast_error & e )
 		{
 			VTX_ERROR( "getFunctionList fail : {}", e.what() );
 		}

@@ -2,6 +2,7 @@
 #include "app/controller/animation.hpp"
 #include "app/controller/freefly.hpp"
 #include "app/controller/trackball.hpp"
+#include "app/pending_updates.hpp"
 #include "app/services.hpp"
 #include <renderer/camera.hpp>
 #include <renderer/renderer.hpp>
@@ -14,28 +15,24 @@ namespace VTX::App::Pass
 		auto & reg = REG();
 
 		// Update functions.
-		reg.on_update<Setting::Controller>().connect<&CameraUpdater::_onControllerSetting>( this );
-		reg.on_update<Renderer::Camera>().connect<&CameraUpdater::_onUpdateCamera>( this );
-		HUB().connect<Events::CameraAnimationStart, &CameraUpdater::_onCameraAnimationStart>( this );
-		HUB().connect<Events::CameraTransformChange, &CameraUpdater::_onUpdateCamera>( this );
+		_controllerUpdatedConnection
+			= reg.on_update<Setting::Controller>().connect<&CameraUpdater::_onControllerSetting>( this );
+		_cameraUpdatedConnection = reg.on_update<Renderer::Camera>().connect<&CameraUpdater::_onUpdateCamera>( this );
+		_animationStartConnection
+			= HUB().connect<Events::CameraAnimationStart, &CameraUpdater::_onCameraAnimationStart>( this );
+		_transformChangedConnection
+			= HUB().connect<Events::CameraTransformChange, &CameraUpdater::_onUpdateCamera>( this );
 
 		// TODO: check if needed.
 		// Trigger initial settings.
 		reg.patch<Setting::Controller>( _entity, [ & ]( Setting::Controller & p_setting ) {} );
 	}
 
-	CameraUpdater::~CameraUpdater()
-	{
-		REG().on_update<Setting::Controller>().disconnect<&CameraUpdater::_onControllerSetting>( this );
-		REG().on_update<Renderer::Camera>().disconnect<&CameraUpdater::_onUpdateCamera>( this );
-		HUB().disconnectAllOf( *this );
-	}
-
 	void CameraUpdater::_onControllerSetting()
 	{
 		const auto & settings = REG().get<Setting::Controller>( _entity );
 
-		// Checlk if controller changed.
+		// Check if controller changed.
 		if ( _controllers.empty() || _controllers.front().hash != Util::hash( settings.current ) )
 		{
 			// Set controller.
@@ -46,6 +43,7 @@ namespace VTX::App::Pass
 			default: break;
 			}
 		}
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::ANIMATION );
 	}
 
 	void CameraUpdater::_onCameraAnimationStart( const Events::CameraAnimationStart & p_event )
@@ -58,6 +56,7 @@ namespace VTX::App::Pass
 			p_event.interpPosition,
 			p_event.interpRotation
 		);
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::ANIMATION );
 	}
 
 	void CameraUpdater::_onUpdateCamera()
@@ -71,6 +70,22 @@ namespace VTX::App::Pass
 		const Mat4f projectionMatrix = camera.computeProjectionMatrix( transform.getPosition() );
 
 		RENDERER().setCamera( camera, transform.getPosition(), viewMatrix, projectionMatrix );
+	}
+
+	void CameraUpdater::_syncAnimatingState()
+	{
+		auto &	   reg = REG();
+		const bool animating
+			= not _controllers.empty() && _controllers.front().hash == Util::hash<Controller::Animation>();
+		const bool tagged = reg.all_of<Controller::CameraAnimating>( _entity );
+		if ( animating && not tagged )
+		{
+			reg.emplace<Controller::CameraAnimating>( _entity );
+		}
+		else if ( not animating && tagged )
+		{
+			reg.remove<Controller::CameraAnimating>( _entity );
+		}
 	}
 
 } // namespace VTX::App::Pass

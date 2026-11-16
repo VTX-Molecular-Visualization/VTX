@@ -1,5 +1,6 @@
 #include "app/controller/animation.hpp"
 #include "app/events.hpp"
+#include "app/pending_updates.hpp"
 #include "app/services.hpp"
 #include <util/event_hub.hpp>
 #include <util/math/transform.hpp>
@@ -14,7 +15,7 @@ namespace VTX::App::Controller
 		const InterpRotationFunc & p_interRotation
 	) :
 		_animationDataStart( p_dataStart ), _animationDataEnd( p_dataEnd ), _duration( p_duration ),
-		_interpPosition( p_interpPosition ), _interpRotation( p_interRotation ), _time( 0.f )
+		_interpPosition( p_interpPosition ), _interpRotation( p_interRotation )
 	{
 	}
 
@@ -37,6 +38,11 @@ namespace VTX::App::Controller
 		p_transform.setPosition( _interpPosition( _animationDataStart.position, _animationDataEnd.position, t ) );
 		p_transform.setRotation( _interpRotation( _animationDataStart.rotation, _animationDataEnd.rotation, t ) );
 		HUB().trigger<Events::CameraTransformChange>();
+
+		if ( t < 1.f )
+		{
+			PENDING_UPDATES().mark( E_PENDING_UPDATE::ANIMATION );
+		}
 
 		return t < 1.f;
 	}

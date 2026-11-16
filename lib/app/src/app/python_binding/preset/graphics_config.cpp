@@ -1,6 +1,5 @@
 #include "app/python_binding/preset/graphics_config.hpp"
 #include "app/action/graphics_config.hpp"
-#include "app/action/scene.hpp"
 #include "app/python_binding/preset/helpers.hpp"
 #include <pybind11/stl.h>
 #include <python_binding/binding/helper.hpp>
@@ -13,10 +12,7 @@ namespace VTX::App::PythonBinding::Preset
 	{
 		template<Renderer::E_GRAPHICS_CONFIG_VALUES VALUE, typename T>
 		void _setValue( const GraphicsConfigHandle & p_preset, const T p_value )
-		{
-			validate( p_preset );
-			executeAction<Action::GraphicsConfig::Change<VALUE, T>>( Entity( p_preset.entity ), T( p_value ) );
-		}
+		{ executePresetAction<Action::GraphicsConfig::Change<VALUE, T>>( p_preset, T( p_value ) ); }
 
 		template<Renderer::E_GRAPHICS_CONFIG_VALUES VALUE, typename T, typename Getter>
 		void _bindProperty(
@@ -28,60 +24,54 @@ namespace VTX::App::PythonBinding::Preset
 
 		void _setEnvironmentPath( const GraphicsConfigHandle & p_preset, const std::optional<std::string> & p_path )
 		{
-			validate( p_preset );
-			executeAction<
+			executePresetAction<
 				Action::GraphicsConfig::Change<Renderer::E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH, FilePath>>(
-				Entity( p_preset.entity ), FilePath( p_path.value_or( "" ) )
+				p_preset, FilePath( p_path.value_or( "" ) )
 			);
 		}
 
-		const Renderer::SSAOConfig & _getSsao( const GraphicsConfigHandle & p_preset )
+		Renderer::SSAOConfig _getSsao( const GraphicsConfigHandle & p_preset )
 		{
-			const auto & config = getData( p_preset ).ssao;
+			const auto config = getData( p_preset ).ssao;
 			return config ? *config : Renderer::GraphicsConfigs::SSAO_DEFAULT;
 		}
 
-		const Renderer::FogConfig & _getFog( const GraphicsConfigHandle & p_preset )
+		Renderer::FogConfig _getFog( const GraphicsConfigHandle & p_preset )
 		{
-			const auto & config = getData( p_preset ).fog;
+			const auto config = getData( p_preset ).fog;
 			return config ? *config : Renderer::GraphicsConfigs::FOG_DEFAULT;
 		}
 
-		const Renderer::OutlineConfig & _getOutline( const GraphicsConfigHandle & p_preset )
+		Renderer::OutlineConfig _getOutline( const GraphicsConfigHandle & p_preset )
 		{
-			const auto & config = getData( p_preset ).outline;
+			const auto config = getData( p_preset ).outline;
 			return config ? *config : Renderer::GraphicsConfigs::OUTLINE_DEFAULT;
 		}
 
-		const Renderer::ChromaticAberrationConfig & _getChromaticAberration( const GraphicsConfigHandle & p_preset )
+		Renderer::ChromaticAberrationConfig _getChromaticAberration( const GraphicsConfigHandle & p_preset )
 		{
-			const auto & config = getData( p_preset ).chromaticAberration;
+			const auto config = getData( p_preset ).chromaticAberration;
 			return config ? *config : Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT;
 		}
 
-		const Renderer::PixelizeConfig & _getPixelize( const GraphicsConfigHandle & p_preset )
+		Renderer::PixelizeConfig _getPixelize( const GraphicsConfigHandle & p_preset )
 		{
-			const auto & config = getData( p_preset ).pixelize;
+			const auto config = getData( p_preset ).pixelize;
 			return config ? *config : Renderer::GraphicsConfigs::PIXELIZE_DEFAULT;
 		}
 
-		const Renderer::CRTConfig & _getCrt( const GraphicsConfigHandle & p_preset )
+		Renderer::CRTConfig _getCrt( const GraphicsConfigHandle & p_preset )
 		{
-			const auto & config = getData( p_preset ).crt;
+			const auto config = getData( p_preset ).crt;
 			return config ? *config : Renderer::GraphicsConfigs::CRT_DEFAULT;
 		}
 
-		const Renderer::SelectionConfig & _getSelection( const GraphicsConfigHandle & p_preset )
+		Renderer::SelectionConfig _getSelection( const GraphicsConfigHandle & p_preset )
 		{
-			const auto & config = getData( p_preset ).selection;
+			const auto config = getData( p_preset ).selection;
 			return config ? *config : Renderer::GraphicsConfigs::SELECTION_DEFAULT;
 		}
 
-		void _apply( const GraphicsConfigHandle & p_preset )
-		{
-			validate( p_preset );
-			executeAction<Action::Scene::SetGraphicsConfig>( Entity( p_preset.entity ) );
-		}
 	} // namespace
 
 	void bindGraphicsConfig( Module & p_vtxModule, pybind11::class_<GraphicsConfigHandle> & p_binding )
@@ -137,7 +127,7 @@ namespace VTX::App::PythonBinding::Preset
 			"environmentPath",
 			[]( const GraphicsConfigHandle & p_preset ) -> std::optional<std::string>
 			{
-				const std::optional<FilePath> & path = getData( p_preset ).shading.environmentPath;
+				const std::optional<FilePath> path = getData( p_preset ).shading.environmentPath;
 				return path ? std::optional<std::string>( path->string() ) : std::nullopt;
 			},
 			&_setEnvironmentPath
@@ -290,7 +280,5 @@ namespace VTX::App::PythonBinding::Preset
 		_bindProperty<Value::COLOR_SELECTION, Util::Color::Rgba>(
 			p_binding, "colorSelection", []( const GraphicsConfigHandle & p ) { return _getSelection( p ).color; }
 		);
-
-		p_binding.def( "apply", &_apply, "Apply this graphics config preset to the scene." );
 	}
 } // namespace VTX::App::PythonBinding::Preset

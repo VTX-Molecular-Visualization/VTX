@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PYTHON_BINDING_TRAJECTORY__
-#define __VTX_APP_PYTHON_BINDING_TRAJECTORY__
+#ifndef VTX_APP_PYTHON_BINDING_TRAJECTORY_HPP
+#define VTX_APP_PYTHON_BINDING_TRAJECTORY_HPP
 
 #include "app/ecs.hpp"
 #include "app/python_binding/module.hpp"
@@ -25,6 +25,11 @@ namespace VTX::App::PythonBinding
 	{
 		Entity entity = InvalidEntity;
 	};
+
+	/**
+	 * @brief Get frame copy.
+	 */
+	Frame getCurrentFrame( Entity p_entity );
 
 	/**
 	 * @brief Binder.

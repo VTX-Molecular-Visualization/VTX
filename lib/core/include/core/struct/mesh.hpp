@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_STRUCT_MESH__
-#define __VTX_CORE_STRUCT_MESH__
+#ifndef VTX_CORE_STRUCT_MESH_HPP
+#define VTX_CORE_STRUCT_MESH_HPP
 
 #include <util/types.hpp>
 #include <vector>

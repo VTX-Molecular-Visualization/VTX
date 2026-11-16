@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_ACCESSIBILITY__
-#define __VTX_APP_ACTION_ACCESSIBILITY__
+#ifndef VTX_APP_ACTION_ACCESSIBILITY_HPP
+#define VTX_APP_ACTION_ACCESSIBILITY_HPP
 
 #include "app/ecs.hpp"
 #include "app/setting/accessibility.hpp"
@@ -12,8 +12,7 @@ namespace VTX::App::Action::Accessibility
 		{
 			const Entity e = ECS::getFirstEntityOnlyWithComponents<Setting::Accessibility>();
 			REG().patch<Setting::Accessibility>(
-				e, [ p_mode ]( Setting::Accessibility & p_setting ) { p_setting.colorMode = p_mode; }
-			);
+				e, [ p_mode ]( Setting::Accessibility & p_setting ) { p_setting.colorMode = p_mode; } );
 		}
 	};
 
@@ -23,8 +22,7 @@ namespace VTX::App::Action::Accessibility
 		{
 			const Entity e = ECS::getFirstEntityOnlyWithComponents<Setting::Accessibility>();
 			REG().patch<Setting::Accessibility>(
-				e, [ p_value ]( Setting::Accessibility & p_setting ) { p_setting.forceDyslexicFont = p_value; }
-			);
+				e, [ p_value ]( Setting::Accessibility & p_setting ) { p_setting.forceDyslexicFont = p_value; } );
 		}
 	};
 } // namespace VTX::App::Action::Accessibility

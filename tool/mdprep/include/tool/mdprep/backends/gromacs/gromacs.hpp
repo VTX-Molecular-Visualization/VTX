@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS__
-#define __VTX_TOOL_TOOLS_MDPREP_GROMACS__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMACS_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMACS_HPP
 
 #include <array>
 #include <cstdint>
@@ -49,11 +49,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	 * @param p_structurePdb
 	 * @param
 	 */
-	void prepareStructure(
-		VTX::Util::Thread::ThreadData &,
-		const FilePath & p_structurePdb,
-		GromacsInstructions &
-	) noexcept;
+	void prepareStructure( VTX::Util::Thread::ThreadData &, const FilePath & p_structurePdb, GromacsInstructions & );
 
 	/**
 	 * @brief Use prepared structure to deliver a ready-to-use directory to start MD from
@@ -69,7 +65,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		/**
 		 * @brief Return the reason why the system is not viable, or empty if not finished or viable.
 		 */
-		const std::string_view why() const noexcept;
+		std::string_view why() const noexcept;
 
 		/**
 		 * @brief Return weither the system is accepted by gromacs or not. Wait for the test to finish before returning
@@ -84,14 +80,14 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		bool isSystemOk() const noexcept;
 
 	  private:
-		class _Impl;
+		class Impl;
 
 		struct Del
 		{
-			void operator()( const _Impl * p ) const;
+			void operator()( const Impl * p ) const noexcept;
 		};
 
-		std::unique_ptr<_Impl, Del> _pimpl = nullptr;
+		std::unique_ptr<Impl, Del> _pimpl = nullptr;
 	};
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs

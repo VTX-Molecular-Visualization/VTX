@@ -1,5 +1,5 @@
-#ifndef __VTX_IO_WRITER_CHEMFILES__
-#define __VTX_IO_WRITER_CHEMFILES__
+#ifndef VTX_IO_WRITER_CHEMFILES_HPP
+#define VTX_IO_WRITER_CHEMFILES_HPP
 
 #include <io/writer/shared.hpp>
 #include <string>
@@ -42,8 +42,8 @@ namespace VTX::IO::Writer
 		double z = 0.;
 	};
 
-	struct _Atom;
-	struct _AtomInfo;
+	struct AtomImpl;
+	struct AtomInfo;
 
 	/**
 	 * @brief Atoms are provided by the System.
@@ -52,22 +52,22 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Atom() = default;
-		Atom( _Atom & );
+		Atom( AtomImpl & ) noexcept;
 
 		/**
 		 * @brief You need to be the chosen one to wield this method to its full power.
 		 * @param
 		 */
-		void get( _AtomInfo & ) const noexcept;
+		void get( AtomInfo & ) const noexcept;
 
 		void setName( std::string ) noexcept;
 		void setSymbol( std::string ) noexcept;
 
 	  private:
-		_Atom * _data;
+		AtomImpl * _data;
 	};
 
-	struct _Residue;
+	struct ResidueImpl;
 
 	/**
 	 * @brief Allows to configure a residue to be written. Residues can be added atoms and properties.
@@ -76,24 +76,24 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Residue() = default;
-		Residue( _Residue & );
+		Residue( ResidueImpl & ) noexcept;
 		/**
 		 * @brief Inform the chain that the input atom is a part of it.
 		 */
-		void add( Atom & ) noexcept;
+		void add( Atom & );
 
 		/**
 		 * @brief Set or replace a property for the chain.
 		 */
-		void set( Property ) noexcept;
+		void set( const Property & );
 		void setResId( int ) noexcept;
 		void setSymbol( std::string ) noexcept;
 
 	  private:
-		_Residue * _data = nullptr;
+		ResidueImpl * _data = nullptr;
 	};
 
-	struct _Chain;
+	struct ChainImpl;
 
 	/**
 	 * @brief Allows to configure a chain to be written.
@@ -102,7 +102,7 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Chain() = default;
-		Chain( _Chain & );
+		Chain( ChainImpl & ) noexcept;
 
 		void setName( std::string ) noexcept;
 		void setId( std::string ) noexcept;
@@ -111,13 +111,13 @@ namespace VTX::IO::Writer
 		 * @brief Inform the chain that the input residue is a part of it. Does nothing however, if the chain info are
 		 * not provided in the first place
 		 */
-		void add( Residue & ) noexcept;
+		void add( Residue & );
 
 	  private:
-		_Chain * _data = nullptr;
+		ChainImpl * _data = nullptr;
 	};
 
-	struct _Frame;
+	struct FrameImpl;
 
 	/**
 	 * @brief Allow to configure one frame of the system. A frame is defined by a set of coordinates for all atoms. If a
@@ -127,18 +127,18 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		Frame() = default;
-		Frame( _Frame & );
+		Frame( FrameImpl & ) noexcept;
 
 		/**
 		 * @brief Give the coordinate of the atom for this frame.
 		 */
-		void set( const Atom &, AtomCoordinates ) noexcept;
+		void set( const Atom &, AtomCoordinates );
 
 	  private:
-		_Frame * _data;
+		FrameImpl * _data;
 	};
 
-	struct _System;
+	struct SystemImpl;
 
 	/**
 	 * @brief Responsible for creating objects to configure the chemfiles system.
@@ -147,39 +147,39 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		System() = default;
-		System( _System & );
+		System( SystemImpl & ) noexcept;
 
 		/**
 		 * @brief Set or replace a property for the frame.
 		 */
-		void set( Property ) noexcept;
+		void set( Property ) const;
 
 		/**
 		 * @brief  Create a new atom
 		 * @param  Id of the atom. Used as an external key to indentify the atom afterward.
 		 */
-		Atom newAtom( AtomId ) noexcept;
+		Atom newAtom( AtomId ) const;
 
 		/**
 		 * @brief  Bind two atoms together. Atoms are identified by the external key provided during their creation.
 		 * Throws if the provided IDs aren't valid.
 		 */
-		void bind( const AtomId &, const AtomId &, E_BOND_ORDER );
+		void bind( const AtomId &, const AtomId &, E_BOND_ORDER ) const;
 
 		/**
 		 * @brief Create a new chain.
 		 */
-		Chain newChain() noexcept;
+		Chain newChain() const;
 
 		/**
 		 * @brief Create a new residue.
 		 */
-		Residue newResidue() noexcept;
+		Residue newResidue() const;
 
 		/**
 		 * @brief Create a new frame. A healthy system should get at least one frame.
 		 */
-		Frame newFrame() noexcept;
+		Frame newFrame() const;
 
 		/**
 		 * @brief Set the input Atom to the one corresponding to the input AtomId
@@ -187,7 +187,7 @@ namespace VTX::IO::Writer
 		 * @param  ID corresponding to the atom
 		 * @return  Wether the fetch was succesful or not
 		 */
-		bool fetch( Atom &, const AtomId & ) noexcept;
+		bool fetch( Atom &, const AtomId & ) const noexcept;
 
 		/**
 		 * @brief Return the frame with the right index
@@ -195,10 +195,9 @@ namespace VTX::IO::Writer
 		 * @param frame number
 		 * @return Wether the fetch was succesful or not
 		 */
-		bool fetch( Frame &, const size_t & ) noexcept;
+		bool fetch( Frame &, const size_t & ) const noexcept;
 
-	  public:
-		_System * _data = nullptr;
+		SystemImpl * _data = nullptr;
 	};
 
 	/**
@@ -210,6 +209,8 @@ namespace VTX::IO::Writer
 	{
 	  public:
 		ChemfilesTrajectory();
+
+		void close();
 
 		/**
 		 * @brief Mandatory to write something. Can be set empty so no files end up being saved at all.
@@ -229,14 +230,14 @@ namespace VTX::IO::Writer
 		System system() noexcept;
 
 	  private:
-		class _Impl;
+		class Impl;
 
 		struct Del
 		{
-			void operator()( _Impl * ) noexcept;
+			void operator()( Impl * ) noexcept;
 		};
 
-		std::unique_ptr<_Impl, Del> _ = nullptr;
+		std::unique_ptr<Impl, Del> _ = nullptr;
 	};
 } // namespace VTX::IO::Writer
 #endif

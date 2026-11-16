@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SYSTEM_UID__
-#define __VTX_APP_SYSTEM_UID__
+#ifndef VTX_APP_SYSTEM_UID_HPP
+#define VTX_APP_SYSTEM_UID_HPP
 
 #include <util/math/range_list.hpp>
 #include <util/uid.hpp>
@@ -18,25 +18,22 @@ namespace VTX::App::System
 		/**
 		 * @brief Get residue index from its picking UID.
 		 */
-		inline Index getResidueIndex( const UID32 p_uid ) const
-		{
-			return static_cast<Index>( p_uid - residues.getFirst() );
-		}
+		Index getResidueIndex( const UID32 p_uid ) const { return static_cast<Index>( p_uid - residues.getFirst() ); }
 
 		/**
 		 * @brief Get atom index from its picking UID.
 		 */
-		inline Index getAtomIndex( const UID32 p_uid ) const { return static_cast<Index>( p_uid - atoms.getFirst() ); }
+		Index getAtomIndex( const UID32 p_uid ) const { return static_cast<Index>( p_uid - atoms.getFirst() ); }
 
 		/**
 		 * @brief Check if the system contains the given residue UID.
 		 */
-		inline bool containsResidueUID( const UID32 p_uid ) const { return residues.contains( p_uid ); }
+		bool containsResidueUID( const UID32 p_uid ) const { return residues.contains( p_uid ); }
 
 		/**
 		 * @brief Check if the system contains the given atom UID.
 		 */
-		inline bool containsAtomUID( const UID32 p_uid ) const { return atoms.contains( p_uid ); }
+		bool containsAtomUID( const UID32 p_uid ) const { return atoms.contains( p_uid ); }
 	};
 } // namespace VTX::App::System
 

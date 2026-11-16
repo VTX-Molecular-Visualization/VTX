@@ -1,15 +1,16 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_TONE_MAPPING__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_TONE_MAPPING__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_TONE_MAPPING_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_TONE_MAPPING_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include <cstdint>
+#include <string_view>
 #include <utility>
 
 namespace VTX::Renderer
 {
-	enum struct E_TONE_MAPPING : uint32_t
+	enum struct E_TONE_MAPPING : uint8_t
 	{
 		NONE,
 		LDR,
@@ -44,39 +45,35 @@ namespace VTX::Renderer::Builder::PostProcess
 {
 	struct ToneMapping
 	{
-		inline static const Desc::Key PASS = "ToneMapping";
+		static constexpr std::string_view PASS = "ToneMapping";
 
 		static Desc::Key build( GraphBuilder & p_graph, const Desc::Key & p_input )
 		{
-			p_graph.pass( PASS )
+			p_graph.pass( Desc::Key { PASS } )
 				.in( p_input )
-				.out( PASS )
-				.program( PASS )
+				.out( Desc::Key { PASS } )
+				.program( Desc::Key { PASS } )
 				.shaders( { "default.vert", "tone_mapping.frag" } )
-				.uniform(
-					"Mode",
-					uint32_t( TONE_MAPPING_MODE_DEFAULT ),
-					std::pair { 0u, uint32_t( E_TONE_MAPPING::COUNT ) - 1u }
-				)
-				.uniform(
-					"Exposure",
-					TONE_MAPPING_EXPOSURE_DEFAULT,
-					std::pair { TONE_MAPPING_EXPOSURE_MIN, TONE_MAPPING_EXPOSURE_MAX }
-				)
+				.uniform( "Mode",
+						  static_cast<uint32_t>( TONE_MAPPING_MODE_DEFAULT ),
+						  std::pair { 0u, static_cast<uint32_t>( E_TONE_MAPPING::COUNT ) - 1u } )
+				.uniform( "Exposure",
+						  TONE_MAPPING_EXPOSURE_DEFAULT,
+						  std::pair { TONE_MAPPING_EXPOSURE_MIN, TONE_MAPPING_EXPOSURE_MAX } )
 				.endProgram()
 				.endPass();
 
-			return PASS;
+			return Desc::Key { PASS };
 		}
 
 		static void upload( Context::ContextWrapper & p_context, const ToneMappingConfig & p_config )
 		{
 			BinaryBuffer140 buffer;
-			buffer.write( uint32_t( p_config.mode ) );
+			buffer.write( static_cast<uint32_t>( p_config.mode ) );
 			buffer.write( p_config.exposure );
 			buffer.close();
 
-			p_context.setBuffer( { PASS }, buffer );
+			p_context.setBuffer( { Desc::Key { PASS } }, buffer.bytes() );
 		}
 	};
 } // namespace VTX::Renderer::Builder::PostProcess

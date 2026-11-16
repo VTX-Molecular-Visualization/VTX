@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_SENTRY__
-#define __VTX_UTIL_SENTRY__
+#ifndef VTX_UTIL_SENTRY_HPP
+#define VTX_UTIL_SENTRY_HPP
 
 #include <memory>
 #include <thread>
@@ -35,7 +35,7 @@ namespace VTX::Util
 		Sentry() = delete;
 
 		// Returns wether the target still exists
-		operator bool() const noexcept;
+		explicit operator bool() const noexcept;
 
 	  private:
 		Sentry( std::shared_ptr<std::atomic_bool> p_ ) noexcept;

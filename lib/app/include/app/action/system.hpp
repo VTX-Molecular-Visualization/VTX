@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_ACTION_SYSTEM__
-#define __VTX_APP_ACTION_SYSTEM__
+#ifndef VTX_APP_ACTION_SYSTEM_HPP
+#define VTX_APP_ACTION_SYSTEM_HPP
 
 #include "app/ecs.hpp"
 #include <util/types.hpp>
@@ -11,7 +11,7 @@ namespace VTX::App::Action::System
 	 */
 	struct SetName
 	{
-		void execute( const Entity, const std::string_view );
+		void execute( Entity, std::string_view );
 	};
 
 	/**
@@ -19,7 +19,7 @@ namespace VTX::App::Action::System
 	 */
 	struct SetPosition
 	{
-		void execute( const Entity, const Vec3f & );
+		void execute( Entity, const Vec3f & );
 	};
 
 	/**
@@ -27,7 +27,7 @@ namespace VTX::App::Action::System
 	 */
 	struct SetRotation
 	{
-		void execute( const Entity, const Quatf & );
+		void execute( Entity, const Quatf & );
 	};
 
 	/**
@@ -35,7 +35,7 @@ namespace VTX::App::Action::System
 	 */
 	struct SetScale
 	{
-		void execute( const Entity, const Vec3f & );
+		void execute( Entity, const Vec3f & );
 	};
 
 } // namespace VTX::App::Action::System

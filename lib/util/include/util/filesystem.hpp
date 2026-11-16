@@ -1,9 +1,11 @@
-#ifndef __VTX_UTIL_FILESYSTEM__
-#define __VTX_UTIL_FILESYSTEM__
+#ifndef VTX_UTIL_FILESYSTEM_HPP
+#define VTX_UTIL_FILESYSTEM_HPP
 
 #include "types.hpp"
 #include <filesystem>
+#include <initializer_list>
 #include <string>
+#include <string_view>
 
 namespace VTX
 {
@@ -49,7 +51,7 @@ namespace VTX::Util::Filesystem
 	/**
 	 * @brief Read content of file at path.
 	 */
-	const std::string readPath( const FilePath & p_filePath );
+	std::string readPath( const FilePath & p_filePath );
 
 	/**
 	 * @brief Write content to file at path (override if exist).
@@ -65,6 +67,11 @@ namespace VTX::Util::Filesystem
 	 * @brief Copy directory from source to destination (override if exist).
 	 */
 	void copyDirectory( const FilePath & p_filePathSrc, const FilePath & p_filePathDestination );
+
+	/**
+	 * @brief Check if a file has one of the specified extensions.
+	 */
+	bool hasExtension( const FilePath & p_filePath, std::initializer_list<std::string_view> p_extensions );
 
 } // namespace VTX::Util::Filesystem
 

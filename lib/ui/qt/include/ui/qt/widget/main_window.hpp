@@ -1,6 +1,7 @@
-#ifndef __VTX_UI_QT_WIDGET_MAIN_WINDOW__
-#define __VTX_UI_QT_WIDGET_MAIN_WINDOW__
+#ifndef VTX_UI_QT_WIDGET_MAIN_WINDOW_HPP
+#define VTX_UI_QT_WIDGET_MAIN_WINDOW_HPP
 
+#include "ui/qt/helper.hpp"
 #include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/widget/renderer.hpp"
 #include "ui/qt/widget/status_bar.hpp"
@@ -12,6 +13,7 @@
 #include <app/events.hpp>
 #include <app/ui/concepts.hpp>
 #include <string_view>
+#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 
 namespace VTX::UI::QT::Dialog
@@ -37,17 +39,17 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Destructor.
 		 */
-		~MainWindow();
+		~MainWindow() override;
 
 		/**
 		 * @brief Hook a registered action to the given menu.
 		 */
-		void addMenuAction( const App::UI::WidgetId & p_menu, const std::string_view p_actionId );
+		void addMenuAction( const App::UI::WidgetId & p_menu, std::string_view p_actionId );
 
 		/**
 		 * @brief Hook a registered action to the given toolbar.
 		 */
-		void addToolBarAction( const App::UI::WidgetId & p_toolbar, const std::string_view p_actionId );
+		void addToolBarAction( const App::UI::WidgetId & p_toolbar, std::string_view p_actionId );
 
 		/**
 		 * @brief Restore the persisted layout after all tool UI hooks are built.
@@ -62,7 +64,7 @@ namespace VTX::UI::QT::Widget
 		uintptr_t getNativeSurface() const;
 		uintptr_t getNativeDisplay() const;
 		uint8_t	  getNativePlatform() const;
-		void populateViewMenu( QMenu & );
+		void	  populateViewMenu( QMenu & );
 
 		/**
 		 * @brief Override "view" context menu.
@@ -70,17 +72,12 @@ namespace VTX::UI::QT::Widget
 		QMenu * createPopupMenu() override;
 
 		/**
-		 * @brief Catch close event to quit application.
-		 */
-		void closeEvent( QCloseEvent * ) override;
-
-		/**
 		 * @brief Create a menu from type.
 		 */
 		template<typename M>
-		M * const createMenu()
+		M * createMenu()
 		{
-			M * const menu = new M( menuBar() );
+			M * const menu = Helper::makeQObject<M>( menuBar() );
 			menuBar()->addMenu( menu );
 			return menu;
 		}
@@ -98,9 +95,9 @@ namespace VTX::UI::QT::Widget
 		 * @brief Create a toolbar from type.
 		 */
 		template<typename TB>
-		TB * const createToolBar()
+		TB * createToolBar()
 		{
-			TB * const toolBar = new TB( this );
+			TB * const toolBar = Helper::makeQObject<TB>( this );
 			addToolBar( toolBar );
 			return toolBar;
 		}
@@ -109,7 +106,7 @@ namespace VTX::UI::QT::Widget
 		 * @brief Create a dock widget from type in the given area.
 		 */
 		template<typename DW>
-		DW * const createDockWidget( const Qt::DockWidgetArea p_area )
+		DW * createDockWidget( const Qt::DockWidgetArea p_area )
 		{
 			QDockWidget * other = nullptr;
 			for ( QDockWidget * w : findChildren<QDockWidget *>() )
@@ -120,7 +117,7 @@ namespace VTX::UI::QT::Widget
 				}
 			}
 
-			DW * const dockWidget = new DW( this );
+			DW * const dockWidget = Helper::makeQObject<DW>( this );
 			if ( restoreDockWidget( dockWidget ) )
 			{
 				return dockWidget;
@@ -138,13 +135,13 @@ namespace VTX::UI::QT::Widget
 		}
 
 	  protected:
-		bool event( QEvent * ) override;
-
 		/**
-		 * @brief Drag and drop events.
+		 * @brief Events.
 		 */
-		void dragEnterEvent( QDragEnterEvent * );
-		void dropEvent( QDropEvent * );
+		bool event( QEvent * ) override;
+		void closeEvent( QCloseEvent * ) override;
+		void dragEnterEvent( QDragEnterEvent * ) override;
+		void dropEvent( QDropEvent * ) override;
 
 	  private:
 		/**
@@ -176,6 +173,13 @@ namespace VTX::UI::QT::Widget
 		void _onBlockingOperationEnd( const App::Events::BlockingOperationEnd & );
 		void _onUpdateAvailable( const App::Events::UpdateAvailable & );
 		void _onRendererResize( const App::Events::RendererResize & );
+
+		VTX::Util::EventHub::ScopedConnection _applicationErrorConnection;
+		VTX::Util::EventHub::ScopedConnection _blockingOperationStartConnection;
+		VTX::Util::EventHub::ScopedConnection _blockingOperationProgressConnection;
+		VTX::Util::EventHub::ScopedConnection _blockingOperationEndConnection;
+		VTX::Util::EventHub::ScopedConnection _updateAvailableConnection;
+		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget
