@@ -30,7 +30,7 @@ namespace VTX::Tool::Structalign::backend
 
 	struct CEAlignResults
 	{
-		Mat3f	 transformMatrix;
+		Mat4f	 transformMatrix;
 		float	 rmsd				= -1.f;
 		uint32_t alignResidueNumber = 0;
 	};

@@ -1,5 +1,6 @@
 #include <tool/structalign/backend/align.hpp>
 #include <util/constant.hpp>
+#include <util/exceptions.hpp>
 #include <util/math.hpp>
 #include <util/math/matrix.hpp>
 
@@ -485,15 +486,51 @@ namespace VTX::Tool::Structalign::backend
 			const Vec3f &			   p_outCenterOfMass
 		)
 		{
-			if ( p_in.size() != p_out.size() )
+			assert( p_in.size() == p_out.size() );
+
+			std::vector<Vec3d> in( p_in.begin(), p_in.end() ), out( p_out.begin(), p_out.end() );
+
+			Mat3d rotationMatix		= MAT3F_ID;
+			Vec3d translationVector = VEC3F_ZERO;
+
+			const double datasetSize = p_in.size();
+			/*
+			VG : Original code featured this but it doesn't seem to do anything
+
+			// First find the scale, by finding the ratio of sums of some distances,
+			// then bring the datasets to the same scale.
+			double dist_in = 0, dist_out = 0;
+			for ( int col = 0; col < p_in.size() - 1; col++ )
 			{
-				throw "Find3DAffineTransform(): input data mis-match";
+				dist_in += Util::Math::length( p_in[ col + 1 ] - p_in[ col ] );
+				dist_out += Util::Math::length( p_out[ col + 1 ] - p_out[ col ] );
+			}
+
+			double scale = dist_out / dist_in;
+			scale		 = 1;
+			out /= scale;
+			*/
+
+			// Find the centroids then shift to the origin
+			Vec3d inCentroid = VEC3F_ZERO, outCentroid = VEC3F_ZERO;
+
+			for ( size_t it_posIdx = 0; it_posIdx < p_in.size(); it_posIdx++ )
+			{
+				inCentroid += in[ it_posIdx ] / datasetSize;
+				outCentroid += out[ it_posIdx ] / datasetSize;
+			}
+
+			for ( size_t it_posIdx = 0; it_posIdx < in.size(); it_posIdx++ )
+			{
+				in[ it_posIdx ] -= inCentroid;
+				out[ it_posIdx ] -= outCentroid;
 			}
 
 			//////////////////////////////////////////////////////////////
 			// Eigen
 			//////////////////////////////////////////////////////////////
 
+			/*
 			Eigen::Matrix3Xd in	 = Eigen::Matrix3Xd( 3, p_in.size() );
 			Eigen::Matrix3Xd out = Eigen::Matrix3Xd( 3, p_out.size() );
 
@@ -544,6 +581,7 @@ namespace VTX::Tool::Structalign::backend
 				in.col( col ) -= in_ctr;
 				out.col( col ) -= out_ctr;
 			}
+			*/
 
 			// SVD
 			Eigen::MatrixXd					  Cov = in * out.transpose();
@@ -721,17 +759,18 @@ namespace VTX::Tool::Structalign::backend
 					residuePositionsB[ i ] -= centerOfMassB;
 				}
 
-				Eigen::Matrix3Xd in	 = Eigen::Matrix3Xd( 3, positionsCount );
-				Eigen::Matrix3Xd out = Eigen::Matrix3Xd( 3, positionsCount );
+				// VG : Why are we doing this ??
+				// Eigen::Matrix3Xd in	 = Eigen::Matrix3Xd( 3, positionsCount );
+				// Eigen::Matrix3Xd out = Eigen::Matrix3Xd( 3, positionsCount );
 
-				for ( int i = 0; i < positionsCount; i++ )
-				{
-					in.col( i ) << residuePositionsA[ i ].x, residuePositionsA[ i ].y, residuePositionsA[ i ].z;
-					out.col( i ) << residuePositionsB[ i ].x, residuePositionsB[ i ].y, residuePositionsB[ i ].z;
-				}
+				// for ( int i = 0; i < positionsCount; i++ )
+				//{
+				//	in.col( i ) << residuePositionsA[ i ].x, residuePositionsA[ i ].y, residuePositionsA[ i ].z;
+				//	out.col( i ) << residuePositionsB[ i ].x, residuePositionsB[ i ].y, residuePositionsB[ i ].z;
+				// }
 
 				const Mat4f eigenMatrix
-					= _find3DAffineTransform( residuePositionsA, residuePositionsB, centerOfMassA, centerOfMassB );
+					= find3DAffineTransform( residuePositionsA, residuePositionsB, centerOfMassA, centerOfMassB );
 
 				const Mat3f rotation = { eigenMatrix[ 0 ][ 0 ], eigenMatrix[ 0 ][ 1 ], eigenMatrix[ 0 ][ 2 ],
 										 eigenMatrix[ 1 ][ 0 ], eigenMatrix[ 1 ][ 1 ], eigenMatrix[ 1 ][ 2 ],
@@ -739,23 +778,16 @@ namespace VTX::Tool::Structalign::backend
 
 				const Vec3f translation = centerOfMassA - ( rotation * centerOfMassB );
 
-				const Mat4f rotationMatrix = Mat4f(
+				const Mat3f rotationMatrix(
 					rotation[ 0 ][ 0 ],
 					rotation[ 0 ][ 1 ],
 					rotation[ 0 ][ 2 ],
-					0,
 					rotation[ 1 ][ 0 ],
 					rotation[ 1 ][ 1 ],
 					rotation[ 1 ][ 2 ],
-					0,
 					rotation[ 2 ][ 0 ],
 					rotation[ 2 ][ 1 ],
-					rotation[ 2 ][ 2 ],
-					0,
-					0,
-					0,
-					0,
-					1.
+					rotation[ 2 ][ 2 ]
 				);
 
 				const Mat4f transformationMatrix = Mat4f(
@@ -778,7 +810,7 @@ namespace VTX::Tool::Structalign::backend
 				);
 
 				const float rmsd = float(
-					Analysis::RMSD::computeRMSD( residuePositionsA, residuePositionsB, MAT4F_ID, rotationMatrix )
+					Util::Math::computeRmsd( residuePositionsA, residuePositionsB, MAT3F_ID, rotationMatrix )
 				);
 
 				if ( !result.isValid() || rmsd < result.rmsd
@@ -828,6 +860,8 @@ namespace VTX::Tool::Structalign::backend
 		PathSelection bestPath = selectBestPath(
 			staticMoleculeResiduePositions, mobileMoleculeResiduePositions, topPaths, correctedParameters
 		);
+
+		p_results.transformMatrix = bestPath.tranformMatrix;
 
 		const double atomRmsdOnPath = _computeRMSDOnAtomOfPath(
 			p_params.staticStructure,

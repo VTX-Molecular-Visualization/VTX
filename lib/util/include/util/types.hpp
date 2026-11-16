@@ -33,6 +33,7 @@ namespace VTX
 	using Vec4i = glm::ivec4;
 	using Vec4u = glm::uvec4;
 	using Mat3f = glm::mat3;
+	using Mat3d = glm::dmat3;
 	using Mat4f = glm::mat4;
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
@@ -48,9 +49,7 @@ namespace VTX
 	template<typename E>
 		requires std::is_enum_v<E>
 	constexpr std::underlying_type_t<E> toUnderlying( const E p_e ) noexcept
-	{
-		return static_cast<std::underlying_type_t<E>>( p_e );
-	}
+	{ return static_cast<std::underlying_type_t<E>>( p_e ); }
 
 } // namespace VTX
 
