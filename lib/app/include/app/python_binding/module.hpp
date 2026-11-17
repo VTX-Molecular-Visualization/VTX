@@ -105,9 +105,7 @@ namespace VTX::App::PythonBinding
 	 */
 	template<typename Predicate>
 	void waitUntil( const Predicate & p_predicate )
-	{
-		while ( not synchronizeCopy( p_predicate ) ) {}
-	}
+	{ THREAD().waitUntil( p_predicate ); }
 
 	namespace Detail
 	{

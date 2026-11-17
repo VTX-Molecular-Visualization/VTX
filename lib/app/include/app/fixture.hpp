@@ -29,11 +29,9 @@ namespace VTX::App
 		 */
 		static Arguments getDefaultArguments()
 		{
-			static const char * argv[] = { "" };
-
 			Arguments args;
 			args.argc		= 1;
-			args.argv		= argv;
+			args.argv		= DEFAULT_ARGV;
 			args.noGraphics = true;
 			args.noUpdates	= true;
 			args.noPython	= true;
@@ -51,16 +49,13 @@ namespace VTX::App
 		{
 			if ( p_args.argv == nullptr )
 			{
-				static const char * argv[] = { "" };
-				p_args.argc				   = 1;
-				p_args.argv				   = argv;
+				p_args.argc = 1;
+				p_args.argv = DEFAULT_ARGV;
 			}
 
 			_app = std::make_unique<VTXApp>( std::move( p_args ) );
 			_app->start();
 		}
-
-		~Fixture() { _app.reset(); }
 
 		/**
 		 * @brief System loading.
@@ -97,9 +92,11 @@ namespace VTX::App
 		/**
 		 * @brief Get app pointer.
 		 */
-		VTXApp * const get() { return _app.get(); }
+		VTXApp * get() { return _app.get(); }
 
 	  private:
+		static constexpr const char * DEFAULT_ARGV[] = { "" };
+
 		/**
 		 * @brief VTYX App.
 		 */

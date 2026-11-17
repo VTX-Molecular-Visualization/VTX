@@ -9,6 +9,7 @@
 #include <list>
 #include <memory>
 #include <mutex>
+#include <stdexcept>
 #include <thread>
 #include <type_traits>
 #include <unordered_set>
@@ -103,6 +104,42 @@ namespace VTX::Util::Thread
 		}
 
 		/**
+		 * @brief Blocks the calling thread until the predicate is true in the main thread context.
+		 */
+		template<std::predicate Predicate>
+		void waitUntil( Predicate p_predicate )
+		{
+			const ID caller = std::this_thread::get_id();
+			if ( caller == _ownerThreadId )
+			{
+				throw std::logic_error( "waitUntil cannot be called from the owner thread." );
+			}
+
+			std::future<void> future = synchronize(
+				[ this, caller, predicate = std::function<bool()>( std::move( p_predicate ) ) ]() mutable
+				{
+					std::promise<void> promise;
+					std::future<void>  result = promise.get_future();
+					if ( predicate() )
+					{
+						promise.set_value();
+					}
+					else
+					{
+						_addWaiter( caller, std::move( predicate ), std::move( promise ) );
+					}
+					return result;
+				}
+			);
+			future.get();
+		}
+
+		/**
+		 * @brief Checks pending waiters.
+		 */
+		void updateWaiters();
+
+		/**
 		 * @brief Dispatches a function to be executed in the context of the thread that owns the ThreadManager.
 		 * Called from another thread, this function will return immediately.
 		 */
@@ -143,6 +180,11 @@ namespace VTX::Util::Thread
 		void setOnPending( const AtomicCallback::Function p_function, void * const p_context ) noexcept
 		{ _onPending.set( p_function, p_context ); }
 
+		/**
+		 * @brief Cancels all synchronized calls.
+		 */
+		void cancelSynchronizedCalls();
+
 	  private:
 		/**
 		 * @brief Struct to store a synchronized call.
@@ -180,6 +222,16 @@ namespace VTX::Util::Thread
 		};
 
 		/**
+		 * @brief Struct to store a thread waiting for a predicate.
+		 */
+		struct Waiter
+		{
+			ID					  caller;
+			std::function<bool()> predicate;
+			std::promise<void>	  promise;
+		};
+
+		/**
 		 * @brief List of threads.
 		 */
 		std::list<std::shared_ptr<BaseThread>> _threads;
@@ -210,6 +262,11 @@ namespace VTX::Util::Thread
 		std::list<DispatchedCall> _dispatchedCalls;
 
 		/**
+		 * @brief List of threads waiting for a predicate.
+		 */
+		std::list<Waiter> _waiters;
+
+		/**
 		 * @brief Set of thread ids that have been cancelled.
 		 */
 		std::unordered_set<ID> _cancelledCallers;
@@ -231,14 +288,14 @@ namespace VTX::Util::Thread
 		AtomicCallback _onPending;
 
 		/**
+		 * @brief Registers a waiter, or drops it if its caller is cancelled or the manager is shutting down.
+		 */
+		void _addWaiter( ID, std::function<bool()>, std::promise<void> );
+
+		/**
 		 * @brief Cancels the synchronized calls for the given thread id.
 		 */
 		void _cancelSynchronizedCalls( ID );
-
-		/**
-		 * @brief Cancels all synchronized calls.
-		 */
-		void _cancelSynchronizedCalls();
 	};
 
 } // namespace VTX::Util::Thread

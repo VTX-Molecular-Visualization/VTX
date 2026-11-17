@@ -190,6 +190,81 @@ TEST_CASE( "VTX_UTIL - Threading - Cancel synchronization", "[threading][synchro
 	CHECK( cancelled );
 }
 
+TEST_CASE( "VTX_UTIL - Threading - Wait until", "[threading][synchronize]" )
+{
+	using namespace VTX;
+	Util::Thread::ThreadManager threadManager;
+	CHECK_THROWS_AS( threadManager.waitUntil( [] { return true; } ), std::logic_error );
+
+	bool			 ready	  = false;
+	int				 checks	  = 0;
+	std::atomic_bool released = false;
+	std::thread		 waiter(
+		[ & ]
+		{
+			threadManager.waitUntil(
+				[ & ]
+				{
+					++checks;
+					return ready;
+				}
+			);
+			released = true;
+		}
+	);
+
+	while ( checks == 0 )
+	{
+		threadManager.update();
+		std::this_thread::yield();
+	}
+	threadManager.updateWaiters();
+	CHECK_FALSE( released );
+
+	ready = true;
+	threadManager.updateWaiters();
+	waiter.join();
+	CHECK( released );
+	CHECK( checks == 3 );
+}
+
+TEST_CASE( "VTX_UTIL - Threading - Wait until cancelled by destruction", "[threading][synchronize]" )
+{
+	using namespace VTX;
+	auto threadManager = std::make_unique<Util::Thread::ThreadManager>();
+
+	bool		registered = false;
+	bool		cancelled  = false;
+	std::thread waiter(
+		[ &threadManager, &registered, &cancelled ]
+		{
+			try
+			{
+				threadManager->waitUntil(
+					[ &registered ]
+					{
+						registered = true;
+						return false;
+					}
+				);
+			}
+			catch ( const std::future_error & )
+			{
+				cancelled = true;
+			}
+		}
+	);
+
+	while ( not registered )
+	{
+		threadManager->update();
+		std::this_thread::yield();
+	}
+	threadManager.reset();
+	waiter.join();
+	CHECK( cancelled );
+}
+
 TEST_CASE( "VTX_UTIL - Threading - Dispatch", "[threading][dispatch]" )
 {
 	using namespace VTX;

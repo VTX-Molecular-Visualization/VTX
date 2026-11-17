@@ -31,6 +31,7 @@
 #include <future>
 #include <io/file_format.hpp>
 #include <memory>
+#include <string_view>
 #include <tuple>
 #include <util/chrono.hpp>
 #include <util/event_hub.hpp>
@@ -102,6 +103,11 @@ namespace VTX::App
 		}
 		unbindPending( HUB() );
 
+		if ( ECS::hasCtx<Util::Thread::ThreadManager>() )
+		{
+			THREAD().cancelSynchronizedCalls();
+		}
+
 #if VTX_PYTHON_BINDING
 		if ( ECS::hasCtx<PythonBinding::Interpretor>() )
 		{
@@ -144,17 +150,10 @@ namespace VTX::App
 		setFrameScheduler( &VTXApp::_wake, this );
 		createInitialEntities();
 
-		auto & renderer = RENDERER();
-		if ( ECS::getCtx<Arguments>().noGraphics )
-		{
-			VTX_WARNING( "No graphics backend initialization" );
-			renderer.setDefault(); // TODO : SetDefault in both cases ?
-		}
-		else
-		{
-			VTX_WARNING( "No UI graphics context available, using default backend" );
-			renderer.setDefault();
-		}
+		const std::string_view warning = ARGS().noGraphics ? "No graphics backend initialization"
+														   : "No UI graphics context available, using default backend";
+		VTX_WARNING( warning );
+		RENDERER().setDefault();
 
 		finishStartup();
 
