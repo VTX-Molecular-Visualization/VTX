@@ -205,42 +205,51 @@ namespace VTX::App::PythonBinding::Topology
 				"setVisible",
 				[ getRanges ]( const T & p_object, const bool p_visible )
 				{ setVisible<ITEM>( p_object.entity, getRanges( p_object ), p_visible ); },
+				"Show or hide.",
 				py::arg( "visible" ) = true
 			)
 			.def(
 				"setSelected",
 				[ getRanges ]( const T & p_object, const bool p_selected, const bool p_append )
 				{ setSelected<ITEM>( p_object.entity, getRanges( p_object ), p_selected, p_append ); },
+				"Select or deselect. Selecting without append clears the rest of the system selection.",
 				py::arg( "selected" ) = true,
 				py::arg( "append" )	  = false
 			)
 			.def_property_readonly(
 				"visibleState",
 				[ getIndex ]( const T & p_object )
-				{ return getVisibleState( p_object.entity, ITEM, getIndex( p_object ) ); }
+				{ return getVisibleState( p_object.entity, ITEM, getIndex( p_object ) ); },
+				"Visibility state."
 			)
 			.def_property_readonly(
 				"selectionState",
 				[ getIndex ]( const T & p_object )
-				{ return getSelectionState( p_object.entity, ITEM, getIndex( p_object ) ); }
+				{ return getSelectionState( p_object.entity, ITEM, getIndex( p_object ) ); },
+				"Selection state."
 			)
 			.def(
 				"isVisible",
-				[ getIndex ]( const T & p_object ) { return isVisible( p_object.entity, ITEM, getIndex( p_object ) ); }
+				[ getIndex ]( const T & p_object ) { return isVisible( p_object.entity, ITEM, getIndex( p_object ) ); },
+				"Whether at least partly visible."
 			)
 			.def(
 				"isFullyVisible",
 				[ getIndex ]( const T & p_object )
-				{ return isFullyVisible( p_object.entity, ITEM, getIndex( p_object ) ); }
+				{ return isFullyVisible( p_object.entity, ITEM, getIndex( p_object ) ); },
+				"Whether entirely visible."
 			)
 			.def(
 				"isSelected",
-				[ getIndex ]( const T & p_object ) { return isSelected( p_object.entity, ITEM, getIndex( p_object ) ); }
+				[ getIndex ]( const T & p_object )
+				{ return isSelected( p_object.entity, ITEM, getIndex( p_object ) ); },
+				"Whether at least partly selected."
 			)
 			.def(
 				"isFullySelected",
 				[ getIndex ]( const T & p_object )
-				{ return isFullySelected( p_object.entity, ITEM, getIndex( p_object ) ); }
+				{ return isFullySelected( p_object.entity, ITEM, getIndex( p_object ) ); },
+				"Whether entirely selected."
 			);
 
 		return p_class;

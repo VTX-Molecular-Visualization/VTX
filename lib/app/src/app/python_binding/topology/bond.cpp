@@ -19,11 +19,13 @@ namespace VTX::App::PythonBinding::Topology
 
 	void bindBond( pybind11::module_ & p_module )
 	{
-		bindIdentity( py::class_<Bond>( p_module, "Bond", py::module_local() ) )
-			.def_property_readonly( "index", []( const Bond & p_bond ) { return p_bond.index; } )
-			.def( "getSystem", synchronized( &Bond::getSystem ) )
-			.def( "getFirstAtom", synchronized( &Bond::getFirstAtom ) )
-			.def( "getSecondAtom", synchronized( &Bond::getSecondAtom ) )
+		bindIdentity( py::class_<Bond>( p_module, "Bond", "Handle to a bond of a system.", py::module_local() ) )
+			.def_property_readonly(
+				"index", []( const Bond & p_bond ) { return p_bond.index; }, "Index in the system."
+			)
+			.def( "getSystem", synchronized( &Bond::getSystem ), "Return the parent system." )
+			.def( "getFirstAtom", synchronized( &Bond::getFirstAtom ), "Return the first atom." )
+			.def( "getSecondAtom", synchronized( &Bond::getSecondAtom ), "Return the second atom." )
 			.def_property_readonly(
 				"order",
 				synchronized(
@@ -33,7 +35,8 @@ namespace VTX::App::PythonBinding::Topology
 							getTopology( p_bond.entity ).getBondOrder( p_bond.index )
 						) ];
 					}
-				)
+				),
+				"Bond order."
 			);
 	}
 } // namespace VTX::App::PythonBinding::Topology

@@ -78,13 +78,18 @@ namespace VTX::App::PythonBinding::Preset
 	{
 		using Value = Renderer::E_GRAPHICS_CONFIG_VALUES;
 
-		VTX::PythonBinding::Helper::declareEnum<Value>( p_vtxModule.pyModule(), "GRAPHICS_CONFIG_VALUE" );
-		VTX::PythonBinding::Helper::declareEnum<Renderer::E_SHADING>( p_vtxModule.pyModule(), "SHADING_MODE" );
-		VTX::PythonBinding::Helper::declareEnum<Renderer::E_BACKGROUND_MODE>(
-			p_vtxModule.pyModule(), "BACKGROUND_MODE"
+		VTX::PythonBinding::Helper::declareEnum<Renderer::E_SHADING>(
+			p_vtxModule.pyModule(), "SHADING_MODE", "Shading mode."
 		);
-		VTX::PythonBinding::Helper::declareEnum<Renderer::E_SSAO_METHOD>( p_vtxModule.pyModule(), "SSAO_METHOD" );
-		VTX::PythonBinding::Helper::declareEnum<Renderer::E_TONE_MAPPING>( p_vtxModule.pyModule(), "TONE_MAPPING" );
+		VTX::PythonBinding::Helper::declareEnum<Renderer::E_BACKGROUND_MODE>(
+			p_vtxModule.pyModule(), "BACKGROUND_MODE", "Background mode."
+		);
+		VTX::PythonBinding::Helper::declareEnum<Renderer::E_SSAO_METHOD>(
+			p_vtxModule.pyModule(), "SSAO_METHOD", "Ambient occlusion method."
+		);
+		VTX::PythonBinding::Helper::declareEnum<Renderer::E_TONE_MAPPING>(
+			p_vtxModule.pyModule(), "TONE_MAPPING", "Tone mapping operator."
+		);
 
 		_bindProperty<Value::SHADING_MODE, Renderer::E_SHADING>(
 			p_binding, "shadingMode", []( const GraphicsConfigHandle & p ) { return getData( p ).shading.mode; }
@@ -130,7 +135,8 @@ namespace VTX::App::PythonBinding::Preset
 				const std::optional<FilePath> path = getData( p_preset ).shading.environmentPath;
 				return path ? std::optional<std::string>( path->string() ) : std::nullopt;
 			},
-			&_setEnvironmentPath
+			&_setEnvironmentPath,
+			"Environment map file path, or None."
 		);
 		_bindProperty<Value::SKYBOX_INTENSITY, float>(
 			p_binding,

@@ -56,7 +56,12 @@ namespace VTX::App::PythonBinding::Topology
 
 	void bindCollections( pybind11::module_ & p_module )
 	{
-		bindCollection<Chain>( p_module, "ChainCollection", SystemItem::CHAIN )
+		bindCollection<Chain>(
+			p_module,
+			"ChainCollection",
+			"Collection of chains. Supports len, iteration, indexing and slicing.",
+			SystemItem::CHAIN
+		)
 			.def_property_readonly(
 				"names",
 				synchronized(
@@ -71,7 +76,12 @@ namespace VTX::App::PythonBinding::Topology
 				),
 				"Names of all chains, fetched in a single call."
 			);
-		bindCollection<Residue>( p_module, "ResidueCollection", SystemItem::RESIDUE )
+		bindCollection<Residue>(
+			p_module,
+			"ResidueCollection",
+			"Collection of residues. Supports len, iteration, indexing and slicing.",
+			SystemItem::RESIDUE
+		)
 			.def_property_readonly(
 				"names",
 				synchronized(
@@ -100,7 +110,12 @@ namespace VTX::App::PythonBinding::Topology
 				),
 				"Symbols of all residues, fetched in a single call."
 			);
-		bindCollection<Atom>( p_module, "AtomCollection", SystemItem::ATOM )
+		bindCollection<Atom>(
+			p_module,
+			"AtomCollection",
+			"Collection of atoms. Supports len, iteration, indexing and slicing.",
+			SystemItem::ATOM
+		)
 			.def_property_readonly(
 				"positions",
 				synchronized( &_getAtomPositions ),
@@ -134,7 +149,14 @@ namespace VTX::App::PythonBinding::Topology
 				),
 				"Symbols of all atoms, fetched in a single call."
 			);
-		bindCollection<Bond>( p_module, "BondCollection" );
-		bindCollection<Category>( p_module, "CategoryCollection", SystemItem::CATEGORY );
+		bindCollection<Bond>(
+			p_module, "BondCollection", "Collection of bonds. Supports len, iteration, indexing and slicing."
+		);
+		bindCollection<Category>(
+			p_module,
+			"CategoryCollection",
+			"Collection of categories. Supports len, iteration, indexing and slicing.",
+			SystemItem::CATEGORY
+		);
 	}
 } // namespace VTX::App::PythonBinding::Topology

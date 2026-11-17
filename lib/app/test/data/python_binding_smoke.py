@@ -162,14 +162,14 @@ for removed_name in (
     "setRepresentationSelected",
     "setColorLayout",
     "setGraphicsConfig",
+    "REPRESENTATION_VALUE",
+    "GRAPHICS_CONFIG_VALUE",
 ):
     require(not hasattr(vtx, removed_name), f"Duplicate module binding should be removed: {removed_name}")
 
 for enum_name in (
-    "REPRESENTATION_VALUE",
     "SES_COMPUTE_MODE",
     "COLOR_LAYOUT_INDEX",
-    "GRAPHICS_CONFIG_VALUE",
     "SHADING_MODE",
     "BACKGROUND_MODE",
     "SSAO_METHOD",
@@ -463,14 +463,12 @@ require(
     "Unexpected topology system counts",
 )
 require(
-    topology_system.indexFirstChain == 0
-    and topology_system.indexLastChain == topology_system.chainCount
-    and topology_system.indexFirstResidue == 0
-    and topology_system.indexLastResidue == topology_system.residueCount
-    and topology_system.indexFirstAtom == 0
-    and topology_system.indexLastAtom == topology_system.atomCount
-    and topology_system.indexFirstBond == 0
-    and topology_system.indexLastBond == topology_system.bondCount,
+    topology_system.indexLastChain == topology_system.chainCount - 1
+    and topology_system.indexLastResidue == topology_system.residueCount - 1
+    and topology_system.indexLastAtom == topology_system.atomCount - 1
+    and topology_system.indexLastBond
+    == (topology_system.bondCount - 1 if topology_system.bondCount > 0 else None)
+    and not hasattr(topology_system, "indexFirstChain"),
     "Unexpected topology system ranges",
 )
 
@@ -500,9 +498,9 @@ require(
 )
 require(
     topology_chain.indexLastResidue
-    == topology_chain.indexFirstResidue + topology_chain.residueCount
+    == topology_chain.indexFirstResidue + topology_chain.residueCount - 1
     and topology_chain.indexLastAtom
-    == topology_chain.indexFirstAtom + topology_chain.atomCount,
+    == topology_chain.indexFirstAtom + topology_chain.atomCount - 1,
     "Unexpected chain ranges",
 )
 
@@ -517,7 +515,7 @@ require(
 )
 require(
     topology_residue.indexLastAtom
-    == topology_residue.indexFirstAtom + topology_residue.atomCount,
+    == topology_residue.indexFirstAtom + topology_residue.atomCount - 1,
     "Unexpected residue ranges",
 )
 topology_residue_category = topology_residue.getCategory()
@@ -575,7 +573,7 @@ require(
     trajectory.requestedFrameIndex == 0
     and trajectory.playMode == vtx.TRAJECTORY_PLAY_MODE.NONE
     and trajectory.paused
-    and almost_equal(trajectory.speed, 0.0),
+    and almost_equal(trajectory.frameDelay, 0.0),
     "Unexpected single-frame player state",
 )
 frame = topology_system.currentFrame
@@ -589,7 +587,7 @@ for trajectory_command in (
     lambda: trajectory.stop(),
     lambda: trajectory.jumpTo(0),
     lambda: trajectory.setPlayMode(vtx.TRAJECTORY_PLAY_MODE.NONE),
-    lambda: trajectory.setSpeed(35.0),
+    lambda: trajectory.setFrameDelay(35.0),
 ):
     try:
         trajectory_command()

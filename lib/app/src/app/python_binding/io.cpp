@@ -30,7 +30,9 @@ namespace VTX::App::PythonBinding
 	{
 		const pybind11::module_ & module = p_vtxModule.pyModule();
 
-		VTX::PythonBinding::Helper::declareEnum<Util::Image::E_FORMAT>( module, "IMAGE_FORMAT" );
+		VTX::PythonBinding::Helper::declareEnum<Util::Image::E_FORMAT>(
+			module, "IMAGE_FORMAT", "Snapshot image format."
+		);
 		p_vtxModule.bindAction<
 			App::Action::IO::Snapshot,
 			const std::optional<FilePath>,
@@ -40,7 +42,7 @@ namespace VTX::App::PythonBinding
 			const std::optional<size_t>,
 			const std::optional<float>>(
 			"makeSnapshot",
-			"Take a snapshot with optional output path, filename, dimensions and background opacity.",
+			"Save a screenshot. Defaults to the snapshots folder, a timestamp name, PNG and the current resolution.",
 			VTX::PythonBinding::Wrapper::VArg<std::optional<FilePath>>( "path", std::optional<FilePath>() ),
 			VTX::PythonBinding::Wrapper::VArg<std::optional<FilePath>>( "filename", std::optional<FilePath>() ),
 			VTX::PythonBinding::Wrapper::VArg<Util::Image::E_FORMAT>( "format", Util::Image::E_FORMAT::PNG ),
@@ -58,8 +60,9 @@ namespace VTX::App::PythonBinding
 		p_vtxModule.def(
 			"download",
 			&_download,
-			"Retrieve a system from the RCSB PDB and wait until it is loaded.",
-			VTX::PythonBinding::Wrapper::Arg( "system_id" )
+			"Download a system from the RCSB PDB and wait until it is loaded. Raises ValueError for an invalid "
+			"identifier.",
+			VTX::PythonBinding::Wrapper::Arg( "systemId" )
 		);
 	}
 } // namespace VTX::App::PythonBinding

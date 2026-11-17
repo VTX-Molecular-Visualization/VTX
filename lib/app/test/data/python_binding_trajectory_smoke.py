@@ -38,14 +38,14 @@ require(
     trajectory.playMode == vtx.TRAJECTORY_PLAY_MODE.FORWARD_LOOP,
     "Unexpected trajectory play mode",
 )
-trajectory.setSpeed(42.0)
-require(almost_equal(trajectory.speed, 42.0), "Unexpected trajectory speed")
+trajectory.setFrameDelay(42.0)
+require(almost_equal(trajectory.frameDelay, 42.0), "Unexpected trajectory frame delay")
 try:
-    trajectory.setSpeed(float("nan"))
+    trajectory.setFrameDelay(float("nan"))
 except ValueError:
     pass
 else:
-    raise AssertionError("A non-finite trajectory speed should raise ValueError")
+    raise AssertionError("A non-finite trajectory frame delay should raise ValueError")
 try:
     trajectory.jumpTo(trajectory.frameCount)
 except IndexError:

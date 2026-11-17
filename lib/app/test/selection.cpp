@@ -360,6 +360,13 @@ TEST_CASE( "VTX_APP - Selection - SetSelected maps items to atom selections", "[
 		CHECK_FALSE( REG().get<System::Selection>( system ).atoms.test( firstAtom ) );
 		CHECK( REG().get<System::Selection>( system ).atoms.test( secondAtom ) );
 		CHECK( REG().get<System::Selection>( system ).atoms.count() == 1 );
+
+		ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, firstAtom, true, true );
+		ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, firstAtom, false, false );
+
+		CHECK_FALSE( REG().get<System::Selection>( system ).atoms.test( firstAtom ) );
+		CHECK( REG().get<System::Selection>( system ).atoms.test( secondAtom ) );
+		CHECK( REG().get<System::Selection>( system ).atoms.count() == 1 );
 	}
 
 	SECTION( "residue range overload expands residue indexes into atom ranges" )

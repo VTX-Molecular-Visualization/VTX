@@ -20,5 +20,5 @@ namespace VTX::App::PythonBinding
 	} // namespace
 
 	void SystemBinder::bind( Module & p_vtxModule )
-	{ p_vtxModule.def( "getSystems", synchronized( &_getSystems ), "Return all loaded systems." ); }
+	{ p_vtxModule.def( "getSystems", synchronized( &_getSystems ), "Return all systems." ); }
 } // namespace VTX::App::PythonBinding

@@ -143,6 +143,7 @@ namespace VTX::App::PythonBinding
 						);
 					}
 				},
+				"Frame the target in the view.",
 				pybind11::arg( "target" ),
 				pybind11::arg( "duration" ) = 0.f
 			);
@@ -203,9 +204,13 @@ namespace VTX::App::PythonBinding
 	{
 		const pybind11::module_ & module = p_vtxModule.pyModule();
 
-		VTX::PythonBinding::Helper::declareEnum<Renderer::PROJECTION>( module, "CAMERA_PROJECTION" );
+		VTX::PythonBinding::Helper::declareEnum<Renderer::PROJECTION>(
+			module, "CAMERA_PROJECTION", "Camera projection mode."
+		);
 
-		bindIdentity( pybind11::class_<Viewpoint>( module, "Viewpoint", pybind11::module_local() ) )
+		bindIdentity(
+			pybind11::class_<Viewpoint>( module, "Viewpoint", "Saved camera viewpoint.", pybind11::module_local() )
+		)
 			.def_property_readonly(
 				"name",
 				synchronized(
@@ -214,17 +219,20 @@ namespace VTX::App::PythonBinding
 						_validateViewpoint( p_viewpoint.entity );
 						return REG().get<Generic::Name>( p_viewpoint.entity ).name;
 					}
-				)
+				),
+				"Viewpoint name."
 			)
 			.def_property_readonly(
 				"position",
 				synchronized( []( const Viewpoint & p_viewpoint )
-							  { return _getViewpointTransform( p_viewpoint ).getPosition(); } )
+							  { return _getViewpointTransform( p_viewpoint ).getPosition(); } ),
+				"Camera position."
 			)
 			.def_property_readonly(
 				"rotation",
 				synchronized( []( const Viewpoint & p_viewpoint )
-							  { return _getViewpointTransform( p_viewpoint ).getRotation(); } )
+							  { return _getViewpointTransform( p_viewpoint ).getRotation(); } ),
+				"Camera rotation quaternion."
 			)
 			.def_property_readonly(
 				"target",
@@ -234,24 +242,28 @@ namespace VTX::App::PythonBinding
 						_validateViewpoint( p_viewpoint.entity );
 						return REG().get<Scene::ViewPoint>( p_viewpoint.entity ).target;
 					}
-				)
+				),
+				"Camera target point."
 			)
 			.def(
 				"setName",
 				[]( const Viewpoint & p_viewpoint, const std::string & p_name )
 				{ _executeViewpointAction<App::Action::Camera::RenameViewPoint>( p_viewpoint, p_name ); },
+				"Rename the viewpoint.",
 				pybind11::arg( "name" )
 			)
 			.def(
 				"setPosition",
 				[]( const Viewpoint & p_viewpoint, const Vec3f & p_position )
 				{ _executeViewpointAction<App::Action::Camera::SetViewPointPosition>( p_viewpoint, p_position ); },
+				"Set the camera position.",
 				pybind11::arg( "position" )
 			)
 			.def(
 				"setRotation",
 				[]( const Viewpoint & p_viewpoint, const Quatf & p_rotation )
 				{ _executeViewpointAction<App::Action::Camera::SetViewPointRotation>( p_viewpoint, p_rotation ); },
+				"Set the camera rotation quaternion.",
 				pybind11::arg( "rotation" )
 			)
 			.def(
@@ -267,8 +279,7 @@ namespace VTX::App::PythonBinding
 					_executeViewpointAction<App::Action::Camera::GoToViewPoint>( p_viewpoint, p_duration );
 					_waitCameraAnimation( p_duration );
 				},
-				"Move the camera to this viewpoint. A positive duration (ms) animates the camera and waits for the "
-				"end.",
+				"Move the camera to this viewpoint.",
 				pybind11::arg( "duration" ) = 0.f
 			)
 			.def(
@@ -278,80 +289,117 @@ namespace VTX::App::PythonBinding
 				"Delete this viewpoint."
 			);
 
-		auto cameraClass = pybind11::class_<CameraView>( module, "Camera", pybind11::module_local() );
+		auto cameraClass = pybind11::class_<CameraView>(
+			module,
+			"Camera",
+			"Scene camera, available as vtx.camera. Durations are in milliseconds; a positive duration animates the "
+			"camera and waits for the end.",
+			pybind11::module_local()
+		);
 		cameraClass
 			.def_property_readonly(
-				"position", synchronized( []( const CameraView & ) { return _getCameraTransform().getPosition(); } )
+				"position",
+				synchronized( []( const CameraView & ) { return _getCameraTransform().getPosition(); } ),
+				"Position in world space."
 			)
 			.def_property_readonly(
-				"rotation", synchronized( []( const CameraView & ) { return _getCameraTransform().getRotation(); } )
+				"rotation",
+				synchronized( []( const CameraView & ) { return _getCameraTransform().getRotation(); } ),
+				"Rotation quaternion."
 			)
-			.def_property_readonly( "fov", synchronized( []( const CameraView & ) { return _getCamera().fov; } ) )
-			.def_property_readonly( "nearClip", synchronized( []( const CameraView & ) { return _getCamera().near; } ) )
-			.def_property_readonly( "farClip", synchronized( []( const CameraView & ) { return _getCamera().far; } ) )
 			.def_property_readonly(
-				"projection", synchronized( []( const CameraView & ) { return _getCamera().projection; } )
+				"fov",
+				synchronized( []( const CameraView & ) { return _getCamera().fov; } ),
+				"Vertical field of view in degrees."
+			)
+			.def_property_readonly(
+				"nearClip",
+				synchronized( []( const CameraView & ) { return _getCamera().near; } ),
+				"Near clipping distance."
+			)
+			.def_property_readonly(
+				"farClip",
+				synchronized( []( const CameraView & ) { return _getCamera().far; } ),
+				"Far clipping distance."
+			)
+			.def_property_readonly(
+				"projection",
+				synchronized( []( const CameraView & ) { return _getCamera().projection; } ),
+				"Projection mode."
 			)
 			.def(
 				"isPerspective",
 				synchronized( []( const CameraView & )
-							  { return _getCamera().projection == Renderer::PROJECTION::PERSPECTIVE; } )
+							  { return _getCamera().projection == Renderer::PROJECTION::PERSPECTIVE; } ),
+				"Whether the projection is perspective."
 			)
 			.def(
 				"isOrthographic",
 				synchronized( []( const CameraView & )
-							  { return _getCamera().projection == Renderer::PROJECTION::ORTHOGRAPHIC; } )
+							  { return _getCamera().projection == Renderer::PROJECTION::ORTHOGRAPHIC; } ),
+				"Whether the projection is orthographic."
 			)
 			.def(
 				"setPosition",
 				[]( const CameraView &, const Vec3f & p_position )
 				{ executeAction<App::Action::Camera::SetPosition>( p_position ); },
+				"Set the position in world space.",
 				pybind11::arg( "position" )
 			)
 			.def(
 				"setRotation",
 				[]( const CameraView &, const Quatf & p_rotation )
 				{ executeAction<App::Action::Camera::SetRotation>( p_rotation ); },
+				"Set the rotation quaternion.",
 				pybind11::arg( "rotation" )
 			)
 			.def(
 				"setFov",
 				[]( const CameraView &, const float p_fov ) { executeAction<App::Action::Camera::SetFov>( p_fov ); },
+				"Set the vertical field of view in degrees, clamped to [10, 90].",
 				pybind11::arg( "fov" )
 			)
 			.def(
 				"setNearClip",
 				[]( const CameraView &, const float p_near )
 				{ executeAction<App::Action::Camera::SetNearClip>( p_near ); },
+				"Set the near clipping distance.",
 				pybind11::arg( "near" )
 			)
 			.def(
 				"setFarClip",
 				[]( const CameraView &, const float p_far )
 				{ executeAction<App::Action::Camera::SetFarClip>( p_far ); },
+				"Set the far clipping distance.",
 				pybind11::arg( "far" )
 			)
 			.def(
 				"setProjectionOrthographic",
 				[]( const CameraView & )
-				{ executeAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(); }
+				{ executeAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::ORTHOGRAPHIC>>(); },
+				"Use an orthographic projection."
 			)
 			.def(
 				"setProjectionPerspective",
 				[]( const CameraView & )
-				{ executeAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(); }
+				{ executeAction<App::Action::Camera::SetProjectionMode<Renderer::PROJECTION::PERSPECTIVE>>(); },
+				"Use a perspective projection."
 			)
-			.def( "reset", []( const CameraView & ) { executeAction<App::Action::Camera::Reset>(); } )
+			.def(
+				"reset", []( const CameraView & ) { executeAction<App::Action::Camera::Reset>(); }, "Reset the camera."
+			)
 			.def(
 				"orient",
 				[]( const CameraView &, const float p_duration )
 				{ _animateCamera<App::Action::Camera::Orient>( p_duration ); },
+				"Frame the selection in the view, or the whole scene if nothing is selected.",
 				pybind11::arg( "duration" ) = 0.f
 			)
 			.def(
 				"orient",
 				[]( const CameraView &, const Util::Math::AABB & p_target, const float p_duration )
 				{ _orient( p_target, p_duration ); },
+				"Frame a bounding box in the view.",
 				pybind11::arg( "target" ),
 				pybind11::arg( "duration" ) = 0.f
 			)
@@ -370,6 +418,7 @@ namespace VTX::App::PythonBinding
 						p_duration
 					);
 				},
+				"Frame a system in the view.",
 				pybind11::arg( "target" ),
 				pybind11::arg( "duration" ) = 0.f
 			);
@@ -390,6 +439,7 @@ namespace VTX::App::PythonBinding
 				"straightTravel",
 				[]( const CameraView &, const Vec3f & p_position, const Quatf & p_rotation, const float p_duration )
 				{ _animateCamera<App::Action::Camera::StraightTravel>( p_duration, p_position, p_rotation ); },
+				"Move the camera to a position and rotation.",
 				pybind11::arg( "position" ),
 				pybind11::arg( "rotation" ),
 				pybind11::arg( "duration" ) = 0.f
@@ -401,12 +451,16 @@ namespace VTX::App::PythonBinding
 				"Save the current camera as a new viewpoint and return it.",
 				pybind11::arg( "name" ) = pybind11::none()
 			)
-			.def( "getViewpoints", synchronized( []( const CameraView & ) { return _getViewpoints(); } ) )
+			.def(
+				"getViewpoints",
+				synchronized( []( const CameraView & ) { return _getViewpoints(); } ),
+				"Return all viewpoints."
+			)
 			.def(
 				"getViewpoint",
 				synchronized( []( const CameraView &, const std::string & p_name )
 							  { return _getViewpoint( p_name ); } ),
-				"Return the viewpoint matching given name (case insensitive).",
+				"Return a viewpoint by name, case insensitive. Raises ValueError if not found.",
 				pybind11::arg( "name" )
 			);
 		module.attr( "camera" ) = CameraView {};

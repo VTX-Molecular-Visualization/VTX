@@ -30,14 +30,14 @@ namespace VTX::App::PythonBinding
 		p_vtxModule.def(
 			"setResolution",
 			&_setResolution,
-			"Set the renderer resolution in pixels.",
+			"Set the renderer resolution in pixels. Raises ValueError if zero.",
 			VTX::PythonBinding::Wrapper::Arg( "width" ),
 			VTX::PythonBinding::Wrapper::Arg( "height" )
 		);
 		p_vtxModule.def(
 			"getResolution",
 			synchronized( &_getResolution ),
-			"Get the renderer resolution in pixels as (width, height)."
+			"Return the renderer resolution in pixels as (width, height)."
 		);
 	}
 } // namespace VTX::App::PythonBinding

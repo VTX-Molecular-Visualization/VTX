@@ -9,9 +9,9 @@ namespace VTX::App::PythonBinding
 	{
 		const pybind11::module_ & module = p_vtxModule.pyModule();
 
-		VTX::PythonBinding::Helper::declareEnum<Renderer::E_COLOR_SCHEME>( module, "COLOR_SCHEME" );
+		VTX::PythonBinding::Helper::declareEnum<Renderer::E_COLOR_SCHEME>( module, "COLOR_SCHEME", "Color scheme." );
 		VTX::PythonBinding::Helper::declareEnum<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE>(
-			module, "SECONDARY_STRUCTURE_COLOR_SCHEME"
+			module, "SECONDARY_STRUCTURE_COLOR_SCHEME", "Secondary structure color scheme."
 		);
 	}
 } // namespace VTX::App::PythonBinding

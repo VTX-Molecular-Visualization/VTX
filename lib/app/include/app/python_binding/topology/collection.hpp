@@ -94,13 +94,14 @@ namespace VTX::App::PythonBinding::Topology
 	pybind11::class_<Collection<T>> bindCollection(
 		pybind11::module_ &				p_module,
 		const char * const				p_name,
+		const char * const				p_doc,
 		const std::optional<SystemItem> p_item = std::nullopt
 	)
 	{
 		namespace py		 = pybind11;
 		using CollectionType = Collection<T>;
 
-		auto cls = py::class_<CollectionType>( p_module, p_name, py::module_local() );
+		auto cls = py::class_<CollectionType>( p_module, p_name, p_doc, py::module_local() );
 
 		cls.def( "__len__", []( const CollectionType & p_collection ) { return p_collection.ranges.size(); } )
 			.def_property_readonly(
@@ -112,7 +113,8 @@ namespace VTX::App::PythonBinding::Topology
 						return p_item ? Helper::AABB::get( p_collection.entity, *p_item, p_collection.ranges )
 									  : Helper::AABB::getBonds( p_collection.entity, p_collection.ranges );
 					}
-				)
+				),
+				"Axis-aligned bounding box."
 			)
 			.def(
 				"__iter__",
@@ -134,12 +136,14 @@ namespace VTX::App::PythonBinding::Topology
 				{
 					const size_t index = resolveIndex( p_index, p_collection.ranges.size() );
 					return makeHandle<T>( p_collection.entity, getValueAt( p_collection.ranges, index ) );
-				}
+				},
+				py::arg( "index" )
 			)
 			.def(
 				"__getitem__",
 				[]( const CollectionType & p_collection, const py::slice & p_slice )
-				{ return CollectionType { p_collection.entity, sliceRanges( p_collection.ranges, p_slice ) }; }
+				{ return CollectionType { p_collection.entity, sliceRanges( p_collection.ranges, p_slice ) }; },
+				py::arg( "slice" )
 			);
 
 		if ( p_item )
@@ -148,12 +152,14 @@ namespace VTX::App::PythonBinding::Topology
 				   "setVisible",
 				   [ p_item ]( const CollectionType & p_collection, const bool p_visible )
 				   { setVisible( p_collection.entity, *p_item, p_collection.ranges, p_visible ); },
+				   "Show or hide all items.",
 				   py::arg( "visible" ) = true
 			)
 				.def(
 					"setSelected",
 					[ p_item ]( const CollectionType & p_collection, const bool p_selected, const bool p_append )
 					{ setSelected( p_collection.entity, *p_item, p_collection.ranges, p_selected, p_append ); },
+					"Select or deselect all items. Selecting without append clears the rest of the system selection.",
 					py::arg( "selected" ) = true,
 					py::arg( "append" )	  = false
 				);
