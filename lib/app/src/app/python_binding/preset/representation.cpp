@@ -2,7 +2,6 @@
 #include "app/action/representation.hpp"
 #include "app/python_binding/preset/helpers.hpp"
 #include <pybind11/native_enum.h>
-#include <python_binding/binding/helper.hpp>
 #include <renderer/representation.hpp>
 #include <string>
 #include <util/enum.hpp>
