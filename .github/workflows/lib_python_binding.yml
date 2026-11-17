@@ -104,26 +104,14 @@ jobs:
         conan upload sqlite3 -r=vtx
         conan upload xz_utils -r=vtx
 
-    - name: Upload Windows Python dependencies
-      if: runner.os == 'Windows'
-      working-directory: ${{env.LIB_DIR}}
-      run: |
-        conan upload tcl -r=vtx
-        conan upload tk -r=vtx
-
     - name: Upload Linux Python dependencies
       if: runner.os == 'Linux'
       working-directory: ${{env.LIB_DIR}}
       run: |
-        conan upload fontconfig -r=vtx
-        conan upload freetype -r=vtx
         conan upload libxcrypt -r=vtx
         conan upload libpng -r=vtx
         conan upload ncurses -r=vtx
-        conan upload tcl -r=vtx
-        conan upload tk -r=vtx
         conan upload util-linux-libuuid -r=vtx
-        conan upload xorg/system -r=vtx
 
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
