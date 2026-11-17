@@ -73,7 +73,7 @@ class VTXRecipe(ConanFile):
     def requirements(self):
         self.requires("glm/1.0.3")
         self.requires("spdlog/1.17.0")
-        self.requires("fmt/12.2.0", force=True)
+        self.requires("fmt/12.1.0")
         self.requires("magic_enum/0.9.8")
         self.requires("cpr/1.14.2")
         self.requires("catch2/3.16.1")

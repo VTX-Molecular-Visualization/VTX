@@ -30,7 +30,7 @@ class VTXRendererRecipe(ConanFile):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
         self.requires("ktx/4.4.2")
-        self.requires("fmt/12.2.0", force=True)
+        self.requires("fmt/12.1.0")
         self.requires("catch2/3.16.1")
         if self.settings.os == "Linux":
             self.requires("libffi/3.4.8", force=True)
