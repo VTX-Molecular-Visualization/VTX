@@ -12,6 +12,7 @@ def install_system_dependencies(conanfile):
 
 def config_options_ktx(conanfile):
     conanfile.options["ktx"].tools = False
+    conanfile.options["ktx"].sse = False
 
 class VTXRendererRecipe(ConanFile):
     name = "vtx_renderer"
