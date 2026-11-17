@@ -62,6 +62,7 @@ def configure_runtime_toolchain(tc, runtime_root: str) -> None:
 
 def config_options_cpython(conan_file) -> None:
     conan_file.options["cpython"].with_gdbm = False
+    conan_file.options["cpython"].with_tkinter = False
     conan_file.options["cpython"].shared = conan_file.settings.os == "Windows"
 
 
