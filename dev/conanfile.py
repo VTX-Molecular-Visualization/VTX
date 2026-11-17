@@ -1,8 +1,6 @@
-import os
 from conan import ConanFile
 from conan.errors import ConanInvalidConfiguration
 from conan.tools.cmake import cmake_layout, CMake, CMakeToolchain
-from conan.tools.files import copy
 from conan.tools.system.package_manager import Apt
 from pathlib import Path
 import importlib.util
@@ -82,8 +80,6 @@ class VTXRecipe(ConanFile):
         self.requires("chemfiles/2026.02.5")
         self.requires("argparse/3.2")
         if self.options.renderer:
-            self.requires("sdl/3.4.16")
-            self.requires("imgui/1.92.9b")
             self.requires("ktx/4.4.2")
         self.requires("stb/cci.20261021", force=True)
         self.requires("tinyexr/1.0.7")
@@ -155,12 +151,6 @@ class VTXRecipe(ConanFile):
             tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = mdprep_module.runtime_root(self)
         
         tc.generate()
-
-        if self.options.renderer:
-            copy(self, "*sdl3*", os.path.join(self.dependencies["imgui"].package_folder,
-                "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
-            copy(self, "*opengl3*", os.path.join(self.dependencies["imgui"].package_folder,
-                "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
 
         if self.options.python_binding:
             python_binding_module.do_python_copies(self, self._python_version())

@@ -1,2 +1,0 @@
-# Don't add imgui because files are copied from Conan repo in .py file.
-imgui
