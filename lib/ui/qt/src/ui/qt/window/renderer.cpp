@@ -1,12 +1,15 @@
 #include "ui/qt/window/renderer.hpp"
+#include <QColorSpace>
 #include <QGuiApplication>
 #include <QStyleHints>
+#include <QSurfaceFormat>
 #include <app/action/camera.hpp>
 #include <app/services.hpp>
 #include <array>
 #include <renderer/renderer.hpp>
 #include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
+#include <util/logger.hpp>
 #include <utility>
 
 namespace
@@ -49,7 +52,114 @@ namespace VTX::UI::QT::Window
 	{
 		_keyboardLayoutChangedConnection
 			= App::HUB().connect<Events::KeyboardLayoutChanged, &Renderer::_onKBLayoutChange>( this );
+
+		QSurfaceFormat format;
+		format.setRenderableType( QSurfaceFormat::OpenGL );
+		format.setVersion(
+			static_cast<int>( VTX::Renderer::Desc::OPENGL_MAJOR_VERSION ),
+			static_cast<int>( VTX::Renderer::Desc::OPENGL_MINOR_VERSION )
+		);
+		format.setProfile( QSurfaceFormat::CoreProfile );
+		format.setRedBufferSize( 8 );
+		format.setGreenBufferSize( 8 );
+		format.setBlueBufferSize( 8 );
+		format.setAlphaBufferSize( 8 );
+		format.setDepthBufferSize( 24 );
+		format.setStencilBufferSize( 8 );
+		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
+		format.setSwapInterval( 1 );
+		format.setColorSpace( QColorSpace::SRgb );
+#ifdef _DEBUG
+		format.setOption( QSurfaceFormat::DebugContext );
+#endif
+
+		setSurfaceType( QSurface::OpenGLSurface );
+		setFormat( format );
 	}
+
+	Renderer::~Renderer() { destroyGLContext(); }
+
+	bool Renderer::createGLContext()
+	{
+		destroyGLContext();
+
+		auto context = std::make_unique<QOpenGLContext>();
+		context->setFormat( format() );
+		if ( not context->create() )
+		{
+			VTX_WARNING( "[Qt] Failed to create OpenGL context" );
+			return false;
+		}
+		if ( not context->makeCurrent( this ) )
+		{
+			VTX_WARNING( "[Qt] Failed to make OpenGL context current" );
+			return false;
+		}
+
+		const QSurfaceFormat obtained = context->format();
+		VTX_INFO(
+			"[Qt] OpenGL context {}.{} created (core={}, srgb={})",
+			obtained.majorVersion(),
+			obtained.minorVersion(),
+			obtained.profile() == QSurfaceFormat::CoreProfile,
+			obtained.colorSpace() == QColorSpace::SRgb
+		);
+
+		_glContext = std::move( context );
+		return true;
+	}
+
+	void Renderer::destroyGLContext()
+	{
+		if ( _glContext == nullptr )
+		{
+			return;
+		}
+
+		_glContext->doneCurrent();
+		_glContext.reset();
+	}
+
+	void Renderer::swapGLBuffers()
+	{
+		if ( _glContext != nullptr && isExposed() )
+		{
+			_glContext->swapBuffers( this );
+		}
+	}
+
+	bool Renderer::setGLSwapInterval( const int p_interval )
+	{
+		if ( _glContext == nullptr )
+		{
+			return false;
+		}
+
+#ifdef _WIN32
+		using SwapIntervalProc = int( __stdcall * )( int );
+		const auto swapInterval
+			= reinterpret_cast<SwapIntervalProc>( _glContext->getProcAddress( "wglSwapIntervalEXT" ) );
+		if ( swapInterval != nullptr )
+		{
+			return swapInterval( p_interval ) != 0;
+		}
+#endif
+
+		return _glContext->format().swapInterval() == p_interval;
+	}
+
+	void * Renderer::getGLProcAddress( const char * const p_name ) const
+	{
+		if ( _glContext == nullptr )
+		{
+			return nullptr;
+		}
+
+		return reinterpret_cast<void *>( _glContext->getProcAddress( p_name ) );
+	}
+
+	bool Renderer::isGLDefaultFramebufferSrgb() const
+	{ return _glContext != nullptr && _glContext->format().colorSpace() == QColorSpace::SRgb; }
 
 	void Renderer::exposeEvent( QExposeEvent * const p_event )
 	{

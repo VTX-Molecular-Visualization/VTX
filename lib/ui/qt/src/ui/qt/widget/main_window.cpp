@@ -214,25 +214,11 @@ namespace VTX::UI::QT::Widget
 		restoreState( _defaultState );
 	}
 
-	uintptr_t MainWindow::getNativeSurface() const
+	Window::Renderer & MainWindow::getRenderWindow() const
 	{
 		const auto * widget = qobject_cast<const Renderer *>( centralWidget() );
 		assert( widget != nullptr );
-		return widget->getNativeSurface();
-	}
-
-	uintptr_t MainWindow::getNativeDisplay() const
-	{
-		const auto * widget = qobject_cast<const Renderer *>( centralWidget() );
-		assert( widget != nullptr );
-		return widget->getNativeDisplay();
-	}
-
-	uint8_t MainWindow::getNativePlatform() const
-	{
-		const auto * widget = qobject_cast<const Renderer *>( centralWidget() );
-		assert( widget != nullptr );
-		return widget->getNativePlatform();
+		return widget->getRenderWindow();
 	}
 
 	void MainWindow::populateViewMenu( QMenu & p_menu )

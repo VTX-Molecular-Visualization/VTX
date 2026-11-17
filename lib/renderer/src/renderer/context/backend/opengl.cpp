@@ -221,19 +221,27 @@ namespace
 		return p_geometry.chunks;
 	}
 
+	GLADapiproc loadExternalProc( void * const p_userPtr, const char * const p_name ) noexcept
+	{
+		try
+		{
+			const auto & getProcAddress = *static_cast<const std::function<void *( const char * )> *>( p_userPtr );
+			return reinterpret_cast<GLADapiproc>( getProcAddress( p_name ) );
+		}
+		catch ( ... )
+		{
+			return nullptr;
+		}
+	}
+
 } // namespace
 
 namespace VTX::Renderer::Context::Backend
 {
-	OpenGL::OpenGL(
-		const size_t					p_width,
-		const size_t					p_height,
-		const Desc::NativeContextInfo & p_contextInfo,
-		FilePath						p_shaderDir
-
-	) : _shaderPath( std::move( p_shaderDir ) )
+	OpenGL::OpenGL( const size_t p_width, const size_t p_height, FilePath p_shaderDir ) :
+		_shaderPath( std::move( p_shaderDir ) )
 	{
-		VTX_INFO( "Initializing OpenGL {}.{} context", VTX_OPENGL_MAJOR_VERSION, VTX_OPENGL_MINOR_VERSION );
+		VTX_INFO( "Initializing OpenGL {}.{} context", Desc::OPENGL_MAJOR_VERSION, Desc::OPENGL_MINOR_VERSION );
 
 		assert( p_width > 0 );
 		assert( p_height > 0 );
@@ -243,26 +251,62 @@ namespace VTX::Renderer::Context::Backend
 
 		_width	= static_cast<uint32_t>( p_width );
 		_height = static_cast<uint32_t>( p_height );
+	}
 
+	OpenGL::OpenGL(
+		const size_t					  p_width,
+		const size_t					  p_height,
+		const Desc::HeadlessContextInfo & p_contextInfo,
+		FilePath						  p_shaderDir
+
+	) : OpenGL( p_width, p_height, std::move( p_shaderDir ) )
+	{
 		// Create EGL/WGL context.
-		_glContext.init( p_contextInfo, _width, _height );
+		_glContext.emplace();
+		_glContext->init( p_contextInfo );
 
 		// Load OpenGL 4.6 functions.
 		// With external loader.
-		if ( gladLoadGL( reinterpret_cast<GLADloadfunc>( _glContext.getProcAddress() ) ) == 0 )
+		if ( gladLoadGL( reinterpret_cast<GLADloadfunc>( _glContext->getProcAddress() ) ) == 0 )
 		{
 			throw GraphicException( "Failed to load OpenGL functions" );
 		}
 
+		_initOpenGL( _glContext->isDefaultFramebufferSrgb() );
+	}
+
+	OpenGL::OpenGL(
+		const size_t					  p_width,
+		const size_t					  p_height,
+		const Desc::ExternalContextInfo & p_contextInfo,
+		FilePath						  p_shaderDir
+	) : OpenGL( p_width, p_height, std::move( p_shaderDir ) )
+	{
+		_externalContext = p_contextInfo;
+		if ( not _externalContext.getProcAddress )
+		{
+			throw GraphicException( "External OpenGL context has no loader" );
+		}
+
+		if ( gladLoadGLUserPtr( &loadExternalProc, &_externalContext.getProcAddress ) == 0 )
+		{
+			throw GraphicException( "Failed to load OpenGL functions" );
+		}
+
+		_initOpenGL( _externalContext.defaultFramebufferSrgb );
+	}
+
+	void OpenGL::_initOpenGL( const bool p_defaultFramebufferSrgb )
+	{
 		// Check version.
-		if constexpr ( VTX_OPENGL_MINOR_VERSION == 6 )
+		if constexpr ( Desc::OPENGL_MINOR_VERSION == 6 )
 		{
 			if ( not GLAD_GL_VERSION_4_6 )
 			{
 				throw GraphicException( "OpenGL 4.6 or higher is required" );
 			}
 		}
-		else if constexpr ( VTX_OPENGL_MINOR_VERSION == 5 )
+		else if constexpr ( Desc::OPENGL_MINOR_VERSION == 5 )
 		{
 			if ( not GLAD_GL_VERSION_4_5 )
 			{
@@ -272,7 +316,8 @@ namespace VTX::Renderer::Context::Backend
 		else
 		{
 			static_assert(
-				VTX_OPENGL_MAJOR_VERSION == 4 && ( VTX_OPENGL_MINOR_VERSION == 5 || VTX_OPENGL_MINOR_VERSION == 6 ),
+				Desc::OPENGL_MAJOR_VERSION == 4
+					&& ( Desc::OPENGL_MINOR_VERSION == 5 || Desc::OPENGL_MINOR_VERSION == 6 ),
 				"Unsupported OpenGL version"
 			);
 		}
@@ -280,7 +325,7 @@ namespace VTX::Renderer::Context::Backend
 		_getOpenglInfos();
 		_openglInfos.print();
 
-		if ( _glContext.isDefaultFramebufferSrgb() )
+		if ( p_defaultFramebufferSrgb )
 		{
 			VTX_INFO( "Default framebuffer color encoding: sRGB" );
 		}
@@ -298,7 +343,7 @@ namespace VTX::Renderer::Context::Backend
 		_cudaInterop.refreshAvailability( cudaInteropProbeBuffer );
 		glDeleteBuffers( 1, &cudaInteropProbeBuffer );
 
-		glViewport( 0, 0, static_cast<GLsizei>( p_width ), static_cast<GLsizei>( p_height ) );
+		glViewport( 0, 0, static_cast<GLsizei>( _width ), static_cast<GLsizei>( _height ) );
 		glPatchParameteri( GL_PATCH_VERTICES, 4 );
 		glEnable( GL_TEXTURE_CUBE_MAP_SEAMLESS );
 
@@ -319,6 +364,23 @@ namespace VTX::Renderer::Context::Backend
 	}
 
 	OpenGL::~OpenGL() = default;
+
+	void OpenGL::swap() const noexcept
+	try
+	{
+		if ( _glContext.has_value() )
+		{
+			_glContext->swapBuffers();
+		}
+		else if ( _externalContext.swapBuffers )
+		{
+			_externalContext.swapBuffers();
+		}
+	}
+	catch ( ... )
+	{
+		VTX_ERROR( "Failed to swap OpenGL buffers" );
+	}
 
 	// Create resources, configure, and push commands.
 	// No OpenGL objects in this function, only Handles.
@@ -661,7 +723,6 @@ namespace VTX::Renderer::Context::Backend
 		_width	= p_width;
 		_height = p_height;
 
-		_glContext.resize( _width, _height );
 		glViewport( 0, 0, static_cast<GLsizei>( _width ), static_cast<GLsizei>( _height ) );
 
 		for ( const auto & [ key, tex ] : p_textures )
@@ -1668,7 +1729,16 @@ namespace VTX::Renderer::Context::Backend
 	{
 		switch ( p_option )
 		{
-		case Desc::E_OPTION::VSYNC: _glContext.setSwapInterval( p_value ? 1 : 0 ); break;
+		case Desc::E_OPTION::VSYNC:
+			if ( _glContext.has_value() )
+			{
+				_glContext->setSwapInterval( p_value ? 1 : 0 );
+			}
+			else if ( _externalContext.setSwapInterval )
+			{
+				_externalContext.setSwapInterval( p_value ? 1 : 0 );
+			}
+			break;
 		default: break;
 		}
 	}

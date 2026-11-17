@@ -8,7 +8,7 @@ DEFAULT_CUDA_ARCH = "native"
 def install_system_dependencies(conanfile):
     if conanfile.settings.os == "Linux":
         apt = Apt(conanfile)
-        apt.install(["libegl-dev", "libgl-dev", "libopengl-dev", "libwayland-dev"], update=True)
+        apt.install(["libegl-dev", "libgl-dev", "libopengl-dev"], update=True)
 
 def config_options_ktx(conanfile):
     conanfile.options["ktx"].tools = False
@@ -33,10 +33,7 @@ class VTXRendererRecipe(ConanFile):
         self.requires("ktx/4.4.2")
         self.requires("fmt/12.1.0")
         self.requires("catch2/3.16.1")
-        if self.settings.os == "Linux":
-            self.requires("libffi/3.4.8", force=True)
-            self.requires("wayland/1.24.0")
-            
+
     def system_requirements(self):
         install_system_dependencies(self)
 
@@ -71,5 +68,5 @@ class VTXRendererRecipe(ConanFile):
         if self.settings.os == "Windows":
             self.cpp_info.system_libs = ["opengl32"]
         elif self.settings.os == "Linux":
-            self.cpp_info.system_libs = ["OpenGL", "EGL", "X11"]
+            self.cpp_info.system_libs = ["OpenGL", "EGL"]
         self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_renderer_copy_shaders.cmake", "cmake/vtx_link_cuda.cmake"])

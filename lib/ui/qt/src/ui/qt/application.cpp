@@ -195,27 +195,13 @@ namespace VTX::UI::QT
 				VTX_WARNING( "No graphics backend initialization" );
 				App::RENDERER().setDefault();
 			}
-			else
+			else if ( not _setQtOpenGL() )
 			{
-				try
-				{
-					Renderer::Desc::NativeContextInfo contextInfo;
-					contextInfo.surface = MAIN_WINDOW().getNativeSurface();
-					contextInfo.display = MAIN_WINDOW().getNativeDisplay();
-					contextInfo.plateform
-						= static_cast<Renderer::Desc::E_NATIVE_PLATEFORM>( MAIN_WINDOW().getNativePlatform() );
-
-					App::RENDERER().setOpenGL( contextInfo, App::SESSION().getApplicationDir() );
-				}
-				catch ( const std::exception & p_e )
-				{
-					VTX_ERROR( p_e.what() );
-					App::RENDERER().setDefault();
-					App::HUB().trigger<App::Events::ApplicationError>(
-						"Unable to create OpenGL context. Update your drivers and check your hardware "
-						"compatibility."
-					);
-				}
+				App::RENDERER().setDefault();
+				App::HUB().trigger<App::Events::ApplicationError>(
+					"Unable to create OpenGL context. Update your drivers and check your hardware "
+					"compatibility."
+				);
 			}
 			_app.finishStartup();
 			_app.handleArgs();
@@ -233,6 +219,40 @@ namespace VTX::UI::QT
 		{
 			VTX_ERROR( "Unknown exception during startup" );
 			QCoreApplication::exit( EXIT_FAILURE );
+		}
+	}
+
+	bool Application::_setQtOpenGL()
+	{
+		Window::Renderer & window = MAIN_WINDOW().getRenderWindow();
+		if ( not window.createGLContext() )
+		{
+			return false;
+		}
+
+		Renderer::Desc::ExternalContextInfo contextInfo;
+		contextInfo.getProcAddress
+			= [ &window ]( const char * const p_name ) { return window.getGLProcAddress( p_name ); };
+		contextInfo.swapBuffers		= [ &window ]() { window.swapGLBuffers(); };
+		contextInfo.setSwapInterval = [ &window ]( const int p_interval )
+		{
+			if ( not window.setGLSwapInterval( p_interval ) )
+			{
+				VTX_WARNING( "[Qt] Swap interval {} is not supported", p_interval );
+			}
+		};
+		contextInfo.defaultFramebufferSrgb = window.isGLDefaultFramebufferSrgb();
+
+		try
+		{
+			App::RENDERER().setOpenGL( contextInfo, App::SESSION().getApplicationDir() );
+			return true;
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "{}", p_e.what() );
+			window.destroyGLContext();
+			return false;
 		}
 	}
 

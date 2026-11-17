@@ -6,9 +6,11 @@
 #include <QFocusEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <QOpenGLContext>
 #include <QWheelEvent>
 #include <QWindow>
 #include <app/input/input_manager.hpp>
+#include <memory>
 #include <optional>
 #include <util/event_hub.hpp>
 
@@ -34,6 +36,14 @@ namespace VTX::UI::QT::Window
 		 * @brief Constructor.
 		 */
 		Renderer();
+		~Renderer() override;
+
+		bool   createGLContext();
+		void   destroyGLContext();
+		void   swapGLBuffers();
+		bool   setGLSwapInterval( int );
+		void * getGLProcAddress( const char * ) const;
+		bool   isGLDefaultFramebufferSrgb() const;
 
 	  signals:
 		/**
@@ -72,6 +82,8 @@ namespace VTX::UI::QT::Window
 		void											_onKBLayoutChange( const Events::KeyboardLayoutChanged & );
 
 		VTX::Util::EventHub::ScopedConnection _keyboardLayoutChangedConnection;
+
+		std::unique_ptr<QOpenGLContext> _glContext;
 	};
 
 } // namespace VTX::UI::QT::Window

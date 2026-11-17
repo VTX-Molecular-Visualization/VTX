@@ -18,6 +18,7 @@
 #include "renderer/resource_handler.hpp"
 #include "renderer/struct_infos.hpp"
 #include <memory>
+#include <optional>
 #include <span>
 #include <string_view>
 #include <vector>
@@ -64,7 +65,8 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Default constructor.
 		 */
-		OpenGL( size_t p_width, size_t p_height, const Desc::NativeContextInfo &, FilePath p_shaderDir );
+		OpenGL( size_t p_width, size_t p_height, const Desc::HeadlessContextInfo &, FilePath p_shaderDir );
+		OpenGL( size_t p_width, size_t p_height, const Desc::ExternalContextInfo &, FilePath p_shaderDir );
 		~OpenGL();
 
 		/**
@@ -80,7 +82,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Swap buffers.
 		 */
-		void swap() const noexcept { _glContext.swapBuffers(); }
+		void swap() const noexcept;
 
 		/**
 		 * @brief Set data to a buffer.
@@ -169,9 +171,10 @@ namespace VTX::Renderer::Context::Backend
 		uint32_t _height;
 
 		/**
-		 * @brief EGL context.
+		 * @brief Context.
 		 */
-		GL::GLContextWrapper _glContext;
+		std::optional<GL::GLContextWrapper> _glContext;
+		Desc::ExternalContextInfo			_externalContext;
 
 		/**
 		 * @brief Render target (default framebuffer or offscreen).
@@ -201,6 +204,21 @@ namespace VTX::Renderer::Context::Backend
 		ResourceHandler<GL::Texture, Desc::Key, Desc::Texture>			_textures;
 		ResourceHandler<GL::Sampler, Desc::Key, Desc::Sampler>			_samplers;
 		ResourceHandler<GL::Program, Desc::Key, Desc::Program>			_programs;
+
+		/**
+		 * @brief Interop with CUDA.
+		 */
+		Interop::OpenGLCudaInterop _cudaInterop;
+
+		/**
+		 * @brief Private shared constructor.
+		 */
+		OpenGL( size_t p_width, size_t p_height, FilePath p_shaderDir );
+
+		/**
+		 * @brief Init OpenGL functions.
+		 */
+		void _initOpenGL( bool p_defaultFramebufferSrgb );
 
 		/**
 		 * @brief Get or create resources.
@@ -260,11 +278,6 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		GL::StructOpenglInfos _openglInfos;
 		void				  _getOpenglInfos();
-
-		/**
-		 * @brief Interop with CUDA.
-		 */
-		Interop::OpenGLCudaInterop _cudaInterop;
 	};
 } // namespace VTX::Renderer::Context::Backend
 

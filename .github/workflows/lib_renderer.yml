@@ -170,10 +170,3 @@ jobs:
       run: |
         conan upload ktx -r=vtx
         conan upload zstd -r=vtx
-
-    - name: Upload Linux dependencies
-      if: runner.os == 'Linux'
-      working-directory: ${{env.LIB_DIR}}
-      run: |
-        conan upload libffi -r=vtx
-        conan upload wayland -r=vtx

@@ -79,7 +79,7 @@ def install_system_dependencies(p_conanFile: ConanFile) -> None:
 def config_options_qt(p_conanFile : ConanFile):
     # Package options.
     p_conanFile.options["qt"].shared = True
-    p_conanFile.options["qt"].opengl = "no"
+    p_conanFile.options["qt"].opengl = "desktop"
     p_conanFile.options["qt"].with_vulkan = False
     p_conanFile.options["qt"].openssl = True
     p_conanFile.options["qt"].with_pcre2 = True
@@ -241,11 +241,7 @@ class VTXUiQtRecipe(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("qt/6.12.0", transitive_headers=True)
-        if self.settings.os == "Linux":
-            self.requires("xkbcommon/1.13.1", force=True)
-            self.requires("libffi/3.4.8", force=True)
-            self.requires("wayland/1.24.0", force=True)
-        
+
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC            

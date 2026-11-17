@@ -52,7 +52,8 @@ namespace VTX::Renderer
 		 * @brief Set graphic context.
 		 */
 		void setDefault();
-		void setOpenGL( const Desc::NativeContextInfo &, const FilePath & p_applicationDir );
+		void setOpenGL( const Desc::HeadlessContextInfo &, const FilePath & p_applicationDir );
+		void setOpenGL( const Desc::ExternalContextInfo &, const FilePath & p_applicationDir );
 
 		/**
 		 * @brief Resize the renderer.
@@ -282,6 +283,11 @@ namespace VTX::Renderer
 		 * @brief Mark something as dirty.
 		 */
 		void _markDirty( Cache::E_RENDERER_DIRTY ) noexcept;
+
+		/**
+		 * @brief Rebuild command buffer and fire event.
+		 */
+		void _onOpenGLSet();
 
 		/**
 		 * @brief The main render loop that call each generated instruction.

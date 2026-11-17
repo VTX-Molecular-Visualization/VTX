@@ -15,6 +15,7 @@
 #include <QToolBar>
 #include <QToolButton>
 #include <app/events.hpp>
+#include <cassert>
 #include <optional>
 #include <util/event_hub.hpp>
 #include <vector>
@@ -57,12 +58,11 @@ namespace VTX::UI::QT::Widget
 		Renderer( QWidget * );
 		~Renderer() override;
 
-		/**
-		 * @brief Get native surface, display and platform for graphic context creation.
-		 */
-		uintptr_t getNativeSurface() const;
-		uintptr_t getNativeDisplay() const;
-		uint8_t	  getNativePlatform() const;
+		Window::Renderer & getRenderWindow() const
+		{
+			assert( _window != nullptr );
+			return *_window;
+		}
 
 		/**
 		 * @brief Create a toolbar from type.

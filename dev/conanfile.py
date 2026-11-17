@@ -101,10 +101,6 @@ class VTXRecipe(ConanFile):
         if self.options.python_binding:
             self.requires("cpython/{}".format(str(self._python_version())))
             self.requires("mpdecimal/4.0.0", force=True)
-        if self.settings.os == "Linux":
-            self.requires("xkbcommon/1.13.1", force=True)
-            self.requires("libffi/3.4.8", force=True)
-            self.requires("wayland/1.24.0", force=True)
 
     def system_requirements(self):
         if self.options.renderer:

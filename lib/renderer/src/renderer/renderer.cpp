@@ -37,13 +37,24 @@ namespace VTX::Renderer
 
 	FilePath Renderer::getShadersDir( const FilePath & p_applicationDir ) { return p_applicationDir / "shaders"; }
 
-	void Renderer::setOpenGL( const Desc::NativeContextInfo & p_contextInfo, const FilePath & p_applicationDir )
+	void Renderer::setOpenGL( const Desc::HeadlessContextInfo & p_contextInfo, const FilePath & p_applicationDir )
 	{
-		const Util::ScopedChrono timer(
-			"[RENDERER] setOpenGL46 / surface: " + std::to_string( p_contextInfo.surface )
-		);
+		const Util::ScopedChrono timer( "[RENDERER] setOpenGL46 / headless context" );
 
 		_context.setOpenGL( _width, _height, p_contextInfo, getShadersDir( p_applicationDir ) );
+		_onOpenGLSet();
+	}
+
+	void Renderer::setOpenGL( const Desc::ExternalContextInfo & p_contextInfo, const FilePath & p_applicationDir )
+	{
+		const Util::ScopedChrono timer( "[RENDERER] setOpenGL46 / external context" );
+
+		_context.setOpenGL( _width, _height, p_contextInfo, getShadersDir( p_applicationDir ) );
+		_onOpenGLSet();
+	}
+
+	void Renderer::_onOpenGLSet()
+	{
 		try
 		{
 			Builder::RenderGraphRuntime::rebuildCommandBuffer(

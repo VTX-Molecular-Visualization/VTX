@@ -16,7 +16,6 @@
 #include <algorithm>
 #include <app/action/application.hpp>
 #include <memory>
-#include <qpa/qplatformnativeinterface.h>
 #include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
@@ -76,63 +75,6 @@ namespace VTX::UI::QT::Widget
 		{
 			_container->removeEventFilter( this );
 		}
-	}
-
-	uintptr_t Renderer::getNativeSurface() const
-	{
-		assert( _window != nullptr );
-
-		if ( QGuiApplication::platformName() == "wayland" )
-		{
-			QPlatformNativeInterface * const nif = QGuiApplication::platformNativeInterface();
-			if ( not nif )
-			{
-				throw std::runtime_error( "Qt: no platform native interface" );
-			}
-
-			const void * const surface = nif->nativeResourceForWindow( "surface", _window );
-			if ( not surface )
-			{
-				throw std::runtime_error( "Qt: native surface is null" );
-			}
-
-			return reinterpret_cast<uintptr_t>( surface );
-		}
-
-		return static_cast<uintptr_t>( _window->winId() );
-	}
-
-	uintptr_t Renderer::getNativeDisplay() const
-	{
-		QPlatformNativeInterface * const nif = QGuiApplication::platformNativeInterface();
-		if ( nif == nullptr )
-		{
-			return 0;
-		}
-
-		if ( const void * const display = nif->nativeResourceForIntegration( "display" ) )
-		{
-			return reinterpret_cast<uintptr_t>( display );
-		}
-
-		return 0;
-	}
-
-	uint8_t Renderer::getNativePlatform() const
-	{
-		if ( QGuiApplication::platformName() == "wayland" )
-		{
-			return 3;
-		}
-		if ( QGuiApplication::platformName() == "xcb" )
-		{
-			return 2;
-		}
-#ifdef _WIN32
-		return 1;
-#else
-		return 0;
-#endif
 	}
 
 	bool Renderer::eventFilter( QObject * p_watched, QEvent * p_event )

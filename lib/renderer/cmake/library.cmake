@@ -84,9 +84,7 @@ target_include_directories(vtx_renderer	SYSTEM PRIVATE "${CMAKE_CURRENT_LIST_DIR
 if(WIN32)
 	target_link_libraries(vtx_renderer PRIVATE opengl32)
 elseif(LINUX)
-	find_package(X11 REQUIRED)
-	find_package(wayland REQUIRED)
-	target_link_libraries(vtx_renderer PRIVATE OpenGL::OpenGL OpenGL::EGL X11::X11 wayland::wayland-client wayland::wayland-egl)
+	target_link_libraries(vtx_renderer PRIVATE OpenGL::OpenGL OpenGL::EGL)
 endif()
 
 # Tests.

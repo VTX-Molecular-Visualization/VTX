@@ -150,10 +150,29 @@ namespace VTX::App
 		setFrameScheduler( &VTXApp::_wake, this );
 		createInitialEntities();
 
-		const std::string_view warning = ARGS().noGraphics ? "No graphics backend initialization"
-														   : "No UI graphics context available, using default backend";
-		VTX_WARNING( warning );
-		RENDERER().setDefault();
+		if ( ARGS().noGraphics )
+		{
+			VTX_WARNING( "No graphics backend initialization" );
+			RENDERER().setDefault();
+		}
+		else if ( not ARGS().noGui )
+		{
+			VTX_WARNING( "No UI graphics context available, using default backend" );
+			RENDERER().setDefault();
+		}
+		else
+		{
+			try
+			{
+				RENDERER().setOpenGL( Renderer::Desc::HeadlessContextInfo {}, SESSION().getApplicationDir() );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "{}", p_e.what() );
+				VTX_WARNING( "Headless OpenGL context unavailable, using default backend" );
+				RENDERER().setDefault();
+			}
+		}
 
 		finishStartup();
 

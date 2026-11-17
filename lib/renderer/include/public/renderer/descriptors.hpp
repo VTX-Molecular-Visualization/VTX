@@ -2,6 +2,7 @@
 #define VTX_RENDERER_DESCRIPTORS_HPP
 
 #include <array>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <span>
@@ -22,26 +23,12 @@
  */
 namespace VTX::Renderer::Desc
 {
-	/**
-	 * @brief Native context information.
-	 */
-	enum class E_NATIVE_PLATEFORM : uint8_t
-	{
-		UNKNOWN = 0,
-		WINDOWS,
-		X11,
-		WAYLAND
-	};
 
 	/**
-	 * @brief Native context information.
+	 * @brief Version.
 	 */
-	struct NativeContextInfo
-	{
-		uintptr_t		   surface	 = 0;
-		uintptr_t		   display	 = 0;
-		E_NATIVE_PLATEFORM plateform = E_NATIVE_PLATEFORM::UNKNOWN;
-	};
+	constexpr uint32_t OPENGL_MAJOR_VERSION = 4;
+	constexpr uint32_t OPENGL_MINOR_VERSION = 6;
 
 	/**
 	 * @brief All data types.
@@ -279,6 +266,24 @@ namespace VTX::Renderer::Desc
 	enum struct E_OPTION : uint8_t
 	{
 		VSYNC
+	};
+
+	/**
+	 * @brief Context infos for no-gui mode.
+	 */
+	struct HeadlessContextInfo
+	{
+	};
+
+	/**
+	 * @brief Context infos created by gui.
+	 */
+	struct ExternalContextInfo
+	{
+		std::function<void *( const char * )> getProcAddress;
+		std::function<void()>				  swapBuffers;
+		std::function<void( int )>			  setSwapInterval;
+		bool								  defaultFramebufferSrgb = false;
 	};
 
 	/**
