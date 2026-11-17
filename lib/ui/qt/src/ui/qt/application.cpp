@@ -190,24 +190,32 @@ namespace VTX::UI::QT
 			MAIN_WINDOW().show();
 			QCoreApplication::processEvents();
 
-			try
+			if ( App::ARGS().noGraphics )
 			{
-				Renderer::Desc::NativeContextInfo contextInfo;
-				contextInfo.surface = MAIN_WINDOW().getNativeSurface();
-				contextInfo.display = MAIN_WINDOW().getNativeDisplay();
-				contextInfo.plateform
-					= static_cast<Renderer::Desc::E_NATIVE_PLATEFORM>( MAIN_WINDOW().getNativePlatform() );
-
-				App::RENDERER().setOpenGL( contextInfo, App::SESSION().getApplicationDir() );
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( p_e.what() );
+				VTX_WARNING( "No graphics backend initialization" );
 				App::RENDERER().setDefault();
-				App::HUB().trigger<App::Events::ApplicationError>(
-					"Unable to create OpenGL context. Update your drivers and check your hardware "
-					"compatibility."
-				);
+			}
+			else
+			{
+				try
+				{
+					Renderer::Desc::NativeContextInfo contextInfo;
+					contextInfo.surface = MAIN_WINDOW().getNativeSurface();
+					contextInfo.display = MAIN_WINDOW().getNativeDisplay();
+					contextInfo.plateform
+						= static_cast<Renderer::Desc::E_NATIVE_PLATEFORM>( MAIN_WINDOW().getNativePlatform() );
+
+					App::RENDERER().setOpenGL( contextInfo, App::SESSION().getApplicationDir() );
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( p_e.what() );
+					App::RENDERER().setDefault();
+					App::HUB().trigger<App::Events::ApplicationError>(
+						"Unable to create OpenGL context. Update your drivers and check your hardware "
+						"compatibility."
+					);
+				}
 			}
 			_app.finishStartup();
 			_app.handleArgs();

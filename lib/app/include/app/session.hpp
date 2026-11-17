@@ -74,8 +74,6 @@ namespace VTX::App
 		FilePath getApplicationDir() const;
 		FilePath getAppTmpFolder() const;
 		FilePath getLicenseFile() const;
-		FilePath getReadmeFile() const;
-		FilePath getChangelogFile() const;
 		FilePath getDataDir() const;
 		FilePath getDefaultUserData() const;
 		FilePath getDefaultRepresentationsDir() const;
@@ -94,49 +92,11 @@ namespace VTX::App
 		FilePath getMaterialsDir() const;
 		FilePath getScriptsDir() const;
 		FilePath getConfigIniFile() const;
-		// const FilePath getSettingJsonFile() const;
 
 		/**
 		 * @brief Print session information (for debug).
 		 */
 		void print() const;
-
-		// TODO: clean old:
-		/*
-		inline bool isSessionFile( const FilePath & p_filePath ) { return p_filePath.extension().string() == "vtx"; }
-
-		inline FilePath getSceneSaveDirectory( const FilePath & p_savePath )
-		{
-			const FilePath projectDirectoryName = FilePath( p_savePath.stem().append( "_data" ) );
-
-			return p_savePath.parent_path() / projectDirectoryName;
-		}
-
-		inline FilePath getSceneObjectsSaveDirectory( const FilePath & p_savePath )
-		{
-			return getSceneSaveDirectory( p_savePath ) / "obj";
-		}
-
-		inline FilePath getResidueDataFilePath( const std::string & p_residueName )
-		{
-			return getResidueDataDir() / p_residueName.substr( 0, 1 );
-		}
-
-		inline void checkSaveDirectoryHierarchy( const FilePath & p_savePath )
-		{
-			const FilePath projectDirectory = getSceneSaveDirectory( p_savePath );
-			if ( std::filesystem::exists( projectDirectory ) == false )
-			{
-				std::filesystem::create_directory( projectDirectory );
-			}
-
-			const FilePath objectsPath = getSceneObjectsSaveDirectory( p_savePath );
-			if ( std::filesystem::exists( objectsPath ) == false )
-			{
-				std::filesystem::create_directory( objectsPath );
-			}
-		}
-		*/
 
 	  private:
 		/**
