@@ -244,7 +244,7 @@ namespace VTX::PythonBinding
 		runScript( p_path );
 
 		const std::string dir = p_path.parent_path().string();
-		getModule().runFunction<void>( "addSysPath", dir );
+		getModule().runFunction<void>( "_addSysPath", dir );
 
 		const std::string filename = p_path.stem().string();
 		pybind11::module  loadedModule;
