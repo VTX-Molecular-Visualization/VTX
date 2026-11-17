@@ -1,3 +1,8 @@
+import enum
+import inspect
+import re
+
+
 def require(condition, message):
     if not condition:
         raise RuntimeError(message)
@@ -176,6 +181,44 @@ for enum_name in (
     "TONE_MAPPING",
 ):
     require(hasattr(vtx, enum_name), f"Missing preset enum: {enum_name}")
+
+
+def documented(text):
+    return bool(text and text.strip())
+
+
+def function_docs(function):
+    lines = (function.__doc__ or "").strip().splitlines()
+    if len(lines) > 1 and lines[1].strip() == "Overloaded function.":
+        blocks = re.split(r"^\d+\. ", "\n".join(lines[2:]).strip(), flags=re.MULTILINE)
+        return [" ".join(block.strip().splitlines()[1:]) for block in blocks if block.strip()]
+    return [" ".join(lines[1:])]
+
+
+undocumented = []
+for name, member in vars(vtx).items():
+    if name.startswith("_") or inspect.ismodule(member):
+        continue
+    if inspect.isclass(member):
+        if not documented(member.__doc__):
+            undocumented.append(name)
+        if issubclass(member, enum.Enum):
+            continue
+        for attribute_name, attribute in vars(member).items():
+            if attribute_name.startswith("_"):
+                continue
+            qualified_name = f"{name}.{attribute_name}"
+            if isinstance(attribute, property):
+                doc = attribute.__doc__ or ""
+                if not documented(doc) or doc.lstrip().startswith("("):
+                    undocumented.append(qualified_name)
+            elif callable(getattr(member, attribute_name)):
+                if not all(documented(doc) for doc in function_docs(getattr(member, attribute_name))):
+                    undocumented.append(qualified_name)
+    elif callable(member):
+        if not all(documented(doc) for doc in function_docs(member)):
+            undocumented.append(name)
+require(not undocumented, f"Undocumented Python API: {', '.join(sorted(undocumented))}")
 
 representation_name = "Python smoke representation"
 vtx.createRepresentationPreset(representation_name)
