@@ -188,6 +188,8 @@ def documented(text):
 
 
 def function_docs(function):
+    if inspect.isfunction(function):
+        return [function.__doc__ or ""]
     lines = (function.__doc__ or "").strip().splitlines()
     if len(lines) > 1 and lines[1].strip() == "Overloaded function.":
         blocks = re.split(r"^\d+\. ", "\n".join(lines[2:]).strip(), flags=re.MULTILINE)

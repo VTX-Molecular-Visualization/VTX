@@ -1,10 +1,12 @@
 import vtx
 
 def addCommand(p_funcName, p_func):
+    """Expose a Python function in the vtx module under the given name."""
     setattr(vtx, p_funcName, p_func)
 
 def addSysPath(p_path):
-    import sys 
+    """Append a folder to sys.path so that its modules can be imported."""
+    import sys
     sys.path.append( p_path )
 
 import functools
