@@ -90,6 +90,7 @@ jobs:
       run: |
         conan upload brotli -r=vtx
         conan upload double-conversion -r=vtx
+        conan upload freetype -r=vtx
         conan upload libjpeg -r=vtx
         conan upload pcre2 -r=vtx
         conan upload qt -r=vtx
@@ -100,11 +101,13 @@ jobs:
       run: |
         conan upload dbus -r=vtx
         conan upload egl/system -r=vtx
+        conan upload fontconfig -r=vtx
         conan upload libiconv -r=vtx
         conan upload libxml2 -r=vtx
         conan upload opengl/system -r=vtx
         conan upload xkeyboard-config/system -r=vtx
         conan upload xkbcommon -r=vtx
+        conan upload xorg/system -r=vtx
 
     - name: Create package
       working-directory: ${{env.LIB_DIR}}
