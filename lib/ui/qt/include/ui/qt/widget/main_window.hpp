@@ -64,7 +64,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Get renderer window.
 		 */
-		Window::Renderer & getRenderWindow() const;
+		OpenGLRenderer * getOpenGLRenderer() const;
 
 		/**
 		 * @brief Fill menu with available widgets to show/hide.

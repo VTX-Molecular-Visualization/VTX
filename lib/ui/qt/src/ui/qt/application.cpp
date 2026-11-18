@@ -5,9 +5,11 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/main_window.hpp"
+#include "ui/qt/widget/opengl_renderer.hpp"
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
+#include <QSurfaceFormat>
 #include <app/constants.hpp>
 #include <app/ecs.hpp>
 #include <app/services.hpp>
@@ -27,6 +29,8 @@ namespace VTX::UI::QT
 	{
 		using namespace Resources;
 		using namespace App;
+
+		QSurfaceFormat::setDefaultFormat( Widget::OpenGLRenderer::surfaceFormat() );
 
 		_splashScreen = std::make_unique<QSplashScreen>( QPixmap( QString::fromUtf8( Resources::SPRITE_SPLASH ) ) );
 		_splashScreen->show();
@@ -57,6 +61,13 @@ namespace VTX::UI::QT
 				try
 				{
 					// Properly destroy graphics resources before Qt kill native surfaces.
+					if ( App::ECS::hasCtx<Widget::MainWindow>() )
+					{
+						if ( Widget::OpenGLRenderer * const openGLRenderer = MAIN_WINDOW().getOpenGLRenderer() )
+						{
+							openGLRenderer->makeCurrent();
+						}
+					}
 					App::RENDERER().clear();
 				}
 				catch ( const std::exception & p_e )
@@ -198,6 +209,10 @@ namespace VTX::UI::QT
 			else if ( not _setQtOpenGL() )
 			{
 				App::RENDERER().setDefault();
+				if ( Widget::OpenGLRenderer * const openGLRenderer = MAIN_WINDOW().getOpenGLRenderer() )
+				{
+					openGLRenderer->deleteLater();
+				}
 				App::HUB().trigger<App::Events::ApplicationError>(
 					"Unable to create OpenGL context. Update your drivers and check your hardware "
 					"compatibility."
@@ -224,24 +239,26 @@ namespace VTX::UI::QT
 
 	bool Application::_setQtOpenGL()
 	{
-		Window::Renderer & window = MAIN_WINDOW().getRenderWindow();
-		if ( not window.createGLContext() )
+		Widget::OpenGLRenderer * const openGLRenderer = MAIN_WINDOW().getOpenGLRenderer();
+		if ( openGLRenderer == nullptr || not openGLRenderer->createGLContext() )
 		{
 			return false;
 		}
 
+		Widget::OpenGLRenderer & glRenderer = *openGLRenderer;
+
 		Renderer::Desc::ExternalContextInfo contextInfo;
 		contextInfo.getProcAddress
-			= [ &window ]( const char * const p_name ) { return window.getGLProcAddress( p_name ); };
-		contextInfo.swapBuffers		= [ &window ]() { window.swapGLBuffers(); };
-		contextInfo.setSwapInterval = [ &window ]( const int p_interval )
+			= [ &glRenderer ]( const char * const p_name ) { return glRenderer.getGLProcAddress( p_name ); };
+		contextInfo.swapBuffers		   = [ &glRenderer ]() { glRenderer.swapGLBuffers(); };
+		contextInfo.defaultFramebuffer = glRenderer.getGLDefaultFramebuffer();
+		contextInfo.setSwapInterval	   = [ &glRenderer ]( const int p_interval )
 		{
-			if ( not window.setGLSwapInterval( p_interval ) )
+			if ( not glRenderer.setGLSwapInterval( p_interval ) )
 			{
 				VTX_WARNING( "[Qt] Swap interval {} is not supported", p_interval );
 			}
 		};
-		contextInfo.defaultFramebufferSrgb = window.isGLDefaultFramebufferSrgb();
 
 		try
 		{
@@ -251,7 +268,7 @@ namespace VTX::UI::QT
 		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "{}", p_e.what() );
-			window.destroyGLContext();
+			glRenderer.destroyGLContext();
 			return false;
 		}
 	}

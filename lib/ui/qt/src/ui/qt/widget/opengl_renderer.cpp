@@ -1,6 +1,8 @@
-#include "ui/qt/window/renderer.hpp"
-#include <QColorSpace>
+#include "ui/qt/widget/opengl_renderer.hpp"
 #include <QGuiApplication>
+#include <QOffscreenSurface>
+#include <QOpenGLContext>
+#include <QOpenGLFunctions>
 #include <QStyleHints>
 #include <QSurfaceFormat>
 #include <app/action/camera.hpp>
@@ -46,13 +48,35 @@ namespace
 	}();
 } // namespace
 
-namespace VTX::UI::QT::Window
+namespace VTX::UI::QT::Widget
 {
-	Renderer::Renderer() : _inputManager( App::INPUT() )
+	OpenGLRenderer::OpenGLRenderer( QWidget * const p_parent ) :
+		QOpenGLWidget( p_parent ), _inputManager( App::INPUT() )
 	{
 		_keyboardLayoutChangedConnection
-			= App::HUB().connect<Events::KeyboardLayoutChanged, &Renderer::_onKBLayoutChange>( this );
+			= App::HUB().connect<Events::KeyboardLayoutChanged, &OpenGLRenderer::_onKBLayoutChange>( this );
 
+		setFormat( surfaceFormat() );
+		setUpdateBehavior( QOpenGLWidget::PartialUpdate );
+
+		connect(
+			this,
+			&QOpenGLWidget::frameSwapped,
+			this,
+			[ this ]()
+			{
+				if ( _glReady )
+				{
+					makeCurrent();
+				}
+			}
+		);
+	}
+
+	OpenGLRenderer::~OpenGLRenderer() { destroyGLContext(); }
+
+	QSurfaceFormat OpenGLRenderer::surfaceFormat()
+	{
 		QSurfaceFormat format;
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setVersion(
@@ -63,133 +87,154 @@ namespace VTX::UI::QT::Window
 		format.setRedBufferSize( 8 );
 		format.setGreenBufferSize( 8 );
 		format.setBlueBufferSize( 8 );
-		format.setAlphaBufferSize( 8 );
-		format.setDepthBufferSize( 24 );
-		format.setStencilBufferSize( 8 );
+		format.setAlphaBufferSize( 0 );
+		format.setDepthBufferSize( 0 );
+		format.setStencilBufferSize( 0 );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
 		format.setSwapInterval( 1 );
-		format.setColorSpace( QColorSpace::SRgb );
 #ifdef _DEBUG
 		format.setOption( QSurfaceFormat::DebugContext );
 #endif
 
-		setSurfaceType( QSurface::OpenGLSurface );
-		setFormat( format );
+		return format;
 	}
 
-	Renderer::~Renderer() { destroyGLContext(); }
-
-	bool Renderer::createGLContext()
+	bool OpenGLRenderer::isOpenGLSupported()
 	{
-		destroyGLContext();
-
-		auto context = std::make_unique<QOpenGLContext>();
-		context->setFormat( format() );
-		if ( not context->create() )
+		QOpenGLContext context;
+		context.setFormat( surfaceFormat() );
+		if ( not context.create() )
 		{
 			VTX_WARNING( "[Qt] Failed to create OpenGL context" );
 			return false;
 		}
-		if ( not context->makeCurrent( this ) )
+
+		QOffscreenSurface surface;
+		surface.setFormat( context.format() );
+		surface.create();
+		if ( not surface.isValid() || not context.makeCurrent( &surface ) )
 		{
 			VTX_WARNING( "[Qt] Failed to make OpenGL context current" );
 			return false;
 		}
 
-		const QSurfaceFormat obtained = context->format();
-		VTX_INFO(
-			"[Qt] OpenGL context {}.{} created (core={}, srgb={})",
-			obtained.majorVersion(),
-			obtained.minorVersion(),
-			obtained.profile() == QSurfaceFormat::CoreProfile,
-			obtained.colorSpace() == QColorSpace::SRgb
-		);
+		const QSurfaceFormat obtained = context.format();
+		context.doneCurrent();
 
-		_glContext = std::move( context );
+		const std::pair required { static_cast<int>( VTX::Renderer::Desc::OPENGL_MAJOR_VERSION ),
+								   static_cast<int>( VTX::Renderer::Desc::OPENGL_MINOR_VERSION ) };
+		const std::pair available { obtained.majorVersion(), obtained.minorVersion() };
+		if ( available < required )
+		{
+			VTX_WARNING(
+				"[Qt] OpenGL {}.{} required, {}.{} available",
+				required.first,
+				required.second,
+				available.first,
+				available.second
+			);
+			return false;
+		}
+
 		return true;
 	}
 
-	void Renderer::destroyGLContext()
+	bool OpenGLRenderer::createGLContext()
 	{
-		if ( _glContext == nullptr )
+		if ( not isValid() )
+		{
+			VTX_WARNING( "[Qt] OpenGL context is not initialized" );
+			return false;
+		}
+
+		makeCurrent();
+
+		const QSurfaceFormat obtained = context()->format();
+		VTX_INFO(
+			"[Qt] OpenGL context {}.{} created (core={})",
+			obtained.majorVersion(),
+			obtained.minorVersion(),
+			obtained.profile() == QSurfaceFormat::CoreProfile
+		);
+
+		_defaultFramebuffer = getGLDefaultFramebuffer();
+		_glReady			= true;
+		return true;
+	}
+
+	void OpenGLRenderer::destroyGLContext()
+	{
+		if ( not _glReady )
 		{
 			return;
 		}
 
-		_glContext->doneCurrent();
-		_glContext.reset();
+		_glReady = false;
+		doneCurrent();
 	}
 
-	void Renderer::swapGLBuffers()
+	void OpenGLRenderer::swapGLBuffers()
 	{
-		if ( _glContext != nullptr && isExposed() )
+		if ( _glReady )
 		{
-			_glContext->swapBuffers( this );
+			update();
 		}
 	}
 
-	bool Renderer::setGLSwapInterval( const int p_interval )
+	bool OpenGLRenderer::setGLSwapInterval( const int p_interval ) const
+	{ return format().swapInterval() == p_interval; }
+
+	void * OpenGLRenderer::getGLProcAddress( const char * const p_name ) const
 	{
-		if ( _glContext == nullptr )
-		{
-			return false;
-		}
-
-#ifdef _WIN32
-		using SwapIntervalProc = int( __stdcall * )( int );
-		const auto swapInterval
-			= reinterpret_cast<SwapIntervalProc>( _glContext->getProcAddress( "wglSwapIntervalEXT" ) );
-		if ( swapInterval != nullptr )
-		{
-			return swapInterval( p_interval ) != 0;
-		}
-#endif
-
-		return _glContext->format().swapInterval() == p_interval;
-	}
-
-	void * Renderer::getGLProcAddress( const char * const p_name ) const
-	{
-		if ( _glContext == nullptr )
+		if ( context() == nullptr )
 		{
 			return nullptr;
 		}
 
-		return reinterpret_cast<void *>( _glContext->getProcAddress( p_name ) );
+		return reinterpret_cast<void *>( context()->getProcAddress( p_name ) );
 	}
 
-	bool Renderer::isGLDefaultFramebufferSrgb() const
-	{ return _glContext != nullptr && _glContext->format().colorSpace() == QColorSpace::SRgb; }
+	uint32_t OpenGLRenderer::getGLDefaultFramebuffer() const
+	{ return static_cast<uint32_t>( defaultFramebufferObject() ); }
 
-	void Renderer::exposeEvent( QExposeEvent * const p_event )
+	bool OpenGLRenderer::event( QEvent * const p_event )
 	{
-		QWindow::exposeEvent( p_event );
-		if ( isExposed() )
+		const bool result = QOpenGLWidget::event( p_event );
+		if ( p_event->type() == QEvent::DevicePixelRatioChange )
 		{
-			App::RENDERER().setNeedUpdate();
+			_syncDefaultFramebuffer();
 		}
+		return result;
 	}
 
-	void Renderer::keyPressEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, true ); }
-
-	void Renderer::keyReleaseEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, false ); }
-
-	void Renderer::focusInEvent( QFocusEvent * p_event )
+	void OpenGLRenderer::resizeGL( const int, const int )
 	{
-		QWindow::focusInEvent( p_event );
+		_syncDefaultFramebuffer();
+		App::RENDERER().setNeedUpdate();
+	}
+
+	void OpenGLRenderer::paintGL() { context()->functions()->glDisable( GL_BLEND ); }
+
+	void OpenGLRenderer::keyPressEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, true ); }
+
+	void OpenGLRenderer::keyReleaseEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, false ); }
+
+	void OpenGLRenderer::focusInEvent( QFocusEvent * p_event )
+	{
+		QOpenGLWidget::focusInEvent( p_event );
 		_handleModifiers();
 	}
 
-	void Renderer::focusOutEvent( QFocusEvent * p_event )
+	void OpenGLRenderer::focusOutEvent( QFocusEvent * p_event )
 	{
-		QWindow::focusOutEvent( p_event );
+		QOpenGLWidget::focusOutEvent( p_event );
 
 		_inputManager.clearActions();
 		_pressedButton = Qt::NoButton;
 		_dragging	   = false;
 	}
 
-	void Renderer::mousePressEvent( QMouseEvent * p_event )
+	void OpenGLRenderer::mousePressEvent( QMouseEvent * p_event )
 	{
 		_pressedButton = p_event->button();
 		_pressPos	   = p_event->position();
@@ -197,7 +242,7 @@ namespace VTX::UI::QT::Window
 		_dragging	   = false;
 	}
 
-	void Renderer::mouseMoveEvent( QMouseEvent * p_event )
+	void OpenGLRenderer::mouseMoveEvent( QMouseEvent * p_event )
 	{
 		if ( _pressedButton == Qt::NoButton )
 		{
@@ -229,7 +274,7 @@ namespace VTX::UI::QT::Window
 		}
 	}
 
-	void Renderer::mouseReleaseEvent( QMouseEvent * p_event )
+	void OpenGLRenderer::mouseReleaseEvent( QMouseEvent * p_event )
 	{
 		if ( p_event->button() != _pressedButton )
 		{
@@ -245,16 +290,17 @@ namespace VTX::UI::QT::Window
 		_dragging	   = false;
 	}
 
-	void Renderer::mouseDoubleClickEvent( QMouseEvent * const )
+	void OpenGLRenderer::mouseDoubleClickEvent( QMouseEvent * const )
 	{
 		_pressedButton = Qt::NoButton;
 		_dragging	   = false;
 		App::ACTION().execute<App::Action::Camera::Orient>();
 	}
 
-	void Renderer::wheelEvent( QWheelEvent * const p_event ) { _inputManager.zoomBy( p_event->angleDelta().y() ); }
+	void OpenGLRenderer::wheelEvent( QWheelEvent * const p_event )
+	{ _inputManager.zoomBy( p_event->angleDelta().y() ); }
 
-	void Renderer::_handleKeyboard( QKeyEvent * const p_event, const bool p_enable )
+	void OpenGLRenderer::_handleKeyboard( QKeyEvent * const p_event, const bool p_enable )
 	{
 		if ( p_event->isAutoRepeat() )
 		{
@@ -269,14 +315,14 @@ namespace VTX::UI::QT::Window
 		_handleModifiers();
 	}
 
-	void Renderer::_handleModifiers()
+	void OpenGLRenderer::_handleModifiers()
 	{
 		const Qt::KeyboardModifiers mods = QGuiApplication::queryKeyboardModifiers();
 		_inputManager.setAction( App::Input::InputManager::Action::Accelerate, mods & Qt::ShiftModifier );
 		_inputManager.setAction( App::Input::InputManager::Action::Decelerate, mods & Qt::AltModifier );
 	}
 
-	std::optional<App::Input::InputManager::Action> Renderer::_getKeyboardAction( const int p_key ) const
+	std::optional<App::Input::InputManager::Action> OpenGLRenderer::_getKeyboardAction( const int p_key ) const
 	{
 		if ( p_key < 0 || std::cmp_greater_equal( p_key, QWERTY_BINDINGS.size() ) )
 		{
@@ -287,13 +333,25 @@ namespace VTX::UI::QT::Window
 		return bindings[ p_key ];
 	}
 
-	QPoint Renderer::_toDevicePixels( const QPointF & p_logicalPos ) const
+	QPoint OpenGLRenderer::_toDevicePixels( const QPointF & p_logicalPos ) const
 	{
 		const qreal dpr = devicePixelRatio();
 		return { static_cast<int>( p_logicalPos.x() * dpr ), static_cast<int>( p_logicalPos.y() * dpr ) };
 	}
 
-	void Renderer::_onKBLayoutChange( const Events::KeyboardLayoutChanged & p_e )
+	void OpenGLRenderer::_syncDefaultFramebuffer()
+	{
+		const uint32_t framebuffer = getGLDefaultFramebuffer();
+		if ( not _glReady || framebuffer == _defaultFramebuffer )
+		{
+			return;
+		}
+
+		_defaultFramebuffer = framebuffer;
+		App::RENDERER().setDefaultFramebuffer( framebuffer );
+	}
+
+	void OpenGLRenderer::_onKBLayoutChange( const Events::KeyboardLayoutChanged & p_e )
 	{ _layout = static_cast<KB_LAYOUT>( p_e.layout ); }
 
-} // namespace VTX::UI::QT::Window
+} // namespace VTX::UI::QT::Widget

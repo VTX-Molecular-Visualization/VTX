@@ -29,6 +29,7 @@ endif()
 target_link_libraries(vtx_ui_qt PUBLIC Qt6::Core)
 target_link_libraries(vtx_ui_qt PUBLIC Qt6::Gui)
 target_link_libraries(vtx_ui_qt PUBLIC Qt6::Widgets)
+target_link_libraries(vtx_ui_qt PUBLIC Qt6::OpenGLWidgets)
 	
 if(MSVC)
 	target_link_libraries(vtx_ui_qt PRIVATE Qt6::QWindowsIntegrationPlugin)

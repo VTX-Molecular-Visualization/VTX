@@ -214,11 +214,11 @@ namespace VTX::UI::QT::Widget
 		restoreState( _defaultState );
 	}
 
-	Window::Renderer & MainWindow::getRenderWindow() const
+	OpenGLRenderer * MainWindow::getOpenGLRenderer() const
 	{
 		const auto * widget = qobject_cast<const Renderer *>( centralWidget() );
 		assert( widget != nullptr );
-		return widget->getRenderWindow();
+		return widget->getOpenGLRenderer();
 	}
 
 	void MainWindow::populateViewMenu( QMenu & p_menu )

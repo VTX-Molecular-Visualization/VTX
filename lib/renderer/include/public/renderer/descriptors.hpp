@@ -283,7 +283,7 @@ namespace VTX::Renderer::Desc
 		std::function<void *( const char * )> getProcAddress;
 		std::function<void()>				  swapBuffers;
 		std::function<void( int )>			  setSwapInterval;
-		bool								  defaultFramebufferSrgb = false;
+		uint32_t							  defaultFramebuffer = 0;
 	};
 
 	/**

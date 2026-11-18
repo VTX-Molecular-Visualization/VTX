@@ -79,6 +79,12 @@ namespace VTX::Renderer
 		}
 	}
 
+	void Renderer::setDefaultFramebuffer( const uint32_t p_id )
+	{
+		_context.setDefaultFramebuffer( p_id );
+		_markDirty( Cache::E_RENDERER_DIRTY::COMMAND_BUFFER | Cache::E_RENDERER_DIRTY::NEED_UPDATE );
+	}
+
 	void Renderer::resize( const size_t p_width, const size_t p_height )
 	{
 		const Util::ScopedChrono timer( "[RENDERER] resize" );

@@ -14,7 +14,6 @@ namespace VTX::Renderer::Builder::PostProcess
 		static Desc::Key build( GraphBuilder & p_graph, const Desc::Key & p_input )
 		{
 			p_graph.pass( Desc::Key { PASS } )
-				.settings( { Desc::E_SETTING::SRGB } )
 				.in( p_input )
 				.out( Desc::Key { PASS } )
 				.program( Desc::Key { PASS } )

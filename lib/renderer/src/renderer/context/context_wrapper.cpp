@@ -540,6 +540,14 @@ namespace VTX::Renderer::Context
 		);
 	}
 
+	void ContextWrapper::setDefaultFramebuffer( const uint32_t p_id )
+	{
+		if ( auto * const backend = std::get_if<Backend::OpenGL>( &_impl->backend ) )
+		{
+			backend->setDefaultFramebuffer( p_id );
+		}
+	}
+
 	void ContextWrapper::setOption( const Desc::E_OPTION p_option, const bool p_value )
 	{
 		std::visit(

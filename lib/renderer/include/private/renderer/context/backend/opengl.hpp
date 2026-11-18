@@ -134,6 +134,11 @@ namespace VTX::Renderer::Context::Backend
 		void setRenderTarget( Desc::E_RENDER_TARGET );
 
 		/**
+		 * @brief Set default fbno id.
+		 */
+		void setDefaultFramebuffer( const uint32_t p_id ) noexcept { _defaultFramebufferId = p_id; }
+
+		/**
 		 * @brief Set options.
 		 */
 		void setOption( Desc::E_OPTION, bool );
@@ -179,9 +184,10 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Render target (default framebuffer or offscreen).
 		 */
-		Desc::Handle _default	= Desc::NO_HANDLE;
-		Desc::Handle _offscreen = Desc::NO_HANDLE;
-		Desc::Handle _target	= Desc::NO_HANDLE;
+		Desc::Handle _default			   = Desc::NO_HANDLE;
+		Desc::Handle _offscreen			   = Desc::NO_HANDLE;
+		Desc::Handle _target			   = Desc::NO_HANDLE;
+		GLuint		 _defaultFramebufferId = 0;
 
 		/**
 		 * @brief Shader path.
@@ -218,7 +224,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Init OpenGL functions.
 		 */
-		void _initOpenGL( bool p_defaultFramebufferSrgb );
+		void _initOpenGL();
 
 		/**
 		 * @brief Get or create resources.

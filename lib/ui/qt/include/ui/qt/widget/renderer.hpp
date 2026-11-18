@@ -3,7 +3,7 @@
 
 #include "ui/qt/events.hpp"
 #include "ui/qt/widget/base_widget.hpp"
-#include "ui/qt/window/renderer.hpp"
+#include "ui/qt/widget/opengl_renderer.hpp"
 #include <QEvent>
 #include <QHideEvent>
 #include <QPaintEvent>
@@ -22,8 +22,6 @@
 
 namespace VTX::UI::QT::Widget
 {
-	using KB_LAYOUT = Window::KB_LAYOUT;
-
 	/**
 	 * @brief Widget to present an OpenGL rendering context.
 	 * No more Qt OpenGL implementation used.
@@ -36,56 +34,15 @@ namespace VTX::UI::QT::Widget
 		static constexpr bool VSYNC_DEFAULT = true;
 
 		/**
-		 * @brief Positions for HUD elements.
-		 */
-		/*
-		enum struct HUD_POSITION
-		{
-			TOP_LEFT,
-			TOP_CENTER,
-			TOP_RIGHT,
-			CENTER_LEFT,
-			CENTER_RIGHT,
-			BOTTOM_LEFT,
-			BOTTOM_CENTER,
-			BOTTOM_RIGHT
-		};
-		*/
-
-		/**
 		 * @brief Constructors.
 		 */
 		Renderer( QWidget * );
 		~Renderer() override;
 
-		Window::Renderer & getRenderWindow() const
-		{
-			assert( _window != nullptr );
-			return *_window;
-		}
-
 		/**
-		 * @brief Create a toolbar from type.
+		 * @brief Get OpenGLRenderer widget.
 		 */
-		/*
-		template<typename TB>
-		TB * const createToolBar( const HUD_POSITION p_pos )
-		{
-			TB * const toolBar = new TB( this );
-			toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
-			for ( auto * button : toolBar->template findChildren<QToolButton *>() )
-			{
-				button->setToolButtonStyle( toolBar->toolButtonStyle() );
-			}
-			_addHUDWidget( toolBar, p_pos );
-			return toolBar;
-		}
-		*/
-
-		/**
-		 * @brief Override resize.
-		 */
-		bool eventFilter( QObject *, QEvent * ) override;
+		OpenGLRenderer * getOpenGLRenderer() const { return _openGLRenderer; }
 
 	  protected:
 		/**
@@ -101,19 +58,6 @@ namespace VTX::UI::QT::Widget
 		void onResizeFinished();
 
 	  private:
-		/*
-		struct HUDItem
-		{
-			QPointer<QWidget> widget;
-			HUD_POSITION	  position;
-		};
-		*/
-
-		/**
-		 * @brief HUD widgets and their anchor positions.
-		 */
-		// std::vector<HUDItem> _hudItems;
-
 		/**
 		 * @brief Debounce timer for resize events.
 		 */
@@ -122,12 +66,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief OpenGL rendering window.
 		 */
-		QPointer<Window::Renderer> _window;
-
-		/**
-		 * @brief Container widget for the OpenGL window.
-		 */
-		QPointer<QWidget> _container;
+		QPointer<OpenGLRenderer> _openGLRenderer;
 
 		/**
 		 * @brief Logo painted behind the native renderer surface during startup and resize.
@@ -148,21 +87,6 @@ namespace VTX::UI::QT::Widget
 		 * @brief Size to ignore if Qt relayouts back after an App-requested resize.
 		 */
 		std::optional<QSize> _pendingLayoutReboundSize;
-
-		/**
-		 * @brief Add a widget to the overlay at the given position.
-		 */
-		// void _addHUDWidget( QWidget * const, const HUD_POSITION );
-
-		/**
-		 * @brief Synchronize HUD geometry and optionally show items.
-		 */
-		// void _syncHUDWidgets( const bool p_showWidgets = false );
-
-		/**
-		 * @brief Compute the geometry of a HUD widget for the current renderer rect.
-		 */
-		// QRect _getHUDGeometry( QWidget * const, const HUD_POSITION ) const;
 
 		/**
 		 * @brief Give focus back to the rendering surface.

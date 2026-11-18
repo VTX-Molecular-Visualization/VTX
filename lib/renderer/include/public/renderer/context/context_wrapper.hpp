@@ -167,6 +167,11 @@ namespace VTX::Renderer::Context
 		void setRenderTarget( Desc::E_RENDER_TARGET p_target );
 
 		/**
+		 * @brief Set the default framebuffer id.
+		 */
+		void setDefaultFramebuffer( uint32_t p_id );
+
+		/**
 		 * @brief Set options.
 		 */
 		void setOption( Desc::E_OPTION p_option, bool p_value );

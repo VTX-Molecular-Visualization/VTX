@@ -2,12 +2,12 @@
 #include "app/services.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/menu/selection.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/main_window.hpp"
-#include <QCoreApplication>
 #include <QCursor>
 #include <QGuiApplication>
 #include <QPainter>
@@ -15,7 +15,6 @@
 #include <QScopedValueRollback>
 #include <algorithm>
 #include <app/action/application.hpp>
-#include <memory>
 #include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
@@ -25,22 +24,29 @@ namespace VTX::UI::QT::Widget
 	{
 		setAcceptDrops( true );
 		_backgroundLogo = QPixmap( Resources::SPRITE_LOGO.toString() );
-
-		auto window = std::make_unique<Window::Renderer>();
-		_window		= window.get();
-		_window->setFlags( Qt::FramelessWindowHint );
-		_window->create();
-
-		_container = createWindowContainer( window.release(), this );
-		_container->installEventFilter( this );
-		_container->setFocusPolicy( Qt::StrongFocus );
 		setFocusPolicy( Qt::NoFocus );
-		setFocusProxy( _container );
-		_container->setFixedSize( 0, 0 );
+
+		_resizeTimer.setSingleShot( true );
+		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
+
+		_rendererResizeConnection
+			= App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
+		_rendererReadyConnection = App::HUB().connect<App::Events::RendererReady, &Renderer::_onRendererReady>( this );
+
+		if ( App::ARGS().noGraphics || not OpenGLRenderer::isOpenGLSupported() )
+		{
+			return;
+		}
+
+		_openGLRenderer = Helper::makeQObject<OpenGLRenderer>( this );
+		_openGLRenderer->setFocusPolicy( Qt::StrongFocus );
+		setFocusProxy( _openGLRenderer );
+		_openGLRenderer->setFixedSize( 1, 1 );
+		_openGLRenderer->move( -1, -1 );
 
 		connect(
-			_window,
-			&Window::Renderer::clicked,
+			_openGLRenderer,
+			&OpenGLRenderer::clicked,
 			this,
 			[ this ]( const Qt::MouseButton p_button, const QPoint p_pos )
 			{
@@ -60,37 +66,9 @@ namespace VTX::UI::QT::Widget
 				}
 			}
 		);
-
-		_resizeTimer.setSingleShot( true );
-		connect( &_resizeTimer, &QTimer::timeout, this, &Renderer::onResizeFinished );
-
-		_rendererResizeConnection
-			= App::HUB().connect<App::Events::RendererResize, &Renderer::_onRendererResize>( this );
-		_rendererReadyConnection = App::HUB().connect<App::Events::RendererReady, &Renderer::_onRendererReady>( this );
 	}
 
-	Renderer::~Renderer()
-	{
-		if ( _container != nullptr )
-		{
-			_container->removeEventFilter( this );
-		}
-	}
-
-	bool Renderer::eventFilter( QObject * p_watched, QEvent * p_event )
-	{
-		if ( p_watched == _container && p_event != nullptr )
-		{
-			if ( p_event->type() == QEvent::DragEnter || p_event->type() == QEvent::Drop )
-			{
-				const std::unique_ptr<QEvent> clonedEvent { p_event->clone() };
-				QCoreApplication::sendEvent( &MAIN_WINDOW(), clonedEvent.get() );
-				return true;
-			}
-		}
-
-		return QWidget::eventFilter( p_watched, p_event );
-	}
+	Renderer::~Renderer() = default;
 
 	void Renderer::paintEvent( QPaintEvent * p_event )
 	{
@@ -120,15 +98,13 @@ namespace VTX::UI::QT::Widget
 	void Renderer::showEvent( QShowEvent * p_event )
 	{
 		QWidget::showEvent( p_event );
-		//_syncHUDWidgets( true );
+
 		_focusRenderer();
 	}
 
 	void Renderer::resizeEvent( QResizeEvent * p_event )
 	{
 		QWidget::resizeEvent( p_event );
-
-		//_syncHUDWidgets();
 
 		if ( not _rendererReady )
 		{
@@ -148,12 +124,6 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		if ( _window != nullptr && _container != nullptr )
-		{
-			_container->resize( 1, 1 );
-			_window->resize( 1, 1 );
-			update();
-		}
 		_resizeTimer.start( 40 );
 	}
 
@@ -173,30 +143,26 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		assert( _window != nullptr );
-		assert( _container != nullptr );
+		assert( _openGLRenderer != nullptr );
 
 		const QSize size = this->size();
-		_container->setMinimumSize( 0, 0 );
-		_container->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
-		_window->resize( size );
-		_container->resize( size );
-		//_syncHUDWidgets();
+		_openGLRenderer->setMinimumSize( 0, 0 );
+		_openGLRenderer->setMaximumSize( QWIDGETSIZE_MAX, QWIDGETSIZE_MAX );
+		_openGLRenderer->setGeometry( QRect( QPoint( 0, 0 ), size ) );
 
-		const QSize scaledSize = size * _window->devicePixelRatio();
+		const QSize scaledSize = size * _openGLRenderer->devicePixelRatio();
 		App::ACTION().execute<App::Action::Application::Resize>( scaledSize.width(), scaledSize.height(), false );
 		_focusRenderer();
 	}
 
 	void Renderer::_focusRenderer()
 	{
-		if ( _container == nullptr || _window == nullptr || not isVisible() )
+		if ( _openGLRenderer == nullptr || not isVisible() )
 		{
 			return;
 		}
 
-		_container->setFocus( Qt::OtherFocusReason );
-		_window->requestActivate();
+		_openGLRenderer->setFocus( Qt::OtherFocusReason );
 	}
 
 	void Renderer::_onRendererReady( const App::Events::RendererReady & )
@@ -210,7 +176,7 @@ namespace VTX::UI::QT::Widget
 
 	void Renderer::_onRendererResize( const App::Events::RendererResize & p_e )
 	{
-		if ( _window == nullptr || _container == nullptr )
+		if ( _openGLRenderer == nullptr )
 		{
 			return;
 		}
@@ -226,7 +192,7 @@ namespace VTX::UI::QT::Widget
 		{
 			return;
 		}
-		qreal dpr = _window->devicePixelRatio();
+		qreal dpr = _openGLRenderer->devicePixelRatio();
 		if ( dpr <= 0 )
 		{
 			dpr = 1;
@@ -236,11 +202,10 @@ namespace VTX::UI::QT::Widget
 			qRound( static_cast<qreal>( p_e.width ) / dpr ), qRound( static_cast<qreal>( p_e.height ) / dpr )
 		);
 
-		const QSize currentSize			 = this->size();
-		const bool	widgetSizeChanged	 = currentSize != size;
-		const bool	windowSizeChanged	 = _window->size() != size;
-		const bool	containerSizeChanged = _container->size() != size;
-		if ( not widgetSizeChanged && not windowSizeChanged && not containerSizeChanged )
+		const QSize currentSize		  = this->size();
+		const bool	widgetSizeChanged = currentSize != size;
+		const bool	windowSizeChanged = _openGLRenderer->size() != size;
+		if ( not widgetSizeChanged && not windowSizeChanged )
 		{
 			return;
 		}
@@ -260,20 +225,16 @@ namespace VTX::UI::QT::Widget
 		}
 
 		const QSize appliedSize = this->size();
-		if ( _window->size() != appliedSize )
+		if ( _openGLRenderer->size() != appliedSize )
 		{
-			_window->resize( appliedSize );
-		}
-		if ( _container->size() != appliedSize )
-		{
-			_container->resize( appliedSize );
+			_openGLRenderer->resize( appliedSize );
 		}
 		QTimer::singleShot(
 			0,
 			this,
 			[ this ]()
 			{
-				if ( _window == nullptr || _container == nullptr )
+				if ( _openGLRenderer == nullptr )
 				{
 					return;
 				}
@@ -282,92 +243,12 @@ namespace VTX::UI::QT::Widget
 				const QScopedValueRollback ignoreResizeEvents( _ignoreResizeEvents, true );
 
 				const QSize size = this->size();
-				if ( _window->size() != size )
+				if ( _openGLRenderer->size() != size )
 				{
-					_window->resize( size );
-				}
-				if ( _container->size() != size )
-				{
-					_container->resize( size );
+					_openGLRenderer->resize( size );
 				}
 			}
 		);
 	}
-
-	/*
-	void Renderer::_addHUDWidget( QWidget * const p_widget, const HUD_POSITION p_pos )
-	{
-		p_widget->setParent( this );
-		// Keep the HUD native so it stays above the embedded QWindow container.
-		p_widget->setAttribute( Qt::WA_NativeWindow, true );
-		p_widget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
-		_hudItems.push_back( { p_widget, p_pos } );
-		_syncHUDWidgets( isVisible() );
-	}
-	*/
-
-	/*
-	void Renderer::_syncHUDWidgets( const bool p_showWidgets )
-	{
-		if ( not isVisible() )
-		{
-			return;
-		}
-
-		for ( const HUDItem & item : _hudItems )
-		{
-			QWidget * const widget = item.widget;
-			if ( widget == nullptr )
-			{
-				continue;
-			}
-
-			widget->setGeometry( _getHUDGeometry( widget, item.position ) );
-			if ( p_showWidgets )
-			{
-				widget->show();
-			}
-			widget->raise();
-		}
-	}
-	*/
-
-	/*
-	QRect Renderer::_getHUDGeometry( QWidget * const p_widget, const HUD_POSITION p_pos ) const
-	{
-		assert( p_widget != nullptr );
-
-		p_widget->adjustSize();
-
-		const QRect availableRect = rect();
-		const QSize size		  = p_widget->sizeHint().expandedTo( p_widget->minimumSizeHint() );
-		int			x			  = availableRect.left();
-		int			y			  = availableRect.top();
-
-		switch ( p_pos )
-		{
-		case HUD_POSITION::TOP_LEFT: break;
-		case HUD_POSITION::TOP_CENTER: x = availableRect.left() + ( availableRect.width() - size.width() ) / 2; break;
-		case HUD_POSITION::TOP_RIGHT: x = availableRect.right() - size.width() + 1; break;
-		case HUD_POSITION::CENTER_LEFT: y = availableRect.top() + ( availableRect.height() - size.height() ) / 2; break;
-		case HUD_POSITION::CENTER_RIGHT:
-			x = availableRect.right() - size.width() + 1;
-			y = availableRect.top() + ( availableRect.height() - size.height() ) / 2;
-			break;
-		case HUD_POSITION::BOTTOM_LEFT: y = availableRect.bottom() - size.height() + 1; break;
-		case HUD_POSITION::BOTTOM_CENTER:
-			x = availableRect.left() + ( availableRect.width() - size.width() ) / 2;
-			y = availableRect.bottom() - size.height() + 1;
-			break;
-		case HUD_POSITION::BOTTOM_RIGHT:
-			x = availableRect.right() - size.width() + 1;
-			y = availableRect.bottom() - size.height() + 1;
-			break;
-		default: assert( false && "Invalid HUD position" );
-		}
-
-		return { QPoint( x, y ), size };
-	}
-	*/
 
 } // namespace VTX::UI::QT::Widget

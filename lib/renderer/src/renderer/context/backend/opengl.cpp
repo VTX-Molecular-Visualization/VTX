@@ -272,7 +272,7 @@ namespace VTX::Renderer::Context::Backend
 			throw GraphicException( "Failed to load OpenGL functions" );
 		}
 
-		_initOpenGL( _glContext->isDefaultFramebufferSrgb() );
+		_initOpenGL();
 	}
 
 	OpenGL::OpenGL(
@@ -282,7 +282,8 @@ namespace VTX::Renderer::Context::Backend
 		FilePath						  p_shaderDir
 	) : OpenGL( p_width, p_height, std::move( p_shaderDir ) )
 	{
-		_externalContext = p_contextInfo;
+		_externalContext	  = p_contextInfo;
+		_defaultFramebufferId = p_contextInfo.defaultFramebuffer;
 		if ( not _externalContext.getProcAddress )
 		{
 			throw GraphicException( "External OpenGL context has no loader" );
@@ -293,10 +294,10 @@ namespace VTX::Renderer::Context::Backend
 			throw GraphicException( "Failed to load OpenGL functions" );
 		}
 
-		_initOpenGL( _externalContext.defaultFramebufferSrgb );
+		_initOpenGL();
 	}
 
-	void OpenGL::_initOpenGL( const bool p_defaultFramebufferSrgb )
+	void OpenGL::_initOpenGL()
 	{
 		// Check version.
 		if constexpr ( Desc::OPENGL_MINOR_VERSION == 6 )
@@ -324,15 +325,6 @@ namespace VTX::Renderer::Context::Backend
 
 		_getOpenglInfos();
 		_openglInfos.print();
-
-		if ( p_defaultFramebufferSrgb )
-		{
-			VTX_INFO( "Default framebuffer color encoding: sRGB" );
-		}
-		else
-		{
-			VTX_WARNING( "Default framebuffer color encoding is linear; GL_FRAMEBUFFER_SRGB has no effect" );
-		}
 
 		GLuint cudaInteropProbeBuffer = 0;
 		glCreateBuffers( 1, &cudaInteropProbeBuffer );
@@ -794,7 +786,11 @@ namespace VTX::Renderer::Context::Backend
 			// Create a default fbo.
 			if ( not _framebuffers.validate( Desc::Key { DEFAULT_FBO } ) )
 			{
-				_default = _framebuffers.emplace( Desc::Key { DEFAULT_FBO }, 0 );
+				_default = _framebuffers.emplace( Desc::Key { DEFAULT_FBO }, _defaultFramebufferId, false );
+			}
+			else if ( _framebuffers.get( _default ).getId() != _defaultFramebufferId )
+			{
+				_framebuffers.get( _default ) = GL::Framebuffer( _defaultFramebufferId, false );
 			}
 
 			if ( targetWasUnset || targetWasDefault )

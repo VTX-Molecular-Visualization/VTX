@@ -190,8 +190,6 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void swapBuffers() const noexcept {}
 
-		bool isDefaultFramebufferSrgb() const { return _defaultFramebufferSrgb; }
-
 		static void setSwapInterval( const int ) {}
 
 		void destroy()
@@ -241,10 +239,10 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			if ( p_choosePixelFormat )
 			{
-				int pixelAttribs[ 17 ] = { WGL_DRAW_TO_WINDOW_ARB, 1,  WGL_SUPPORT_OPENGL_ARB, 1,
-										   WGL_DOUBLE_BUFFER_ARB,  1,  WGL_PIXEL_TYPE_ARB,	   WGL_TYPE_RGBA_ARB,
-										   WGL_COLOR_BITS_ARB,	   32, WGL_DEPTH_BITS_ARB,	   24,
-										   WGL_STENCIL_BITS_ARB,   8 };
+				const int pixelAttribs[ 15 ] = { WGL_DRAW_TO_WINDOW_ARB, 1,	 WGL_SUPPORT_OPENGL_ARB, 1,
+												 WGL_DOUBLE_BUFFER_ARB,	 1,	 WGL_PIXEL_TYPE_ARB,	 WGL_TYPE_RGBA_ARB,
+												 WGL_COLOR_BITS_ARB,	 32, WGL_DEPTH_BITS_ARB,	 24,
+												 WGL_STENCIL_BITS_ARB,	 8 };
 
 				const auto chooseFormat = [ & ]( const int * const p_attributes )
 				{
@@ -254,36 +252,19 @@ namespace VTX::Renderer::Context::Backend::GL
 						   && numFormats > 0;
 				};
 
-				pixelAttribs[ 14 ]		= WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB;
-				pixelAttribs[ 15 ]		= 1;
-				const bool selectedSrgb = chooseFormat( pixelAttribs );
-				pixelAttribs[ 14 ]		= 0;
-				pixelAttribs[ 15 ]		= 0;
-				if ( not selectedSrgb )
-				{
-					VTX_WARNING( "[WGL] No sRGB pixel format available, falling back to a linear format" );
-				}
-
-				if ( selectedSrgb || chooseFormat( pixelAttribs ) )
+				if ( chooseFormat( pixelAttribs ) )
 				{
 					PIXELFORMATDESCRIPTOR chosen = {};
 					if ( DescribePixelFormat( _hdc, pixelFormat, sizeof( chosen ), &chosen ) != 0 )
 					{
-						p_pfd					= chosen;
-						_defaultFramebufferSrgb = selectedSrgb;
-						if ( selectedSrgb )
-						{
-							VTX_INFO( "[WGL] Using sRGB pixel format {}", pixelFormat );
-						}
+						p_pfd = chosen;
 						VTX_TRACE(
-							"[WGL] Using ARB pixel format {} (color={}, depth={}, stencil={}, double_buffer={}, "
-							"srgb={})",
+							"[WGL] Using ARB pixel format {} (color={}, depth={}, stencil={}, double_buffer={})",
 							pixelFormat,
 							static_cast<int>( p_pfd.cColorBits ),
 							static_cast<int>( p_pfd.cDepthBits ),
 							static_cast<int>( p_pfd.cStencilBits ),
-							( p_pfd.dwFlags & PFD_DOUBLEBUFFER ) != 0,
-							selectedSrgb
+							( p_pfd.dwFlags & PFD_DOUBLEBUFFER ) != 0
 						);
 						return pixelFormat;
 					}
@@ -303,10 +284,9 @@ namespace VTX::Renderer::Context::Backend::GL
 			return pixelFormat;
 		}
 
-		HWND  _hwnd					  = nullptr;
-		HDC	  _hdc					  = nullptr;
-		HGLRC _context				  = nullptr;
-		bool  _defaultFramebufferSrgb = false;
+		HWND  _hwnd	   = nullptr;
+		HDC	  _hdc	   = nullptr;
+		HGLRC _context = nullptr;
 	};
 
 	using GLContextWrapper = WGLContextWrapper;
@@ -337,8 +317,6 @@ namespace VTX::Renderer::Context::Backend::GL
 		void makeCurrent() const { throw std::runtime_error( "macOS OpenGL context is not initialized" ); }
 
 		void swapBuffers() const noexcept {}
-
-		bool isDefaultFramebufferSrgb() const { return false; }
 
 		void setSwapInterval( int ) {}
 
@@ -469,8 +447,6 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 
 		void swapBuffers() const noexcept {}
-
-		bool isDefaultFramebufferSrgb() const { return false; }
 
 		void setSwapInterval( const int ) {}
 

@@ -61,6 +61,11 @@ namespace VTX::Renderer
 		void resize( size_t, size_t );
 
 		/**
+		 * @brief Set default framebuffer id.
+		 */
+		void setDefaultFramebuffer( uint32_t );
+
+		/**
 		 * @brief Clean all.
 		 */
 		void clear();

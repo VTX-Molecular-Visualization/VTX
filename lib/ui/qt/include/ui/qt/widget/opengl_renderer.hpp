@@ -1,20 +1,19 @@
-#ifndef VTX_UI_QT_WINDOW_RENDERER_HPP
-#define VTX_UI_QT_WINDOW_RENDERER_HPP
+#ifndef VTX_UI_QT_WIDGET_OPENGL_RENDERER_HPP
+#define VTX_UI_QT_WIDGET_OPENGL_RENDERER_HPP
 
 #include "ui/qt/events.hpp"
-#include <QExposeEvent>
 #include <QFocusEvent>
 #include <QKeyEvent>
 #include <QMouseEvent>
-#include <QOpenGLContext>
+#include <QOpenGLWidget>
+#include <QSurfaceFormat>
 #include <QWheelEvent>
-#include <QWindow>
 #include <app/input/input_manager.hpp>
-#include <memory>
+#include <cstdint>
 #include <optional>
 #include <util/event_hub.hpp>
 
-namespace VTX::UI::QT::Window
+namespace VTX::UI::QT::Widget
 {
 	// TODO: move to settings.
 	enum struct KB_LAYOUT : uint8_t
@@ -27,7 +26,7 @@ namespace VTX::UI::QT::Window
 	/**
 	 * @brief Handle user input and forward it to the InputManager.
 	 */
-	class Renderer : public QWindow
+	class OpenGLRenderer : public QOpenGLWidget
 	{
 		Q_OBJECT
 
@@ -35,15 +34,18 @@ namespace VTX::UI::QT::Window
 		/**
 		 * @brief Constructor.
 		 */
-		Renderer();
-		~Renderer() override;
+		explicit OpenGLRenderer( QWidget * p_parent );
+		~OpenGLRenderer() override;
 
-		bool   createGLContext();
-		void   destroyGLContext();
-		void   swapGLBuffers();
-		bool   setGLSwapInterval( int );
-		void * getGLProcAddress( const char * ) const;
-		bool   isGLDefaultFramebufferSrgb() const;
+		static QSurfaceFormat surfaceFormat();
+		static bool			  isOpenGLSupported();
+
+		bool	 createGLContext();
+		void	 destroyGLContext();
+		void	 swapGLBuffers();
+		bool	 setGLSwapInterval( int ) const;
+		void *	 getGLProcAddress( const char * ) const;
+		uint32_t getGLDefaultFramebuffer() const;
 
 	  signals:
 		/**
@@ -55,7 +57,9 @@ namespace VTX::UI::QT::Window
 		/**
 		 * @brief Override events.
 		 */
-		void exposeEvent( QExposeEvent * ) override;
+		bool event( QEvent * ) override;
+		void resizeGL( int, int ) override;
+		void paintGL() override;
 		void keyPressEvent( QKeyEvent * ) override;
 		void keyReleaseEvent( QKeyEvent * ) override;
 		void focusInEvent( QFocusEvent * ) override;
@@ -83,9 +87,12 @@ namespace VTX::UI::QT::Window
 
 		VTX::Util::EventHub::ScopedConnection _keyboardLayoutChangedConnection;
 
-		std::unique_ptr<QOpenGLContext> _glContext;
+		bool	 _glReady			 = false;
+		uint32_t _defaultFramebuffer = 0;
+
+		void _syncDefaultFramebuffer();
 	};
 
-} // namespace VTX::UI::QT::Window
+} // namespace VTX::UI::QT::Widget
 
 #endif
