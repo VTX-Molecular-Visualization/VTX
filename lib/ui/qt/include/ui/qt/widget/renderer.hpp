@@ -5,7 +5,10 @@
 #include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/widget/opengl_renderer.hpp"
 #include <QEvent>
+#include <QFocusEvent>
 #include <QHideEvent>
+#include <QKeyEvent>
+#include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPixmap>
 #include <QPointer>
@@ -14,14 +17,25 @@
 #include <QTimer>
 #include <QToolBar>
 #include <QToolButton>
+#include <QWheelEvent>
 #include <app/events.hpp>
+#include <app/input/input_manager.hpp>
 #include <cassert>
+#include <cstdint>
 #include <optional>
 #include <util/event_hub.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Widget
 {
+	// TODO: move to settings.
+	enum struct KB_LAYOUT : uint8_t
+	{
+		QWERTY,
+		AZERTY,
+		COUNT
+	};
+
 	/**
 	 * @brief Widget to present an OpenGL rendering context.
 	 * No more Qt OpenGL implementation used.
@@ -51,6 +65,15 @@ namespace VTX::UI::QT::Widget
 		void paintEvent( QPaintEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
+		void keyPressEvent( QKeyEvent * ) override;
+		void keyReleaseEvent( QKeyEvent * ) override;
+		void focusInEvent( QFocusEvent * ) override;
+		void focusOutEvent( QFocusEvent * ) override;
+		void mousePressEvent( QMouseEvent * ) override;
+		void mouseMoveEvent( QMouseEvent * ) override;
+		void mouseReleaseEvent( QMouseEvent * ) override;
+		void mouseDoubleClickEvent( QMouseEvent * ) override;
+		void wheelEvent( QWheelEvent * ) override;
 
 		/**
 		 * @brief Debounce callback.
@@ -67,6 +90,11 @@ namespace VTX::UI::QT::Widget
 		 * @brief OpenGL rendering window.
 		 */
 		QPointer<OpenGLRenderer> _openGLRenderer;
+
+		/**
+		 * @brief Input manager.
+		 */
+		App::Input::InputManager & _inputManager;
 
 		/**
 		 * @brief Logo painted behind the native renderer surface during startup and resize.
@@ -89,6 +117,20 @@ namespace VTX::UI::QT::Widget
 		std::optional<QSize> _pendingLayoutReboundSize;
 
 		/**
+		 * @brief Current keyboard layout.
+		 * TODO: move to settings.
+		 */
+		KB_LAYOUT _layout = KB_LAYOUT::QWERTY;
+
+		/**
+		 * @brief Handle input events.
+		 */
+		Qt::MouseButton _pressedButton = Qt::NoButton;
+		QPointF			_pressPos	   = {};
+		QPointF			_lastPos	   = {};
+		bool			_dragging	   = false;
+
+		/**
 		 * @brief Give focus back to the rendering surface.
 		 */
 		void _focusRenderer();
@@ -97,13 +139,28 @@ namespace VTX::UI::QT::Widget
 		 * @brief Synchronize widget size after an App renderer resize.
 		 */
 		void _onRendererResize( const App::Events::RendererResize & );
+
+		/**
+		 * @brief On ready event from the native renderer.
+		 */
 		void _onRendererReady( const App::Events::RendererReady & );
+
+		/**
+		 * @brief Handle keyboard events and forward them to the InputManager.
+		 */
+		void											_handleKeyboard( QKeyEvent *, bool p_enable );
+		void											_handleModifiers();
+		std::optional<App::Input::InputManager::Action> _getKeyboardAction( int ) const;
+		QPoint											_toDevicePixels( const QPointF & ) const;
+		void											_onClick( Qt::MouseButton, QPoint );
+		void											_onKBLayoutChange( const Events::KeyboardLayoutChanged & );
 
 		/**
 		 * @brief Connection.
 		 */
 		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
 		VTX::Util::EventHub::ScopedConnection _rendererReadyConnection;
+		VTX::Util::EventHub::ScopedConnection _keyboardLayoutChangedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
 

@@ -1,61 +1,17 @@
 #include "ui/qt/widget/opengl_renderer.hpp"
-#include <QGuiApplication>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
-#include <QStyleHints>
 #include <QSurfaceFormat>
-#include <app/action/camera.hpp>
 #include <app/services.hpp>
-#include <array>
 #include <renderer/renderer.hpp>
-#include <util/action_manager.hpp>
-#include <util/event_hub.hpp>
 #include <util/logger.hpp>
 #include <utility>
 
-namespace
-{
-	using Action	   = VTX::App::Input::InputManager::Action;
-	using BindingTable = std::array<std::optional<Action>, 256>;
-
-	constexpr BindingTable QWERTY_BINDINGS = []()
-	{
-		BindingTable bindings;
-		bindings[ Qt::Key_W ] = Action::MoveFront;
-		bindings[ Qt::Key_S ] = Action::MoveBack;
-		bindings[ Qt::Key_A ] = Action::MoveLeft;
-		bindings[ Qt::Key_D ] = Action::MoveRight;
-		bindings[ Qt::Key_R ] = Action::MoveUp;
-		bindings[ Qt::Key_F ] = Action::MoveDown;
-		bindings[ Qt::Key_Q ] = Action::RotateLeft;
-		bindings[ Qt::Key_E ] = Action::RotateRight;
-		return bindings;
-	}();
-
-	constexpr BindingTable AZERTY_BINDINGS = []()
-	{
-		BindingTable bindings;
-		bindings[ Qt::Key_Z ] = Action::MoveFront;
-		bindings[ Qt::Key_S ] = Action::MoveBack;
-		bindings[ Qt::Key_Q ] = Action::MoveLeft;
-		bindings[ Qt::Key_D ] = Action::MoveRight;
-		bindings[ Qt::Key_R ] = Action::MoveUp;
-		bindings[ Qt::Key_F ] = Action::MoveDown;
-		bindings[ Qt::Key_A ] = Action::RotateLeft;
-		bindings[ Qt::Key_E ] = Action::RotateRight;
-		return bindings;
-	}();
-} // namespace
-
 namespace VTX::UI::QT::Widget
 {
-	OpenGLRenderer::OpenGLRenderer( QWidget * const p_parent ) :
-		QOpenGLWidget( p_parent ), _inputManager( App::INPUT() )
+	OpenGLRenderer::OpenGLRenderer( QWidget * const p_parent ) : QOpenGLWidget( p_parent )
 	{
-		_keyboardLayoutChangedConnection
-			= App::HUB().connect<Events::KeyboardLayoutChanged, &OpenGLRenderer::_onKBLayoutChange>( this );
-
 		setFormat( surfaceFormat() );
 		setUpdateBehavior( QOpenGLWidget::PartialUpdate );
 
@@ -215,130 +171,6 @@ namespace VTX::UI::QT::Widget
 
 	void OpenGLRenderer::paintGL() { context()->functions()->glDisable( GL_BLEND ); }
 
-	void OpenGLRenderer::keyPressEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, true ); }
-
-	void OpenGLRenderer::keyReleaseEvent( QKeyEvent * const p_event ) { _handleKeyboard( p_event, false ); }
-
-	void OpenGLRenderer::focusInEvent( QFocusEvent * p_event )
-	{
-		QOpenGLWidget::focusInEvent( p_event );
-		_handleModifiers();
-	}
-
-	void OpenGLRenderer::focusOutEvent( QFocusEvent * p_event )
-	{
-		QOpenGLWidget::focusOutEvent( p_event );
-
-		_inputManager.clearActions();
-		_pressedButton = Qt::NoButton;
-		_dragging	   = false;
-	}
-
-	void OpenGLRenderer::mousePressEvent( QMouseEvent * p_event )
-	{
-		_pressedButton = p_event->button();
-		_pressPos	   = p_event->position();
-		_lastPos	   = _pressPos;
-		_dragging	   = false;
-	}
-
-	void OpenGLRenderer::mouseMoveEvent( QMouseEvent * p_event )
-	{
-		if ( _pressedButton == Qt::NoButton )
-		{
-			return;
-		}
-
-		const int threshold = QGuiApplication::styleHints()->startDragDistance();
-		if ( not _dragging && ( p_event->position() - _pressPos ).manhattanLength() >= threshold )
-		{
-			_dragging = true;
-			_lastPos  = p_event->position();
-			return;
-		}
-
-		if ( _dragging )
-		{
-			const QPoint delta = _toDevicePixels( p_event->position() - _lastPos );
-			const Vec2i	 deltaVec( delta.x(), delta.y() );
-
-			switch ( _pressedButton )
-			{
-			case Qt::LeftButton: _inputManager.rotateBy( deltaVec ); break;
-			case Qt::MiddleButton: _inputManager.panBy( deltaVec ); break;
-			case Qt::RightButton: _inputManager.rotateAltBy( deltaVec ); break;
-			default: break;
-			}
-
-			_lastPos = p_event->position();
-		}
-	}
-
-	void OpenGLRenderer::mouseReleaseEvent( QMouseEvent * p_event )
-	{
-		if ( p_event->button() != _pressedButton )
-		{
-			return;
-		}
-
-		if ( not _dragging )
-		{
-			emit clicked( _pressedButton, _toDevicePixels( p_event->position() ) );
-		}
-
-		_pressedButton = Qt::NoButton;
-		_dragging	   = false;
-	}
-
-	void OpenGLRenderer::mouseDoubleClickEvent( QMouseEvent * const )
-	{
-		_pressedButton = Qt::NoButton;
-		_dragging	   = false;
-		App::ACTION().execute<App::Action::Camera::Orient>();
-	}
-
-	void OpenGLRenderer::wheelEvent( QWheelEvent * const p_event )
-	{ _inputManager.zoomBy( p_event->angleDelta().y() ); }
-
-	void OpenGLRenderer::_handleKeyboard( QKeyEvent * const p_event, const bool p_enable )
-	{
-		if ( p_event->isAutoRepeat() )
-		{
-			return;
-		}
-
-		if ( const auto action = _getKeyboardAction( p_event->key() ); action.has_value() )
-		{
-			_inputManager.setAction( *action, p_enable );
-		}
-
-		_handleModifiers();
-	}
-
-	void OpenGLRenderer::_handleModifiers()
-	{
-		const Qt::KeyboardModifiers mods = QGuiApplication::queryKeyboardModifiers();
-		_inputManager.setAction( App::Input::InputManager::Action::Accelerate, mods & Qt::ShiftModifier );
-		_inputManager.setAction( App::Input::InputManager::Action::Decelerate, mods & Qt::AltModifier );
-	}
-
-	std::optional<App::Input::InputManager::Action> OpenGLRenderer::_getKeyboardAction( const int p_key ) const
-	{
-		if ( p_key < 0 || std::cmp_greater_equal( p_key, QWERTY_BINDINGS.size() ) )
-		{
-			return std::nullopt;
-		}
-
-		const BindingTable & bindings = _layout == KB_LAYOUT::AZERTY ? AZERTY_BINDINGS : QWERTY_BINDINGS;
-		return bindings[ p_key ];
-	}
-
-	QPoint OpenGLRenderer::_toDevicePixels( const QPointF & p_logicalPos ) const
-	{
-		const qreal dpr = devicePixelRatio();
-		return { static_cast<int>( p_logicalPos.x() * dpr ), static_cast<int>( p_logicalPos.y() * dpr ) };
-	}
-
 	void OpenGLRenderer::_syncDefaultFramebuffer()
 	{
 		const uint32_t framebuffer = getGLDefaultFramebuffer();
@@ -350,8 +182,5 @@ namespace VTX::UI::QT::Widget
 		_defaultFramebuffer = framebuffer;
 		App::RENDERER().setDefaultFramebuffer( framebuffer );
 	}
-
-	void OpenGLRenderer::_onKBLayoutChange( const Events::KeyboardLayoutChanged & p_e )
-	{ _layout = static_cast<KB_LAYOUT>( p_e.layout ); }
 
 } // namespace VTX::UI::QT::Widget
