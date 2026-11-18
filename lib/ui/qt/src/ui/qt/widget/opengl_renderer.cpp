@@ -1,4 +1,5 @@
 #include "ui/qt/widget/opengl_renderer.hpp"
+#include <QEvent>
 #include <QOffscreenSurface>
 #include <QOpenGLContext>
 #include <QOpenGLFunctions>
