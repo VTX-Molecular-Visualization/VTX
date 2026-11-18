@@ -140,6 +140,12 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
+		const QRect hiddenGeometry( -1, -1, 1, 1 );
+		if ( _openGLRenderer != nullptr && _openGLRenderer->geometry() != hiddenGeometry )
+		{
+			_openGLRenderer->setGeometry( hiddenGeometry );
+		}
+
 		_resizeTimer.start( 40 );
 	}
 
