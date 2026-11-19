@@ -137,8 +137,8 @@ namespace VTX::UI::QT::Widget
 
 	PythonCompleter::Variables PythonCompleter::inferVariables( const QStringList & p_lines ) const
 	{
-		static const QRegularExpression assignmentPattern( "^\\s*([A-Za-z_]\\w*)\\s*=(?!=)\\s*(.+?)\\s*;?\\s*$" );
-		static const QRegularExpression loopPattern( "^\\s*for\\s+([A-Za-z_]\\w*)\\s+in\\s+(.+?)\\s*:\\s*$" );
+		static const QRegularExpression assignmentPattern( R"(^\s*([A-Za-z_]\w*)\s*=(?!=)\s*(.+?)\s*;?\s*$)" );
+		static const QRegularExpression loopPattern( R"(^\s*for\s+([A-Za-z_]\w*)\s+in\s+(.+?)\s*:\s*$)" );
 
 		Variables variables;
 		for ( const QString & line : p_lines )

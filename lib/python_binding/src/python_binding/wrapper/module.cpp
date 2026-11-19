@@ -135,7 +135,7 @@ namespace VTX::PythonBinding::Wrapper
 							continue;
 						}
 
-						const std::string subKey = p_key + "." + name;
+						const std::string subKey = std::string( p_key ).append( "." ).append( name );
 						_visitor( p_key, name, subKey );
 						_visitModule( member, subKey );
 					}

@@ -160,11 +160,11 @@ namespace VTX::UI::QT::Widget
 	}
 
 	PythonEditor::PythonEditor( QWidget * const p_parent ) :
-		BaseWidget( p_parent ), _textEdit( Helper::makeQObject<PythonTextEdit>( this ) )
+		BaseWidget( p_parent ), _textEdit( Helper::makeQObject<PythonTextEdit>( this ) ),
+		_runAction( UI_ACTIONS().getAction( Action::Script::RUN ) )
 	{
 		setAttribute( Qt::WA_NoMousePropagation );
 
-		_runAction = UI_ACTIONS().getAction( Action::Script::RUN );
 		_runAction->setEnabled( false );
 
 		auto * const toolbar = Helper::makeQObject<QToolBar>( this );
@@ -194,7 +194,7 @@ namespace VTX::UI::QT::Widget
 		_opacitySlider->setValue( SETTINGS().value( SETTING_KEY_PYTHON_EDITOR_OPACITY, DEFAULT_OPACITY ).toInt() );
 		toolbar->addWidget( _opacitySlider );
 
-		QAction * const closeAction
+		const QAction * const closeAction
 			= toolbar->addAction( style()->standardIcon( QStyle::SP_TitleBarCloseButton ), "Close" );
 		connect( closeAction, &QAction::triggered, this, []() { SELECTION().clear( E_SELECTION_GROUP::SCRIPT ); } );
 

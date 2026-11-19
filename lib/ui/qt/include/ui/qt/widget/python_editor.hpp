@@ -33,12 +33,16 @@ namespace VTX::UI::QT::Widget
 		explicit PythonEditor( QWidget * p_parent );
 		~PythonEditor() override;
 
+		/**
+		 * @brief Override events.
+		 */
+		bool eventFilter( QObject *, QEvent * ) override;
+
 	  protected:
 		/**
 		 * @brief Override events.
 		 */
 		bool event( QEvent * ) override;
-		bool eventFilter( QObject *, QEvent * ) override;
 		void paintEvent( QPaintEvent * ) override;
 		void keyPressEvent( QKeyEvent * ) override;
 		void keyReleaseEvent( QKeyEvent * ) override;
