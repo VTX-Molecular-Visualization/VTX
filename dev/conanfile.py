@@ -88,7 +88,7 @@ class VTXRecipe(ConanFile):
         self.requires("assimp/6.0.5")
         self.requires("minizip/1.3.2", force=True)
         if self.options.python_binding:
-            self.requires("pybind11/3.0.4")
+            self.requires("pybind11/3.1.0")
         if self.options.ui_qt:
             self.requires("qt/6.12.0")
         if self.options.tool_mdprep:
