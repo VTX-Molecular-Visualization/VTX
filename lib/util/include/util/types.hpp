@@ -35,6 +35,7 @@ namespace VTX
 	using Mat3f = glm::mat3;
 	using Mat3d = glm::dmat3;
 	using Mat4f = glm::mat4;
+	using Mat4d = glm::dmat4;
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
 

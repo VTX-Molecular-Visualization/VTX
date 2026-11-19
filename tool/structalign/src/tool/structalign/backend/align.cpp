@@ -1,5 +1,5 @@
 #include <tool/structalign/backend/align.hpp>
-#include <util/constant.hpp>
+#include <util/constants.hpp>
 #include <util/exceptions.hpp>
 #include <util/math.hpp>
 #include <util/math/matrix.hpp>
@@ -478,22 +478,163 @@ namespace VTX::Tool::Structalign::backend
 			return res;
 		}
 
+		Quatd jacobiEigen( Mat4d p_transportMatrix )
+		{
+			const int	 MAX_SWEEPS = 50;
+			const double TOLERANCE	= 1e-14;
+			Mat4d		 V			= MAT4D_ID;
+
+			double normSq = 0.0;
+			for ( int it_cellIdx = 0; it_cellIdx < 16; it_cellIdx++ )
+			{
+				const double & cellValue = p_transportMatrix[ it_cellIdx / 4 ][ it_cellIdx % 4 ];
+				normSq += cellValue * cellValue;
+			}
+
+			if ( normSq == 0.0 )
+			{
+				return QUATD_ID;
+			}
+
+			for ( int it_sweep = 0; it_sweep < MAX_SWEEPS; it_sweep++ )
+			{
+				double off = 0.0;
+				for ( int p = 0; p < 3; p++ )
+				{
+					for ( int q = p + 1; q < 4; q++ )
+					{
+						off += 2.0 * p_transportMatrix[ p ][ q ] * p_transportMatrix[ p ][ q ];
+					}
+				}
+
+				if ( off <= TOLERANCE * normSq ) // convergeance check
+				{
+					break;
+				}
+
+				for ( int it_p = 0; it_p < 3; it_p++ )
+				{
+					for ( int it_q = it_p + 1; it_q < 4; it_q++ )
+					{
+						if ( p_transportMatrix[ it_p ][ it_q ] == 0.0 )
+						{
+							continue;
+						}
+
+						const double theta = ( p_transportMatrix[ it_q ][ it_q ] - p_transportMatrix[ it_p ][ it_p ] )
+											 / ( 2.0 * p_transportMatrix[ it_p ][ it_q ] );
+						const double t
+							= 1.0 / ( std::abs( theta ) + std::copysign( std::sqrt( theta * theta + 1.0 ), theta ) );
+						const double c = 1.0 / std::sqrt( t * t + 1.0 );
+						const double s = t * c;
+
+						const double & npq = p_transportMatrix[ it_p ][ it_q ];
+
+						// the two diagonal entries absorb it; the pair is annihilated
+						p_transportMatrix[ it_p ][ it_p ] -= t * npq;
+						p_transportMatrix[ it_q ][ it_q ] += t * npq;
+						p_transportMatrix[ it_p ][ it_q ] = p_transportMatrix[ it_q ][ it_p ] = 0.0;
+
+						// mix the rest of rows/columns p and q
+						for ( int r = 0; r < 4; r++ )
+						{
+							if ( r == it_p || r == it_q )
+							{
+								continue;
+							}
+
+							const double & nrp			   = p_transportMatrix[ r ][ it_p ];
+							const double & nrq			   = p_transportMatrix[ r ][ it_q ];
+							p_transportMatrix[ r ][ it_p ] = p_transportMatrix[ it_p ][ r ] = c * nrp - s * nrq;
+							p_transportMatrix[ r ][ it_q ] = p_transportMatrix[ it_q ][ r ] = s * nrp + c * nrq;
+						}
+
+						// accumulate this rotation into the eigenvector matrix
+						for ( int r = 0; r < 4; r++ )
+						{
+							const double vrp = V[ r ][ it_p ];
+							const double vrq = V[ r ][ it_q ];
+							V[ r ][ it_p ]	 = c * vrp - s * vrq;
+							V[ r ][ it_q ]	 = s * vrp + c * vrq;
+						}
+					}
+				}
+			}
+			int highestEigenValueColumnIndex = 0;
+			for ( int it_diagCellIdx = 1; it_diagCellIdx < 4; it_diagCellIdx++ )
+			{
+				if ( V[ it_diagCellIdx ][ it_diagCellIdx ]
+					 > V[ highestEigenValueColumnIndex ][ highestEigenValueColumnIndex ] )
+				{
+					highestEigenValueColumnIndex = it_diagCellIdx;
+				}
+			}
+			return Quatd { V[ highestEigenValueColumnIndex ][ 0 ],
+						   { V[ highestEigenValueColumnIndex ][ 1 ],
+							 V[ highestEigenValueColumnIndex ][ 2 ],
+							 V[ highestEigenValueColumnIndex ][ 3 ] } };
+		}
+
+		/**
+		 * @brief Compute cross variance matrix and use it to create the transport matrix before returning it. Assumes
+		 * source and destination shared their center.
+		 */
+		Mat4d computeTransportMatrix( const std::vector<Vec3d> & p_a, const std::vector<Vec3d> & p_b )
+		{
+			assert( p_a.size() == p_b.size() );
+			Mat3d crossVarianceMatrix { 0. };
+
+			for ( uint it_resIdx = 0; it_resIdx < p_a.size(); it_resIdx++ )
+			{
+				const Vec3d &cur_a = p_a[ it_resIdx ], cur_b = p_b[ it_resIdx ];
+				crossVarianceMatrix[ 0 ][ 0 ] += cur_a[ 0 ] * cur_b[ 0 ];
+				crossVarianceMatrix[ 0 ][ 1 ] += cur_a[ 0 ] * cur_b[ 1 ];
+				crossVarianceMatrix[ 0 ][ 2 ] += cur_a[ 0 ] * cur_b[ 2 ];
+				crossVarianceMatrix[ 1 ][ 0 ] += cur_a[ 1 ] * cur_b[ 0 ];
+				crossVarianceMatrix[ 1 ][ 1 ] += cur_a[ 1 ] * cur_b[ 1 ];
+				crossVarianceMatrix[ 1 ][ 2 ] += cur_a[ 1 ] * cur_b[ 2 ];
+				crossVarianceMatrix[ 2 ][ 0 ] += cur_a[ 2 ] * cur_b[ 0 ];
+				crossVarianceMatrix[ 2 ][ 1 ] += cur_a[ 2 ] * cur_b[ 1 ];
+				crossVarianceMatrix[ 2 ][ 2 ] += cur_a[ 2 ] * cur_b[ 2 ];
+			}
+			return Mat4d {
+				{ crossVarianceMatrix[ 0 ][ 0 ] + crossVarianceMatrix[ 1 ][ 1 ] + crossVarianceMatrix[ 2 ][ 2 ],
+				  crossVarianceMatrix[ 1 ][ 2 ] - crossVarianceMatrix[ 2 ][ 1 ],
+				  crossVarianceMatrix[ 2 ][ 0 ] - crossVarianceMatrix[ 0 ][ 2 ],
+				  crossVarianceMatrix[ 0 ][ 1 ] - crossVarianceMatrix[ 1 ][ 0 ] },
+				{ crossVarianceMatrix[ 1 ][ 2 ] - crossVarianceMatrix[ 2 ][ 1 ],
+				  crossVarianceMatrix[ 0 ][ 0 ] - crossVarianceMatrix[ 1 ][ 1 ] - crossVarianceMatrix[ 2 ][ 2 ],
+				  crossVarianceMatrix[ 0 ][ 1 ] + crossVarianceMatrix[ 1 ][ 0 ],
+				  crossVarianceMatrix[ 2 ][ 0 ] + crossVarianceMatrix[ 0 ][ 2 ] },
+				{ crossVarianceMatrix[ 2 ][ 0 ] - crossVarianceMatrix[ 0 ][ 2 ],
+				  crossVarianceMatrix[ 0 ][ 1 ] + crossVarianceMatrix[ 1 ][ 0 ],
+				  -crossVarianceMatrix[ 0 ][ 0 ] + crossVarianceMatrix[ 1 ][ 1 ] - crossVarianceMatrix[ 2 ][ 2 ],
+				  crossVarianceMatrix[ 1 ][ 2 ] + crossVarianceMatrix[ 2 ][ 1 ] },
+				{ crossVarianceMatrix[ 0 ][ 1 ] - crossVarianceMatrix[ 1 ][ 0 ],
+				  crossVarianceMatrix[ 2 ][ 0 ] + crossVarianceMatrix[ 0 ][ 2 ],
+				  crossVarianceMatrix[ 1 ][ 2 ] + crossVarianceMatrix[ 2 ][ 1 ],
+				  -crossVarianceMatrix[ 0 ][ 0 ] - crossVarianceMatrix[ 1 ][ 1 ] + crossVarianceMatrix[ 2 ][ 2 ] }
+			};
+		}
+
 		// The input 3D points are stored as columns.
 		Mat4f find3DAffineTransform(
-			const std::vector<Vec3f> & p_in,
-			const std::vector<Vec3f> & p_out,
+			const std::vector<Vec3f> & p_source,
+			const std::vector<Vec3f> & p_destination,
 			const Vec3f &			   p_inCenterOfMass,
 			const Vec3f &			   p_outCenterOfMass
 		)
 		{
-			assert( p_in.size() == p_out.size() );
+			assert( p_source.size() == p_destination.size() );
 
-			std::vector<Vec3d> in( p_in.begin(), p_in.end() ), out( p_out.begin(), p_out.end() );
+			// We create writable versions to shift toward the origin (0,0,0)
+			std::vector<Vec3d> source( p_source.begin(), p_source.end() ),
+				destination( p_destination.begin(), p_destination.end() );
 
 			Mat3d rotationMatix		= MAT3F_ID;
 			Vec3d translationVector = VEC3F_ZERO;
 
-			const double datasetSize = p_in.size();
+			const double datasetSize = p_source.size();
 			/*
 			VG : Original code featured this but it doesn't seem to do anything
 
@@ -512,121 +653,25 @@ namespace VTX::Tool::Structalign::backend
 			*/
 
 			// Find the centroids then shift to the origin
-			Vec3d inCentroid = VEC3F_ZERO, outCentroid = VEC3F_ZERO;
+			Vec3d sourceCentroid = VEC3F_ZERO, destinationCentroid = VEC3F_ZERO;
 
-			for ( size_t it_posIdx = 0; it_posIdx < p_in.size(); it_posIdx++ )
+			for ( size_t it_posIdx = 0; it_posIdx < p_source.size(); it_posIdx++ )
 			{
-				inCentroid += in[ it_posIdx ] / datasetSize;
-				outCentroid += out[ it_posIdx ] / datasetSize;
+				sourceCentroid += source[ it_posIdx ] / datasetSize;
+				destinationCentroid += destination[ it_posIdx ] / datasetSize;
 			}
 
-			for ( size_t it_posIdx = 0; it_posIdx < in.size(); it_posIdx++ )
+			for ( size_t it_posIdx = 0; it_posIdx < source.size(); it_posIdx++ )
 			{
-				in[ it_posIdx ] -= inCentroid;
-				out[ it_posIdx ] -= outCentroid;
+				source[ it_posIdx ] -= sourceCentroid;
+				destination[ it_posIdx ] -= destinationCentroid;
 			}
-
-			//////////////////////////////////////////////////////////////
-			// Eigen
-			//////////////////////////////////////////////////////////////
-
-			/*
-			Eigen::Matrix3Xd in	 = Eigen::Matrix3Xd( 3, p_in.size() );
-			Eigen::Matrix3Xd out = Eigen::Matrix3Xd( 3, p_out.size() );
-
-			for ( int i = 0; i < p_in.size(); i++ )
-			{
-				in.col( i ) << p_in[ i ][ 0 ], p_in[ i ][ 1 ], p_in[ i ][ 2 ];
-				out.col( i ) << p_out[ i ][ 0 ], p_out[ i ][ 1 ], p_out[ i ][ 2 ];
-			}
-			Eigen::Affine3d A;
-			A.linear()		= Eigen::Matrix3d::Identity( 3, 3 );
-			A.translation() = Eigen::Vector3d::Zero();
-
-			if ( in.cols() != out.cols() )
-			{
-				throw "Find3DAffineTransform(): input data mis-match";
-			}
-
-			// First find the scale, by finding the ratio of sums of some distances,
-			// then bring the datasets to the same scale.
-			double dist_in = 0, dist_out = 0;
-			for ( int col = 0; col < in.cols() - 1; col++ )
-			{
-				dist_in += ( in.col( col + 1 ) - in.col( col ) ).norm();
-				dist_out += ( out.col( col + 1 ) - out.col( col ) ).norm();
-			}
-
-			if ( dist_in <= 0 || dist_out <= 0 )
-			{
-				return MAT4F_ID;
-			}
-
-			double scale = dist_out / dist_in;
-			scale		 = 1;
-			out /= scale;
-
-			// Find the centroids then shift to the origin
-			Eigen::Vector3d in_ctr	= Eigen::Vector3d::Zero();
-			Eigen::Vector3d out_ctr = Eigen::Vector3d::Zero();
-			for ( int col = 0; col < in.cols(); col++ )
-			{
-				in_ctr += in.col( col );
-				out_ctr += out.col( col );
-			}
-			in_ctr /= in.cols();
-			out_ctr /= out.cols();
-			for ( int col = 0; col < in.cols(); col++ )
-			{
-				in.col( col ) -= in_ctr;
-				out.col( col ) -= out_ctr;
-			}
-			*/
-
-			// SVD
-			Eigen::MatrixXd					  Cov = in * out.transpose();
-			Eigen::JacobiSVD<Eigen::MatrixXd> svd( Cov, Eigen::ComputeThinU | Eigen::ComputeThinV );
-
-			// Find the rotation
-			double d = ( svd.matrixV() * svd.matrixU().transpose() ).determinant();
-			if ( d > 0 )
-			{
-				d = 1.0;
-			}
-			else
-			{
-				d = -1.0;
-			}
-			Eigen::Matrix3d I = Eigen::Matrix3d::Identity( 3, 3 );
-			I( 2, 2 )		  = d;
-			Eigen::Matrix3d R = svd.matrixV() * I * svd.matrixU().transpose();
-
-			// The final transform
-			A.linear()						   = scale * R;
-			const Eigen::Vector3d rotatedInCtr = R * in_ctr;
-			A.translation()					   = scale * ( out_ctr - rotatedInCtr );
-
-			Eigen::Matrix3d eigenRotation = A.rotation().matrix();
-			Mat3f			rotation	  = _eigenMat3dToMat3f( eigenRotation );
-
-			return Mat4f(
-				rotation[ 0 ][ 0 ],
-				rotation[ 0 ][ 1 ],
-				rotation[ 0 ][ 2 ],
-				0,
-				rotation[ 1 ][ 0 ],
-				rotation[ 1 ][ 1 ],
-				rotation[ 1 ][ 2 ],
-				0,
-				rotation[ 2 ][ 0 ],
-				rotation[ 2 ][ 1 ],
-				rotation[ 2 ][ 2 ],
-				0,
-				0,
-				0,
-				0,
-				1.
-			);
+			Mat4d transportMatrix	= computeTransportMatrix( source, destination );
+			Quatd rotationQuat		= jacobiEigen( transportMatrix );
+			Vec3f translationVector = destinationCentroid - sourceCentroid;
+			Mat4f out				= Util::Math::toMat4( rotationQuat );
+			out[ 3 ]				= Vec4f( translationVector, 1.f );
+			return out;
 
 			//////////////////////////////////////////////////////////////
 			// TODO VTX (WIP)

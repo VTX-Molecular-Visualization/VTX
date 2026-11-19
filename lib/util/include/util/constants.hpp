@@ -42,8 +42,10 @@ namespace VTX
 
 	constexpr Mat3f MAT3F_ID = Mat3f( 1.f );
 	constexpr Mat4f MAT4F_ID = Mat4f( 1.f );
+	constexpr Mat4d MAT4D_ID = Mat4d( 1.0 );
 
 	constexpr Quatf QUATF_ID = Quatf( 1.f, { 0.f, 0.f, 0.f } );
+	constexpr Quatf QUATD_ID = Quatf( 1.0, { 0.0, 0.0, 0.0 } );
 
 	constexpr float PIf		 = glm::pi<float>();
 	constexpr float PI_2f	 = glm::half_pi<float>();
