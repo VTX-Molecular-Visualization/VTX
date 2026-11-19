@@ -251,6 +251,21 @@ namespace VTX::UI::QT
 			}
 		} // namespace View
 
+		namespace Script
+		{
+			inline constexpr std::string_view RUN = "script.run";
+
+			inline App::UI::DescAction runAction()
+			{
+				App::UI::DescAction action;
+				action.key	= RUN;
+				action.name = "Run";
+				action.tip	= "Save and run the current script";
+				action.icon = Style::Icons::SCRIPT_RUN;
+				return action;
+			}
+		} // namespace Script
+
 		namespace Theme
 		{
 			inline constexpr std::string_view SET		   = "theme.set";

@@ -54,6 +54,7 @@ namespace VTX::UI::QT::DockWidget
 		selection.add( _treeGraphicsConfigPresets->selectionModel(), E_SELECTION_GROUP::GRAPHICS_CONFIG );
 		selection.add( _treeColorLayoutPresets->selectionModel(), E_SELECTION_GROUP::COLOR_LAYOUT );
 		selection.add( _treeRepresentationPresets->selectionModel(), E_SELECTION_GROUP::REPRESENTATION );
+		selection.add( _treeScripts->selectionModel(), E_SELECTION_GROUP::SCRIPT );
 
 		_filler = Helper::makeQObject<QWidget>( this );
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
@@ -147,6 +148,7 @@ namespace VTX::UI::QT::DockWidget
 		_setSelectionEnabled( _treeGraphicsConfigPresets, selectionEnabled );
 		_setSelectionEnabled( _treeColorLayoutPresets, selectionEnabled );
 		_setSelectionEnabled( _treeRepresentationPresets, selectionEnabled );
+		_setSelectionEnabled( _treeScripts, selectionEnabled );
 		_setSelectionEnabled( _treeCamera, selectionEnabled );
 	}
 

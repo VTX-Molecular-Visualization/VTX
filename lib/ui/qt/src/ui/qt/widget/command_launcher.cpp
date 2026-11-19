@@ -1,35 +1,31 @@
-#include "app/ecs.hpp"
+#include "ui/qt/widget/command_launcher.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/services.hpp"
-#include <string>
-#include <util/thread/thread_manager.hpp>
-#include <utility>
-#include <vector>
-//  pybind MUST be included before any QT because of macro shenanigans
 #include "ui/qt/helper.hpp"
-#include "ui/qt/widget/command_launcher.hpp"
-#include <QStringList>
+#include <QAbstractItemView>
 #include <qevent.h>
+#include <string>
+#include <utility>
 
 namespace VTX::UI::QT::Widget
 {
 
-	CommandLauncher::CommandLauncher( QWidget * const p_parent ) : BaseWidget( p_parent )
+	CommandLauncher::CommandLauncher( QWidget * const p_parent ) :
+		BaseWidget( p_parent ), _completer( Helper::makeQObject<PythonCompleter>( this ) )
 	{
 		setPlaceholderText( "help()" );
 		setClearButtonEnabled( true );
 		setEnabled( false );
 
 		connect( this, &QLineEdit::returnPressed, this, &CommandLauncher::_launchCommand );
+		connect(
+			_completer, qOverload<const QString &>( &QCompleter::activated ), this, &CommandLauncher::_insertCompletion
+		);
 		_pythonInitializedConnection
 			= App::HUB().connect<App::Events::PythonInitialized, &CommandLauncher::_pythonInitialized>( this );
 	}
 
-	void CommandLauncher::_pythonInitialized( const App::Events::PythonInitialized & )
-	{
-		setEnabled( true );
-		_setupCompleter();
-	}
+	void CommandLauncher::_pythonInitialized( const App::Events::PythonInitialized & ) { setEnabled( true ); }
 
 	void CommandLauncher::launchCommand( std::string p_ )
 	{
@@ -39,6 +35,19 @@ namespace VTX::UI::QT::Widget
 
 	void CommandLauncher::keyPressEvent( QKeyEvent * event )
 	{
+		if ( _completer->popup()->isVisible() )
+		{
+			switch ( event->key() )
+			{
+			case Qt::Key_Enter:
+			case Qt::Key_Return:
+			case Qt::Key_Escape:
+			case Qt::Key_Tab:
+			case Qt::Key_Backtab: event->ignore(); return;
+			default: break;
+			}
+		}
+
 		if ( not _history.empty() )
 		{
 			switch ( event->key() )
@@ -56,6 +65,21 @@ namespace VTX::UI::QT::Widget
 		}
 
 		BaseWidget::keyPressEvent( event );
+
+		if ( event->text().isEmpty() || not _completer->updateCompletions( text().left( cursorPosition() ), {} ) )
+		{
+			_completer->popup()->hide();
+			return;
+		}
+
+		_completer->showPopup( cursorRect() );
+	}
+
+	void CommandLauncher::_insertCompletion( const QString & p_completion )
+	{
+		const int prefixSize = static_cast<int>( _completer->completionPrefix().size() );
+		setSelection( cursorPosition() - prefixSize, prefixSize );
+		insert( p_completion );
 	}
 
 	void CommandLauncher::_launchCommand()
@@ -82,44 +106,6 @@ namespace VTX::UI::QT::Widget
 		_history.resetBrowsing();
 
 		App::INTERPRETOR().runCommand( _history.last() );
-	}
-
-	void CommandLauncher::_setupCompleter()
-	{
-#if VTX_PYTHON_BINDING
-		if ( not App::ECS::hasCtx<App::PythonBinding::Interpretor>() )
-		{
-			return;
-		}
-
-		App::INTERPRETOR().requestFunctionList(
-			[ launcher		 = QPointer<CommandLauncher>( this ),
-			  &threadManager = App::THREAD() ]( std::vector<std::string> names )
-			{
-				threadManager.dispatch(
-					[ launcher, names = std::move( names ) ]()
-					{
-						if ( not launcher )
-						{
-							return;
-						}
-
-						QStringList commands;
-						commands.reserve( static_cast<qsizetype>( names.size() ) );
-						for ( const std::string & name : names )
-						{
-							commands.append( QString::fromStdString( "vtx." + name ) );
-						}
-
-						launcher->_completer = Helper::makeQObject<QCompleter>( commands, launcher.data() );
-						launcher->_completer->setCaseSensitivity( Qt::CaseInsensitive );
-						launcher->_completer->setCompletionMode( QCompleter::PopupCompletion );
-						launcher->setCompleter( launcher->_completer );
-					}
-				);
-			}
-		);
-#endif
 	}
 
 } // namespace VTX::UI::QT::Widget

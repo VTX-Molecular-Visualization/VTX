@@ -15,13 +15,28 @@ namespace VTX::UI::QT::Widget::Tree
 	class Scripts : public Widget::Tree::BaseTree<Scripts, QTreeView>
 	{
 	  public:
+		/**
+		 * @brief Constructor.
+		 */
 		Scripts( QWidget * p_parent );
 
+	  protected:
+		/**
+		 * @brief Override of the selection command to run the script on double click.
+		 */
+		QItemSelectionModel::SelectionFlags selectionCommand( const QModelIndex &, const QEvent * ) const override;
+
 	  private:
-		QPointer<QFileSystemModel>		_fileModel;
+		/**
+		 * @brief File system model.
+		 */
+		QPointer<QFileSystemModel> _fileModel;
+
+		/**
+		 * @brief Proxy model to filter the file system model.
+		 */
 		QPointer<QSortFilterProxyModel> _proxyModel;
 
-		void _selectScript( const QModelIndex & p_index );
 		void _runScript( const QModelIndex & p_index );
 	};
 } // namespace VTX::UI::QT::Widget::Tree

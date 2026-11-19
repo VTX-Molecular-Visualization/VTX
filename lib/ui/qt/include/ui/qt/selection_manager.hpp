@@ -21,7 +21,8 @@ namespace VTX::UI::QT
 		GRAPHICS_CONFIG,
 		COLOR_LAYOUT,
 		REPRESENTATION,
-		CAMERA
+		CAMERA,
+		SCRIPT
 	};
 
 	/**

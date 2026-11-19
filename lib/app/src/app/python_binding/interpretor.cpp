@@ -488,10 +488,20 @@ namespace VTX::App::PythonBinding
 	void Interpretor::setOnPending( const Util::AtomicCallback::Function p_function, void * const p_context ) noexcept
 	{ _impl->setOnPending( p_function, p_context ); }
 
-	void Interpretor::requestFunctionList( std::function<void( std::vector<std::string> )> p_callback )
+	void Interpretor::requestCompletionTable( std::function<void( std::vector<CompletionEntry> )> p_callback )
 	{
-		_impl->post( [ callback = std::move( p_callback ) ]( VTX::PythonBinding::Interpretor & )
-					 { callback( VTX::PythonBinding::Wrapper::Module::getFunctionList() ); } );
+		_impl->post(
+			[ callback = std::move( p_callback ) ]( VTX::PythonBinding::Interpretor & )
+			{
+				std::vector<CompletionEntry> entries;
+				VTX::PythonBinding::Wrapper::Module::visitCompletionTable(
+					[ &entries ]( const std::string & p_scope, const std::string & p_name, const std::string & p_type )
+					{ entries.push_back( { p_scope, p_name, p_type } ); }
+				);
+
+				callback( std::move( entries ) );
+			}
+		);
 	}
 
 	void Interpretor::Del::operator()( Interpretor::Impl * const p_ ) noexcept

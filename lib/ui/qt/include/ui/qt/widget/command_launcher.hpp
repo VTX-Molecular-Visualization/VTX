@@ -2,7 +2,7 @@
 #define VTX_UI_QT_WIDGET_COMMAND_LAUNCHER_HPP
 
 #include "ui/qt/widget/base_widget.hpp"
-#include <QCompleter>
+#include "ui/qt/widget/python_completer.hpp"
 #include <QLineEdit>
 #include <QPointer>
 #include <app/events.hpp>
@@ -35,7 +35,7 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief Auto completion.
 		 */
-		QPointer<QCompleter> _completer;
+		QPointer<PythonCompleter> _completer;
 
 		/**
 		 * @brief History.
@@ -48,9 +48,9 @@ namespace VTX::UI::QT::Widget
 		VTX::Util::EventHub::ScopedConnection _pythonInitializedConnection;
 
 		/**
-		 * @brief Retrieve all python functions.
+		 * @brief Insert a completion in the command line.
 		 */
-		void _setupCompleter();
+		void _insertCompletion( const QString & );
 
 		/**
 		 * @brief Run a command.

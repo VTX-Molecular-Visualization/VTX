@@ -8,6 +8,7 @@
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/main_window.hpp"
+#include <QApplication>
 #include <QCursor>
 #include <QGuiApplication>
 #include <QPainter>
@@ -283,6 +284,12 @@ namespace VTX::UI::QT::Widget
 	void Renderer::_focusRenderer()
 	{
 		if ( _openGLRenderer == nullptr || not isVisible() )
+		{
+			return;
+		}
+
+		const QWidget * const focused = QApplication::focusWidget();
+		if ( focused != nullptr && focused != this && isAncestorOf( focused ) )
 		{
 			return;
 		}
