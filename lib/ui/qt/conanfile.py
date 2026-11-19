@@ -241,6 +241,8 @@ class VTXUiQtRecipe(ConanFile):
         self.requires("vtx_io/1.0")
         self.requires("vtx_python_binding/1.0")
         self.requires("qt/6.12.0", transitive_headers=True)
+        if self.settings.os == "Linux":
+            self.requires("libffi/3.4.8", force=True) # cpython (via vtx_python_binding) pins an older libffi than wayland (Qt on Linux)
 
     def config_options(self):
         if self.settings.os == "Windows":

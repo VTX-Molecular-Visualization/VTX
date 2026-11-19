@@ -101,6 +101,8 @@ class VTXRecipe(ConanFile):
         if self.options.python_binding:
             self.requires("cpython/{}".format(str(self._python_version())))
             self.requires("mpdecimal/4.0.0", force=True)
+            if self.settings.os == "Linux":
+                self.requires("libffi/3.4.8", force=True) # cpython pins an older libffi than wayland (Qt on Linux)
 
     def system_requirements(self):
         if self.options.renderer:
