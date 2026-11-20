@@ -37,6 +37,10 @@ extern "C"
 }
 #endif
 
+#ifdef __linux__
+#include <filesystem>
+#endif
+
 namespace
 {
 	[[noreturn]] void onTerminate() noexcept
@@ -84,6 +88,22 @@ namespace
 		std::abort();
 	}
 
+#ifdef __linux__
+	// Force high performance GPU on Linux.
+	void requestDedicatedGpu() noexcept
+	{
+		std::error_code error;
+		if ( not std::filesystem::exists( "/proc/driver/nvidia/version", error ) )
+		{
+			return;
+		}
+		// NOLINTBEGIN(concurrency-mt-unsafe)
+		setenv( "__NV_PRIME_RENDER_OFFLOAD", "1", 0 );
+		setenv( "__GLX_VENDOR_LIBRARY_NAME", "nvidia", 0 );
+		// NOLINTEND(concurrency-mt-unsafe)
+	}
+#endif
+
 #ifdef _WIN32
 	void redirectStdStreams() noexcept
 	{
@@ -129,6 +149,10 @@ int main( int p_argc, char * p_argv[] )
 	using namespace VTX;
 
 	std::set_terminate( &onTerminate );
+
+#ifdef __linux__
+	requestDedicatedGpu();
+#endif
 
 #ifdef _WIN32
 #pragma comment( linker, "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup" )
