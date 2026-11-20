@@ -174,7 +174,6 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 	{
 		ChemfilesTrajectory trajWriter;
 		trajWriter.setWriteDestination( waterPath );
-		trajWriter.setWriteFormat( E_FILE_FORMATS::pdb );
 		twoWaterSystems1frame( trajWriter );
 		trajWriter.close();
 	}
@@ -211,7 +210,6 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemf
 	{
 		ChemfilesTrajectory trajWriter;
 		trajWriter.setWriteDestination( waterPath );
-		trajWriter.setWriteFormat( E_FILE_FORMATS::pdb );
 		twoWaterSystems2frame( trajWriter );
 		trajWriter.close();
 	}
@@ -322,7 +320,6 @@ namespace
 			systems.emplace_back( WriteArgs::System { &topology, std::move( traj ) } );
 			writeFile( WriteArgs {
 				.destination = destination,
-				.format		 = E_FILE_FORMATS::none,
 				.topologies	 = std::move( systems ),
 			} );
 		}
@@ -489,7 +486,6 @@ TEST_CASE( "VTX_IO - writeFile multi-system: all atoms from every system are pre
 	topologies.emplace_back( WriteArgs::System { &methane, std::move( trajM ) } );
 	writeFile( WriteArgs {
 		.destination = dest,
-		.format		 = E_FILE_FORMATS::pdb,
 		.topologies	 = std::move( topologies ),
 	} );
 
@@ -535,7 +531,6 @@ TEST_CASE( "VTX_IO - writeFile multi-system: atoms with identical names across s
 	topologies.emplace_back( WriteArgs::System { &water2, std::move( traj2 ) } );
 	writeFile( WriteArgs {
 		.destination = dest,
-		.format		 = E_FILE_FORMATS::pdb,
 		.topologies	 = std::move( topologies ),
 	} );
 
@@ -577,7 +572,6 @@ TEST_CASE( "VTX_IO - writeFile multi-system: each atom receives coordinates from
 	topologies.emplace_back( WriteArgs::System { &sys2, std::move( traj2 ) } );
 	writeFile( WriteArgs {
 		.destination = dest,
-		.format		 = E_FILE_FORMATS::pdb,
 		.topologies	 = std::move( topologies ),
 	} );
 
@@ -625,7 +619,6 @@ TEST_CASE( "VTX_IO - writeFile atom filter: excluded atoms absent, kept atoms re
 	topologies.emplace_back( WriteArgs::System { &top, std::move( traj ), keepNonN } );
 	writeFile( WriteArgs {
 		.destination = dest,
-		.format		 = E_FILE_FORMATS::pdb,
 		.topologies	 = std::move( topologies ),
 	} );
 
@@ -691,7 +684,6 @@ TEST_CASE( "VTX_IO - writeFile multi-system with filter: combined atom count cor
 	topologies.emplace_back( WriteArgs::System { &sys2, std::move( traj2 ), keepNonN } );
 	writeFile( WriteArgs {
 		.destination = dest,
-		.format		 = E_FILE_FORMATS::pdb,
 		.topologies	 = std::move( topologies ),
 	} );
 
