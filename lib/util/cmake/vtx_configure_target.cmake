@@ -79,6 +79,9 @@ function(vtx_configure_target p_target)
 		cmake_language(EVAL CODE "cmake_language(DEFER CALL _vtx_exclude_vendor_sources_from_pch [[${p_target}]])")
 	endif()
 
+	# Warnings as errors (/WX and -Werror).
+	set_property(TARGET ${p_target} PROPERTY COMPILE_WARNING_AS_ERROR ON)
+
 	# Compiler-specific options.
 	if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 		target_compile_options(${p_target} PRIVATE
@@ -98,7 +101,6 @@ function(vtx_configure_target p_target)
 		# General.
 		target_compile_options(${p_target} PRIVATE 
 			$<$<COMPILE_LANGUAGE:CXX>:/W3>              # Warning level 3
-			$<$<COMPILE_LANGUAGE:CXX>:/WX>              # Warnings as errors
 			$<$<COMPILE_LANGUAGE:CXX>:/MP>		        # Multicore compilation.
 			$<$<COMPILE_LANGUAGE:CXX>:/sdl>             # Security Checks
 			$<$<COMPILE_LANGUAGE:CXX>:/utf-8>           # UTF-8 encoding
