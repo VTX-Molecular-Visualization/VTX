@@ -82,6 +82,12 @@ function(vtx_configure_target p_target)
 	# Warnings as errors (/WX and -Werror).
 	set_property(TARGET ${p_target} PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
+	# Hidden symbol visibility by default, as on MSVC and as recommended by pybind11 (its namespace is hidden).
+	set_target_properties(${p_target} PROPERTIES
+		CXX_VISIBILITY_PRESET hidden
+		VISIBILITY_INLINES_HIDDEN ON
+	)
+
 	# Compiler-specific options.
 	if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 		target_compile_options(${p_target} PRIVATE
