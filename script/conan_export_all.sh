@@ -10,3 +10,4 @@ conan export lib/util
 conan export tool/example
 conan export tool/mdprep
 conan export tool/topology_editor
+conan export lib/ui/qt/conan/wayland

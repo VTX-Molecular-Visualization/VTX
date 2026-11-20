@@ -47,6 +47,7 @@ jobs:
       working-directory: ${{env.DEV_DIR}}
       shell: bash
       run: |
+        conan export ../lib/ui/qt/conan/wayland
         conan install . -b missing \
           -s build_type=${{ env.BUILD_TYPE }} \
           -s compiler.cppstd=gnu20 \

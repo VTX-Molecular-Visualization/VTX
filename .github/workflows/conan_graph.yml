@@ -97,6 +97,7 @@ jobs:
         conan export lib/python_binding
         conan export lib/renderer
         conan export lib/ui/qt
+        conan export lib/ui/qt/conan/wayland
         conan export lib/util
         conan export tool/example
         conan export tool/mdprep

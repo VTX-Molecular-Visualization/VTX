@@ -80,6 +80,7 @@ jobs:
         conan export lib/app
         conan export lib/python_binding
         conan export lib/ui/qt
+        conan export lib/ui/qt/conan/wayland
         ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/example -b missing \
           -s build_type=${{env.BUILD_TYPE}} \
           -s compiler.cppstd=${{ matrix.conan_cppstd }} \

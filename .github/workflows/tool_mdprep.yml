@@ -79,6 +79,7 @@ jobs:
         conan export lib/app
         conan export lib/python_binding
         conan export lib/ui/qt
+        conan export lib/ui/qt/conan/wayland
 
     - name: Install dependencies
       working-directory: ${{env.ROOT_DIR}}

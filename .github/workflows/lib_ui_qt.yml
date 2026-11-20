@@ -74,6 +74,7 @@ jobs:
         conan export renderer
         conan export app
         conan export python_binding
+        conan export ui/qt/conan/wayland
 
     - name: Install dependencies
       working-directory: ${{env.LIB_DIR}}

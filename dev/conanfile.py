@@ -91,6 +91,8 @@ class VTXRecipe(ConanFile):
             self.requires("pybind11/3.1.0")
         if self.options.ui_qt:
             self.requires("qt/6.12.0")
+            if self.settings.os == "Linux":
+                self.requires("wayland/system", override=True) # See lib/ui/qt/conan/wayland.
         if self.options.tool_mdprep:
             self.requires("gromacs/2026.0.1")
         self.requires("re2/20251105")
@@ -101,8 +103,6 @@ class VTXRecipe(ConanFile):
         if self.options.python_binding:
             self.requires("cpython/{}".format(str(self._python_version())))
             self.requires("mpdecimal/4.0.0", force=True)
-            if self.settings.os == "Linux":
-                self.requires("libffi/3.4.8", force=True) # cpython pins an older libffi than wayland (Qt on Linux)
 
     def system_requirements(self):
         if self.options.renderer:
