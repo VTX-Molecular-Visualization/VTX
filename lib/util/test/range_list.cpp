@@ -46,7 +46,7 @@ TEST_CASE( "Util::Math::RangeList", "[unit]" )
 	rangeList.addRange( Range<size_t>( 6, 7 ) );
 
 	int itemCount = 0;
-	for ( const size_t _ : rangeList )
+	for ( auto it = rangeList.begin(); it != rangeList.end(); ++it )
 	{
 		itemCount++;
 	}
@@ -60,7 +60,7 @@ TEST_CASE( "Util::Math::RangeList", "[unit]" )
 	rangeList.removeRange( Range<size_t>( 1, 18 ) );
 
 	itemCount = 0;
-	for ( const size_t _ : rangeList )
+	for ( auto it = rangeList.begin(); it != rangeList.end(); ++it )
 	{
 		itemCount++;
 	}

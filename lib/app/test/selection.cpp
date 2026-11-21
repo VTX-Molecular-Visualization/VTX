@@ -75,7 +75,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
 		const auto & selection = App::REG().get<App::System::Selection>( system );
-		for ( size_t _ : selection.atoms )
+		for ( auto it = selection.atoms.begin(); it != selection.atoms.end(); ++it )
 		{
 			count++;
 		}
@@ -99,7 +99,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
 		const auto & selection = App::REG().get<App::System::Selection>( system );
-		for ( size_t _ : selection.atoms )
+		for ( auto it = selection.atoms.begin(); it != selection.atoms.end(); ++it )
 		{
 			count++;
 		}
@@ -117,7 +117,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
 		const auto & selection = App::REG().get<App::System::Selection>( system );
-		for ( size_t _ : selection.atoms )
+		for ( auto it = selection.atoms.begin(); it != selection.atoms.end(); ++it )
 		{
 			count++;
 		}
@@ -200,7 +200,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelecti
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
 		const auto & selection = App::REG().get<App::System::Selection>( system );
-		for ( size_t _ : selection.atoms )
+		for ( auto it = selection.atoms.begin(); it != selection.atoms.end(); ++it )
 		{
 			count++;
 		}
@@ -262,7 +262,7 @@ TEST_CASE( "VTX_APP - Selection - RevertSelection", "[revertSelection][selection
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
 		const auto & selection = App::REG().get<App::System::Selection>( system );
-		for ( size_t _ : selection.atoms )
+		for ( auto it = selection.atoms.begin(); it != selection.atoms.end(); ++it )
 		{
 			count++;
 		}
