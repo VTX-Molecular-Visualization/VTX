@@ -43,7 +43,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	  private:
 		std::array<VTX::UI::QT::Util::ObjectOwnership, 2> _toDeleteObjects;
-		[[maybe_unused]] Gateway::Gromacs::MdSettings *	  _specificData;
+		// Gateway::Gromacs::MdSettings *				  _specificData;
 		std::optional<FormLayouts>						  _layouts;
 
 		struct UiObjects

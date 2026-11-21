@@ -38,7 +38,7 @@ namespace VTX::Tool::Mdprep::ui
 
 	} // namespace
 
-	GromacsFieldPlacer::GromacsFieldPlacer( Gateway::Gromacs::MdSettings & p_ ) : _specificData( &p_ )
+	GromacsFieldPlacer::GromacsFieldPlacer( Gateway::Gromacs::MdSettings & p_ ) /*: _specificData( &p_ )*/
 	{
 		_uiObjects._fieldConc = std::make_unique<QDoubleSpinBox>().release();
 		_toDeleteObjects[ 0 ] = _uiObjects._fieldConc;
