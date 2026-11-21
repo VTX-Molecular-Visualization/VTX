@@ -1,5 +1,5 @@
 from conan import ConanFile
-from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 from conan.tools.env import VirtualRunEnv
 
 class VTXUtilRecipe(ConanFile):
@@ -11,7 +11,7 @@ class VTXUtilRecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
     default_options = {"shared": False, "fPIC": True, "test": False}
     
-    generators = "CMakeDeps", "CMakeToolchain"
+    generators = "CMakeDeps"
     
     exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "test/*"
         
@@ -38,6 +38,9 @@ class VTXUtilRecipe(ConanFile):
         # self.cpp.source and cpp.build are only for editable.
 
     def generate(self):
+        tc = CMakeToolchain(self)
+        tc.cache_variables["VTX_BUILD_TESTS"] = "ON" if self.options.test else "OFF"
+        tc.generate()
         VirtualRunEnv(self).generate()
 
     def build(self):

@@ -130,6 +130,7 @@ class VTXPythonBindingRecipe(ConanFile):
         tc = CMakeToolchain(self)
         configure_toolchain(tc, self._python_version())
         configure_runtime_toolchain(tc, runtime_root(self))
+        tc.cache_variables["VTX_BUILD_TESTS"] = "ON" if self.options.test else "OFF"
         tc.generate()
         VirtualRunEnv(self).generate()
         do_python_copies(self)

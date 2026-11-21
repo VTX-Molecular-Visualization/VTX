@@ -45,6 +45,7 @@ class VTXRendererRecipe(ConanFile):
     def generate(self):
         tc = CMakeToolchain(self)
         tc.cache_variables["VTX_CUDA_ARCH"] = self.options.cuda_arch
+        tc.cache_variables["VTX_BUILD_TESTS"] = "ON" if self.options.test else "OFF"
         tc.generate()
         VirtualRunEnv(self).generate()
         

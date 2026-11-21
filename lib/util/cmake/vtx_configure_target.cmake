@@ -1,6 +1,7 @@
 option(VTX_ENABLE_NATIVE_OPTIMIZATIONS "Enable CPU-specific release optimizations for local builds." OFF)
 option(VTX_ENABLE_INTERPROCEDURAL_OPTIMIZATION "Enable interprocedural optimization for VTX targets." OFF)
 option(VTX_ENABLE_PCH "Enable precompiled headers for VTX targets." ON)
+option(VTX_BUILD_TESTS "Build VTX test executables." ON)
 set(_vtx_clang_tidy_levels OFF WARN ERR)
 set(VTX_CLANG_TIDY "OFF" CACHE STRING "clang-tidy analysis level for VTX targets (OFF, WARN, ERR).")
 if(NOT VTX_CLANG_TIDY IN_LIST _vtx_clang_tidy_levels)

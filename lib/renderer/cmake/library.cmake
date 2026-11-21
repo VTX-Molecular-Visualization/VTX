@@ -87,12 +87,6 @@ elseif(LINUX)
 	target_link_libraries(vtx_renderer PRIVATE OpenGL::OpenGL OpenGL::EGL)
 endif()
 
-# Tests.
-file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
-add_executable(vtx_renderer_test ${TESTS})
-set_property(TARGET vtx_renderer_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_renderer_test NO_LINTER)
-
 target_link_libraries(vtx_renderer PUBLIC vtx_util::vtx_util)
 target_link_libraries(vtx_renderer PUBLIC vtx_core::vtx_core)
 
@@ -103,15 +97,23 @@ add_executable(baker-cli "${CMAKE_CURRENT_LIST_DIR}/../baker/main.cpp")
 vtx_configure_target(baker-cli)
 target_link_libraries(baker-cli PRIVATE vtx_renderer::vtx_renderer)
 
-target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
-target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
-
-target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer)
-target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
-
 vtx_link_cuda(vtx_renderer)
-vtx_link_cuda(vtx_renderer_test)
 
-include(CTest)
-include(Catch)
-catch_discover_tests(vtx_renderer_test DISCOVERY_MODE PRE_TEST)
+# Tests.
+if(VTX_BUILD_TESTS)
+	file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
+	add_executable(vtx_renderer_test ${TESTS})
+	set_property(TARGET vtx_renderer_test PROPERTY FOLDER "test")
+	vtx_configure_target(vtx_renderer_test NO_LINTER)
+
+	target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
+	target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
+	target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer)
+	target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
+
+	vtx_link_cuda(vtx_renderer_test)
+
+	include(CTest)
+	include(Catch)
+	catch_discover_tests(vtx_renderer_test DISCOVERY_MODE PRE_TEST)
+endif()

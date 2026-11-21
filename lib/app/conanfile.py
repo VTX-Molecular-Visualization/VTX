@@ -102,6 +102,7 @@ class VTXAppRecipe(ConanFile):
         tc.cache_variables["VTX_VELOPACK_LIB"] = velopack_lib_name(
             str(self.settings.os), str(self.settings.arch)
         )
+        tc.cache_variables["VTX_BUILD_TESTS"] = "ON" if self.options.test else "OFF"
         tc.generate()
         VirtualRunEnv(self).generate()
 
