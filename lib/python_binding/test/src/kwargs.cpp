@@ -85,8 +85,8 @@ TEST_CASE( "VTX_PYTHON_BINDING - Kwarg wrapper test", "[python][kwargs]" )
 	CHECK( test.strings.size() == 2 );
 	CHECK( test.uint32s.size() == 2 );
 	CHECK( test.uint64s.size() == 2 );
-	CHECK( std::find( test.uint64s.begin(), test.uint64s.end(), 18446744073709551613 ) != std::end( test.uint64s ) );
-	CHECK( std::find( test.uint64s.begin(), test.uint64s.end(), 18446744073709551610 ) != std::end( test.uint64s ) );
+	CHECK( std::find( test.uint64s.begin(), test.uint64s.end(), 18446744073709551613ULL ) != std::end( test.uint64s ) );
+	CHECK( std::find( test.uint64s.begin(), test.uint64s.end(), 18446744073709551610ULL ) != std::end( test.uint64s ) );
 	CHECK( test.items.size() == 2 );
 	CHECK( std::find( test.items.begin(), test.items.end(), Test::Item { "pinegrape" } ) != std::end( test.items ) );
 	CHECK( std::find( test.items.begin(), test.items.end(), Test::Item { "dragonfruit" } ) != std::end( test.items ) );

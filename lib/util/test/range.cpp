@@ -92,5 +92,5 @@ TEST_CASE( "Util::Math::Range", "[unit]" )
 	CHECK( range.contains( { Range<size_t>( 10, 12 ), Range<size_t>( 14, 18 ) } ) );
 	CHECK( !range.contains( { Range<size_t>( 10, 12 ), Range<size_t>( 14, 18 ), Range<size_t>( 19, 22 ) } ) );
 
-	for ( const auto v : range ) {}
+	for ( const auto _ : range ) {}
 };

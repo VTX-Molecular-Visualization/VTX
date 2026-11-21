@@ -186,16 +186,23 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	CHECK(
 		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::BUFFER_CONVEX_PATCH_ELEMENTS } )
 			.allocation
-		== E_BUFFER_ALLOCATION::CHUNKED );
-	CHECK( resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::INDEX_CONVEX_PATCHES } )
-			   .allocation
-		   == E_BUFFER_ALLOCATION::CHUNKED );
-	CHECK( resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::INDIRECT_CONVEX_PATCHES } )
-			   .allocation
-		   == E_BUFFER_ALLOCATION::CHUNKED );
-	CHECK( resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::Sphere::INDIRECT_SPHERES } )
-			   .allocation
-		   == E_BUFFER_ALLOCATION::SINGLE );
+		== E_BUFFER_ALLOCATION::CHUNKED
+	);
+	CHECK(
+		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::INDEX_CONVEX_PATCHES } )
+			.allocation
+		== E_BUFFER_ALLOCATION::CHUNKED
+	);
+	CHECK(
+		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::INDIRECT_CONVEX_PATCHES } )
+			.allocation
+		== E_BUFFER_ALLOCATION::CHUNKED
+	);
+	CHECK(
+		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::Sphere::INDIRECT_SPHERES } )
+			.allocation
+		== E_BUFFER_ALLOCATION::SINGLE
+	);
 
 	RenderQueue queue;
 	REQUIRE_NOTHROW( queue = graph.build() );
@@ -278,8 +285,9 @@ TEST_CASE( "GraphBuilder: compute dispatch pass builds", "[renderer][graph]" )
 	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->groupX == 4 );
 	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->groupY == 2 );
 	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->groupZ == 1 );
-	CHECK( queue[ 0 ]->programs[ 0 ].dispatch->barriers
-		   == ( E_MEMORY_BARRIER::SHADER_STORAGE | E_MEMORY_BARRIER::COMMAND ) );
+	CHECK(
+		queue[ 0 ]->programs[ 0 ].dispatch->barriers == ( E_MEMORY_BARRIER::SHADER_STORAGE | E_MEMORY_BARRIER::COMMAND )
+	);
 }
 
 TEST_CASE( "GraphBuilder: compute dispatch indirect creates its buffer", "[renderer][graph]" )
@@ -470,9 +478,7 @@ TEST_CASE( "CommandBuffer: ON_DIRTY pass is scheduled explicitly" )
 }
 
 struct alignas( 16 ) A16
-{
-	std::uint32_t a, b, c, d;
-};
+{ std::uint32_t a, b, c, d; };
 
 TEST_CASE( "CommandBuffer: pushPayload aligns and pads correctly" )
 {
@@ -673,11 +679,9 @@ TEST_CASE( "ResourceHandler: validate(key, desc) matches by hash and clears inva
 	const FakeDesc d_ok { 1, 2 };
 	const FakeDesc d_bad { 1, 999 };
 
-	const Handle h1 = h.emplace( k1, d_ok, 10 );
-	const Handle h2 = h.emplace( k2, d_ok, 20 );
-	(void)h1;
-	(void)h2;
-
+	h.emplace( k1, d_ok, 10 );
+	h.emplace( k2, d_ok, 20 );
+	
 	// Invalidate all existing resources
 	h.invalidate();
 
@@ -702,7 +706,7 @@ TEST_CASE( "ResourceHandler: invalidate ignores available handles (already erase
 	const Key k1 = "1", k2 = "2";
 
 	const Handle h1 = h.emplace( k1, 10 );
-	const Handle h2 = h.emplace( k2, 20 );
+	h.emplace( k2, 20 );
 
 	h.erase( h1 ); // make h1 available (null slot)
 
@@ -721,10 +725,8 @@ TEST_CASE( "ResourceHandler: clear removes everything and resets handle numberin
 
 	const Key k1 = "1", k2 = "2";
 
-	const Handle h1 = h.emplace( k1, 10 );
-	const Handle h2 = h.emplace( k2, 20 );
-	(void)h1;
-	(void)h2;
+	h.emplace( k1, 10 );
+	h.emplace( k2, 20 );
 
 	h.clear();
 

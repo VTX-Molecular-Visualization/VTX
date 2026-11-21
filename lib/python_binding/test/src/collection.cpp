@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <catch2/catch_test_macros.hpp>
 #include <python_binding/api/collection.hpp>
+#include <utility>
 #include <vector>
 
 namespace
@@ -53,7 +54,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Collection wrapper test", "[python][binding][co
 		size_t it_idx = 0;
 		for ( auto it = collec.begin(); it != collec.end(); it++ )
 		{
-			CHECK( ( std::distance( collec.begin(), it ) == it_idx ) );
+			CHECK( std::cmp_equal( std::distance( collec.begin(), it ), it_idx ) );
 			it_idx++;
 		}
 		CHECK( it_idx == collec.size() );
