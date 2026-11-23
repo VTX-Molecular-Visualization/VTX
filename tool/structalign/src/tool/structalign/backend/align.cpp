@@ -100,12 +100,14 @@ namespace VTX::Tool::Structalign::backend
 				p_distanceMatrix1.getRowCount(), p_distanceMatrix2.getRowCount(), -1.f
 			);
 
-			const int windowSize = p_parameters.windowSize;
+			const uint32_t windowSize = p_parameters.windowSize;
 
-			const int sumSize = ( windowSize - 1.f ) * ( windowSize - 2.f ) / 2.f;
+			const uint32_t sumSize = static_cast<uint32_t>(
+				( static_cast<float>( windowSize ) - 1.f ) * ( static_cast<float>( windowSize ) - 2.f ) / 2.f
+			);
 
-			const size_t windSizeMat1 = p_distanceMatrix1.getRowCount() - windowSize;
-			const size_t windSizeMat2 = p_distanceMatrix2.getRowCount() - windowSize;
+			const size_t windSizeMat1 = p_distanceMatrix1.getRowCount() - static_cast<size_t>( windowSize );
+			const size_t windSizeMat2 = p_distanceMatrix2.getRowCount() - static_cast<size_t>( windowSize );
 
 			for ( size_t iA = 0; iA <= windSizeMat1; iA++ )
 			{
@@ -172,7 +174,7 @@ namespace VTX::Tool::Structalign::backend
 			// allScoreBuffer
 			// this 2D array keeps track of all partial gapped scores
 			VTX::Util::Math::Matrix<float> allScoreBuffer(
-				longestAlignmentLength, size_t( gapMax ) * 2 + 1, VTX::TypeMax<float>
+				longestAlignmentLength, static_cast<size_t>( gapMax ) * 2 + 1, VTX::TypeMax<float>
 			);
 
 			std::vector<size_t> tIndex;
@@ -212,7 +214,7 @@ namespace VTX::Tool::Structalign::backend
 					// Restart curPath here.
 					Path currentPath = Path();
 					currentPath.resize( longestAlignmentLength, { -1, -1 } );
-					currentPath[ 0 ] = { iA, iB };
+					currentPath[ 0 ] = { static_cast<Index>( iA ), static_cast<Index>( iB ) };
 
 					size_t curPathLength		= 1;
 					tIndex[ curPathLength - 1 ] = 0;
@@ -225,7 +227,7 @@ namespace VTX::Tool::Structalign::backend
 						int	  gapBestIndex = -1;
 
 						// Check all possible gaps [1..gapMax] from here
-						for ( int g = 0; g < ( gapMax * 2 ) + 1; g++ )
+						for ( uint32_t g = 0; g < ( gapMax * 2 ) + 1; g++ )
 						{
 							// VG : used for (1) (2) (3) I guess
 							size_t jA = currentPath[ curPathLength - 1 ].first + winSize;
@@ -293,10 +295,10 @@ namespace VTX::Tool::Structalign::backend
 							}
 							else if ( currentScore < gapBestScore )
 							{
-								currentPath[ curPathLength ].first	= jA;
-								currentPath[ curPathLength ].second = jB;
+								currentPath[ curPathLength ].first	= static_cast<Index>( jA );
+								currentPath[ curPathLength ].second = static_cast<Index>( jB );
 								gapBestScore						= currentScore;
-								gapBestIndex						= g;
+								gapBestIndex						= static_cast<int>( g );
 								allScoreBuffer.set( curPathLength - 1, g, currentScore );
 							}
 						}
@@ -632,9 +634,9 @@ namespace VTX::Tool::Structalign::backend
 				destination( p_destination.begin(), p_destination.end() );
 
 			Mat3d rotationMatix		= MAT3F_ID;
-			Vec3d translationVector = VEC3F_ZERO;
+			Vec3f translationVector = VEC3F_ZERO;
 
-			const double datasetSize = p_source.size();
+			const double datasetSize = static_cast<double>( p_source.size() );
 			/*
 			VG : Original code featured this but it doesn't seem to do anything
 
@@ -666,11 +668,11 @@ namespace VTX::Tool::Structalign::backend
 				source[ it_posIdx ] -= sourceCentroid;
 				destination[ it_posIdx ] -= destinationCentroid;
 			}
-			Mat4d transportMatrix	= computeTransportMatrix( source, destination );
-			Quatd rotationQuat		= jacobiEigen( transportMatrix );
-			Vec3f translationVector = destinationCentroid - sourceCentroid;
-			Mat4f out				= Util::Math::toMat4( rotationQuat );
-			out[ 3 ]				= Vec4f( translationVector, 1.f );
+			Mat4d transportMatrix = computeTransportMatrix( source, destination );
+			Quatd rotationQuat	  = jacobiEigen( transportMatrix );
+			translationVector	  = destinationCentroid - sourceCentroid;
+			Mat4f out			  = Util::Math::toMat4( rotationQuat );
+			out[ 3 ]			  = Vec4f( translationVector, 1.f );
 			return out;
 
 			//////////////////////////////////////////////////////////////
@@ -750,9 +752,10 @@ namespace VTX::Tool::Structalign::backend
 
 		struct PathSelection
 		{
-			Index pathIndex;
-			float rmsd = VTX::TypeMax<float>;
-			Mat3f tranformMatrix;
+			Index	 pathIndex;
+			float	 rmsd			= VTX::TypeMax<float>;
+			uint32_t positionsCount = VTX::TypeMax<uint32_t>;
+			Mat4f	 tranformMatrix;
 		};
 
 		PathSelection selectBestPath(
@@ -766,8 +769,8 @@ namespace VTX::Tool::Structalign::backend
 
 			for ( int i = 0; i < p_results.size(); i++ )
 			{
-				const Path & curPath		= p_results[ i ];
-				const size_t positionsCount = p_parameters.windowSize * curPath.size();
+				const Path &   curPath		  = p_results[ i ];
+				const uint32_t positionsCount = static_cast<uint32_t>( p_parameters.windowSize * curPath.size() );
 
 				std::vector<Vec3f> residuePositionsA = std::vector<Vec3f>();
 				residuePositionsA.resize( positionsCount );
@@ -783,7 +786,7 @@ namespace VTX::Tool::Structalign::backend
 					const size_t startIndexA = curPath[ i ].first;
 					const size_t startIndexB = curPath[ i ].second;
 
-					for ( int k = 0; k < p_parameters.windowSize; k++ )
+					for ( uint32_t k = 0; k < p_parameters.windowSize; k++ )
 					{
 						const Vec3f positionA = p_residuePositionsA[ startIndexA + k ];
 						const Vec3f positionB = p_residuePositionsB[ startIndexB + k ];
@@ -816,55 +819,20 @@ namespace VTX::Tool::Structalign::backend
 
 				const Mat4f eigenMatrix
 					= find3DAffineTransform( residuePositionsA, residuePositionsB, centerOfMassA, centerOfMassB );
-
-				const Mat3f rotation = { eigenMatrix[ 0 ][ 0 ], eigenMatrix[ 0 ][ 1 ], eigenMatrix[ 0 ][ 2 ],
-										 eigenMatrix[ 1 ][ 0 ], eigenMatrix[ 1 ][ 1 ], eigenMatrix[ 1 ][ 2 ],
-										 eigenMatrix[ 2 ][ 0 ], eigenMatrix[ 2 ][ 1 ], eigenMatrix[ 2 ][ 2 ] };
-
-				const Vec3f translation = centerOfMassA - ( rotation * centerOfMassB );
-
-				const Mat3f rotationMatrix(
-					rotation[ 0 ][ 0 ],
-					rotation[ 0 ][ 1 ],
-					rotation[ 0 ][ 2 ],
-					rotation[ 1 ][ 0 ],
-					rotation[ 1 ][ 1 ],
-					rotation[ 1 ][ 2 ],
-					rotation[ 2 ][ 0 ],
-					rotation[ 2 ][ 1 ],
-					rotation[ 2 ][ 2 ]
-				);
-
-				const Mat4f transformationMatrix = Mat4f(
-					rotation[ 0 ][ 0 ],
-					rotation[ 0 ][ 1 ],
-					rotation[ 0 ][ 2 ],
-					0,
-					rotation[ 1 ][ 0 ],
-					rotation[ 1 ][ 1 ],
-					rotation[ 1 ][ 2 ],
-					0,
-					rotation[ 2 ][ 0 ],
-					rotation[ 2 ][ 1 ],
-					rotation[ 2 ][ 2 ],
-					0,
-					translation.x,
-					translation.y,
-					translation.z,
-					1.
-				);
-
-				const float rmsd = float(
+				Mat3f rotationMatrix = { { eigenMatrix[ 0 ][ 0 ], eigenMatrix[ 0 ][ 1 ], eigenMatrix[ 0 ][ 2 ] },
+										 { eigenMatrix[ 1 ][ 0 ], eigenMatrix[ 1 ][ 1 ], eigenMatrix[ 1 ][ 2 ] },
+										 { eigenMatrix[ 2 ][ 0 ], eigenMatrix[ 2 ][ 1 ], eigenMatrix[ 2 ][ 2 ] } };
+				const float rmsd	 = float(
 					Util::Math::computeRmsd( residuePositionsA, residuePositionsB, MAT3F_ID, rotationMatrix )
 				);
 
-				if ( !result.isValid() || rmsd < result.rmsd
-					 || ( rmsd == result.rmsd && positionsCount > result.positionsCount ) )
+				if ( result.rmsd != VTX::TypeMax<float> or rmsd < result.rmsd
+					 or ( rmsd == result.rmsd and positionsCount > result.positionsCount ) )
 				{
-					result.pathIndex			= i;
-					result.rmsd					= rmsd;
-					result.transformationMatrix = transformationMatrix;
-					result.positionsCount		= positionsCount;
+					result.pathIndex	  = i;
+					result.rmsd			  = rmsd;
+					result.tranformMatrix = eigenMatrix;
+					result.positionsCount = positionsCount;
 				}
 			}
 
@@ -906,8 +874,10 @@ namespace VTX::Tool::Structalign::backend
 			staticMoleculeResiduePositions, mobileMoleculeResiduePositions, topPaths, correctedParameters
 		);
 
-		p_results.transformMatrix = bestPath.tranformMatrix;
-
+		p_results.transformMatrix	 = bestPath.tranformMatrix;
+		p_results.rmsd				 = bestPath.rmsd;
+		p_results.alignResidueNumber = bestPath.positionsCount;
+		/*
 		const double atomRmsdOnPath = _computeRMSDOnAtomOfPath(
 			p_params.staticStructure,
 			p_params.mobileStructure,
@@ -924,6 +894,7 @@ namespace VTX::Tool::Structalign::backend
 		result.alignedResidueCount	= bestPathResult.positionsCount;
 
 		return result;
+		*/
 	}
 
 } // namespace VTX::Tool::Structalign::backend

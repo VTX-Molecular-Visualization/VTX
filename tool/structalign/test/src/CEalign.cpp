@@ -1,4 +1,3 @@
-#include <app/action/action_manager.hpp>
 #include <app/fixture.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
@@ -8,6 +7,7 @@
 #include <core/struct/topology.hpp>
 #include <io/metadata.hpp>
 #include <tool/structalign/backend/align.hpp>
+#include <util/action_manager.hpp>
 #include <util/math.hpp>
 
 struct Structure
