@@ -32,9 +32,10 @@ on:
         description: 'Python version (override)'
         required: false
 
-# Separate groups per event so a push never cancels a manual run (and vice versa); manual runs are never cancelled.
+# Push / pull_request: one group per event and ref, a new run cancels the previous one.
+# Manual runs: a unique group per run (run_id), so they never wait for or cancel each other.
 concurrency:
-  group: build-${{ github.event_name }}-${{ github.ref }}
+  group: build-${{ github.event_name }}-${{ github.event_name == 'workflow_dispatch' && github.run_id || github.ref }}
   cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 permissions:
