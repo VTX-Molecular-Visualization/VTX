@@ -1,4 +1,4 @@
-name: App VTX
+name: deploy
 
 on:
   workflow_dispatch:
@@ -61,7 +61,11 @@ on:
       python_version:
         description: 'Python version (override)'
         required: false
-        
+
+# Velopack publishes the GitHub release with GITHUB_TOKEN.
+permissions:
+  contents: write
+
 env:
   ROOT_DIR: ${{github.workspace}}
   BUILD_TYPE: ${{ inputs.build_type }}
@@ -79,7 +83,8 @@ env:
   RELEASE_DIR: ${{ github.workspace }}/release
 
 jobs:
-  build:
+  deploy:
+    name: deploy (${{ matrix.channel }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -88,28 +93,22 @@ jobs:
             channel: win-x64
             framework: vcredist144-x64
             main_exe: vtx.exe
-            conan_cppstd: '20'
           - os: ubuntu-22.04
             channel: linux-x64
             main_exe: vtx
-            conan_cppstd: 'gnu20'
           # - os: macos-15-intel
           #   channel: osx-x64
           #   main_exe: vtx
-          #   conan_cppstd: '20'
           # - os: windows-11-arm
           #   channel: win-arm64
           #   framework: vcredist144-arm64
           #   main_exe: vtx.exe
-          #   conan_cppstd: '20'
           # - os: ubuntu-22.04-arm
           #   channel: linux-arm64
           #   main_exe: vtx
-          #   conan_cppstd: 'gnu20'
           # - os: macos-15
           #   channel: osx-arm64
           #   main_exe: vtx
-          #   conan_cppstd: '20'
       fail-fast: false
 
     steps:
@@ -123,91 +122,19 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Install Ninja
-      uses: seanmiddleditch/gha-setup-ninja@v5
-
-    - name: Setup Conan
-      uses: conan-io/setup-conan@v1.3.0
+    - name: Setup build environment
+      uses: ./.github/actions/setup-vtx
       with:
-        use_venv: true
-        profile_detect: true
-
-    - name: Add custom remote
-      run: |
-        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
-        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
-    
-    - name: Install CUDA Toolkit
-      if: env.CUDA_VERSION != ''
-      uses: Jimver/cuda-toolkit@v0.2.32
-      id: cuda-toolkit
-      with:
-        cuda: ${{ env.CUDA_VERSION }}
-        method: network
-        linux-local-args: '["--toolkit"]'
-    
-    - name: Setup CUDA environment
-      if: env.CUDA_VERSION != ''
-      shell: bash
-      run: |
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          CUDA_PATH_WIN="$(cygpath -m "$CUDA_PATH")"
-          CUDA_PATH_UNIX="$(cygpath -u "$CUDA_PATH")"
-
-          NVCC="$CUDA_PATH_WIN/bin/nvcc.exe"
-          CUDA_BIN="$CUDA_PATH_UNIX/bin"
-
-        else
-          CUDA_PATH_WIN="$CUDA_PATH"
-          CUDA_PATH_UNIX="$CUDA_PATH"
-
-          NVCC="$CUDA_PATH/bin/nvcc"
-          CUDA_BIN="$CUDA_PATH/bin"
-        fi
-
-        echo "CUDA_PATH=$CUDA_PATH_WIN"
-        echo "CUDA_BIN=$CUDA_BIN"
-        echo "NVCC=$NVCC"
-
-        "$NVCC" --version
-
-        echo "$CUDA_BIN" >> "$GITHUB_PATH"
-
-        echo "CUDA_PATH=$CUDA_PATH_WIN" >> "$GITHUB_ENV"
-        echo "CUDAToolkit_ROOT=$CUDA_PATH_WIN" >> "$GITHUB_ENV"
-        echo "CUDACXX=$NVCC" >> "$GITHUB_ENV"
-
-    - name: Check CUDA
-      if: env.CUDA_VERSION != ''   
-      shell: bash
-      run: |
-        echo "CUDA_PATH=$CUDA_PATH"
-        ls "$CUDA_PATH/bin"
-
-        if [[ "$RUNNER_OS" == "Windows" ]]; then
-          "$CUDA_PATH/bin/nvcc.exe" --version
-        else
-          "$CUDA_PATH/bin/nvcc" --version
-        fi
-
-        nvcc --version
-
-    - name: Setup MSVC environment
-      uses: ilammy/msvc-dev-cmd@v1
-      if: runner.os == 'Windows'
+        conan_user: ${{ secrets.CONAN_SERVER_USER }}
+        conan_password: ${{ secrets.CONAN_SERVER_PASSWORD }}
+        build_type: ${{ env.BUILD_TYPE }}
+        cuda_version: ${{ env.CUDA_VERSION }}
+        cuda_arch: ${{ env.CUDA_ARCH }}
+        python_version: ${{ env.PYTHON_VERSION }}
 
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
       run: |
-        PYTHON_VERSION_OPTION=()
-        if [ -n "${PYTHON_VERSION}" ]; then
-          PYTHON_VERSION_OPTION=(-o "vtx_python_binding/*:python_version=${PYTHON_VERSION}")
-        fi
-        CUDA_ARCH_OPTION=()
-        if [ -n "${CUDA_ARCH}" ]; then
-          CUDA_ARCH_OPTION=(-o "vtx_renderer/*:cuda_arch=${CUDA_ARCH}")
-        fi
-
         conan export lib/app
         conan export lib/core
         conan export lib/io
@@ -220,8 +147,6 @@ jobs:
         conan export tool/mdprep
         conan export tool/topology_editor
         conan create app/vtx -b missing \
-          -s build_type=${{env.BUILD_TYPE}} \
-          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_app/*:version=${{env.VERSION}} \
           -o vtx_app/*:renderer=${{env.VTX_RENDERER}} \
           -o vtx_app/*:python_binding=${{env.VTX_PYTHON_BINDING}} \
@@ -231,12 +156,6 @@ jobs:
           -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} \
           -o vtx/*:tool_topology_editor=${{env.TOOL_TOPOLOGY_EDITOR}} \
           -o vtx/*:ui_qt=${{env.UI_QT}} \
-          "${PYTHON_VERSION_OPTION[@]}" \
-          "${CUDA_ARCH_OPTION[@]}" \
-          -c tools.cmake.cmaketoolchain:generator=Ninja \
-          -c tools.system.package_manager:mode=install \
-          -c tools.system.package_manager:sudo=True \
-           -c tools.cmake.cmaketoolchain:extra_variables="{\"CMAKE_CUDA_COMPILER\":\"$CUDACXX\",\"CUDAToolkit_ROOT\":\"$CUDAToolkit_ROOT\"}" \
           --format=json > output.json
       shell: bash
 
@@ -249,7 +168,7 @@ jobs:
     - name: Install Velopack CLI
       run: |
         dotnet tool install -g vpk --version 1.2.0
-        echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+        echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
       shell: bash
 
     - name: Download previous release for delta generation

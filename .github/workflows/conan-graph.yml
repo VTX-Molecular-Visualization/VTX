@@ -1,4 +1,4 @@
-name: Conan Graph
+name: conan-graph
 
 on:
   workflow_dispatch:
@@ -27,6 +27,9 @@ on:
         default: false
         type: boolean
 
+permissions:
+  contents: read
+
 env:
   ROOT_DIR: ${{ github.workspace }}
   BUILD_TYPE: ${{ inputs.build_type }}
@@ -35,7 +38,8 @@ env:
   TOOL_TOPOLOGY_EDITOR: ${{ inputs.tool_topology_editor == true && 'True' || 'False' }}
 
 jobs:
-  graph:
+  conan-graph:
+    name: conan-graph (${{ matrix.channel }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -43,28 +47,20 @@ jobs:
         include:
           - os: windows-2022
             channel: win
-            conan_cppstd: '20'
           - os: ubuntu-22.04
             channel: linux
-            conan_cppstd: 'gnu20'
           - os: windows-latest
             channel: win-latest
-            conan_cppstd: '20'
           - os: ubuntu-latest
             channel: linux-latest
-            conan_cppstd: 'gnu20'
           # - os: windows-11-arm
           #   channel: win-arm
-          #   conan_cppstd: '20'
           # - os: ubuntu-22.04-arm
           #   channel: linux-arm
-          #   conan_cppstd: 'gnu20'
           # - os: macos-15-intel
           #   channel: macos-intel
-          #   conan_cppstd: '20'
           # - os: macos-15
           #   channel: macos-arm
-          #   conan_cppstd: '20'
 
     steps:
     - name: Set git to use CRLF
@@ -77,16 +73,12 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Setup Conan
-      uses: conan-io/setup-conan@v1.3.0
+    - name: Setup build environment
+      uses: ./.github/actions/setup-vtx
       with:
-        use_venv: true
-        profile_detect: true
-
-    - name: Add custom remote
-      run: |
-        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
-        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
+        conan_user: ${{ secrets.CONAN_SERVER_USER }}
+        conan_password: ${{ secrets.CONAN_SERVER_PASSWORD }}
+        build_type: ${{ env.BUILD_TYPE }}
 
     - name: Export local packages
       working-directory: ${{ env.ROOT_DIR }}
@@ -109,14 +101,10 @@ jobs:
       run: |
         mkdir -p artifacts
         conan graph info app/vtx \
-          -s build_type=${{ env.BUILD_TYPE }} \
-          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx/*:tool_example=${{ env.TOOL_EXAMPLE }} \
           -o vtx/*:tool_mdprep=${{ env.TOOL_MDPREP }} \
           -o vtx/*:tool_topology_editor=${{ env.TOOL_TOPOLOGY_EDITOR }} \
           -o vtx_app/*:version=0.0.0 \
-          -c tools.system.package_manager:mode=install \
-          -c tools.system.package_manager:sudo=True \
           --format=html \
           --out-file "${{ env.ROOT_DIR }}/artifacts/conan-graph-${{ matrix.channel }}.html"
       shell: bash
