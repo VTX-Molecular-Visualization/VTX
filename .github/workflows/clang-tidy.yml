@@ -1,9 +1,12 @@
-name: Clang-Tidy
+name: clang-tidy
 
 on:
   push:
-    branches: [ "master", "dev" ]
-    paths: ['app/**', 'lib/**', 'tool/**', 'dev/**', '.clang-tidy', '.github/workflows/clang_tidy.yml']
+    branches: [ "dev" ]
+    paths: ['app/**', 'lib/**', 'tool/**', 'dev/**', '.clang-tidy', '.github/workflows/clang-tidy.yml', '.github/scripts/run_clang_tidy.py', '.github/actions/setup-vtx/**']
+  pull_request:
+    branches: [ "dev" ]
+    paths: ['app/**', 'lib/**', 'tool/**', 'dev/**', '.clang-tidy', '.github/workflows/clang-tidy.yml', '.github/scripts/run_clang_tidy.py', '.github/actions/setup-vtx/**']
   workflow_dispatch:
 
 permissions:
@@ -26,11 +29,9 @@ jobs:
           - os: ubuntu-latest
             conan_cppstd: 'gnu20'
             conan_extra: '-c tools.system.package_manager:mode=install -c tools.system.package_manager:sudo=True'
-            keep_going: '-k'
           - os: windows-2022
             conan_cppstd: '20'
-            conan_extra: '-c tools.cmake.cmaketoolchain:generator=Ninja'
-            keep_going: '-k 0'
+            conan_extra: ''
       fail-fast: false
 
     env:
@@ -67,20 +68,11 @@ jobs:
         & 'C:\llvm\bin\clang-tidy.exe' --version
         "CLANG_TIDY_EXE=C:/llvm/bin/clang-tidy.exe" >> $env:GITHUB_ENV
 
-    - name: Setup MSVC environment
-      if: runner.os == 'Windows'
-      uses: ilammy/msvc-dev-cmd@v1.13.0
-
-    - name: Setup Conan
-      uses: conan-io/setup-conan@v1.3.0
+    - name: Setup build environment
+      uses: ./.github/actions/setup-vtx
       with:
-        use_venv: true
-        profile_detect: true
-
-    - name: Add custom remote
-      run: |
-        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
-        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
+        conan_user: ${{ secrets.CONAN_SERVER_USER }}
+        conan_password: ${{ secrets.CONAN_SERVER_PASSWORD }}
 
     - name: Install dependencies
       working-directory: ${{env.DEV_DIR}}
@@ -93,21 +85,29 @@ jobs:
           -o vtx/*:tool_example=True \
           -o vtx/*:tool_mdprep=True \
           -o vtx/*:tool_topology_editor=True \
-          -o vtx/*:clang_tidy=WARN \
+          -c tools.cmake.cmaketoolchain:generator=Ninja \
           ${{ matrix.conan_extra }}
 
+    # Configure only: generates compile_commands.json, nothing is compiled.
+    # PCH disabled so compile commands do not reference a precompiled header that does not exist.
     - name: Configure
       working-directory: ${{env.DEV_DIR}}
       shell: bash
       run: |
         cmake --preset conan-${BUILD_TYPE,,} \
-          -DVTX_CLANG_TIDY_EXECUTABLE="$CLANG_TIDY_EXE"
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+          -DVTX_ENABLE_PCH=OFF
+        test -f "${{ env.BUILD_DIR }}/compile_commands.json"
 
-    - name: Build with clang-tidy
+    - name: Run clang-tidy
       working-directory: ${{github.workspace}}
       shell: bash
       run: |
-        cmake --build "${{env.BUILD_DIR}}" --parallel $(nproc) -- ${{ matrix.keep_going }} > clang-tidy.out 2>&1
+        PYTHON="$(command -v python || command -v python3)"
+        "$PYTHON" .github/scripts/run_clang_tidy.py \
+          -p "${{ env.BUILD_DIR }}" \
+          --clang-tidy "$CLANG_TIDY_EXE" \
+          > clang-tidy.out 2>&1
 
     - name: Report
       id: report

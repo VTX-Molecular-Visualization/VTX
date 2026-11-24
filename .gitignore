@@ -12,3 +12,4 @@
 **/CMakeCache.txt
 *.code-workspace
 AGENTS.md
+__pycache__/

@@ -1,0 +1,196 @@
+name: build
+
+on:
+  push:
+    branches: [ "dev", "dev-sge", "dev-vge" ]
+  pull_request:
+    branches: [ "dev" ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'Release'
+        type: choice
+        options:
+        - Debug
+        - Release
+      cuda:
+        description: 'Enable CUDA'
+        required: false
+        default: false
+        type: boolean
+      cuda_version:
+        description: 'CUDA version'
+        required: false
+        default: '12.9.0'
+      cuda_arch:
+        description: 'Cuda architectures'
+        required: false
+        default: "52;61;75;80;86;87;89;90"
+      python_version:
+        description: 'Python version (override)'
+        required: false
+
+# Separate groups per event so a push never cancels a manual run (and vice versa); manual runs are never cancelled.
+concurrency:
+  group: build-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+permissions:
+  contents: read
+
+env:
+  # Inputs are empty on push / pull_request: CUDA stays disabled unless the workflow is run manually with "Enable CUDA".
+  BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
+  CUDA_VERSION: ${{ inputs.cuda == true && inputs.cuda_version || '' }}
+  CUDA_ARCH: ${{ inputs.cuda == true && inputs.cuda_arch || '' }}
+  PYTHON_VERSION: ${{ inputs.python_version }}
+  CONAN_PROFILE: vtx_ci
+
+jobs:
+  build:
+    # Explicit name: required status checks on master depend on it.
+    name: build (${{ matrix.os }}, ${{ matrix.conan_cppstd }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            conan_cppstd: '20'
+          - os: ubuntu-22.04
+            conan_cppstd: 'gnu20'
+          - os: windows-latest
+            conan_cppstd: '20'
+          - os: ubuntu-latest
+            conan_cppstd: 'gnu20'
+          # - os: macos-15-intel
+          #   conan_cppstd: '20'
+          # - os: windows-11-arm
+          #   conan_cppstd: '20'
+          # - os: ubuntu-22.04-arm
+          #   conan_cppstd: 'gnu20'
+          # - os: macos-15
+          #   conan_cppstd: '20'
+
+    env:
+      CUDAFLAGS: ${{ startsWith(matrix.os, 'windows') && '-allow-unsupported-compiler' || '' }}
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Set git to use CRLF
+      if: runner.os == 'Windows'
+      run: |
+        git config --global core.autocrlf true
+        git config --global core.eol crlf
+
+    - uses: actions/checkout@v6.0.2
+      with:
+        submodules: recursive
+
+    - name: Setup build environment
+      uses: ./.github/actions/setup-vtx
+      with:
+        conan_user: ${{ secrets.CONAN_SERVER_USER }}
+        conan_password: ${{ secrets.CONAN_SERVER_PASSWORD }}
+        cuda_version: ${{ env.CUDA_VERSION }}
+        xvfb: 'true'
+
+    # Same settings/options for every package so each VTX package is built (and tested) only once.
+    - name: Create Conan profile
+      run: |
+        PROFILE="$(conan config home)/profiles/${CONAN_PROFILE}"
+        {
+          echo "include(default)"
+          echo "[settings]"
+          echo "build_type=${BUILD_TYPE}"
+          echo "compiler.cppstd=${{ matrix.conan_cppstd }}"
+          echo "[options]"
+          echo "vtx_*/*:test=True"
+          if [ -n "${CUDA_ARCH}" ]; then
+            echo "vtx_renderer/*:cuda_arch=${CUDA_ARCH}"
+          fi
+          if [ -n "${PYTHON_VERSION}" ]; then
+            echo "vtx_python_binding/*:python_version=${PYTHON_VERSION}"
+          fi
+          echo "[conf]"
+          echo "tools.cmake.cmaketoolchain:generator=Ninja"
+          echo "tools.system.package_manager:mode=install"
+          echo "tools.system.package_manager:sudo=True"
+          if [ -n "${CUDACXX}" ]; then
+            echo "tools.cmake.cmaketoolchain:extra_variables={'CMAKE_CUDA_COMPILER': '${CUDACXX}', 'CUDAToolkit_ROOT': '${CUDAToolkit_ROOT}'}"
+          fi
+        } > "${PROFILE}"
+        cat "${PROFILE}"
+
+    - name: Export local packages
+      run: |
+        conan export lib/util
+        conan export lib/core
+        conan export lib/io
+        conan export lib/renderer
+        conan export lib/python_binding
+        conan export lib/app
+        conan export lib/ui/qt
+        conan export lib/ui/qt/conan/wayland
+
+    - name: Build vtx_util
+      run: conan create lib/util -pr "${CONAN_PROFILE}" -b missing
+
+    - name: Build vtx_core
+      run: conan create lib/core -pr "${CONAN_PROFILE}" -b missing
+
+    - name: Build vtx_io
+      run: conan create lib/io -pr "${CONAN_PROFILE}" -b missing
+
+    - name: Build vtx_renderer
+      run: conan create lib/renderer -pr "${CONAN_PROFILE}" -b missing
+
+    - name: Build vtx_python_binding
+      run: conan create lib/python_binding -pr "${CONAN_PROFILE}" -b missing
+
+    - name: Build vtx_app
+      run: conan create lib/app -pr "${CONAN_PROFILE}" -b missing
+
+    - name: Build vtx_ui_qt
+      run: conan create lib/ui/qt -pr "${CONAN_PROFILE}" -b missing
+
+    - name: Build vtx_tool_example
+      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/example -pr "${CONAN_PROFILE}" -b missing
+
+    - name: Build vtx_tool_mdprep
+      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/mdprep -pr "${CONAN_PROFILE}" -b missing
+
+    - name: Build vtx_tool_topology_editor
+      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/topology_editor -pr "${CONAN_PROFILE}" -b missing
+
+    # Cache third-party binaries on the VTX remote (not from pull requests, only when authenticated), even if a VTX
+    # package failed: packages missing from the cache (build stopped earlier) only emit a warning.
+    - name: Upload dependencies
+      if: ${{ !cancelled() && github.event_name != 'pull_request' && env.VTX_CONAN_AUTHENTICATED == 'true' }}
+      run: |
+        for pkg in \
+          glm spdlog magic_enum entt cpr stb tinyexr miniz fmt bzip2 zlib libcurl openssl platformfolders \
+          assimp clipper draco kuba-zip openddl-parser poly2tri pugixml rapidjson utfcpp minizip exiv2 inih catch2 \
+          argparse chemfiles \
+          ktx zstd \
+          pybind11 cpython expat libffi mpdecimal sqlite3 xz_utils \
+          brotli double-conversion freetype libjpeg libpng pcre2 qt \
+          abseil gromacs re2
+        do
+          conan upload "${pkg}" -r=vtx || echo "::warning::Upload of ${pkg} skipped"
+        done
+
+    - name: Upload Linux dependencies
+      if: ${{ !cancelled() && github.event_name != 'pull_request' && env.VTX_CONAN_AUTHENTICATED == 'true' && runner.os == 'Linux' }}
+      run: |
+        for pkg in \
+          libxcrypt ncurses util-linux-libuuid \
+          dbus egl/system fontconfig libiconv libxml2 opengl/system wayland xkeyboard-config/system xkbcommon xorg/system
+        do
+          conan upload "${pkg}" -r=vtx || echo "::warning::Upload of ${pkg} skipped"
+        done

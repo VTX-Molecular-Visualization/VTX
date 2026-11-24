@@ -1,4 +1,4 @@
-name: Conan Graph
+name: conan-graph
 
 on:
   workflow_dispatch:
@@ -35,7 +35,8 @@ env:
   TOOL_TOPOLOGY_EDITOR: ${{ inputs.tool_topology_editor == true && 'True' || 'False' }}
 
 jobs:
-  graph:
+  conan-graph:
+    name: conan-graph (${{ matrix.channel }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -77,16 +78,11 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Setup Conan
-      uses: conan-io/setup-conan@v1.3.0
+    - name: Setup build environment
+      uses: ./.github/actions/setup-vtx
       with:
-        use_venv: true
-        profile_detect: true
-
-    - name: Add custom remote
-      run: |
-        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
-        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
+        conan_user: ${{ secrets.CONAN_SERVER_USER }}
+        conan_password: ${{ secrets.CONAN_SERVER_PASSWORD }}
 
     - name: Export local packages
       working-directory: ${{ env.ROOT_DIR }}
