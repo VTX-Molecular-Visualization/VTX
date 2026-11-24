@@ -315,6 +315,13 @@ namespace VTX::App::Action::Selection
 			const float dist2 = dx * dx + dy * dy + dz * dz;
 			return dist2 <= threshold2;
 		}
+
+		int neighbourCellDist( const Util::Math::Grid<Index> & p_grid, const float p_threshold )
+		{
+			const Vec3f & cellSize = p_grid.getCellSize();
+			const float	  minSide  = std::min( { cellSize.x, cellSize.y, cellSize.z } );
+			return static_cast<int>( std::ceil( p_threshold / minSide ) );
+		}
 	} // namespace
 
 	void ExtendSelection::execute( const float p_threshold )
@@ -368,12 +375,8 @@ namespace VTX::App::Action::Selection
 			);
 		}
 
-		const Vec3f & cellSize = systems[ 0 ].grid.getCellSize();
-		const float	  minSide  = std::min( { cellSize.x, cellSize.y, cellSize.z } );
 		// square to avoid using square root during distance calculation
 		const float threshold2 = p_threshold * p_threshold;
-		// distance of neighbor voxels to check
-		const int vd = static_cast<int>( std::ceil( p_threshold / minSide ) );
 
 		// system loop
 		for ( const SystemData & testedSystem : systems )
@@ -429,7 +432,7 @@ namespace VTX::App::Action::Selection
 								break;
 							}
 						},
-						vd
+						neighbourCellDist( testingSystem.grid, p_threshold )
 					);
 					// stop looking for a selected atom since we already found one
 					if ( found )
@@ -471,12 +474,8 @@ namespace VTX::App::Action::Selection
 			);
 		}
 
-		const Vec3f & cellSize = systems[ 0 ].grid.getCellSize();
-		const float	  minSide  = std::min( { cellSize.x, cellSize.y, cellSize.z } );
 		// square to avoid using square root during distance calculation
 		const float threshold2 = p_threshold * p_threshold;
-		// distance of neighbor voxels to check
-		const int vd = static_cast<int>( std::ceil( p_threshold / minSide ) );
 
 		// systems loop
 		for ( const SystemData & testingSystem : systems )
@@ -519,7 +518,7 @@ namespace VTX::App::Action::Selection
 								testedSystem.toSelect.addRange( j );
 							}
 						},
-						vd
+						neighbourCellDist( testedSystem.grid, p_threshold )
 					);
 				}
 			}
