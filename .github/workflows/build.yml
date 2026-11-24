@@ -1,8 +1,6 @@
 name: build
 
 on:
-  push:
-    branches: [ "dev" ]
   pull_request:
     branches: [ "dev" ]
   workflow_dispatch:
@@ -32,7 +30,7 @@ on:
         description: 'Python version (override)'
         required: false
 
-# Push / pull_request: one group per event and ref, a new run cancels the previous one.
+# Pull requests: one group per PR, a new commit cancels the previous run.
 # Manual runs: a unique group per run (run_id), so they never wait for or cancel each other.
 concurrency:
   group: build-${{ github.event_name }}-${{ github.event_name == 'workflow_dispatch' && github.run_id || github.ref }}
@@ -51,7 +49,7 @@ env:
 
 jobs:
   build:
-    # Explicit name: required status checks on master depend on it.
+    # Explicit name: required status checks of the dev ruleset depend on it.
     name: build (${{ matrix.os }}, ${{ matrix.conan_cppstd }})
     runs-on: ${{ matrix.os }}
     strategy:
@@ -125,6 +123,10 @@ jobs:
           if [ -n "${CUDACXX}" ]; then
             echo "tools.cmake.cmaketoolchain:extra_variables={'CMAKE_CUDA_COMPILER': '${CUDACXX}', 'CUDAToolkit_ROOT': '${CUDAToolkit_ROOT}'}"
           fi
+          # Quick fix: gromacs 2026.0.1 misses #include <cstdint> (mdtypes/energyhistory.h), which GCC 15 rejects.
+          if [ "${RUNNER_OS}" = "Linux" ]; then
+            echo "gromacs/*:tools.build:cxxflags=['-include', 'cstdint']"
+          fi
         } > "${PROFILE}"
         cat "${PROFILE}"
 
@@ -169,10 +171,10 @@ jobs:
     - name: Build vtx_tool_topology_editor
       run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/topology_editor -pr "${CONAN_PROFILE}" -b missing
 
-    # Cache third-party binaries on the VTX remote (not from pull requests, only when authenticated), even if a VTX
-    # package failed: packages missing from the cache (build stopped earlier) only emit a warning.
+    # Cache third-party binaries on the VTX remote, only when authenticated (never for pull requests from forks, which
+    # have no secrets), even if a VTX package failed: packages missing from the cache only emit a warning.
     - name: Upload dependencies
-      if: ${{ !cancelled() && github.event_name != 'pull_request' && env.VTX_CONAN_AUTHENTICATED == 'true' }}
+      if: ${{ !cancelled() && env.VTX_CONAN_AUTHENTICATED == 'true' }}
       run: |
         for pkg in \
           glm spdlog magic_enum entt cpr stb tinyexr miniz fmt bzip2 zlib libcurl openssl platformfolders \
@@ -187,7 +189,7 @@ jobs:
         done
 
     - name: Upload Linux dependencies
-      if: ${{ !cancelled() && github.event_name != 'pull_request' && env.VTX_CONAN_AUTHENTICATED == 'true' && runner.os == 'Linux' }}
+      if: ${{ !cancelled() && env.VTX_CONAN_AUTHENTICATED == 'true' && runner.os == 'Linux' }}
       run: |
         for pkg in \
           libxcrypt ncurses util-linux-libuuid \
