@@ -40,38 +40,29 @@ permissions:
   contents: read
 
 env:
-  # Inputs are empty on push / pull_request: CUDA stays disabled unless the workflow is run manually with "Enable CUDA".
+  # Inputs are empty on pull_request: CUDA stays disabled unless the workflow is run manually with "Enable CUDA".
   BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
   CUDA_VERSION: ${{ inputs.cuda == true && inputs.cuda_version || '' }}
   CUDA_ARCH: ${{ inputs.cuda == true && inputs.cuda_arch || '' }}
   PYTHON_VERSION: ${{ inputs.python_version }}
-  CONAN_PROFILE: vtx_ci
 
 jobs:
   build:
     # Explicit name: required status checks of the dev ruleset depend on it.
-    name: build (${{ matrix.os }}, ${{ matrix.conan_cppstd }})
+    name: build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: windows-2022
-            conan_cppstd: '20'
-          - os: ubuntu-22.04
-            conan_cppstd: 'gnu20'
-          - os: windows-latest
-            conan_cppstd: '20'
-          - os: ubuntu-latest
-            conan_cppstd: 'gnu20'
-          # - os: macos-15-intel
-          #   conan_cppstd: '20'
-          # - os: windows-11-arm
-          #   conan_cppstd: '20'
-          # - os: ubuntu-22.04-arm
-          #   conan_cppstd: 'gnu20'
-          # - os: macos-15
-          #   conan_cppstd: '20'
+        os:
+          - windows-2022
+          - ubuntu-22.04
+          - windows-latest
+          - ubuntu-latest
+          # - macos-15-intel
+          # - windows-11-arm
+          # - ubuntu-22.04-arm
+          # - macos-15
 
     env:
       CUDAFLAGS: ${{ startsWith(matrix.os, 'windows') && '-allow-unsupported-compiler' || '' }}
@@ -96,39 +87,13 @@ jobs:
       with:
         conan_user: ${{ secrets.CONAN_SERVER_USER }}
         conan_password: ${{ secrets.CONAN_SERVER_PASSWORD }}
+        build_type: ${{ env.BUILD_TYPE }}
         cuda_version: ${{ env.CUDA_VERSION }}
+        cuda_arch: ${{ env.CUDA_ARCH }}
+        python_version: ${{ env.PYTHON_VERSION }}
+        # Same options for every package so each VTX package is built (and tested) only once.
+        tests: 'true'
         xvfb: 'true'
-
-    # Same settings/options for every package so each VTX package is built (and tested) only once.
-    - name: Create Conan profile
-      run: |
-        PROFILE="$(conan config home)/profiles/${CONAN_PROFILE}"
-        {
-          echo "include(default)"
-          echo "[settings]"
-          echo "build_type=${BUILD_TYPE}"
-          echo "compiler.cppstd=${{ matrix.conan_cppstd }}"
-          echo "[options]"
-          echo "vtx_*/*:test=True"
-          if [ -n "${CUDA_ARCH}" ]; then
-            echo "vtx_renderer/*:cuda_arch=${CUDA_ARCH}"
-          fi
-          if [ -n "${PYTHON_VERSION}" ]; then
-            echo "vtx_python_binding/*:python_version=${PYTHON_VERSION}"
-          fi
-          echo "[conf]"
-          echo "tools.cmake.cmaketoolchain:generator=Ninja"
-          echo "tools.system.package_manager:mode=install"
-          echo "tools.system.package_manager:sudo=True"
-          if [ -n "${CUDACXX}" ]; then
-            echo "tools.cmake.cmaketoolchain:extra_variables={'CMAKE_CUDA_COMPILER': '${CUDACXX}', 'CUDAToolkit_ROOT': '${CUDAToolkit_ROOT}'}"
-          fi
-          # Quick fix: gromacs 2026.0.1 misses #include <cstdint> (mdtypes/energyhistory.h), which GCC 15 rejects.
-          if [ "${RUNNER_OS}" = "Linux" ]; then
-            echo "gromacs/*:tools.build:cxxflags=['-include', 'cstdint']"
-          fi
-        } > "${PROFILE}"
-        cat "${PROFILE}"
 
     - name: Export local packages
       run: |
@@ -142,34 +107,34 @@ jobs:
         conan export lib/ui/qt/conan/wayland
 
     - name: Build vtx_util
-      run: conan create lib/util -pr "${CONAN_PROFILE}" -b missing
+      run: conan create lib/util -b missing
 
     - name: Build vtx_core
-      run: conan create lib/core -pr "${CONAN_PROFILE}" -b missing
+      run: conan create lib/core -b missing
 
     - name: Build vtx_io
-      run: conan create lib/io -pr "${CONAN_PROFILE}" -b missing
+      run: conan create lib/io -b missing
 
     - name: Build vtx_renderer
-      run: conan create lib/renderer -pr "${CONAN_PROFILE}" -b missing
+      run: conan create lib/renderer -b missing
 
     - name: Build vtx_python_binding
-      run: conan create lib/python_binding -pr "${CONAN_PROFILE}" -b missing
+      run: conan create lib/python_binding -b missing
 
     - name: Build vtx_app
-      run: conan create lib/app -pr "${CONAN_PROFILE}" -b missing
+      run: conan create lib/app -b missing
 
     - name: Build vtx_ui_qt
-      run: conan create lib/ui/qt -pr "${CONAN_PROFILE}" -b missing
+      run: conan create lib/ui/qt -b missing
 
     - name: Build vtx_tool_example
-      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/example -pr "${CONAN_PROFILE}" -b missing
+      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/example -b missing
 
     - name: Build vtx_tool_mdprep
-      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/mdprep -pr "${CONAN_PROFILE}" -b missing
+      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/mdprep -b missing
 
     - name: Build vtx_tool_topology_editor
-      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/topology_editor -pr "${CONAN_PROFILE}" -b missing
+      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/topology_editor -b missing
 
     # Cache third-party binaries on the VTX remote, only when authenticated (never for pull requests from forks, which
     # have no secrets), even if a VTX package failed: packages missing from the cache only emit a warning.

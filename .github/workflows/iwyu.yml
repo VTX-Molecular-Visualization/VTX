@@ -37,6 +37,7 @@ jobs:
       with:
         conan_user: ${{ secrets.CONAN_SERVER_USER }}
         conan_password: ${{ secrets.CONAN_SERVER_PASSWORD }}
+        build_type: ${{ env.BUILD_TYPE }}
 
     - name: Install dependencies
       working-directory: ${{env.DEV_DIR}}
@@ -44,13 +45,9 @@ jobs:
       run: |
         conan export ../lib/ui/qt/conan/wayland
         conan install . -b missing \
-          -s build_type=${{ env.BUILD_TYPE }} \
-          -s compiler.cppstd=gnu20 \
           -o vtx/*:tool_example=True \
           -o vtx/*:tool_mdprep=True \
-          -o vtx/*:tool_topology_editor=True \
-          -c tools.system.package_manager:mode=install \
-          -c tools.system.package_manager:sudo=True
+          -o vtx/*:tool_topology_editor=True
 
     - name: Configure
       working-directory: ${{env.DEV_DIR}}

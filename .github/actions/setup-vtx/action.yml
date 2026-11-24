@@ -1,5 +1,5 @@
 name: Setup VTX build environment
-description: Install Ninja, Conan (with the VTX remote), optional CUDA toolkit, xvfb and MSVC environment.
+description: Install Ninja, Conan (VTX remote and VTX host profile), optional CUDA toolkit, xvfb and MSVC environment.
 
 inputs:
   conan_host:
@@ -14,10 +14,30 @@ inputs:
     description: 'Conan remote password'
     required: false
     default: ''
+  build_type:
+    description: 'Conan build_type setting'
+    required: false
+    default: 'Release'
+  cppstd:
+    description: 'Conan compiler.cppstd setting (empty = gnu20 on Linux, 20 elsewhere)'
+    required: false
+    default: ''
   cuda_version:
     description: 'CUDA toolkit version to install (empty = no CUDA)'
     required: false
     default: ''
+  cuda_arch:
+    description: 'vtx_renderer cuda_arch option (empty = recipe default)'
+    required: false
+    default: ''
+  python_version:
+    description: 'vtx_python_binding python_version option (empty = recipe default)'
+    required: false
+    default: ''
+  tests:
+    description: 'Build and run the tests of every VTX package (vtx_*/*:test=True)'
+    required: false
+    default: 'false'
   xvfb:
     description: 'Install xvfb on Linux (needed to run Qt tests headless)'
     required: false
@@ -44,7 +64,7 @@ runs:
     run: |
       # The VTX remote hosts in-house packages required by the build: it cannot work without it.
       if [ -z "$CONAN_HOST" ]; then
-        echo "::error::VTX Conan remote URL is unavailable (e.g. pull request from a fork): the build requires the VTX remote."
+        echo "::error::VTX Conan remote URL is unavailable: the build requires the VTX remote."
         exit 1
       fi
       conan remote add vtx "$CONAN_HOST" --index 0
@@ -98,6 +118,57 @@ runs:
     if: inputs.cuda_version != ''
     shell: bash
     run: nvcc --version
+
+  # Single place where Conan is configured for VTX: a "vtx" profile (on top of the detected "default" one) becomes the
+  # default host profile, so every Conan command uses it without -pr. The build profile stays the detected one.
+  - name: Configure Conan profile
+    shell: bash
+    env:
+      VTX_BUILD_TYPE: ${{ inputs.build_type }}
+      VTX_CPPSTD: ${{ inputs.cppstd }}
+      VTX_CUDA_ARCH: ${{ inputs.cuda_arch }}
+      VTX_PYTHON_VERSION: ${{ inputs.python_version }}
+      VTX_TESTS: ${{ inputs.tests }}
+    run: |
+      # C++20, with GNU extensions on Linux (GCC); MSVC and Apple Clang use the standard flavor.
+      if [ -z "${VTX_CPPSTD}" ]; then
+        if [ "${RUNNER_OS}" = "Linux" ]; then
+          VTX_CPPSTD="gnu20"
+        else
+          VTX_CPPSTD="20"
+        fi
+      fi
+      CONAN_HOME_DIR="$(conan config home)"
+      PROFILE="${CONAN_HOME_DIR}/profiles/vtx"
+      {
+        echo "include(default)"
+        echo "[settings]"
+        echo "build_type=${VTX_BUILD_TYPE}"
+        echo "compiler.cppstd=${VTX_CPPSTD}"
+        echo "[options]"
+        if [ "${VTX_TESTS}" = "true" ]; then
+          echo "vtx_*/*:test=True"
+        fi
+        if [ -n "${VTX_CUDA_ARCH}" ]; then
+          echo "vtx_renderer/*:cuda_arch=${VTX_CUDA_ARCH}"
+        fi
+        if [ -n "${VTX_PYTHON_VERSION}" ]; then
+          echo "vtx_python_binding/*:python_version=${VTX_PYTHON_VERSION}"
+        fi
+        echo "[conf]"
+        echo "tools.cmake.cmaketoolchain:generator=Ninja"
+        echo "tools.system.package_manager:mode=install"
+        echo "tools.system.package_manager:sudo=True"
+        if [ -n "${CUDACXX}" ]; then
+          echo "tools.cmake.cmaketoolchain:extra_variables={'CMAKE_CUDA_COMPILER': '${CUDACXX}', 'CUDAToolkit_ROOT': '${CUDAToolkit_ROOT}'}"
+        fi
+        # Quick fix: gromacs 2026.0.1 misses #include <cstdint> (mdtypes/energyhistory.h), which GCC 15 rejects.
+        if [ "${RUNNER_OS}" = "Linux" ]; then
+          echo "gromacs/*:tools.build:cxxflags=['-include', 'cstdint']"
+        fi
+      } > "${PROFILE}"
+      echo "core:default_profile=vtx" >> "${CONAN_HOME_DIR}/global.conf"
+      conan profile show
 
   - name: Setup MSVC environment
     if: runner.os == 'Windows'

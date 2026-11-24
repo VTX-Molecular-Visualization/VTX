@@ -61,7 +61,11 @@ on:
       python_version:
         description: 'Python version (override)'
         required: false
-        
+
+# Velopack publishes the GitHub release with GITHUB_TOKEN.
+permissions:
+  contents: write
+
 env:
   ROOT_DIR: ${{github.workspace}}
   BUILD_TYPE: ${{ inputs.build_type }}
@@ -89,28 +93,22 @@ jobs:
             channel: win-x64
             framework: vcredist144-x64
             main_exe: vtx.exe
-            conan_cppstd: '20'
           - os: ubuntu-22.04
             channel: linux-x64
             main_exe: vtx
-            conan_cppstd: 'gnu20'
           # - os: macos-15-intel
           #   channel: osx-x64
           #   main_exe: vtx
-          #   conan_cppstd: '20'
           # - os: windows-11-arm
           #   channel: win-arm64
           #   framework: vcredist144-arm64
           #   main_exe: vtx.exe
-          #   conan_cppstd: '20'
           # - os: ubuntu-22.04-arm
           #   channel: linux-arm64
           #   main_exe: vtx
-          #   conan_cppstd: 'gnu20'
           # - os: macos-15
           #   channel: osx-arm64
           #   main_exe: vtx
-          #   conan_cppstd: '20'
       fail-fast: false
 
     steps:
@@ -129,20 +127,14 @@ jobs:
       with:
         conan_user: ${{ secrets.CONAN_SERVER_USER }}
         conan_password: ${{ secrets.CONAN_SERVER_PASSWORD }}
+        build_type: ${{ env.BUILD_TYPE }}
         cuda_version: ${{ env.CUDA_VERSION }}
+        cuda_arch: ${{ env.CUDA_ARCH }}
+        python_version: ${{ env.PYTHON_VERSION }}
 
     - name: Create package
       working-directory: ${{env.ROOT_DIR}}
       run: |
-        PYTHON_VERSION_OPTION=()
-        if [ -n "${PYTHON_VERSION}" ]; then
-          PYTHON_VERSION_OPTION=(-o "vtx_python_binding/*:python_version=${PYTHON_VERSION}")
-        fi
-        CUDA_ARCH_OPTION=()
-        if [ -n "${CUDA_ARCH}" ]; then
-          CUDA_ARCH_OPTION=(-o "vtx_renderer/*:cuda_arch=${CUDA_ARCH}")
-        fi
-
         conan export lib/app
         conan export lib/core
         conan export lib/io
@@ -155,8 +147,6 @@ jobs:
         conan export tool/mdprep
         conan export tool/topology_editor
         conan create app/vtx -b missing \
-          -s build_type=${{env.BUILD_TYPE}} \
-          -s compiler.cppstd=${{ matrix.conan_cppstd }} \
           -o vtx_app/*:version=${{env.VERSION}} \
           -o vtx_app/*:renderer=${{env.VTX_RENDERER}} \
           -o vtx_app/*:python_binding=${{env.VTX_PYTHON_BINDING}} \
@@ -166,12 +156,6 @@ jobs:
           -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} \
           -o vtx/*:tool_topology_editor=${{env.TOOL_TOPOLOGY_EDITOR}} \
           -o vtx/*:ui_qt=${{env.UI_QT}} \
-          "${PYTHON_VERSION_OPTION[@]}" \
-          "${CUDA_ARCH_OPTION[@]}" \
-          -c tools.cmake.cmaketoolchain:generator=Ninja \
-          -c tools.system.package_manager:mode=install \
-          -c tools.system.package_manager:sudo=True \
-           -c tools.cmake.cmaketoolchain:extra_variables="{\"CMAKE_CUDA_COMPILER\":\"$CUDACXX\",\"CUDAToolkit_ROOT\":\"$CUDAToolkit_ROOT\"}" \
           --format=json > output.json
       shell: bash
 
