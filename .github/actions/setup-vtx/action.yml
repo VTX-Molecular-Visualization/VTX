@@ -110,9 +110,11 @@ runs:
       "$NVCC" --version
 
       echo "$CUDA_BIN" >> "$GITHUB_PATH"
-      echo "CUDA_PATH=$CUDA_PATH_WIN" >> "$GITHUB_ENV"
-      echo "CUDAToolkit_ROOT=$CUDA_PATH_WIN" >> "$GITHUB_ENV"
-      echo "CUDACXX=$NVCC" >> "$GITHUB_ENV"
+      {
+        echo "CUDA_PATH=$CUDA_PATH_WIN"
+        echo "CUDAToolkit_ROOT=$CUDA_PATH_WIN"
+        echo "CUDACXX=$NVCC"
+      } >> "$GITHUB_ENV"
 
   - name: Check CUDA
     if: inputs.cuda_version != ''

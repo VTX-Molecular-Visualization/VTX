@@ -87,7 +87,7 @@ jobs:
       working-directory: ${{env.DEV_DIR}}
       shell: bash
       run: |
-        cmake --preset conan-${BUILD_TYPE,,} \
+        cmake --preset "conan-${BUILD_TYPE,,}" \
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
           -DVTX_ENABLE_PCH=OFF
         test -f "${{ env.BUILD_DIR }}/compile_commands.json"
