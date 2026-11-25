@@ -186,27 +186,23 @@ namespace VTX::Util::Math
 				return;
 			}
 
-			const CellPosition lower(
-				max( p_gridPosition.x - p_neighbourDist, _minCell.x ),
-				max( p_gridPosition.y - p_neighbourDist, _minCell.y ),
-				max( p_gridPosition.z - p_neighbourDist, _minCell.z )
-			);
-			const CellPosition upper(
-				min( p_gridPosition.x + p_neighbourDist, _maxCell.x ),
-				min( p_gridPosition.y + p_neighbourDist, _maxCell.y ),
-				min( p_gridPosition.z + p_neighbourDist, _maxCell.z )
-			);
+			using WidePosition = vec<3, int64_t>;
 
-			if ( lower.x > upper.x || lower.y > upper.y || lower.z > upper.z )
+			const WidePosition center( p_gridPosition );
+			const WidePosition dist( p_neighbourDist );
+			const WidePosition lower = max( center - dist, WidePosition( _minCell ) );
+			const WidePosition upper = min( center + dist, WidePosition( _maxCell ) );
+
+			if ( any( lessThan( upper, lower ) ) )
 			{
 				return;
 			}
 
-			const size_t rangeCellCount = static_cast<size_t>( upper.x - lower.x + 1 )
-										  * static_cast<size_t>( upper.y - lower.y + 1 )
-										  * static_cast<size_t>( upper.z - lower.z + 1 );
+			const WidePosition extent	= upper - lower + WidePosition( 1 );
+			const int64_t	   dataSize = static_cast<int64_t>( _data.size() );
 
-			if ( rangeCellCount > _data.size() )
+			if ( extent.x > dataSize || extent.y > dataSize / extent.x
+				 || extent.z > dataSize / ( extent.x * extent.y ) )
 			{
 				for ( const auto & [ position, cell ] : _data )
 				{
@@ -219,13 +215,15 @@ namespace VTX::Util::Math
 				return;
 			}
 
-			for ( int z = lower.z; z <= upper.z; ++z )
+			for ( int64_t z = lower.z; z <= upper.z; ++z )
 			{
-				for ( int y = lower.y; y <= upper.y; ++y )
+				for ( int64_t y = lower.y; y <= upper.y; ++y )
 				{
-					for ( int x = lower.x; x <= upper.x; ++x )
+					for ( int64_t x = lower.x; x <= upper.x; ++x )
 					{
-						const auto it = _data.find( CellPosition( x, y, z ) );
+						const auto it = _data.find(
+							CellPosition( static_cast<int>( x ), static_cast<int>( y ), static_cast<int>( z ) )
+						);
 
 						if ( it != _data.end() )
 						{

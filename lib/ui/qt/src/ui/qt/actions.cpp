@@ -209,7 +209,7 @@ namespace VTX::UI::QT::Action
 						 "Extend selection",
 						 "Distance (Å):",
 						 SETTINGS().value( SETTING_KEY_EXTEND_DISTANCE, 5.0 ).toDouble(),
-						 0.0,
+						 0.01,
 						 1000.0,
 						 2,
 						 &accepted
