@@ -157,6 +157,17 @@ namespace VTX::UI::QT::Action
 			[]( const ActionRegistry::ActionContext & p_context )
 			{
 				const bool locked = UI_ACTIONS().isChecked( p_context.actionId );
+				for ( const std::string_view key : { Selection::CLEAR,
+													 Selection::SELECT_ALL,
+													 Selection::INVERT,
+													 Selection::EXTEND,
+													 Selection::EXTEND_TO_RESIDUE } )
+				{
+					if ( QAction * const action = UI_ACTIONS().getAction( key ) )
+					{
+						action->setEnabled( not locked );
+					}
+				}
 				App::HUB().trigger<Events::SelectionLocked>( locked );
 			}
 		);
@@ -175,7 +186,17 @@ namespace VTX::UI::QT::Action
 		);
 		p_registry.registerAction(
 			Selection::selectAllAction(),
-			handler( []() { App::ACTION().execute<App::Action::Selection::SelectAll>(); } )
+			handler(
+				[]()
+				{
+					if ( UI_ACTIONS().isChecked( Selection::LOCK ) )
+					{
+						return;
+					}
+
+					App::ACTION().execute<App::Action::Selection::SelectAll>();
+				}
+			)
 		);
 		p_registry.registerAction(
 			Selection::invertAction(),

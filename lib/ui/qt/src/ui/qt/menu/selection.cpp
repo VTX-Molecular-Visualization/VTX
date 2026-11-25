@@ -102,6 +102,7 @@ namespace VTX::UI::QT::Menu
 			);
 		}
 		UI_ACTIONS().addTo( *_extendMenu, Action::Selection::EXTEND );
+		_extendMenu->setEnabled( not UI_ACTIONS().isChecked( Action::Selection::LOCK ) );
 		addMenu( _extendMenu );
 
 		UI_ACTIONS().addTo( *this, Action::Selection::CLEAR );
