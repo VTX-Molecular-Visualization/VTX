@@ -13,6 +13,7 @@ find_package(tinyexr CONFIG REQUIRED)
 find_package(exiv2 CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 find_package(platform_folders REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
