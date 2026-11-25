@@ -1,5 +1,5 @@
 #include "app/action/controller.hpp"
-#include <algorithm>
+#include <util/math.hpp>
 
 namespace VTX::App::Action::Controller
 {
@@ -18,7 +18,7 @@ namespace VTX::App::Action::Controller
 			[ p_value ]( Setting::Controller & p_setting )
 			{
 				p_setting.translationSpeed
-					= std::clamp( p_value, Setting::TRANSLATION_SPEED_MIN, Setting::TRANSLATION_SPEED_MAX );
+					= Util::Math::clamp( p_value, Setting::TRANSLATION_SPEED_MIN, Setting::TRANSLATION_SPEED_MAX );
 			} );
 	}
 
@@ -28,7 +28,7 @@ namespace VTX::App::Action::Controller
 		REG().patch<Setting::Controller>( e,
 										  [ p_value ]( Setting::Controller & p_setting )
 										  {
-											  p_setting.rotationSpeed = std::clamp(
+											  p_setting.rotationSpeed = Util::Math::clamp(
 												  p_value, Setting::ROTATION_SPEED_MIN, Setting::ROTATION_SPEED_MAX );
 										  } );
 	}
@@ -41,7 +41,7 @@ namespace VTX::App::Action::Controller
 			[ p_value ]( Setting::Controller & p_setting )
 			{
 				p_setting.accelerationFactor
-					= std::clamp( p_value, Setting::ACCELERATION_FACTOR_MIN, Setting::ACCELERATION_FACTOR_MAX );
+					= Util::Math::clamp( p_value, Setting::ACCELERATION_FACTOR_MIN, Setting::ACCELERATION_FACTOR_MAX );
 			} );
 	}
 
@@ -53,7 +53,7 @@ namespace VTX::App::Action::Controller
 			[ p_value ]( Setting::Controller & p_setting )
 			{
 				p_setting.decelerationFactor
-					= std::clamp( p_value, Setting::DECELERATION_FACTOR_MIN, Setting::DECELERATION_FACTOR_MAX );
+					= Util::Math::clamp( p_value, Setting::DECELERATION_FACTOR_MIN, Setting::DECELERATION_FACTOR_MAX );
 			} );
 	}
 
@@ -72,7 +72,7 @@ namespace VTX::App::Action::Controller
 			[ p_value ]( Setting::Controller & p_setting )
 			{
 				p_setting.elasticityFactor
-					= std::clamp( p_value, Setting::ELASTICITY_FACTOR_MIN, Setting::ELASTICITY_FACTOR_MAX );
+					= Util::Math::clamp( p_value, Setting::ELASTICITY_FACTOR_MIN, Setting::ELASTICITY_FACTOR_MAX );
 			} );
 	}
 } // namespace VTX::App::Action::Controller

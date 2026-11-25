@@ -13,37 +13,37 @@ namespace VTX::Util::Math
 		float		y = 0.f;
 		float		z = 0.f;
 
-		if ( std::abs( a ) > VTX::EPSILON && std::abs( b ) > VTX::EPSILON )
+		if ( abs( a ) > VTX::EPSILON && abs( b ) > VTX::EPSILON )
 		{
 			x = -glm::sign( a ) * b;
 			y = glm::sign( a ) * a;
 			z = 0.f;
 		}
-		else if ( std::abs( b ) > VTX::EPSILON && std::abs( c ) > VTX::EPSILON )
+		else if ( abs( b ) > VTX::EPSILON && abs( c ) > VTX::EPSILON )
 		{
 			x = 0.f;
 			y = -glm::sign( b ) * c;
 			z = glm::sign( b ) * b;
 		}
-		else if ( std::abs( c ) > VTX::EPSILON && std::abs( a ) > VTX::EPSILON )
+		else if ( abs( c ) > VTX::EPSILON && abs( a ) > VTX::EPSILON )
 		{
 			x = glm::sign( c ) * c;
 			y = 0.f;
 			z = -glm::sign( c ) * a;
 		}
-		else if ( std::abs( a ) > VTX::EPSILON )
+		else if ( abs( a ) > VTX::EPSILON )
 		{
 			x = 0.f;
 			y = 1.f;
 			z = 0.f;
 		}
-		else if ( std::abs( b ) > VTX::EPSILON )
+		else if ( abs( b ) > VTX::EPSILON )
 		{
 			x = 0.f;
 			y = 0.f;
 			z = 1.f;
 		}
-		else if ( std::abs( c ) > VTX::EPSILON )
+		else if ( abs( c ) > VTX::EPSILON )
 		{
 			x = 1.f;
 			y = 0.f;

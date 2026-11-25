@@ -4,6 +4,7 @@
 #include <QPalette>
 #include <QRawFont>
 #include <QScreen>
+#include <util/math.hpp>
 
 namespace VTX::UI::QT::Style
 {
@@ -61,7 +62,7 @@ namespace VTX::UI::QT::Style
 
 		const qreal sx	 = target.width() / br.width();
 		const qreal sy	 = target.height() / br.height();
-		const qreal smin = std::min( sx, sy );
+		const qreal smin = Util::Math::min( sx, sy );
 
 		QTransform t;
 		t.translate( target.center().x(), target.center().y() );
@@ -85,8 +86,8 @@ namespace VTX::UI::QT::Style
 			dpr = s->devicePixelRatio();
 		}
 
-		QPixmap pm( QSize( static_cast<int>( std::ceil( p_size.width() * dpr ) ),
-						   static_cast<int>( std::ceil( p_size.height() * dpr ) ) ) );
+		QPixmap pm( QSize( static_cast<int>( Util::Math::ceil( p_size.width() * dpr ) ),
+						   static_cast<int>( Util::Math::ceil( p_size.height() * dpr ) ) ) );
 		pm.setDevicePixelRatio( dpr );
 		pm.fill( Qt::transparent );
 

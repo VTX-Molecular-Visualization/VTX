@@ -9,9 +9,7 @@
 #include "util/math/grid.hpp"
 #include "util/math/range_list.hpp"
 #include "util/math/transform.hpp"
-#include <algorithm>
 #include <cassert>
-#include <cmath>
 #include <optional>
 #include <renderer/renderer.hpp>
 #include <util/action_manager.hpp>
@@ -338,13 +336,15 @@ namespace VTX::App::Action::Selection
 			const float						p_distance
 		)
 		{
-			const float minScale = std::min( { p_scale.x, p_scale.y, p_scale.z } );
+			using namespace Util::Math;
+
+			const float minScale = min( p_scale.x, min( p_scale.y, p_scale.z ) );
 			assert( minScale > 0.f );
 
 			const Vec3f & cellSize = p_grid.getCellSize();
-			const float	  minSide  = std::min( { cellSize.x, cellSize.y, cellSize.z } );
+			const float	  minSide  = min( cellSize.x, min( cellSize.y, cellSize.z ) );
 
-			return static_cast<int>( std::ceil( p_distance / minScale / minSide ) );
+			return static_cast<int>( ceil( p_distance / minScale / minSide ) );
 		}
 
 		Vec3f transformPoint( const Mat4f & p_matrix, const Vec3f & p_point )

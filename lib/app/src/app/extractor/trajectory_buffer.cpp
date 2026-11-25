@@ -1,5 +1,5 @@
 #include "app/extractor/trajectory_buffer.hpp"
-#include <algorithm>
+#include <util/math.hpp>
 #include <util/types.hpp>
 
 namespace VTX::App::Extractor
@@ -21,7 +21,9 @@ namespace VTX::App::Extractor
 														   const size_t p_frameCount ) const noexcept
 	{
 		return p_mode == Trajectory::TRAJECTORY_BUFFER_MODE::CIRCULAR
-				   ? std::min( p_frameCount, std::max( static_cast<size_t>( 1 ), circularBufferFrameCount ) )
+				   ? Util::Math::min(
+						 p_frameCount, Util::Math::max( static_cast<size_t>( 1 ), circularBufferFrameCount )
+					 )
 				   : p_frameCount;
 	}
 } // namespace VTX::App::Extractor

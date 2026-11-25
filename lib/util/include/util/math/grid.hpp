@@ -1,9 +1,8 @@
 #ifndef VTX_UTIL_MATH_GRID_HPP
 #define VTX_UTIL_MATH_GRID_HPP
 
+#include "util/math.hpp"
 #include "util/types.hpp"
-#include <algorithm>
-#include <cmath>
 #include <cstddef>
 #include <functional>
 #include <unordered_map>
@@ -49,9 +48,9 @@ namespace VTX::Util::Math
 		{
 			CellPosition gridPos;
 
-			gridPos.x = static_cast<uint>( std::floor( ( p_worldPosition.x - _worldOrigin.x ) / _cellSize.x ) );
-			gridPos.y = static_cast<uint>( std::floor( ( p_worldPosition.y - _worldOrigin.y ) / _cellSize.y ) );
-			gridPos.z = static_cast<uint>( std::floor( ( p_worldPosition.z - _worldOrigin.z ) / _cellSize.z ) );
+			gridPos.x = static_cast<uint>( floor( ( p_worldPosition.x - _worldOrigin.x ) / _cellSize.x ) );
+			gridPos.y = static_cast<uint>( floor( ( p_worldPosition.y - _worldOrigin.y ) / _cellSize.y ) );
+			gridPos.z = static_cast<uint>( floor( ( p_worldPosition.z - _worldOrigin.z ) / _cellSize.z ) );
 
 			return gridPos;
 		}
@@ -147,9 +146,9 @@ namespace VTX::Util::Math
 		{
 			CellPosition gridPos;
 
-			gridPos.x = static_cast<int>( std::floor( ( p_worldPosition.x - _worldOrigin.x ) / _cellSize.x ) );
-			gridPos.y = static_cast<int>( std::floor( ( p_worldPosition.y - _worldOrigin.y ) / _cellSize.y ) );
-			gridPos.z = static_cast<int>( std::floor( ( p_worldPosition.z - _worldOrigin.z ) / _cellSize.z ) );
+			gridPos.x = static_cast<int>( floor( ( p_worldPosition.x - _worldOrigin.x ) / _cellSize.x ) );
+			gridPos.y = static_cast<int>( floor( ( p_worldPosition.y - _worldOrigin.y ) / _cellSize.y ) );
+			gridPos.z = static_cast<int>( floor( ( p_worldPosition.z - _worldOrigin.z ) / _cellSize.z ) );
 
 			return gridPos;
 		}
@@ -188,14 +187,14 @@ namespace VTX::Util::Math
 			}
 
 			const CellPosition lower(
-				std::max( p_gridPosition.x - p_neighbourDist, _minCell.x ),
-				std::max( p_gridPosition.y - p_neighbourDist, _minCell.y ),
-				std::max( p_gridPosition.z - p_neighbourDist, _minCell.z )
+				max( p_gridPosition.x - p_neighbourDist, _minCell.x ),
+				max( p_gridPosition.y - p_neighbourDist, _minCell.y ),
+				max( p_gridPosition.z - p_neighbourDist, _minCell.z )
 			);
 			const CellPosition upper(
-				std::min( p_gridPosition.x + p_neighbourDist, _maxCell.x ),
-				std::min( p_gridPosition.y + p_neighbourDist, _maxCell.y ),
-				std::min( p_gridPosition.z + p_neighbourDist, _maxCell.z )
+				min( p_gridPosition.x + p_neighbourDist, _maxCell.x ),
+				min( p_gridPosition.y + p_neighbourDist, _maxCell.y ),
+				min( p_gridPosition.z + p_neighbourDist, _maxCell.z )
 			);
 
 			if ( lower.x > upper.x || lower.y > upper.y || lower.z > upper.z )
@@ -340,13 +339,13 @@ namespace VTX::Util::Math
 				return;
 			}
 
-			_minCell.x = std::min( _minCell.x, p_gridPosition.x );
-			_minCell.y = std::min( _minCell.y, p_gridPosition.y );
-			_minCell.z = std::min( _minCell.z, p_gridPosition.z );
+			_minCell.x = min( _minCell.x, p_gridPosition.x );
+			_minCell.y = min( _minCell.y, p_gridPosition.y );
+			_minCell.z = min( _minCell.z, p_gridPosition.z );
 
-			_maxCell.x = std::max( _maxCell.x, p_gridPosition.x );
-			_maxCell.y = std::max( _maxCell.y, p_gridPosition.y );
-			_maxCell.z = std::max( _maxCell.z, p_gridPosition.z );
+			_maxCell.x = max( _maxCell.x, p_gridPosition.x );
+			_maxCell.y = max( _maxCell.y, p_gridPosition.y );
+			_maxCell.z = max( _maxCell.z, p_gridPosition.z );
 		}
 	};
 } // namespace VTX::Util::Math
