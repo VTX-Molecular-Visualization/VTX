@@ -10,17 +10,15 @@ namespace VTX::App::PythonBinding
 	{
 		const pybind11::module_ & module = p_vtxModule.pyModule();
 
-		VTX::PythonBinding::Helper::declareEnum<App::System::E_VISIBLE_STATE>( module, "VISIBLE_STATE" );
+		VTX::PythonBinding::Helper::declareEnum<App::System::E_VISIBLE_STATE>(
+			module, "VISIBLE_STATE", "Visibility state of an item."
+		);
 
 		p_vtxModule.def(
-			"showAll",
-			[]() { executeAction<App::Action::Visibility::SetVisibleAll>( true ); },
-			"Show all loaded systems."
+			"showAll", []() { executeAction<App::Action::Visibility::SetVisibleAll>( true ); }, "Show all systems."
 		);
 		p_vtxModule.def(
-			"hideAll",
-			[]() { executeAction<App::Action::Visibility::SetVisibleAll>( false ); },
-			"Hide all loaded systems."
+			"hideAll", []() { executeAction<App::Action::Visibility::SetVisibleAll>( false ); }, "Hide all systems."
 		);
 	}
 } // namespace VTX::App::PythonBinding

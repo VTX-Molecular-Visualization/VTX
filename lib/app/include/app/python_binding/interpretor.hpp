@@ -25,12 +25,28 @@ namespace VTX::App::PythonBinding
 	  public:
 		using InterpretorInstructionsOneShot = std::function<void( VTX::PythonBinding::Interpretor & )>;
 
+		/**
+		 * @brief Struct to hold the result of an asynchronous job.
+		 */
 		struct AsyncJobResult
 		{
 			bool		success = false;
 			std::string resultStr;
 		};
 
+		/**
+		 * @brief Struct to hold a completion entry.
+		 */
+		struct CompletionEntry
+		{
+			std::string scope;
+			std::string name;
+			std::string type;
+		};
+
+		/**
+		 * @brief Constructors.
+		 */
 		Interpretor();
 		Interpretor( const Interpretor & )			   = delete;
 		Interpretor & operator=( const Interpretor & ) = delete;
@@ -70,9 +86,9 @@ namespace VTX::App::PythonBinding
 		void post( InterpretorInstructionsOneShot );
 
 		/**
-		 * @brief Get available function list.
+		 * @brief Request the completion table and pass it to the callback.
 		 */
-		void requestFunctionList( std::function<void( std::vector<std::string> )> );
+		void requestCompletionTable( std::function<void( std::vector<CompletionEntry> )> );
 
 		/**
 		 * @brief Set pending callback.

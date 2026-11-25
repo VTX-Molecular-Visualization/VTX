@@ -75,7 +75,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
 		const auto & selection = App::REG().get<App::System::Selection>( system );
-		for ( size_t j : selection.atoms )
+		for ( auto it = selection.atoms.begin(); it != selection.atoms.end(); ++it )
 		{
 			count++;
 		}
@@ -99,7 +99,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
 		const auto & selection = App::REG().get<App::System::Selection>( system );
-		for ( size_t j : selection.atoms )
+		for ( auto it = selection.atoms.begin(); it != selection.atoms.end(); ++it )
 		{
 			count++;
 		}
@@ -117,7 +117,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
 		const auto & selection = App::REG().get<App::System::Selection>( system );
-		for ( size_t j : selection.atoms )
+		for ( auto it = selection.atoms.begin(); it != selection.atoms.end(); ++it )
 		{
 			count++;
 		}
@@ -136,7 +136,6 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to X angstrom", "[extendSelec
 	auto & selection3 = App::REG().get<App::System::Selection>( system3 );
 	auto & visible3	  = App::REG().get<App::System::Visibility>( system3 );
 	auto & selection4 = App::REG().get<App::System::Selection>( system4 );
-	auto & visible4	  = App::REG().get<App::System::Visibility>( system4 );
 
 	// Testing extendSelectionFromSelec 4.0 angstrom
 	selection3.atoms.set( 0 );
@@ -201,7 +200,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelecti
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
 		const auto & selection = App::REG().get<App::System::Selection>( system );
-		for ( size_t j : selection.atoms )
+		for ( auto it = selection.atoms.begin(); it != selection.atoms.end(); ++it )
 		{
 			count++;
 		}
@@ -220,7 +219,6 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelecti
 	auto & selection3 = App::REG().get<App::System::Selection>( system3 );
 	auto & visible3	  = App::REG().get<App::System::Visibility>( system3 );
 	auto & selection4 = App::REG().get<App::System::Selection>( system4 );
-	auto & visible4	  = App::REG().get<App::System::Visibility>( system4 );
 
 	Util::Math::BitSet			  expected1 = Util::Math::BitSet( 10, false );
 	Util::Math::BitSet			  expected2 = Util::Math::BitSet( 5, false );
@@ -264,7 +262,7 @@ TEST_CASE( "VTX_APP - Selection - RevertSelection", "[revertSelection][selection
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
 	{
 		const auto & selection = App::REG().get<App::System::Selection>( system );
-		for ( size_t j : selection.atoms )
+		for ( auto it = selection.atoms.begin(); it != selection.atoms.end(); ++it )
 		{
 			count++;
 		}
@@ -356,6 +354,13 @@ TEST_CASE( "VTX_APP - Selection - SetSelected maps items to atom selections", "[
 		CHECK( updatedSelection.atoms.count() == 2 );
 
 		ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, firstAtom, false, true );
+
+		CHECK_FALSE( REG().get<System::Selection>( system ).atoms.test( firstAtom ) );
+		CHECK( REG().get<System::Selection>( system ).atoms.test( secondAtom ) );
+		CHECK( REG().get<System::Selection>( system ).atoms.count() == 1 );
+
+		ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, firstAtom, true, true );
+		ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system, firstAtom, false, false );
 
 		CHECK_FALSE( REG().get<System::Selection>( system ).atoms.test( firstAtom ) );
 		CHECK( REG().get<System::Selection>( system ).atoms.test( secondAtom ) );

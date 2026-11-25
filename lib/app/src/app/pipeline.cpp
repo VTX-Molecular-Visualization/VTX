@@ -62,6 +62,8 @@ namespace VTX::App
 					)
 					&& succeeded;
 
+		succeeded = _step( "Thread waiters update", []() { VTX::App::THREAD().updateWaiters(); } ) && succeeded;
+
 		if ( succeeded )
 		{
 			_flushRepeatedError();

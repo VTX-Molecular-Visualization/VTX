@@ -42,6 +42,7 @@ class VTXToolExampleRecipe(ConanFile):
         tc.cache_variables["VTX_UI_QT"] = "1"
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
         tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")
+        tc.cache_variables["VTX_BUILD_TESTS"] = "ON" if self.options.test else "OFF"
         tc.generate()
 
     def build(self):

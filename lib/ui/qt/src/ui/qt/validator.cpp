@@ -23,8 +23,19 @@ namespace VTX::UI::QT
 				return State::Invalid;
 			}
 		}
-		// const std::string str = input.toStdString();
-		// const uint64_t unused = std::stoull( str );
+
+		bool		   ok	 = false;
+		const uint64_t value = input.toULongLong( &ok );
+		// Out of uint64 range or above max: typing more digits can only make it bigger.
+		if ( not ok || value > _max )
+		{
+			return State::Invalid;
+		}
+		// Below min: may still become valid while the user is typing.
+		if ( value < _min )
+		{
+			return State::Intermediate;
+		}
 		return State::Acceptable;
 	}
 } // namespace VTX::UI::QT

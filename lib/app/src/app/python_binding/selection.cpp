@@ -158,22 +158,51 @@ namespace VTX::App::PythonBinding
 	{
 		const pybind11::module_ & module = p_vtxModule.pyModule();
 
-		VTX::PythonBinding::Helper::declareEnum<SystemItem>( module, "SYSTEM_ITEM" );
-		VTX::PythonBinding::Helper::declareEnum<App::System::E_SELECTION_STATE>( module, "SELECTION_STATE" );
+		VTX::PythonBinding::Helper::declareEnum<SystemItem>( module, "SYSTEM_ITEM", "Topology item type." );
+		VTX::PythonBinding::Helper::declareEnum<App::System::E_SELECTION_STATE>(
+			module, "SELECTION_STATE", "Selection state of an item."
+		);
 
-		pybind11::class_<SelectionView>( module, "Selection", pybind11::module_local() )
-			.def( "getSystems", synchronized( &SelectionView::getSystems ) )
-			.def( "getAtoms", synchronized( &SelectionView::getAtoms ), pybind11::arg( "system" ) )
-			.def( "getResidues", synchronized( &SelectionView::getResidues ), pybind11::arg( "system" ) )
-			.def( "getChains", synchronized( &SelectionView::getChains ), pybind11::arg( "system" ) )
-			.def( "getCategories", synchronized( &SelectionView::getCategories ), pybind11::arg( "system" ) )
-			.def( "isEmpty", synchronized( &SelectionView::isEmpty ), pybind11::arg( "system" ) )
-			.def( "show", &SelectionView::show, "Show the current selection." )
-			.def( "hide", &SelectionView::hide, "Hide the current selection." )
+		pybind11::class_<SelectionView>(
+			module, "Selection", "Current selection, available as vtx.selection.", pybind11::module_local()
+		)
+			.def( "getSystems", synchronized( &SelectionView::getSystems ), "Return the systems with a selection." )
+			.def(
+				"getAtoms",
+				synchronized( &SelectionView::getAtoms ),
+				"Return the selected atoms of a system.",
+				pybind11::arg( "system" )
+			)
+			.def(
+				"getResidues",
+				synchronized( &SelectionView::getResidues ),
+				"Return the residues with at least one selected atom.",
+				pybind11::arg( "system" )
+			)
+			.def(
+				"getChains",
+				synchronized( &SelectionView::getChains ),
+				"Return the chains with at least one selected atom.",
+				pybind11::arg( "system" )
+			)
+			.def(
+				"getCategories",
+				synchronized( &SelectionView::getCategories ),
+				"Return the categories with at least one selected atom.",
+				pybind11::arg( "system" )
+			)
+			.def(
+				"isEmpty",
+				synchronized( &SelectionView::isEmpty ),
+				"Whether nothing is selected in a system.",
+				pybind11::arg( "system" )
+			)
+			.def( "show", &SelectionView::show, "Show the selection." )
+			.def( "hide", &SelectionView::hide, "Hide the selection." )
 			.def(
 				"setRepresentation",
 				pybind11::overload_cast<const std::string &>( &SelectionView::setRepresentation, pybind11::const_ ),
-				"Set the representation preset of the current selection.",
+				"Apply a representation preset by name to the selection.",
 				pybind11::arg( "name" )
 			)
 			.def(
@@ -181,21 +210,21 @@ namespace VTX::App::PythonBinding
 				pybind11::overload_cast<const Preset::RepresentationHandle &>(
 					&SelectionView::setRepresentation, pybind11::const_
 				),
-				"Set the representation preset of the current selection.",
+				"Apply a representation preset to the selection.",
 				pybind11::arg( "preset" )
 			)
 			.def(
 				"setColorScheme",
 				&SelectionView::setColorScheme,
-				"Set the color scheme of the current selection. A color index is required for custom schemes.",
+				"Set the color scheme of the selection. A color index is required for custom schemes.",
 				pybind11::arg( "scheme" ),
 				pybind11::arg( "colorIndex" ) = pybind11::none()
 			);
 		module.attr( "selection" ) = SelectionView {};
 
-		p_vtxModule.bindAction<App::Action::Selection::SelectAll>( "selectAll", "Select all loaded systems." );
+		p_vtxModule.bindAction<App::Action::Selection::SelectAll>( "selectAll", "Select all systems." );
 		p_vtxModule.bindAction<App::Action::Selection::Clear>(
-			"clearSelection", "Clear the current selection on all loaded systems."
+			"clearSelection", "Clear the selection of all systems."
 		);
 	}
 } // namespace VTX::App::PythonBinding

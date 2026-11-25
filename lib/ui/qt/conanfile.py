@@ -79,7 +79,7 @@ def install_system_dependencies(p_conanFile: ConanFile) -> None:
 def config_options_qt(p_conanFile : ConanFile):
     # Package options.
     p_conanFile.options["qt"].shared = True
-    p_conanFile.options["qt"].opengl = "no"
+    p_conanFile.options["qt"].opengl = "desktop"
     p_conanFile.options["qt"].with_vulkan = False
     p_conanFile.options["qt"].openssl = True
     p_conanFile.options["qt"].with_pcre2 = True
@@ -188,7 +188,7 @@ def generate_qt(p_conanFile : ConanFile):
     destDir = str(_editable_runtime_root(p_conanFile))
 
     if p_conanFile.settings.os == "Windows":
-        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll" ]
+        binFiles = [ "Qt6Core*.dll", "Qt6Gui*.dll", "Qt6Widgets*.dll", "Qt6OpenGL*.dll" ]
         for file in binFiles:
             p_conanFile.output.highlight(f"Copying {file} from Qt bin directory to {destDir}")
             copy(p_conanFile, file, qtBinDir, destDir)
@@ -242,12 +242,8 @@ class VTXUiQtRecipe(ConanFile):
         self.requires("vtx_python_binding/1.0")
         self.requires("qt/6.12.0", transitive_headers=True)
         if self.settings.os == "Linux":
-            self.requires("xkbcommon/1.13.1", force=True)
-            self.requires("fontconfig/2.17.1", force=True)
-            self.requires("freetype/2.14.3", force=True)
-            self.requires("libffi/3.4.8", force=True)
-            self.requires("wayland/1.24.0", force=True)
-        
+            self.requires("wayland/system", override=True) # System libwayland-client, see conan/wayland/conanfile.py.
+
     def config_options(self):
         if self.settings.os == "Windows":
             del self.options.fPIC            

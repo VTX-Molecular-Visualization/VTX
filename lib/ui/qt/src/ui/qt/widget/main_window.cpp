@@ -11,7 +11,6 @@
 #include "ui/qt/dock_widget/graphics_configs.hpp"
 #include "ui/qt/dock_widget/inspector.hpp"
 #include "ui/qt/dock_widget/options.hpp"
-#include "ui/qt/dock_widget/python_editor.hpp"
 #include "ui/qt/dock_widget/representations.hpp"
 #include "ui/qt/dock_widget/scene.hpp"
 #include "ui/qt/dock_widget/sequences.hpp"
@@ -28,6 +27,7 @@
 #include "ui/qt/tool_bar/file.hpp"
 #include "ui/qt/tool_bar/selection.hpp"
 #include "ui/qt/tool_bar/snapshot.hpp"
+#include "ui/qt/widget/python_editor.hpp"
 #include <QApplication>
 #include <QMessageBox>
 #include <QMimeData>
@@ -87,11 +87,10 @@ namespace VTX::UI::QT::Widget
 		// Main area : opengl widget.
 		auto * renderer = Helper::makeQObject<Renderer>( this );
 		setCentralWidget( renderer );
+		Helper::makeQObject<PythonEditor>( renderer )->hide();
 
 		// Dock widgets.
 		auto * dwSequence = createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
-		auto * dwPython	  = createDockWidget<DockWidget::PythonEditor>( Qt::TopDockWidgetArea );
-		dwPython->hide();
 		dwSequence->raise();
 
 		auto * dwScene = createDockWidget<DockWidget::Scene>( Qt::LeftDockWidgetArea );
@@ -214,25 +213,11 @@ namespace VTX::UI::QT::Widget
 		restoreState( _defaultState );
 	}
 
-	uintptr_t MainWindow::getNativeSurface() const
+	OpenGLRenderer * MainWindow::getOpenGLRenderer() const
 	{
 		const auto * widget = qobject_cast<const Renderer *>( centralWidget() );
 		assert( widget != nullptr );
-		return widget->getNativeSurface();
-	}
-
-	uintptr_t MainWindow::getNativeDisplay() const
-	{
-		const auto * widget = qobject_cast<const Renderer *>( centralWidget() );
-		assert( widget != nullptr );
-		return widget->getNativeDisplay();
-	}
-
-	uint8_t MainWindow::getNativePlatform() const
-	{
-		const auto * widget = qobject_cast<const Renderer *>( centralWidget() );
-		assert( widget != nullptr );
-		return widget->getNativePlatform();
+		return widget->getOpenGLRenderer();
 	}
 
 	void MainWindow::populateViewMenu( QMenu & p_menu )

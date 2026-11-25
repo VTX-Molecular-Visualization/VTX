@@ -1,5 +1,4 @@
 #include "ui/qt/widget/tree/scripts.hpp"
-#include "ui/qt/events.hpp"
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
@@ -10,7 +9,6 @@
 #include <app/services.hpp>
 #include <app/session.hpp>
 #include <util/action_manager.hpp>
-#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -116,54 +114,59 @@ namespace VTX::UI::QT::Widget::Tree
 		const QModelIndex scriptsIndex = _proxyModel->mapFromSource( _fileModel->index( scriptsPath ) );
 		setExpanded( scriptsIndex, SETTINGS().value( SETTING_KEY_SCRIPTS_EXPANDED, true ).toBool() );
 
-		connect( this, &QTreeView::clicked, this, &Scripts::_selectScript );
 		connect( this, &QTreeView::doubleClicked, this, &Scripts::_runScript );
-		connect( this,
-				 &QTreeView::expanded,
-				 this,
-				 [ this, scriptsPath ]( const QModelIndex & p_index )
-				 {
-					 if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
-					 {
-						 SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, true );
-					 }
-				 } );
-		connect( this,
-				 &QTreeView::collapsed,
-				 this,
-				 [ this, scriptsPath ]( const QModelIndex & p_index )
-				 {
-					 if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
-					 {
-						 SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, false );
-					 }
-				 } );
 		connect(
-			_fileModel, &QFileSystemModel::directoryLoaded, this, [ this ]( const QString & ) { updateGeometry(); } );
-		connect( _proxyModel,
-				 &QAbstractItemModel::rowsInserted,
-				 this,
-				 [ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); } );
-		connect( _proxyModel,
-				 &QAbstractItemModel::rowsRemoved,
-				 this,
-				 [ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); } );
+			this,
+			&QTreeView::expanded,
+			this,
+			[ this, scriptsPath ]( const QModelIndex & p_index )
+			{
+				if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
+				{
+					SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, true );
+				}
+			}
+		);
+		connect(
+			this,
+			&QTreeView::collapsed,
+			this,
+			[ this, scriptsPath ]( const QModelIndex & p_index )
+			{
+				if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
+				{
+					SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, false );
+				}
+			}
+		);
+		connect(
+			_fileModel, &QFileSystemModel::directoryLoaded, this, [ this ]( const QString & ) { updateGeometry(); }
+		);
+		connect(
+			_proxyModel,
+			&QAbstractItemModel::rowsInserted,
+			this,
+			[ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); }
+		);
+		connect(
+			_proxyModel,
+			&QAbstractItemModel::rowsRemoved,
+			this,
+			[ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); }
+		);
 	}
 
-	void Scripts::_selectScript( const QModelIndex & p_index )
+	QItemSelectionModel::SelectionFlags Scripts::selectionCommand(
+		const QModelIndex &	 p_index,
+		const QEvent * const p_event
+	) const
 	{
-		if ( not p_index.isValid() )
+		if ( p_index.isValid() && _fileModel->isDir( _proxyModel->mapToSource( p_index ) ) )
 		{
-			return;
+			return QItemSelectionModel::NoUpdate;
 		}
 
-		const QModelIndex sourceIndex = _proxyModel->mapToSource( p_index );
-		if ( _fileModel->isDir( sourceIndex ) )
-		{
-			return;
-		}
-
-		App::HUB().trigger<Events::ScriptSelected>( FilePath( _fileModel->filePath( sourceIndex ).toStdString() ) );
+		return QTreeView::selectionCommand( p_index, p_event );
 	}
 
 	void Scripts::_runScript( const QModelIndex & p_index )
@@ -180,6 +183,7 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 
 		App::ACTION().execute<App::Action::IO::RunPythonScript>(
-			FilePath( _fileModel->filePath( sourceIndex ).toStdString() ) );
+			FilePath( _fileModel->filePath( sourceIndex ).toStdString() )
+		);
 	}
 } // namespace VTX::UI::QT::Widget::Tree

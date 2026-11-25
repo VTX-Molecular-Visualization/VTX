@@ -17,6 +17,7 @@
 #include <renderer/renderer.hpp>
 #include <string>
 #include <util/chrono.hpp>
+#include <util/exceptions.hpp>
 #include <util/logger.hpp>
 #include <util/resolution.hpp>
 
@@ -199,7 +200,11 @@ namespace VTX::App::Action::IO
 	{
 		const Util::Resolution resolution = { "Export", p_width, p_height };
 		std::vector<std::byte> image	  = RENDERER().snapshot( resolution, p_backgroundOpacity );
-		const FilePath		   path		  = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
+		if ( image.size() != p_width * p_height * 4 )
+		{
+			throw GraphicException( "Snapshot unavailable: no image data returned by the graphics backend." );
+		}
+		const FilePath path = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
 		_writeSnapshotMetadata( path );
 
 		VTX_INFO( "Image saved: {}", fmt::format( fmt::runtime( std::string( LOG_LINK_FORMAT ) ), path.string() ) );

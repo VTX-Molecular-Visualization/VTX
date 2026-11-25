@@ -10,3 +10,4 @@ conan editable add lib/util
 conan editable add tool/example
 conan editable add tool/mdprep
 conan editable add tool/topology_editor
+conan export lib/ui/qt/conan/wayland

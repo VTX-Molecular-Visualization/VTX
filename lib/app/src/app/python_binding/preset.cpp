@@ -92,33 +92,37 @@ namespace VTX::App::PythonBinding
 		)
 		{
 			py::class_<PresetHandle<T>> binding(
-				p_vtxModule.pyModule(), p_className, "Reference to an application preset.", py::module_local()
+				p_vtxModule.pyModule(), p_className, "Handle to a named preset.", py::module_local()
 			);
 			bindIdentity( binding )
-				.def_property_readonly( "name", &_getName<T> )
+				.def_property_readonly( "name", &_getName<T>, "Preset name." )
 				.def( "rename", &_rename<T>, "Rename the preset.", py::arg( "name" ) )
-				.def( "duplicate", &_duplicate<T>, "Duplicate the preset.", py::arg( "name" ) = py::none() )
+				.def(
+					"duplicate",
+					&_duplicate<T>,
+					"Duplicate the preset, with an optional name for the copy.",
+					py::arg( "name" ) = py::none()
+				)
 				.def( "delete", &_deletePreset<T>, "Delete the preset." )
 				.def(
 					"apply",
 					[]( const PresetHandle<T> & p_preset )
 					{ Preset::executePresetAction<Action::Preset::Apply<T>>( p_preset ); },
-					"Apply the preset globally: to the scene for color layouts and graphics configs, to all systems "
-					"for representations."
+					"Apply the preset to the scene, or to all systems for representations."
 				);
 
 			p_vtxModule.def(
 				p_getFunctionName,
 				[ p_typeName ]( const std::string & p_name ) { return _getPreset<T>( p_name, p_typeName ); },
-				"Get a preset by name.",
+				"Return a preset by name. Raises ValueError if not found.",
 				VTX::PythonBinding::Wrapper::Arg( "name" )
 			);
-			p_vtxModule.def( p_getAllFunctionName, &_getPresets<T>, "Get all presets of this type." );
+			p_vtxModule.def( p_getAllFunctionName, &_getPresets<T>, "Return all presets of this type." );
 			p_vtxModule.def(
 				p_createFunctionName,
 				[]( const std::optional<std::string_view> p_name )
 				{ executeAction<Action::Preset::Add<T>>( std::optional<std::string>( p_name ) ); },
-				"Create a preset.",
+				"Create a preset with default values.",
 				VTX::PythonBinding::Wrapper::VArg<std::optional<std::string_view>>(
 					"name", std::optional<std::string_view>()
 				)

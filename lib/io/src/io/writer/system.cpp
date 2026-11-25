@@ -342,7 +342,6 @@ namespace VTX::IO::Writer
 
 			// We fill the write destination at the very end so if we stopped due to the stoptoken, nothing get written
 			writer.setWriteDestination( std::move( p_args.destination ) );
-			writer.setWriteFormat( p_args.format );
 			writer.close();
 		}
 	} // namespace

@@ -1,6 +1,7 @@
 option(VTX_ENABLE_NATIVE_OPTIMIZATIONS "Enable CPU-specific release optimizations for local builds." OFF)
 option(VTX_ENABLE_INTERPROCEDURAL_OPTIMIZATION "Enable interprocedural optimization for VTX targets." OFF)
 option(VTX_ENABLE_PCH "Enable precompiled headers for VTX targets." ON)
+option(VTX_BUILD_TESTS "Build VTX test executables." ON)
 set(_vtx_clang_tidy_levels OFF WARN ERR)
 set(VTX_CLANG_TIDY "OFF" CACHE STRING "clang-tidy analysis level for VTX targets (OFF, WARN, ERR).")
 if(NOT VTX_CLANG_TIDY IN_LIST _vtx_clang_tidy_levels)
@@ -79,6 +80,15 @@ function(vtx_configure_target p_target)
 		cmake_language(EVAL CODE "cmake_language(DEFER CALL _vtx_exclude_vendor_sources_from_pch [[${p_target}]])")
 	endif()
 
+	# Warnings as errors (/WX and -Werror).
+	set_property(TARGET ${p_target} PROPERTY COMPILE_WARNING_AS_ERROR ON)
+
+	# Hidden symbol visibility by default, as on MSVC and as recommended by pybind11 (its namespace is hidden).
+	set_target_properties(${p_target} PROPERTIES
+		CXX_VISIBILITY_PRESET hidden
+		VISIBILITY_INLINES_HIDDEN ON
+	)
+
 	# Compiler-specific options.
 	if(APPLE AND CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 		target_compile_options(${p_target} PRIVATE
@@ -98,7 +108,6 @@ function(vtx_configure_target p_target)
 		# General.
 		target_compile_options(${p_target} PRIVATE 
 			$<$<COMPILE_LANGUAGE:CXX>:/W3>              # Warning level 3
-			$<$<COMPILE_LANGUAGE:CXX>:/WX>              # Warnings as errors
 			$<$<COMPILE_LANGUAGE:CXX>:/MP>		        # Multicore compilation.
 			$<$<COMPILE_LANGUAGE:CXX>:/sdl>             # Security Checks
 			$<$<COMPILE_LANGUAGE:CXX>:/utf-8>           # UTF-8 encoding

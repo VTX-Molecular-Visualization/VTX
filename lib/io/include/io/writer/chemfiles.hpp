@@ -218,12 +218,6 @@ namespace VTX::IO::Writer
 		void setWriteDestination( FilePath ) noexcept;
 
 		/**
-		 * @brief Tells the writer in which format to write structural data. If left empty or set to none, the format
-		 * will be guessed from the file's extension.
-		 */
-		void setWriteFormat( E_FILE_FORMATS ) noexcept;
-
-		/**
 		 * @brief Create/retrieve the system that will be written eventually.
 		 * @return The system to configure
 		 */

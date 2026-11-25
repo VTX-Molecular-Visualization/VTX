@@ -54,8 +54,8 @@ namespace VTX::Tool::Mdprep
 		  private:
 			using EngineCollection
 				= std::array<std::optional<VTX::Tool::Mdprep::ui::MdEngine>, VTX::Tool::Mdprep::ui::MD_ENGINE_NUMBER>;
-			[[maybe_unused]] QComboBox * _w_mdEngine	= nullptr;
-			[[maybe_unused]] QWidget *	 _formContainer = nullptr;
+			// QComboBox * _w_mdEngine	= nullptr;
+			// QWidget *	 _formContainer = nullptr;
 
 			VTX::Tool::Mdprep::Gateway::MdParameters		  _paramaeters;
 			std::optional<VTX::Tool::Mdprep::ui::ScreenForms> _screen;

@@ -96,126 +96,6 @@ namespace VTX::IO::Writer
 
 	namespace
 	{
-		void figureFormat( const FilePath & dest, E_FILE_FORMATS & format )
-		{
-			if ( not dest.has_extension() )
-			{
-				return;
-			}
-			std::string extension = dest.extension().string();
-			extension			  = VTX::Util::String::toUpper( extension );
-
-			if ( extension == ".MMCIF" )
-			{
-				format = E_FILE_FORMATS::mmcif;
-			}
-			else if ( extension == ".PDB" )
-			{
-				format = E_FILE_FORMATS::pdb;
-			}
-			else if ( extension == ".MMTF" )
-			{
-				format = E_FILE_FORMATS::mmtf;
-			}
-			else if ( extension == ".MOLDEN" )
-			{
-				format = E_FILE_FORMATS::molden;
-			}
-			else if ( extension == ".CIF" )
-			{
-				format = E_FILE_FORMATS::cif;
-			}
-			else if ( extension == ".GRO" )
-			{
-				format = E_FILE_FORMATS::gro;
-			}
-			else if ( extension == ".MOL2" )
-			{
-				format = E_FILE_FORMATS::mol2;
-			}
-			else if ( extension == ".SDf" )
-			{
-				format = E_FILE_FORMATS::sdf;
-			}
-			else if ( extension == ".SMI" )
-			{
-				format = E_FILE_FORMATS::smi;
-			}
-			else if ( extension == ".XYZ" )
-			{
-				format = E_FILE_FORMATS::xyz;
-			}
-			else if ( extension == ".CML" )
-			{
-				format = E_FILE_FORMATS::cml;
-			}
-			else if ( extension == ".CSSR" )
-			{
-				format = E_FILE_FORMATS::cssr;
-			}
-			else if ( extension == ".NC" )
-			{
-				format = E_FILE_FORMATS::nc;
-			}
-			else if ( extension == ".DCD" )
-			{
-				format = E_FILE_FORMATS::nc;
-			}
-			else if ( extension == ".LAMMPSTRJ" )
-			{
-				format = E_FILE_FORMATS::lammpstrj;
-			}
-			else if ( extension == ".ARC" )
-			{
-				format = E_FILE_FORMATS::arc;
-			}
-			else if ( extension == ".TRR" )
-			{
-				format = E_FILE_FORMATS::trr;
-			}
-			else if ( extension == ".XTC" )
-			{
-				format = E_FILE_FORMATS::xtc;
-			}
-			else if ( extension == ".TNG" )
-			{
-				format = E_FILE_FORMATS::tng;
-			}
-			else if ( extension == ".TRJ" )
-			{
-				format = E_FILE_FORMATS::trj;
-			}
-		}
-
-		const char * string( const E_FILE_FORMATS & format ) noexcept
-		{
-			switch ( format )
-			{
-			case E_FILE_FORMATS::pdb: return "PDB";
-			case E_FILE_FORMATS::mmcif: return "mmCIF";
-			case E_FILE_FORMATS::mmtf: return "MMTF";
-			case E_FILE_FORMATS::molden: return "Molden";
-			case E_FILE_FORMATS::cif: return "CIF";
-			case E_FILE_FORMATS::gro: return "GRO";
-			case E_FILE_FORMATS::mol2: return "MOL2";
-			case E_FILE_FORMATS::sdf: return "SDF";
-			case E_FILE_FORMATS::smi: return "SMI";
-			case E_FILE_FORMATS::xyz: return "XYZ";
-			case E_FILE_FORMATS::cml: return "CML";
-			case E_FILE_FORMATS::cssr: return "CSSR";
-			case E_FILE_FORMATS::nc: return "Amber NetCDF";
-			case E_FILE_FORMATS::dcd: return "DCD";
-			case E_FILE_FORMATS::lammpstrj: return "LAMMPS";
-			case E_FILE_FORMATS::arc: return "Tinker";
-			case E_FILE_FORMATS::trr: return "TRR";
-			case E_FILE_FORMATS::xtc: return "XTC";
-			case E_FILE_FORMATS::tng: return "TNG";
-			case E_FILE_FORMATS::trj: return "TRJ";
-			default: break;
-			}
-			return "";
-		}
-
 		template<typename T>
 		inline void setProperty( T & cf, const std::string & key, const std::string & value )
 		{ cf.set( key, value ); }
@@ -262,8 +142,8 @@ namespace VTX::IO::Writer
 
 		void writeFile( const FilePath & dest, SystemImpl & system )
 		{
-			// TODO I disabled the format things as chemfiles has a format guessing adequat enough
-			::chemfiles::Trajectory cf_traj( dest.string(), 'w' /*, string( format )*/ );
+			// The format is guessed by chemfiles from the file extension.
+			::chemfiles::Trajectory cf_traj( dest.string(), 'w' );
 
 			std::unordered_map<AtomId, size_t> atomIdCorrespondaceTable; // We need a correspondance table between the
 																		 // ID that chemfiles accepts and the ID we
@@ -325,13 +205,10 @@ namespace VTX::IO::Writer
 	class ChemfilesTrajectory::Impl
 	{
 		FilePath	   _dest;
-		E_FILE_FORMATS _format = E_FILE_FORMATS::none;
 		SystemImpl	   _system;
 
 	  public:
 		void setWriteDestination( FilePath && p_ ) noexcept { _dest = std::move( p_ ); }
-
-		void setWriteFormat( const E_FILE_FORMATS p_ ) noexcept { _format = p_; }
 
 		System system() noexcept { return _system; }
 
@@ -352,12 +229,6 @@ namespace VTX::IO::Writer
 			{
 				return;
 			}
-			// TODO I disabled the format things as chemfiles has a format guessing adequat enough
-			// if ( _format == E_FILE_FORMATS::none )
-			//	figureFormat( _dest, _format );
-			// if ( _format == E_FILE_FORMATS::none )
-			//	return;
-
 			writeFile( _dest, _system );
 			_dest.clear();
 		}
@@ -630,8 +501,6 @@ namespace VTX::IO::Writer
 	void ChemfilesTrajectory::close() { _->close(); }
 
 	void ChemfilesTrajectory::setWriteDestination( FilePath p_ ) noexcept { _->setWriteDestination( std::move( p_ ) ); }
-
-	void ChemfilesTrajectory::setWriteFormat( const E_FILE_FORMATS p_ ) noexcept { _->setWriteFormat( p_ ); }
 
 	System ChemfilesTrajectory::system() noexcept { return _->system(); }
 

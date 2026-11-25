@@ -74,6 +74,11 @@ namespace VTX::UI::QT
 		void _postQtStartup();
 
 		/**
+		 * @brief Init OpenGL context with QOpenGLContext.
+		 */
+		bool _setQtOpenGL();
+
+		/**
 		 * @brief Run a frame.
 		 */
 		void _scheduleFrame();

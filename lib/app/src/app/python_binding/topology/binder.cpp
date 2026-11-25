@@ -10,9 +10,15 @@ namespace VTX::App::PythonBinding
 	{
 		pybind11::module_ & module = p_vtxModule.pyModule();
 
-		VTX::PythonBinding::Helper::declareEnum<Core::ChemDB::Residue::SYMBOL>( module, "RESIDUE_SYMBOL" );
-		VTX::PythonBinding::Helper::declareEnum<Core::ChemDB::Atom::SYMBOL>( module, "ATOM_SYMBOL" );
-		VTX::PythonBinding::Helper::declareEnum<Core::ChemDB::Atom::TYPE>( module, "ATOM_TYPE" );
+		VTX::PythonBinding::Helper::declareEnum<Core::ChemDB::Residue::SYMBOL>(
+			module, "RESIDUE_SYMBOL", "Residue type."
+		);
+		VTX::PythonBinding::Helper::declareEnum<Core::ChemDB::Atom::SYMBOL>(
+			module, "ATOM_SYMBOL", "Chemical element."
+		);
+		VTX::PythonBinding::Helper::declareEnum<Core::ChemDB::Atom::TYPE>(
+			module, "ATOM_TYPE", "Atom type (normal, solvent or ion)."
+		);
 
 		Topology::bindCollections( module );
 		Topology::bindSystem( p_vtxModule, module );

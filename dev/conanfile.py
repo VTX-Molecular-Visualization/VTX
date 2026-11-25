@@ -1,8 +1,6 @@
-import os
 from conan import ConanFile
 from conan.errors import ConanInvalidConfiguration
 from conan.tools.cmake import cmake_layout, CMake, CMakeToolchain
-from conan.tools.files import copy
 from conan.tools.system.package_manager import Apt
 from pathlib import Path
 import importlib.util
@@ -78,15 +76,13 @@ class VTXRecipe(ConanFile):
     def requirements(self):
         self.requires("glm/1.0.3")
         self.requires("spdlog/1.17.0")
-        self.requires("fmt/12.2.0", force=True)
+        self.requires("fmt/12.1.0")
         self.requires("magic_enum/0.9.8")
         self.requires("cpr/1.14.2")
         self.requires("catch2/3.16.1")
         self.requires("chemfiles/2026.02.5")
         self.requires("argparse/3.2")
         if self.options.renderer:
-            self.requires("sdl/3.4.16")
-            self.requires("imgui/1.92.9b")
             self.requires("ktx/4.4.2")
         self.requires("stb/cci.20261021", force=True)
         self.requires("tinyexr/1.0.7")
@@ -95,9 +91,11 @@ class VTXRecipe(ConanFile):
         self.requires("assimp/6.0.5")
         self.requires("minizip/1.3.2", force=True)
         if self.options.python_binding:
-            self.requires("pybind11/3.0.1")
+            self.requires("pybind11/3.1.0")
         if self.options.ui_qt:
             self.requires("qt/6.12.0")
+            if self.settings.os == "Linux":
+                self.requires("wayland/system", override=True) # See lib/ui/qt/conan/wayland.
         if self.options.tool_mdprep:
             self.requires("gromacs/2026.0.1")
         if self.options.tool_structalign:
@@ -110,12 +108,6 @@ class VTXRecipe(ConanFile):
         if self.options.python_binding:
             self.requires("cpython/{}".format(str(self._python_version())))
             self.requires("mpdecimal/4.0.0", force=True)
-        if self.settings.os == "Linux":
-            self.requires("xkbcommon/1.13.1", force=True)
-            self.requires("fontconfig/2.17.1", override=True)
-            self.requires("freetype/2.14.3", force=True)
-            self.requires("libffi/3.4.8", force=True)
-            self.requires("wayland/1.24.0", force=True)
 
     def system_requirements(self):
         if self.options.renderer:
@@ -161,12 +153,6 @@ class VTXRecipe(ConanFile):
             tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = mdprep_module.runtime_root(self)
         
         tc.generate()
-
-        if self.options.renderer:
-            copy(self, "*sdl3*", os.path.join(self.dependencies["imgui"].package_folder,
-                "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
-            copy(self, "*opengl3*", os.path.join(self.dependencies["imgui"].package_folder,
-                "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
 
         if self.options.python_binding:
             python_binding_module.do_python_copies(self, self._python_version())

@@ -61,10 +61,15 @@ namespace VTX::UI::QT::Widget
 		 */
 		void resetLayout();
 
-		uintptr_t getNativeSurface() const;
-		uintptr_t getNativeDisplay() const;
-		uint8_t	  getNativePlatform() const;
-		void	  populateViewMenu( QMenu & );
+		/**
+		 * @brief Get renderer window.
+		 */
+		OpenGLRenderer * getOpenGLRenderer() const;
+
+		/**
+		 * @brief Fill menu with available widgets to show/hide.
+		 */
+		void populateViewMenu( QMenu & );
 
 		/**
 		 * @brief Override "view" context menu.

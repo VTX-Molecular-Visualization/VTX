@@ -17,6 +17,7 @@ endif()
 find_package(Qt6 CONFIG COMPONENTS Core REQUIRED)
 find_package(Qt6 CONFIG COMPONENTS Gui REQUIRED)
 find_package(Qt6 CONFIG COMPONENTS Widgets REQUIRED)
+find_package(Qt6 CONFIG COMPONENTS OpenGLWidgets REQUIRED)
 
 include("./cmake/library.cmake")
 

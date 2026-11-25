@@ -144,7 +144,7 @@ namespace VTX::App::PythonBinding::Topology
 	{
 		bindIdentity(
 			bindState<SystemItem::SYSTEM>( bindStyle(
-				py::class_<System>( p_module, "System", py::module_local() ),
+				py::class_<System>( p_module, "System", "Handle to a loaded system.", py::module_local() ),
 				[]( const System & p_system ) { return Target { p_system.entity, SystemItem::SYSTEM, RangeList() }; }
 			) )
 		)
@@ -174,80 +174,96 @@ namespace VTX::App::PythonBinding::Topology
 				{ executeSystemAction<App::Action::Scene::DeleteSystem>( p_system.entity ); },
 				"Delete this system from the scene."
 			)
-			.def_property_readonly( "trajectory", synchronized( &getTrajectory ) )
+			.def_property_readonly( "trajectory", synchronized( &getTrajectory ), "Trajectory of the system." )
 			.def_property_readonly(
 				"currentFrame",
-				[]( const System & p_system ) { return PythonBinding::getCurrentFrame( p_system.entity ); }
+				[]( const System & p_system ) { return PythonBinding::getCurrentFrame( p_system.entity ); },
+				"Displayed trajectory frame."
 			)
 			.def_property_readonly(
 				"name",
 				synchronized(
 					[]( const System & p_system ) -> const std::string & { return getMetadata( p_system.entity ).name; }
-				)
+				),
+				"System name."
 			)
 			.def(
 				"setName",
 				[]( const System & p_system, const std::string & p_name )
 				{ executeSystemAction<App::Action::System::SetName>( p_system.entity, p_name ); },
+				"Rename the system.",
 				py::arg( "name" )
 			)
 			.def_property_readonly(
 				"position",
-				synchronized( []( const System & p_system ) { return getTransform( p_system.entity ).getPosition(); } )
+				synchronized( []( const System & p_system ) { return getTransform( p_system.entity ).getPosition(); } ),
+				"Position in world space."
 			)
 			.def_property_readonly(
 				"rotation",
-				synchronized( []( const System & p_system ) { return getTransform( p_system.entity ).getRotation(); } )
+				synchronized( []( const System & p_system ) { return getTransform( p_system.entity ).getRotation(); } ),
+				"Rotation quaternion."
 			)
 			.def_property_readonly(
 				"scale",
-				synchronized( []( const System & p_system ) { return getTransform( p_system.entity ).getScale(); } )
+				synchronized( []( const System & p_system ) { return getTransform( p_system.entity ).getScale(); } ),
+				"Scale factors."
 			)
 			.def(
 				"setPosition",
 				[]( const System & p_system, const Vec3f & p_position )
 				{ executeSystemAction<App::Action::System::SetPosition>( p_system.entity, p_position ); },
+				"Set the position in world space.",
 				py::arg( "position" )
 			)
 			.def(
 				"setRotation",
 				[]( const System & p_system, const Quatf & p_rotation )
 				{ executeSystemAction<App::Action::System::SetRotation>( p_system.entity, p_rotation ); },
+				"Set the rotation quaternion.",
 				py::arg( "rotation" )
 			)
 			.def(
 				"setScale",
 				[]( const System & p_system, const Vec3f & p_scale )
 				{ executeSystemAction<App::Action::System::SetScale>( p_system.entity, p_scale ); },
+				"Set the scale factors.",
 				py::arg( "scale" )
 			)
 			.def_property_readonly(
 				"path",
-				synchronized( []( const System & p_system ) { return getMetadata( p_system.entity ).path.string(); } )
+				synchronized( []( const System & p_system ) { return getMetadata( p_system.entity ).path.string(); } ),
+				"Source file path."
 			)
 			.def_property_readonly(
 				"pdbIdCode",
 				synchronized(
 					[]( const System & p_system ) -> const std::string &
 					{ return getMetadata( p_system.entity ).pdbIDCode; }
-				)
+				),
+				"PDB identifier."
 			)
 			.def_property_readonly(
 				"chainCount",
-				synchronized( []( const System & p_system ) { return getTopology( p_system.entity ).getChainCount(); } )
+				synchronized( []( const System & p_system )
+							  { return getTopology( p_system.entity ).getChainCount(); } ),
+				"Number of chains."
 			)
 			.def_property_readonly(
 				"residueCount",
 				synchronized( []( const System & p_system )
-							  { return getTopology( p_system.entity ).getResidueCount(); } )
+							  { return getTopology( p_system.entity ).getResidueCount(); } ),
+				"Number of residues."
 			)
 			.def_property_readonly(
 				"atomCount",
-				synchronized( []( const System & p_system ) { return getTopology( p_system.entity ).getAtomCount(); } )
+				synchronized( []( const System & p_system ) { return getTopology( p_system.entity ).getAtomCount(); } ),
+				"Number of atoms."
 			)
 			.def_property_readonly(
 				"bondCount",
-				synchronized( []( const System & p_system ) { return getTopology( p_system.entity ).getBondCount(); } )
+				synchronized( []( const System & p_system ) { return getTopology( p_system.entity ).getBondCount(); } ),
+				"Number of bonds."
 			)
 			.def_property_readonly(
 				"categoryCount",
@@ -257,7 +273,8 @@ namespace VTX::App::PythonBinding::Topology
 						getTopology( p_system.entity );
 						return toUnderlying( Core::ChemDB::Category::TYPE::COUNT );
 					}
-				)
+				),
+				"Number of residue categories."
 			)
 			.def_property_readonly(
 				"aabb",
@@ -267,17 +284,8 @@ namespace VTX::App::PythonBinding::Topology
 						getTopology( p_system.entity );
 						return Helper::AABB::get( p_system.entity );
 					}
-				)
-			)
-			.def_property_readonly(
-				"indexFirstChain",
-				synchronized(
-					[]( const System & p_system )
-					{
-						getTopology( p_system.entity );
-						return static_cast<Index>( 0 );
-					}
-				)
+				),
+				"Axis-aligned bounding box."
 			)
 			.def_property_readonly(
 				"indexLastChain",
@@ -285,19 +293,10 @@ namespace VTX::App::PythonBinding::Topology
 					[]( const System & p_system )
 					{
 						const Index count = getTopology( p_system.entity ).getChainCount();
-						return count;
+						return count == 0 ? std::nullopt : std::optional<Index>( count - 1 );
 					}
-				)
-			)
-			.def_property_readonly(
-				"indexFirstResidue",
-				synchronized(
-					[]( const System & p_system )
-					{
-						getTopology( p_system.entity );
-						return static_cast<Index>( 0 );
-					}
-				)
+				),
+				"Index of the last chain, or None if empty."
 			)
 			.def_property_readonly(
 				"indexLastResidue",
@@ -305,19 +304,10 @@ namespace VTX::App::PythonBinding::Topology
 					[]( const System & p_system )
 					{
 						const Index count = getTopology( p_system.entity ).getResidueCount();
-						return count;
+						return count == 0 ? std::nullopt : std::optional<Index>( count - 1 );
 					}
-				)
-			)
-			.def_property_readonly(
-				"indexFirstAtom",
-				synchronized(
-					[]( const System & p_system )
-					{
-						getTopology( p_system.entity );
-						return static_cast<Index>( 0 );
-					}
-				)
+				),
+				"Index of the last residue, or None if empty."
 			)
 			.def_property_readonly(
 				"indexLastAtom",
@@ -325,19 +315,10 @@ namespace VTX::App::PythonBinding::Topology
 					[]( const System & p_system )
 					{
 						const Index count = getTopology( p_system.entity ).getAtomCount();
-						return count;
+						return count == 0 ? std::nullopt : std::optional<Index>( count - 1 );
 					}
-				)
-			)
-			.def_property_readonly(
-				"indexFirstBond",
-				synchronized(
-					[]( const System & p_system )
-					{
-						getTopology( p_system.entity );
-						return static_cast<Index>( 0 );
-					}
-				)
+				),
+				"Index of the last atom, or None if empty."
 			)
 			.def_property_readonly(
 				"indexLastBond",
@@ -345,25 +326,76 @@ namespace VTX::App::PythonBinding::Topology
 					[]( const System & p_system )
 					{
 						const Index count = getTopology( p_system.entity ).getBondCount();
-						return count;
+						return count == 0 ? std::nullopt : std::optional<Index>( count - 1 );
 					}
-				)
+				),
+				"Index of the last bond, or None if empty."
 			)
-			.def( "getChains", synchronized( &getChains ), py::arg( "indices" ) = py::none() )
-			.def( "getResidues", synchronized( &getResidues ), py::arg( "indices" ) = py::none() )
-			.def( "getAtoms", synchronized( &getAtoms ), py::arg( "indices" ) = py::none() )
-			.def( "getBonds", synchronized( &getBonds ), py::arg( "indices" ) = py::none() )
-			.def( "getCategories", synchronized( &getCategories ), py::arg( "indices" ) = py::none() )
-			.def( "getChain", synchronized( &System::getChain ), py::arg( "index" ) )
-			.def( "getResidue", synchronized( &System::getResidue ), py::arg( "index" ) )
-			.def( "getAtom", synchronized( &System::getAtom ), py::arg( "index" ) )
-			.def( "getBond", synchronized( &System::getBond ), py::arg( "index" ) )
-			.def( "getCategory", synchronized( &System::getCategory ), py::arg( "index" ) );
+			.def(
+				"getChains",
+				synchronized( &getChains ),
+				"Return all chains, or those at the given indices. Raises IndexError if out of range.",
+				py::arg( "indices" ) = py::none()
+			)
+			.def(
+				"getResidues",
+				synchronized( &getResidues ),
+				"Return all residues, or those at the given indices. Raises IndexError if out of range.",
+				py::arg( "indices" ) = py::none()
+			)
+			.def(
+				"getAtoms",
+				synchronized( &getAtoms ),
+				"Return all atoms, or those at the given indices. Raises IndexError if out of range.",
+				py::arg( "indices" ) = py::none()
+			)
+			.def(
+				"getBonds",
+				synchronized( &getBonds ),
+				"Return all bonds, or those at the given indices. Raises IndexError if out of range.",
+				py::arg( "indices" ) = py::none()
+			)
+			.def(
+				"getCategories",
+				synchronized( &getCategories ),
+				"Return all categories, or those at the given indices. Raises IndexError if out of range.",
+				py::arg( "indices" ) = py::none()
+			)
+			.def(
+				"getChain",
+				synchronized( &System::getChain ),
+				"Return a chain by index. Raises IndexError if out of range.",
+				py::arg( "index" )
+			)
+			.def(
+				"getResidue",
+				synchronized( &System::getResidue ),
+				"Return a residue by index. Raises IndexError if out of range.",
+				py::arg( "index" )
+			)
+			.def(
+				"getAtom",
+				synchronized( &System::getAtom ),
+				"Return an atom by index. Raises IndexError if out of range.",
+				py::arg( "index" )
+			)
+			.def(
+				"getBond",
+				synchronized( &System::getBond ),
+				"Return a bond by index. Raises IndexError if out of range.",
+				py::arg( "index" )
+			)
+			.def(
+				"getCategory",
+				synchronized( &System::getCategory ),
+				"Return a category by index. Raises IndexError if out of range.",
+				py::arg( "index" )
+			);
 
 		p_vtxModule.def(
 			"getSystem",
 			synchronized( &getSystem ),
-			"Return a topology system handle matching given name.",
+			"Return the system matching a name, PDB identifier or file name. Raises ValueError if not found.",
 			VTX::PythonBinding::Wrapper::Arg( "name" )
 		);
 	}

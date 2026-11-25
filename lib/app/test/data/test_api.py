@@ -16,7 +16,7 @@ def countAtoms(p_selection):
         for atomSymbol, atomCount in mapAtomCounter.items() :
             print("target contains {0} {1}.".format(atomSymbol.name, atomCount ) )
 
-vtx.addCommand("countAtoms", countAtoms)
+vtx._addCommand("countAtoms", countAtoms)
 # scene = PyTX.API.getScene()
 
 # molecule = scene.getMolecule("1AGA")

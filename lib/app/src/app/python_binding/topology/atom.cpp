@@ -29,21 +29,25 @@ namespace VTX::App::PythonBinding::Topology
 	{
 		bindIdentity(
 			bindState<SystemItem::ATOM>( bindStyle(
-				py::class_<Atom>( p_module, "Atom", py::module_local() ),
+				py::class_<Atom>( p_module, "Atom", "Handle to an atom of a system.", py::module_local() ),
 				[]( const Atom & p_atom )
 				{ return Target { p_atom.entity, SystemItem::ATOM, RangeList( p_atom.index ) }; }
 			) )
 		)
-			.def_property_readonly( "index", []( const Atom & p_atom ) { return p_atom.index; } )
+			.def_property_readonly(
+				"index", []( const Atom & p_atom ) { return p_atom.index; }, "Index in the system."
+			)
 			.def_property_readonly(
 				"name",
 				synchronized( []( const Atom & p_atom )
-							  { return getTopology( p_atom.entity ).getAtomName( p_atom.index ); } )
+							  { return getTopology( p_atom.entity ).getAtomName( p_atom.index ); } ),
+				"Atom name."
 			)
 			.def_property_readonly(
 				"symbol",
 				synchronized( []( const Atom & p_atom )
-							  { return getTopology( p_atom.entity ).getAtomSymbol( p_atom.index ); } )
+							  { return getTopology( p_atom.entity ).getAtomSymbol( p_atom.index ); } ),
+				"Chemical element."
 			)
 			.def_property_readonly(
 				"symbolName",
@@ -53,7 +57,8 @@ namespace VTX::App::PythonBinding::Topology
 						const auto symbol = getTopology( p_atom.entity ).getAtomSymbol( p_atom.index );
 						return std::string( Core::ChemDB::Atom::SYMBOL_NAME[ toUnderlying( symbol ) ] );
 					}
-				)
+				),
+				"Chemical element name."
 			)
 			.def_property_readonly(
 				"vdwRadius",
@@ -63,12 +68,14 @@ namespace VTX::App::PythonBinding::Topology
 						const auto symbol = getTopology( p_atom.entity ).getAtomSymbol( p_atom.index );
 						return Core::ChemDB::Atom::SYMBOL_VDW_RADIUS[ toUnderlying( symbol ) ];
 					}
-				)
+				),
+				"Van der Waals radius in angstroms."
 			)
 			.def_property_readonly(
 				"originalIndex",
 				synchronized( []( const Atom & p_atom )
-							  { return getTopology( p_atom.entity ).getAtomOriginalIndex( p_atom.index ); } )
+							  { return getTopology( p_atom.entity ).getAtomOriginalIndex( p_atom.index ); } ),
+				"Index in the source file."
 			)
 			.def_property_readonly(
 				"position",
@@ -78,11 +85,12 @@ namespace VTX::App::PythonBinding::Topology
 						getTopology( p_atom.entity );
 						return Helper::System::getAtomPosition( p_atom.entity, p_atom.index );
 					}
-				)
+				),
+				"Position in the displayed frame, in system local space."
 			)
-			.def( "getSystem", synchronized( &Atom::getSystem ) )
-			.def( "getResidue", synchronized( &Atom::getResidue ) )
-			.def( "getChain", synchronized( &Atom::getChain ) )
-			.def( "getCategory", synchronized( &Atom::getCategory ) );
+			.def( "getSystem", synchronized( &Atom::getSystem ), "Return the parent system." )
+			.def( "getResidue", synchronized( &Atom::getResidue ), "Return the parent residue." )
+			.def( "getChain", synchronized( &Atom::getChain ), "Return the parent chain." )
+			.def( "getCategory", synchronized( &Atom::getCategory ), "Return the residue category." );
 	}
 } // namespace VTX::App::PythonBinding::Topology

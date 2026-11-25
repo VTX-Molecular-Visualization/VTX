@@ -18,6 +18,7 @@
 #include "renderer/resource_handler.hpp"
 #include "renderer/struct_infos.hpp"
 #include <memory>
+#include <optional>
 #include <span>
 #include <string_view>
 #include <vector>
@@ -64,7 +65,8 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Default constructor.
 		 */
-		OpenGL( size_t p_width, size_t p_height, const Desc::NativeContextInfo &, FilePath p_shaderDir );
+		OpenGL( size_t p_width, size_t p_height, const Desc::HeadlessContextInfo &, FilePath p_shaderDir );
+		OpenGL( size_t p_width, size_t p_height, const Desc::ExternalContextInfo &, FilePath p_shaderDir );
 		~OpenGL();
 
 		/**
@@ -80,7 +82,7 @@ namespace VTX::Renderer::Context::Backend
 		/**
 		 * @brief Swap buffers.
 		 */
-		void swap() const noexcept { _glContext.swapBuffers(); }
+		void swap() const noexcept;
 
 		/**
 		 * @brief Set data to a buffer.
@@ -132,6 +134,11 @@ namespace VTX::Renderer::Context::Backend
 		void setRenderTarget( Desc::E_RENDER_TARGET );
 
 		/**
+		 * @brief Set default fbno id.
+		 */
+		void setDefaultFramebuffer( const uint32_t p_id ) noexcept { _defaultFramebufferId = p_id; }
+
+		/**
 		 * @brief Set options.
 		 */
 		void setOption( Desc::E_OPTION, bool );
@@ -169,16 +176,18 @@ namespace VTX::Renderer::Context::Backend
 		uint32_t _height;
 
 		/**
-		 * @brief EGL context.
+		 * @brief Context.
 		 */
-		GL::GLContextWrapper _glContext;
+		std::optional<GL::GLContextWrapper> _glContext;
+		Desc::ExternalContextInfo			_externalContext;
 
 		/**
 		 * @brief Render target (default framebuffer or offscreen).
 		 */
-		Desc::Handle _default	= Desc::NO_HANDLE;
-		Desc::Handle _offscreen = Desc::NO_HANDLE;
-		Desc::Handle _target	= Desc::NO_HANDLE;
+		Desc::Handle _default			   = Desc::NO_HANDLE;
+		Desc::Handle _offscreen			   = Desc::NO_HANDLE;
+		Desc::Handle _target			   = Desc::NO_HANDLE;
+		GLuint		 _defaultFramebufferId = 0;
 
 		/**
 		 * @brief Shader path.
@@ -201,6 +210,21 @@ namespace VTX::Renderer::Context::Backend
 		ResourceHandler<GL::Texture, Desc::Key, Desc::Texture>			_textures;
 		ResourceHandler<GL::Sampler, Desc::Key, Desc::Sampler>			_samplers;
 		ResourceHandler<GL::Program, Desc::Key, Desc::Program>			_programs;
+
+		/**
+		 * @brief Interop with CUDA.
+		 */
+		Interop::OpenGLCudaInterop _cudaInterop;
+
+		/**
+		 * @brief Private shared constructor.
+		 */
+		OpenGL( size_t p_width, size_t p_height, FilePath p_shaderDir );
+
+		/**
+		 * @brief Init OpenGL functions.
+		 */
+		void _initOpenGL();
 
 		/**
 		 * @brief Get or create resources.
@@ -260,11 +284,6 @@ namespace VTX::Renderer::Context::Backend
 		 */
 		GL::StructOpenglInfos _openglInfos;
 		void				  _getOpenglInfos();
-
-		/**
-		 * @brief Interop with CUDA.
-		 */
-		Interop::OpenGLCudaInterop _cudaInterop;
 	};
 } // namespace VTX::Renderer::Context::Backend
 

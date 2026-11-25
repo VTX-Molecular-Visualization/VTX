@@ -1,10 +1,12 @@
 import vtx
 
-def addCommand(p_funcName, p_func):
+def _addCommand(p_funcName, p_func):
+    """Expose a Python function in the vtx module under the given name."""
     setattr(vtx, p_funcName, p_func)
 
-def addSysPath(p_path):
-    import sys 
+def _addSysPath(p_path):
+    """Append a folder to sys.path so that its modules can be imported."""
+    import sys
     sys.path.append( p_path )
 
 import functools
@@ -31,5 +33,5 @@ class CustomHelper:
 # Replace globally
 builtins.help = CustomHelper(builtins.help)
 
-vtx.addCommand = addCommand
-vtx.addSysPath = addSysPath
+vtx._addCommand = _addCommand
+vtx._addSysPath = _addSysPath

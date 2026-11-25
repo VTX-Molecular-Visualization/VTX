@@ -3,9 +3,12 @@
 
 #include "ui/qt/events.hpp"
 #include "ui/qt/widget/base_widget.hpp"
-#include "ui/qt/window/renderer.hpp"
+#include "ui/qt/widget/opengl_renderer.hpp"
 #include <QEvent>
+#include <QFocusEvent>
 #include <QHideEvent>
+#include <QKeyEvent>
+#include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPixmap>
 #include <QPointer>
@@ -14,14 +17,24 @@
 #include <QTimer>
 #include <QToolBar>
 #include <QToolButton>
+#include <QWheelEvent>
 #include <app/events.hpp>
+#include <app/input/input_manager.hpp>
+#include <cassert>
+#include <cstdint>
 #include <optional>
 #include <util/event_hub.hpp>
 #include <vector>
 
 namespace VTX::UI::QT::Widget
 {
-	using KB_LAYOUT = Window::KB_LAYOUT;
+	// TODO: move to settings.
+	enum struct KB_LAYOUT : uint8_t
+	{
+		QWERTY,
+		AZERTY,
+		COUNT
+	};
 
 	/**
 	 * @brief Widget to present an OpenGL rendering context.
@@ -35,57 +48,15 @@ namespace VTX::UI::QT::Widget
 		static constexpr bool VSYNC_DEFAULT = true;
 
 		/**
-		 * @brief Positions for HUD elements.
-		 */
-		/*
-		enum struct HUD_POSITION
-		{
-			TOP_LEFT,
-			TOP_CENTER,
-			TOP_RIGHT,
-			CENTER_LEFT,
-			CENTER_RIGHT,
-			BOTTOM_LEFT,
-			BOTTOM_CENTER,
-			BOTTOM_RIGHT
-		};
-		*/
-
-		/**
 		 * @brief Constructors.
 		 */
 		Renderer( QWidget * );
 		~Renderer() override;
 
 		/**
-		 * @brief Get native surface, display and platform for graphic context creation.
+		 * @brief Get OpenGLRenderer widget.
 		 */
-		uintptr_t getNativeSurface() const;
-		uintptr_t getNativeDisplay() const;
-		uint8_t	  getNativePlatform() const;
-
-		/**
-		 * @brief Create a toolbar from type.
-		 */
-		/*
-		template<typename TB>
-		TB * const createToolBar( const HUD_POSITION p_pos )
-		{
-			TB * const toolBar = new TB( this );
-			toolBar->setToolButtonStyle( Qt::ToolButtonIconOnly );
-			for ( auto * button : toolBar->template findChildren<QToolButton *>() )
-			{
-				button->setToolButtonStyle( toolBar->toolButtonStyle() );
-			}
-			_addHUDWidget( toolBar, p_pos );
-			return toolBar;
-		}
-		*/
-
-		/**
-		 * @brief Override resize.
-		 */
-		bool eventFilter( QObject *, QEvent * ) override;
+		OpenGLRenderer * getOpenGLRenderer() const { return _openGLRenderer; }
 
 	  protected:
 		/**
@@ -94,6 +65,15 @@ namespace VTX::UI::QT::Widget
 		void paintEvent( QPaintEvent * ) override;
 		void showEvent( QShowEvent * ) override;
 		void resizeEvent( QResizeEvent * ) override;
+		void keyPressEvent( QKeyEvent * ) override;
+		void keyReleaseEvent( QKeyEvent * ) override;
+		void focusInEvent( QFocusEvent * ) override;
+		void focusOutEvent( QFocusEvent * ) override;
+		void mousePressEvent( QMouseEvent * ) override;
+		void mouseMoveEvent( QMouseEvent * ) override;
+		void mouseReleaseEvent( QMouseEvent * ) override;
+		void mouseDoubleClickEvent( QMouseEvent * ) override;
+		void wheelEvent( QWheelEvent * ) override;
 
 		/**
 		 * @brief Debounce callback.
@@ -101,19 +81,6 @@ namespace VTX::UI::QT::Widget
 		void onResizeFinished();
 
 	  private:
-		/*
-		struct HUDItem
-		{
-			QPointer<QWidget> widget;
-			HUD_POSITION	  position;
-		};
-		*/
-
-		/**
-		 * @brief HUD widgets and their anchor positions.
-		 */
-		// std::vector<HUDItem> _hudItems;
-
 		/**
 		 * @brief Debounce timer for resize events.
 		 */
@@ -122,12 +89,12 @@ namespace VTX::UI::QT::Widget
 		/**
 		 * @brief OpenGL rendering window.
 		 */
-		QPointer<Window::Renderer> _window;
+		QPointer<OpenGLRenderer> _openGLRenderer;
 
 		/**
-		 * @brief Container widget for the OpenGL window.
+		 * @brief Input manager.
 		 */
-		QPointer<QWidget> _container;
+		App::Input::InputManager & _inputManager;
 
 		/**
 		 * @brief Logo painted behind the native renderer surface during startup and resize.
@@ -150,19 +117,18 @@ namespace VTX::UI::QT::Widget
 		std::optional<QSize> _pendingLayoutReboundSize;
 
 		/**
-		 * @brief Add a widget to the overlay at the given position.
+		 * @brief Current keyboard layout.
+		 * TODO: move to settings.
 		 */
-		// void _addHUDWidget( QWidget * const, const HUD_POSITION );
+		KB_LAYOUT _layout = KB_LAYOUT::QWERTY;
 
 		/**
-		 * @brief Synchronize HUD geometry and optionally show items.
+		 * @brief Handle input events.
 		 */
-		// void _syncHUDWidgets( const bool p_showWidgets = false );
-
-		/**
-		 * @brief Compute the geometry of a HUD widget for the current renderer rect.
-		 */
-		// QRect _getHUDGeometry( QWidget * const, const HUD_POSITION ) const;
+		Qt::MouseButton _pressedButton = Qt::NoButton;
+		QPointF			_pressPos	   = {};
+		QPointF			_lastPos	   = {};
+		bool			_dragging	   = false;
 
 		/**
 		 * @brief Give focus back to the rendering surface.
@@ -173,13 +139,28 @@ namespace VTX::UI::QT::Widget
 		 * @brief Synchronize widget size after an App renderer resize.
 		 */
 		void _onRendererResize( const App::Events::RendererResize & );
+
+		/**
+		 * @brief On ready event from the native renderer.
+		 */
 		void _onRendererReady( const App::Events::RendererReady & );
+
+		/**
+		 * @brief Handle keyboard events and forward them to the InputManager.
+		 */
+		void											_handleKeyboard( QKeyEvent *, bool p_enable );
+		void											_handleModifiers();
+		std::optional<App::Input::InputManager::Action> _getKeyboardAction( int ) const;
+		QPoint											_toDevicePixels( const QPointF & ) const;
+		void											_onClick( Qt::MouseButton, QPoint );
+		void											_onKBLayoutChange( const Events::KeyboardLayoutChanged & );
 
 		/**
 		 * @brief Connection.
 		 */
 		VTX::Util::EventHub::ScopedConnection _rendererResizeConnection;
 		VTX::Util::EventHub::ScopedConnection _rendererReadyConnection;
+		VTX::Util::EventHub::ScopedConnection _keyboardLayoutChangedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
 

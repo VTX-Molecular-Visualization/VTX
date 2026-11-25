@@ -28,20 +28,10 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		~WGLContextWrapper() { destroy(); }
 
-		void init( const Desc::NativeContextInfo & p_contextInfo, const uint32_t, const uint32_t )
+		void init( const Desc::HeadlessContextInfo & )
 		{
-			VTX_TRACE( "[WGL] Creating context for surface {}", p_contextInfo.surface );
+			VTX_TRACE( "[WGL] Creating headless context" );
 
-			_hwnd = reinterpret_cast<HWND>( p_contextInfo.surface );
-			_hdc  = GetDC( _hwnd );
-			if ( not _hdc )
-			{
-				throw std::runtime_error( "WGL: Failed to get device context" );
-			}
-
-			PIXELFORMATDESCRIPTOR pfd = _defaultPixelFormatDescriptor();
-
-			// Bootstrap WGL extensions from a dummy window/context before configuring the real surface.
 			const HMODULE instance	= GetModuleHandleA( nullptr );
 			const char *  className = "VTX_WGLBootstrap";
 			WNDCLASSA	  wc		= {};
@@ -55,6 +45,23 @@ namespace VTX::Renderer::Context::Backend::GL
 				throw std::runtime_error( "WGL: Failed to register bootstrap window class" );
 			}
 
+			_hwnd = CreateWindowA(
+				className, "VTX WGL Headless", WS_OVERLAPPEDWINDOW, 0, 0, 1, 1, nullptr, nullptr, instance, nullptr
+			);
+			if ( not _hwnd )
+			{
+				throw std::runtime_error( "WGL: Failed to create headless window" );
+			}
+
+			_hdc = GetDC( _hwnd );
+			if ( not _hdc )
+			{
+				throw std::runtime_error( "WGL: Failed to get device context" );
+			}
+
+			PIXELFORMATDESCRIPTOR pfd = _defaultPixelFormatDescriptor();
+
+			// Bootstrap WGL extensions from a dummy window/context before configuring the real surface.
 			HWND bootstrapWindow = CreateWindowA(
 				className, "VTX WGL Bootstrap", WS_OVERLAPPEDWINDOW, 0, 0, 1, 1, nullptr, nullptr, instance, nullptr
 			);
@@ -110,9 +117,9 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			wglMakeCurrent( nullptr, nullptr );
 			const int contextAttribs[] = { WGL_CONTEXT_MAJOR_VERSION_ARB,
-										   VTX_OPENGL_MAJOR_VERSION,
+										   Desc::OPENGL_MAJOR_VERSION,
 										   WGL_CONTEXT_MINOR_VERSION_ARB,
-										   VTX_OPENGL_MINOR_VERSION,
+										   Desc::OPENGL_MINOR_VERSION,
 
 										   WGL_CONTEXT_PROFILE_MASK_ARB,
 										   WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
@@ -154,9 +161,10 @@ namespace VTX::Renderer::Context::Backend::GL
 				throw std::runtime_error( "WGL: Failed to create context" );
 			}
 
-			VTX_TRACE( "[WGL] Core profile context {}.{} created", VTX_OPENGL_MAJOR_VERSION, VTX_OPENGL_MINOR_VERSION );
+			VTX_TRACE(
+				"[WGL] Core profile context {}.{} created", Desc::OPENGL_MAJOR_VERSION, Desc::OPENGL_MINOR_VERSION
+			);
 			makeCurrent();
-			setSwapInterval( 1 );
 		}
 
 		static void * _wglLoader( const char * p_name )
@@ -180,40 +188,31 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		void swapBuffers() const noexcept { SwapBuffers( _hdc ); }
+		void swapBuffers() const noexcept {}
 
-		bool isDefaultFramebufferSrgb() const { return _defaultFramebufferSrgb; }
-
-		static void setSwapInterval( const int p_interval )
-		{
-			auto wglSwapIntervalEXT
-				= reinterpret_cast<PFNWGLSWAPINTERVALEXTPROC>( wglGetProcAddress( "wglSwapIntervalEXT" ) );
-			if ( not wglSwapIntervalEXT )
-			{
-				throw std::runtime_error( "WGL: wglSwapIntervalEXT not available" );
-			}
-			wglSwapIntervalEXT( p_interval );
-		}
-
-		void resize( const uint32_t, const uint32_t ) {}
+		static void setSwapInterval( const int ) {}
 
 		void destroy()
 		{
-			if ( not _hdc )
+			if ( _hdc )
 			{
-				return;
+				wglMakeCurrent( nullptr, nullptr );
+
+				if ( _context )
+				{
+					wglDeleteContext( _context );
+					_context = nullptr;
+				}
+
+				ReleaseDC( _hwnd, _hdc );
+				_hdc = nullptr;
 			}
 
-			wglMakeCurrent( nullptr, nullptr );
-
-			if ( _context )
+			if ( _hwnd )
 			{
-				wglDeleteContext( _context );
-				_context = nullptr;
+				DestroyWindow( _hwnd );
+				_hwnd = nullptr;
 			}
-
-			ReleaseDC( _hwnd, _hdc );
-			_hdc = nullptr;
 		}
 
 	  private:
@@ -240,10 +239,10 @@ namespace VTX::Renderer::Context::Backend::GL
 
 			if ( p_choosePixelFormat )
 			{
-				int pixelAttribs[ 17 ] = { WGL_DRAW_TO_WINDOW_ARB, 1,  WGL_SUPPORT_OPENGL_ARB, 1,
-										   WGL_DOUBLE_BUFFER_ARB,  1,  WGL_PIXEL_TYPE_ARB,	   WGL_TYPE_RGBA_ARB,
-										   WGL_COLOR_BITS_ARB,	   32, WGL_DEPTH_BITS_ARB,	   24,
-										   WGL_STENCIL_BITS_ARB,   8 };
+				const int pixelAttribs[ 15 ] = { WGL_DRAW_TO_WINDOW_ARB, 1,	 WGL_SUPPORT_OPENGL_ARB, 1,
+												 WGL_DOUBLE_BUFFER_ARB,	 1,	 WGL_PIXEL_TYPE_ARB,	 WGL_TYPE_RGBA_ARB,
+												 WGL_COLOR_BITS_ARB,	 32, WGL_DEPTH_BITS_ARB,	 24,
+												 WGL_STENCIL_BITS_ARB,	 8 };
 
 				const auto chooseFormat = [ & ]( const int * const p_attributes )
 				{
@@ -253,36 +252,19 @@ namespace VTX::Renderer::Context::Backend::GL
 						   && numFormats > 0;
 				};
 
-				pixelAttribs[ 14 ]		= WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB;
-				pixelAttribs[ 15 ]		= 1;
-				const bool selectedSrgb = chooseFormat( pixelAttribs );
-				pixelAttribs[ 14 ]		= 0;
-				pixelAttribs[ 15 ]		= 0;
-				if ( not selectedSrgb )
-				{
-					VTX_WARNING( "[WGL] No sRGB pixel format available, falling back to a linear format" );
-				}
-
-				if ( selectedSrgb || chooseFormat( pixelAttribs ) )
+				if ( chooseFormat( pixelAttribs ) )
 				{
 					PIXELFORMATDESCRIPTOR chosen = {};
 					if ( DescribePixelFormat( _hdc, pixelFormat, sizeof( chosen ), &chosen ) != 0 )
 					{
-						p_pfd					= chosen;
-						_defaultFramebufferSrgb = selectedSrgb;
-						if ( selectedSrgb )
-						{
-							VTX_INFO( "[WGL] Using sRGB pixel format {}", pixelFormat );
-						}
+						p_pfd = chosen;
 						VTX_TRACE(
-							"[WGL] Using ARB pixel format {} (color={}, depth={}, stencil={}, double_buffer={}, "
-							"srgb={})",
+							"[WGL] Using ARB pixel format {} (color={}, depth={}, stencil={}, double_buffer={})",
 							pixelFormat,
 							static_cast<int>( p_pfd.cColorBits ),
 							static_cast<int>( p_pfd.cDepthBits ),
 							static_cast<int>( p_pfd.cStencilBits ),
-							( p_pfd.dwFlags & PFD_DOUBLEBUFFER ) != 0,
-							selectedSrgb
+							( p_pfd.dwFlags & PFD_DOUBLEBUFFER ) != 0
 						);
 						return pixelFormat;
 					}
@@ -302,10 +284,9 @@ namespace VTX::Renderer::Context::Backend::GL
 			return pixelFormat;
 		}
 
-		HWND  _hwnd					  = nullptr;
-		HDC	  _hdc					  = nullptr;
-		HGLRC _context				  = nullptr;
-		bool  _defaultFramebufferSrgb = false;
+		HWND  _hwnd	   = nullptr;
+		HDC	  _hdc	   = nullptr;
+		HGLRC _context = nullptr;
 	};
 
 	using GLContextWrapper = WGLContextWrapper;
@@ -328,7 +309,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		~MacOSGLContextWrapper() { destroy(); }
 
-		void init( const Desc::NativeContextInfo &, const uint32_t, const uint32_t )
+		void init( const Desc::HeadlessContextInfo & )
 		{ throw std::runtime_error( "macOS OpenGL context creation is not implemented yet" ); }
 
 		void * getProcAddress() { return nullptr; }
@@ -337,11 +318,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void swapBuffers() const noexcept {}
 
-		bool isDefaultFramebufferSrgb() const { return false; }
-
 		void setSwapInterval( int ) {}
-
-		void resize( const uint32_t, const uint32_t ) {}
 
 		void destroy() {}
 	};
@@ -357,10 +334,10 @@ namespace VTX::Renderer::Context::Backend::GL
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-#include <X11/Xlib.h>
+#include <array>
 #include <renderer/descriptors.hpp>
+#include <string_view>
 #include <util/logger.hpp>
-#include <wayland-egl.h>
 
 namespace VTX::Renderer::Context::Backend::GL
 {
@@ -373,89 +350,24 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		~EGLContextWrapper() { destroy(); }
 
-		void init( const Desc::NativeContextInfo & p_contextInfo, const uint32_t p_width, const uint32_t p_height )
+		void init( const Desc::HeadlessContextInfo & )
 		{
-			VTX_TRACE(
-				"[EGL] Creating context for surface {} with display {} and platform {}",
-				p_contextInfo.surface,
-				p_contextInfo.display,
-				static_cast<int>( p_contextInfo.plateform )
-			);
+			VTX_TRACE( "[EGL] Creating headless context" );
 
-			_nativeDisplay = reinterpret_cast<void *>( p_contextInfo.display );
-			switch ( p_contextInfo.plateform )
-			{
-			case Desc::E_NATIVE_PLATEFORM::WAYLAND:
-			{
-				_platform = Platform::Wayland;
-				if ( not _nativeDisplay )
-				{
-					throw std::runtime_error( "EGL: Wayland platform requires a native display" );
-				}
-				VTX_TRACE( "[EGL] Using Wayland platform display" );
-				VTX_TRACE( "[EGL] Calling eglGetPlatformDisplay(WAYLAND)" );
-				_display = eglGetPlatformDisplay( EGL_PLATFORM_WAYLAND_KHR, _nativeDisplay, nullptr );
-				VTX_TRACE( "[EGL] eglGetPlatformDisplay(WAYLAND) -> {}", reinterpret_cast<uintptr_t>( _display ) );
-				break;
-			}
-			case Desc::E_NATIVE_PLATEFORM::X11:
-			{
-				_platform = Platform::X11;
-				if ( _nativeDisplay )
-				{
-					VTX_TRACE( "[EGL] Using X11 platform display" );
-					VTX_TRACE( "[EGL] Calling eglGetPlatformDisplay(X11)" );
-					_display = eglGetPlatformDisplay( EGL_PLATFORM_X11_KHR, _nativeDisplay, nullptr );
-					VTX_TRACE( "[EGL] eglGetPlatformDisplay(X11) -> {}", reinterpret_cast<uintptr_t>( _display ) );
-				}
-				break;
-			}
-			case Desc::E_NATIVE_PLATEFORM::UNKNOWN:
-			default:
-			{
-				VTX_TRACE( "[EGL] No explicit native platform provided, using EGL default display" );
-				_platform	   = Platform::Default;
-				_nativeDisplay = nullptr;
-				VTX_TRACE( "[EGL] Calling eglGetDisplay(EGL_DEFAULT_DISPLAY)" );
-				_display = eglGetDisplay( EGL_DEFAULT_DISPLAY );
-				VTX_TRACE( "[EGL] eglGetDisplay(EGL_DEFAULT_DISPLAY) -> {}", reinterpret_cast<uintptr_t>( _display ) );
-				break;
-			}
-			}
-
-			if ( _display == EGL_NO_DISPLAY && _platform == Platform::X11 )
-			{
-				VTX_TRACE( "[EGL] X11 platform display unavailable, using EGL default display" );
-				_nativeDisplay = nullptr;
-				_platform	   = Platform::Default;
-				VTX_TRACE( "[EGL] Calling eglGetDisplay(EGL_DEFAULT_DISPLAY) fallback" );
-				_display = eglGetDisplay( EGL_DEFAULT_DISPLAY );
-				VTX_TRACE(
-					"[EGL] eglGetDisplay(EGL_DEFAULT_DISPLAY) fallback -> {}", reinterpret_cast<uintptr_t>( _display )
-				);
-			}
-
+			_display = _initializeHeadlessDisplay();
 			if ( _display == EGL_NO_DISPLAY )
 			{
-				throw std::runtime_error( "EGL: Failed to get platform display" );
-			}
-
-			VTX_TRACE( "[EGL] Calling eglInitialize" );
-			if ( not eglInitialize( _display, &_major, &_minor ) )
-			{
-				throw std::runtime_error( "EGL: Initialization failed" );
+				throw std::runtime_error( "EGL: Failed to initialize a headless display" );
 			}
 			VTX_TRACE( "[EGL] Initialized EGL {}.{}", _major, _minor );
 
-			VTX_TRACE( "[EGL] Calling eglBindAPI(EGL_OPENGL_API)" );
 			if ( not eglBindAPI( EGL_OPENGL_API ) )
 			{
 				throw std::runtime_error( "EGL: Failed to bind OpenGL API" );
 			}
-			VTX_TRACE( "[EGL] eglBindAPI(EGL_OPENGL_API) succeeded" );
 
 			const EGLint configAttribs[] = { EGL_SURFACE_TYPE,
-											 EGL_WINDOW_BIT,
+											 EGL_PBUFFER_BIT,
 											 EGL_RENDERABLE_TYPE,
 											 EGL_OPENGL_BIT,
 
@@ -476,54 +388,13 @@ namespace VTX::Renderer::Context::Backend::GL
 											 EGL_NONE };
 
 			EGLint numConfigs = 0;
-
-			VTX_TRACE( "[EGL] Calling eglChooseConfig" );
 			if ( not eglChooseConfig( _display, configAttribs, &_config, 1, &numConfigs ) || numConfigs == 0 )
 			{
 				throw std::runtime_error( "EGL: Failed to choose config" );
 			}
-			VTX_TRACE( "[EGL] eglChooseConfig succeeded with {} config(s)", numConfigs );
 
-			EGLNativeWindowType nativeWindow = reinterpret_cast<EGLNativeWindowType>( p_contextInfo.surface );
-			if ( _platform == Platform::Wayland )
-			{
-				auto * const waylandSurface = reinterpret_cast<wl_surface *>( p_contextInfo.surface );
-				if ( waylandSurface == nullptr )
-				{
-					throw std::runtime_error( "EGL: Wayland platform requires a native surface" );
-				}
-
-				_waylandWindow
-					= wl_egl_window_create( waylandSurface, static_cast<int>( p_width ), static_cast<int>( p_height ) );
-				if ( _waylandWindow == nullptr )
-				{
-					throw std::runtime_error( "EGL: Failed to create Wayland EGL window" );
-				}
-
-				nativeWindow = reinterpret_cast<EGLNativeWindowType>( _waylandWindow );
-				VTX_TRACE( "[EGL] Created Wayland EGL window {}", reinterpret_cast<uintptr_t>( _waylandWindow ) );
-			}
-
-			VTX_TRACE(
-				"[EGL] Calling eglCreateWindowSurface for native window {}", reinterpret_cast<uintptr_t>( nativeWindow )
-			);
-			const EGLint srgbSurfaceAttribs[] = { EGL_GL_COLORSPACE_KHR, EGL_GL_COLORSPACE_SRGB_KHR, EGL_NONE };
-			_surface				= eglCreateWindowSurface( _display, _config, nativeWindow, srgbSurfaceAttribs );
-			_defaultFramebufferSrgb = _surface != EGL_NO_SURFACE;
-			if ( _surface == EGL_NO_SURFACE )
-			{
-				const EGLint srgbError = eglGetError();
-				VTX_WARNING(
-					"[EGL] Failed to create an sRGB surface (error 0x{:X}), falling back to a linear surface", srgbError
-				);
-				_surface = eglCreateWindowSurface( _display, _config, nativeWindow, nullptr );
-			}
-			else
-			{
-				VTX_INFO( "[EGL] Using an sRGB window surface" );
-			}
-			VTX_TRACE( "[EGL] eglCreateWindowSurface -> {}", reinterpret_cast<uintptr_t>( _surface ) );
-
+			const EGLint pbufferAttribs[] = { EGL_WIDTH, 1, EGL_HEIGHT, 1, EGL_NONE };
+			_surface					  = eglCreatePbufferSurface( _display, _config, pbufferAttribs );
 			if ( _surface == EGL_NO_SURFACE )
 			{
 				const EGLint	   err = eglGetError();
@@ -533,9 +404,9 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 
 			const EGLint contextAttribs[] = { EGL_CONTEXT_MAJOR_VERSION,
-											  VTX_OPENGL_MAJOR_VERSION,
+											  Desc::OPENGL_MAJOR_VERSION,
 											  EGL_CONTEXT_MINOR_VERSION,
-											  VTX_OPENGL_MINOR_VERSION,
+											  Desc::OPENGL_MINOR_VERSION,
 
 											  EGL_CONTEXT_OPENGL_PROFILE_MASK,
 											  EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
@@ -547,10 +418,7 @@ namespace VTX::Renderer::Context::Backend::GL
 
 											  EGL_NONE };
 
-			VTX_TRACE( "[EGL] Calling eglCreateContext" );
 			_context = eglCreateContext( _display, _config, EGL_NO_CONTEXT, contextAttribs );
-			VTX_TRACE( "[EGL] eglCreateContext -> {}", reinterpret_cast<uintptr_t>( _context ) );
-
 			if ( _context == EGL_NO_CONTEXT )
 			{
 				const EGLint	   err = eglGetError();
@@ -559,9 +427,10 @@ namespace VTX::Renderer::Context::Backend::GL
 				throw std::runtime_error( oss.str() );
 			}
 
-			VTX_TRACE( "[EGL] Core profile context {}.{} created", VTX_OPENGL_MAJOR_VERSION, VTX_OPENGL_MINOR_VERSION );
+			VTX_TRACE(
+				"[EGL] Core profile context {}.{} created", Desc::OPENGL_MAJOR_VERSION, Desc::OPENGL_MINOR_VERSION
+			);
 			makeCurrent();
-			setSwapInterval( 1 );
 		}
 
 		static void * _eglLoader( const char * p_name )
@@ -571,33 +440,15 @@ namespace VTX::Renderer::Context::Backend::GL
 
 		void makeCurrent() const
 		{
-			VTX_TRACE( "[EGL] Calling eglMakeCurrent" );
 			if ( not eglMakeCurrent( _display, _surface, _surface, _context ) )
 			{
 				throw std::runtime_error( "EGL: makeCurrent failed" );
 			}
-			VTX_TRACE( "[EGL] eglMakeCurrent succeeded" );
 		}
 
-		void swapBuffers() const noexcept { eglSwapBuffers( _display, _surface ); }
+		void swapBuffers() const noexcept {}
 
-		bool isDefaultFramebufferSrgb() const { return _defaultFramebufferSrgb; }
-
-		void setSwapInterval( const int p_interval )
-		{
-			if ( not eglSwapInterval( _display, p_interval ) )
-			{
-				throw std::runtime_error( "EGL: Failed to set swap interval" );
-			}
-		}
-
-		void resize( const uint32_t p_width, const uint32_t p_height )
-		{
-			if ( _waylandWindow != nullptr )
-			{
-				wl_egl_window_resize( _waylandWindow, static_cast<int>( p_width ), static_cast<int>( p_height ), 0, 0 );
-			}
-		}
+		void setSwapInterval( const int ) {}
 
 		void destroy()
 		{
@@ -616,39 +467,85 @@ namespace VTX::Renderer::Context::Backend::GL
 			{
 				eglDestroySurface( _display, _surface );
 			}
-			if ( _waylandWindow != nullptr )
-			{
-				wl_egl_window_destroy( _waylandWindow );
-			}
 
 			eglTerminate( _display );
-			_display	   = EGL_NO_DISPLAY;
-			_surface	   = EGL_NO_SURFACE;
-			_context	   = EGL_NO_CONTEXT;
-			_config		   = nullptr;
-			_nativeDisplay = nullptr;
-			_waylandWindow = nullptr;
+			_display = EGL_NO_DISPLAY;
+			_surface = EGL_NO_SURFACE;
+			_context = EGL_NO_CONTEXT;
+			_config	 = nullptr;
 		}
 
 	  private:
-		enum class Platform : uint8_t
-		{
-			Default,
-			X11,
-			Wayland
-		};
-
-		EGLDisplay		_display				= EGL_NO_DISPLAY;
-		EGLSurface		_surface				= EGL_NO_SURFACE;
-		EGLContext		_context				= EGL_NO_CONTEXT;
-		EGLConfig		_config					= nullptr;
-		Platform		_platform				= Platform::Default;
-		void *			_nativeDisplay			= nullptr;
-		wl_egl_window * _waylandWindow			= nullptr;
-		bool			_defaultFramebufferSrgb = false;
+		EGLDisplay _display = EGL_NO_DISPLAY;
+		EGLSurface _surface = EGL_NO_SURFACE;
+		EGLContext _context = EGL_NO_CONTEXT;
+		EGLConfig  _config	= nullptr;
 
 		int _major = 0;
 		int _minor = 0;
+
+		bool _tryInitialize( const EGLDisplay p_display, const std::string_view p_name )
+		{
+			if ( p_display == EGL_NO_DISPLAY )
+			{
+				return false;
+			}
+			if ( not eglInitialize( p_display, &_major, &_minor ) )
+			{
+				VTX_TRACE( "[EGL] {} display initialization failed (0x{:X})", p_name, eglGetError() );
+				return false;
+			}
+			VTX_INFO( "[EGL] Using {} display", p_name );
+			return true;
+		}
+
+		EGLDisplay _initializeHeadlessDisplay()
+		{
+			const char * const	   clientExtensions = eglQueryString( EGL_NO_DISPLAY, EGL_EXTENSIONS );
+			const std::string_view extensions		= clientExtensions != nullptr ? clientExtensions : "";
+			const auto			   hasExtension		= [ & ]( const std::string_view p_name )
+			{ return extensions.find( p_name ) != std::string_view::npos; };
+
+			if ( hasExtension( "EGL_MESA_platform_surfaceless" ) )
+			{
+				const EGLDisplay display
+					= eglGetPlatformDisplay( EGL_PLATFORM_SURFACELESS_MESA, EGL_DEFAULT_DISPLAY, nullptr );
+				if ( _tryInitialize( display, "surfaceless" ) )
+				{
+					return display;
+				}
+			}
+
+			if ( hasExtension( "EGL_EXT_platform_device" ) && hasExtension( "EGL_EXT_device_enumeration" ) )
+			{
+				const auto queryDevices
+					= reinterpret_cast<PFNEGLQUERYDEVICESEXTPROC>( eglGetProcAddress( "eglQueryDevicesEXT" ) );
+
+				std::array<EGLDeviceEXT, 16> devices	 = {};
+				EGLint						 deviceCount = 0;
+				if ( queryDevices != nullptr
+					 && queryDevices( static_cast<EGLint>( devices.size() ), devices.data(), &deviceCount ) )
+				{
+					for ( EGLint i = 0; i < deviceCount; ++i )
+					{
+						const EGLDisplay display
+							= eglGetPlatformDisplay( EGL_PLATFORM_DEVICE_EXT, devices[ i ], nullptr );
+						if ( _tryInitialize( display, "device" ) )
+						{
+							return display;
+						}
+					}
+				}
+			}
+
+			const EGLDisplay display = eglGetDisplay( EGL_DEFAULT_DISPLAY );
+			if ( _tryInitialize( display, "default" ) )
+			{
+				return display;
+			}
+
+			return EGL_NO_DISPLAY;
+		}
 	};
 
 	using GLContextWrapper = EGLContextWrapper;

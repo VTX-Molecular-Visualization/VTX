@@ -124,6 +124,7 @@ class VTXToolMdprepRecipe(ConanFile):
         tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = _cmake_path(executable_folder(self))
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
         tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")
+        tc.cache_variables["VTX_BUILD_TESTS"] = "ON" if self.options.test else "OFF"
         tc.generate()
         do_gromacs_copies(self)
         

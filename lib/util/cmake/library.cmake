@@ -12,12 +12,6 @@ target_sources(vtx_util
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
-# Tests.
-file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
-add_executable(vtx_util_test ${TESTS})
-set_property(TARGET vtx_util_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_util_test NO_LINTER)
-
 target_link_libraries(vtx_util PUBLIC glm::glm)
 target_compile_definitions(vtx_util PUBLIC GLM_FORCE_INLINE)
 target_compile_definitions(vtx_util PUBLIC GLM_FORCE_XYZW_ONLY)
@@ -35,9 +29,17 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	target_link_libraries(vtx_util PUBLIC atomic)
 endif()
 
-target_link_libraries(vtx_util_test PRIVATE vtx_util::vtx_util)
-target_link_libraries(vtx_util_test PRIVATE Catch2::Catch2WithMain)
+# Tests.
+if(VTX_BUILD_TESTS)
+	file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
+	add_executable(vtx_util_test ${TESTS})
+	set_property(TARGET vtx_util_test PROPERTY FOLDER "test")
+	vtx_configure_target(vtx_util_test NO_LINTER)
 
-include(CTest)
-include(Catch)
-catch_discover_tests(vtx_util_test DISCOVERY_MODE PRE_TEST)
+	target_link_libraries(vtx_util_test PRIVATE vtx_util::vtx_util)
+	target_link_libraries(vtx_util_test PRIVATE Catch2::Catch2WithMain)
+
+	include(CTest)
+	include(Catch)
+	catch_discover_tests(vtx_util_test DISCOVERY_MODE PRE_TEST)
+endif()

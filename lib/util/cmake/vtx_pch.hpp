@@ -16,12 +16,13 @@
 #include <utility>
 #include <variant>
 #include <vector>
-
+//
 #include <entt/entity/registry.hpp>
 #include <entt/signal/dispatcher.hpp>
-#include <fmt/format.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <spdlog/spdlog.h>
-
+// Do not add spdlog, it includes fmt that uses "#pragma GCC optimize".
+// GCC leaks the resulting __OPTIMIZE__ macro to every TU using the pch.
+// #include <spdlog/spdlog.h>
+// #include <fmt/format.h>
 #endif

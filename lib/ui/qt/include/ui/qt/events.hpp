@@ -36,9 +36,8 @@ namespace VTX::UI::QT::Events
 		int theme;
 	};
 
-	struct ScriptSelected
+	struct ScriptRun
 	{
-		FilePath path;
 	};
 
 } // namespace VTX::UI::QT::Events

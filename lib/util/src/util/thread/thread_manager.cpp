@@ -20,7 +20,7 @@ namespace VTX::Util::Thread
 	{
 		try
 		{
-			_cancelSynchronizedCalls();
+			cancelSynchronizedCalls();
 		}
 		catch ( ... )
 		{
@@ -147,6 +147,55 @@ namespace VTX::Util::Thread
 		}
 	}
 
+	void ThreadManager::updateWaiters()
+	{
+		std::list<Waiter> waiters;
+		{
+			const std::scoped_lock lock( _synchronizedCallsMutex );
+			waiters.splice( waiters.end(), _waiters );
+		}
+
+		std::erase_if(
+			waiters,
+			[]( Waiter & p_waiter )
+			{
+				try
+				{
+					if ( not p_waiter.predicate() )
+					{
+						return false;
+					}
+					p_waiter.promise.set_value();
+				}
+				catch ( ... )
+				{
+					p_waiter.promise.set_exception( std::current_exception() );
+				}
+				return true;
+			}
+		);
+
+		const std::scoped_lock lock( _synchronizedCallsMutex );
+		if ( _shuttingDown )
+		{
+			return;
+		}
+		std::erase_if(
+			waiters, [ this ]( const Waiter & p_waiter ) { return _cancelledCallers.contains( p_waiter.caller ); }
+		);
+		_waiters.splice( _waiters.begin(), waiters );
+	}
+
+	void ThreadManager::_addWaiter( const ID p_caller, std::function<bool()> p_predicate, std::promise<void> p_promise )
+	{
+		const std::scoped_lock lock( _synchronizedCallsMutex );
+		if ( _shuttingDown || _cancelledCallers.contains( p_caller ) )
+		{
+			return;
+		}
+		_waiters.emplace_back( p_caller, std::move( p_predicate ), std::move( p_promise ) );
+	}
+
 	BaseThread & ThreadManager::createThread(
 		const BaseThread::AsyncOp &		p_asyncOp,
 		const BaseThread::EndCallback & p_callback
@@ -205,13 +254,15 @@ namespace VTX::Util::Thread
 		_cancelledCallers.emplace( p_caller );
 		_synchronizedCalls.remove_if( [ p_caller ]( const SynchronizedCall & p_call )
 									  { return p_call.caller == p_caller; } );
+		_waiters.remove_if( [ p_caller ]( const Waiter & p_waiter ) { return p_waiter.caller == p_caller; } );
 	}
 
-	void ThreadManager::_cancelSynchronizedCalls()
+	void ThreadManager::cancelSynchronizedCalls()
 	{
 		const std::scoped_lock lock( _synchronizedCallsMutex );
 		_shuttingDown = true;
 		_synchronizedCalls.clear();
 		_dispatchedCalls.clear();
+		_waiters.clear();
 	}
 } // namespace VTX::Util::Thread

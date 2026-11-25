@@ -5,32 +5,6 @@
 
 namespace VTX::IO::Writer
 {
-	enum class E_FILE_FORMATS : uint8_t
-	{
-		none,
-		pdb,
-		mmcif,
-		mmtf,
-		molden,
-		cif,
-		gro,
-		mol2,
-		sdf,
-		smi,
-		xyz,
-		cml,
-		cssr,
-		nc,
-		dcd,
-		lammpstrj,
-		arc,
-		trr,
-		xtc,
-		tng,
-		trj,
-		COUNT
-	};
-
 	enum class E_BOND_ORDER : uint8_t
 	{
 		unknown,

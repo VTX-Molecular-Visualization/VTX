@@ -8,6 +8,7 @@ namespace
 {
 	using namespace VTX;
 
+	/*
 	int _bakeEnvironmentDirectoryToKtx( const VTX::FilePath & p_hdrRoot, const VTX::uint p_faceSize )
 	{
 		int failures = 0;
@@ -43,6 +44,7 @@ namespace
 
 		return failures == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 	}
+	*/
 } // namespace
 
 int main( const int argc, char ** argv )

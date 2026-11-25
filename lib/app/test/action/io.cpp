@@ -40,7 +40,6 @@ TEST_CASE( "VTX_APP - Action - Io - WriteSelection", "[integration][visibility][
 	VTX::App::Action::Visibility::SetVisible<Core::Struct::E_SYSTEM_ITEM::ATOM> setVisible;
 	VTX::App::ACTION().execute( setVisible, ent, Core::Struct::IndexRangeList { { 0, 1 } }, false );
 	const uint initialAtomCount = topology.getAtomCount();
-	uint	   rewriteAtomCount = 0;
 
 	const VTX::FilePath outDir = VTX::Util::Filesystem::getExecutableDir() / "out";
 	std::filesystem::create_directories( outDir );

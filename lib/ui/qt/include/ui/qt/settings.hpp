@@ -31,6 +31,8 @@ namespace VTX::UI::QT
 	constexpr QUtf8StringView SETTING_KEY_REPRESENTATION_PRESETS_EXPANDED { "tree/presets/representation/expanded" };
 	constexpr QUtf8StringView SETTING_KEY_SCRIPTS_EXPANDED { "tree/scripts/expanded" };
 
+	constexpr QUtf8StringView SETTING_KEY_PYTHON_EDITOR_OPACITY { "python_editor/opacity" };
+
 	/**
 	 * @brief Which resid to use to generate the sequence viewer
 	 */

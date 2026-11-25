@@ -37,13 +37,24 @@ namespace VTX::Renderer
 
 	FilePath Renderer::getShadersDir( const FilePath & p_applicationDir ) { return p_applicationDir / "shaders"; }
 
-	void Renderer::setOpenGL( const Desc::NativeContextInfo & p_contextInfo, const FilePath & p_applicationDir )
+	void Renderer::setOpenGL( const Desc::HeadlessContextInfo & p_contextInfo, const FilePath & p_applicationDir )
 	{
-		const Util::ScopedChrono timer(
-			"[RENDERER] setOpenGL46 / surface: " + std::to_string( p_contextInfo.surface )
-		);
+		const Util::ScopedChrono timer( "[RENDERER] setOpenGL46 / headless context" );
 
 		_context.setOpenGL( _width, _height, p_contextInfo, getShadersDir( p_applicationDir ) );
+		_onOpenGLSet();
+	}
+
+	void Renderer::setOpenGL( const Desc::ExternalContextInfo & p_contextInfo, const FilePath & p_applicationDir )
+	{
+		const Util::ScopedChrono timer( "[RENDERER] setOpenGL46 / external context" );
+
+		_context.setOpenGL( _width, _height, p_contextInfo, getShadersDir( p_applicationDir ) );
+		_onOpenGLSet();
+	}
+
+	void Renderer::_onOpenGLSet()
+	{
 		try
 		{
 			Builder::RenderGraphRuntime::rebuildCommandBuffer(
@@ -66,6 +77,12 @@ namespace VTX::Renderer
 			VTX_ERROR( "Can not build openGL 4.6 backend" );
 			setDefault();
 		}
+	}
+
+	void Renderer::setDefaultFramebuffer( const uint32_t p_id )
+	{
+		_context.setDefaultFramebuffer( p_id );
+		_markDirty( Cache::E_RENDERER_DIRTY::COMMAND_BUFFER | Cache::E_RENDERER_DIRTY::NEED_UPDATE );
 	}
 
 	void Renderer::resize( const size_t p_width, const size_t p_height )

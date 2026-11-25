@@ -1,3 +1,8 @@
+import enum
+import inspect
+import re
+
+
 def require(condition, message):
     if not condition:
         raise RuntimeError(message)
@@ -162,20 +167,60 @@ for removed_name in (
     "setRepresentationSelected",
     "setColorLayout",
     "setGraphicsConfig",
+    "REPRESENTATION_VALUE",
+    "GRAPHICS_CONFIG_VALUE",
 ):
     require(not hasattr(vtx, removed_name), f"Duplicate module binding should be removed: {removed_name}")
 
 for enum_name in (
-    "REPRESENTATION_VALUE",
     "SES_COMPUTE_MODE",
     "COLOR_LAYOUT_INDEX",
-    "GRAPHICS_CONFIG_VALUE",
     "SHADING_MODE",
     "BACKGROUND_MODE",
     "SSAO_METHOD",
     "TONE_MAPPING",
 ):
     require(hasattr(vtx, enum_name), f"Missing preset enum: {enum_name}")
+
+
+def documented(text):
+    return bool(text and text.strip())
+
+
+def function_docs(function):
+    if inspect.isfunction(function):
+        return [function.__doc__ or ""]
+    lines = (function.__doc__ or "").strip().splitlines()
+    if len(lines) > 1 and lines[1].strip() == "Overloaded function.":
+        blocks = re.split(r"^\d+\. ", "\n".join(lines[2:]).strip(), flags=re.MULTILINE)
+        return [" ".join(block.strip().splitlines()[1:]) for block in blocks if block.strip()]
+    return [" ".join(lines[1:])]
+
+
+undocumented = []
+for name, member in vars(vtx).items():
+    if name.startswith("_") or inspect.ismodule(member):
+        continue
+    if inspect.isclass(member):
+        if not documented(member.__doc__):
+            undocumented.append(name)
+        if issubclass(member, enum.Enum):
+            continue
+        for attribute_name, attribute in vars(member).items():
+            if attribute_name.startswith("_"):
+                continue
+            qualified_name = f"{name}.{attribute_name}"
+            if isinstance(attribute, property):
+                doc = attribute.__doc__ or ""
+                if not documented(doc) or doc.lstrip().startswith("("):
+                    undocumented.append(qualified_name)
+            elif callable(getattr(member, attribute_name)):
+                if not all(documented(doc) for doc in function_docs(getattr(member, attribute_name))):
+                    undocumented.append(qualified_name)
+    elif callable(member):
+        if not all(documented(doc) for doc in function_docs(member)):
+            undocumented.append(name)
+require(not undocumented, f"Undocumented Python API: {', '.join(sorted(undocumented))}")
 
 representation_name = "Python smoke representation"
 vtx.createRepresentationPreset(representation_name)
@@ -463,14 +508,12 @@ require(
     "Unexpected topology system counts",
 )
 require(
-    topology_system.indexFirstChain == 0
-    and topology_system.indexLastChain == topology_system.chainCount
-    and topology_system.indexFirstResidue == 0
-    and topology_system.indexLastResidue == topology_system.residueCount
-    and topology_system.indexFirstAtom == 0
-    and topology_system.indexLastAtom == topology_system.atomCount
-    and topology_system.indexFirstBond == 0
-    and topology_system.indexLastBond == topology_system.bondCount,
+    topology_system.indexLastChain == topology_system.chainCount - 1
+    and topology_system.indexLastResidue == topology_system.residueCount - 1
+    and topology_system.indexLastAtom == topology_system.atomCount - 1
+    and topology_system.indexLastBond
+    == (topology_system.bondCount - 1 if topology_system.bondCount > 0 else None)
+    and not hasattr(topology_system, "indexFirstChain"),
     "Unexpected topology system ranges",
 )
 
@@ -500,9 +543,9 @@ require(
 )
 require(
     topology_chain.indexLastResidue
-    == topology_chain.indexFirstResidue + topology_chain.residueCount
+    == topology_chain.indexFirstResidue + topology_chain.residueCount - 1
     and topology_chain.indexLastAtom
-    == topology_chain.indexFirstAtom + topology_chain.atomCount,
+    == topology_chain.indexFirstAtom + topology_chain.atomCount - 1,
     "Unexpected chain ranges",
 )
 
@@ -517,7 +560,7 @@ require(
 )
 require(
     topology_residue.indexLastAtom
-    == topology_residue.indexFirstAtom + topology_residue.atomCount,
+    == topology_residue.indexFirstAtom + topology_residue.atomCount - 1,
     "Unexpected residue ranges",
 )
 topology_residue_category = topology_residue.getCategory()
@@ -575,7 +618,7 @@ require(
     trajectory.requestedFrameIndex == 0
     and trajectory.playMode == vtx.TRAJECTORY_PLAY_MODE.NONE
     and trajectory.paused
-    and almost_equal(trajectory.speed, 0.0),
+    and almost_equal(trajectory.frameDelay, 0.0),
     "Unexpected single-frame player state",
 )
 frame = topology_system.currentFrame
@@ -589,7 +632,7 @@ for trajectory_command in (
     lambda: trajectory.stop(),
     lambda: trajectory.jumpTo(0),
     lambda: trajectory.setPlayMode(vtx.TRAJECTORY_PLAY_MODE.NONE),
-    lambda: trajectory.setSpeed(35.0),
+    lambda: trajectory.setFrameDelay(35.0),
 ):
     try:
         trajectory_command()

@@ -529,6 +529,7 @@ namespace VTX::Renderer::Geometry
 			}
 #else
 			construction->markIncalculable();
+			VTX_ERROR( "Can not build SES: VTX was built without CUDA support." );
 #endif
 		}
 

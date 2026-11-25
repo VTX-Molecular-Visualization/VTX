@@ -64,11 +64,14 @@ namespace VTX::UI::QT::Util
 
 	void fillComboBox( QComboBox * p_comboBox, const std::vector<std::string> & p_values );
 	void fillComboBox( QComboBox * p_comboBox, const std::vector<QString> & p_values );
-	void fillMenu( QMenu &							p_menu,
-				   int								p_enumSize,
-				   const std::vector<std::string> & p_names,
-				   bool								p_actionCheckable = false );
+	void fillMenu(
+		QMenu &							 p_menu,
+		int								 p_enumSize,
+		const std::vector<std::string> & p_names,
+		bool							 p_actionCheckable = false
+	);
 
+	/*
 	static void appendColorHtmlTag( QString & p_txt, const VTX::Util::Color::Rgba & p_color )
 	{
 		const QString colorString = QString::fromStdString( p_color.toHexaString() );
@@ -90,10 +93,12 @@ namespace VTX::UI::QT::Util
 
 	static void setDynamicProperty( QWidget * const p_widget, const char * const p_property )
 	{ setDynamicProperty( p_widget, p_property, true ); }
+	*/
 
 	static constexpr Qt::CheckState getCheckState( const bool p_boolValue )
 	{ return p_boolValue ? Qt::CheckState::Checked : Qt::CheckState::Unchecked; }
 
+	/*
 	static void filterEventOnWidget( QWidget * const p_widget, const QEvent::Type & p_eventType )
 	{
 		EventEater * const eater = Helper::makeQObject<EventEater>( p_eventType, p_widget );
@@ -111,6 +116,7 @@ namespace VTX::UI::QT::Util
 
 	static QBitmap generateAlphaMask( const QString & p_filepath )
 	{ return QBitmap::fromPixmap( QPixmap::fromImage( QImage( p_filepath ).createAlphaMask() ) ); }
+	*/
 
 	// Class responsible for creating a label with tooltip as a question mark ? button next to it.
 	// Implicitly convert in QWidget pointer which refers to the container of both the label and the question mark.

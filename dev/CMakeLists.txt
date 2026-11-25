@@ -20,8 +20,6 @@ find_package(cpr CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 find_package(chemfiles CONFIG REQUIRED)
 if (VTX_RENDERER)
-	find_package(SDL3 CONFIG REQUIRED)
-	find_package(imgui CONFIG REQUIRED)
 	find_package(Ktx CONFIG REQUIRED)
 endif()
 find_package(stb CONFIG CONFIG REQUIRED)
@@ -38,6 +36,7 @@ if (VTX_UI_QT)
 	find_package(Qt6 COMPONENTS Core REQUIRED)
 	find_package(Qt6 COMPONENTS Gui REQUIRED)
 	find_package(Qt6 COMPONENTS Widgets REQUIRED)
+	find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 	find_package(Qt6 COMPONENTS Test REQUIRED)
 endif()
 find_package(fmt CONFIG REQUIRED)
@@ -47,8 +46,6 @@ find_package(argparse REQUIRED)
 
 if(LINUX)
 	find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
-	find_package(X11 REQUIRED)
-	find_package(wayland REQUIRED)
 endif()
 
 if (LOCAL_PDB100)
@@ -70,11 +67,6 @@ include("${DIR_LIBS}/io/cmake/library.cmake")
 # Renderer.
 if (VTX_RENDERER)
 	include("${DIR_LIBS}/renderer/cmake/library.cmake")
-endif()
-
-# Bench.
-if (VTX_RENDERER)
-	include("${DIR_APPS}/bench/cmake/library.cmake")
 endif()
 
 # Python binding.

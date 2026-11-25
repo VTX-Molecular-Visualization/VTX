@@ -1,4 +1,4 @@
-name: Include What You Use
+name: iwyu
 
 on:
   workflow_dispatch:
@@ -32,29 +32,22 @@ jobs:
         sudo apt-get install -y iwyu jq
         include-what-you-use --version
 
-    - name: Setup Conan
-      uses: conan-io/setup-conan@v1.3.0
+    - name: Setup build environment
+      uses: ./.github/actions/setup-vtx
       with:
-        use_venv: true
-        profile_detect: true
-
-    - name: Add custom remote
-      run: |
-        conan remote add vtx ${{ secrets.CONAN_SERVER_HOST }} --index 0
-        conan remote login -p ${{ secrets.CONAN_SERVER_PASSWORD }} vtx ${{ secrets.CONAN_SERVER_USER }}
+        conan_user: ${{ secrets.CONAN_SERVER_USER }}
+        conan_password: ${{ secrets.CONAN_SERVER_PASSWORD }}
+        build_type: ${{ env.BUILD_TYPE }}
 
     - name: Install dependencies
       working-directory: ${{env.DEV_DIR}}
       shell: bash
       run: |
+        conan export ../lib/ui/qt/conan/wayland
         conan install . -b missing \
-          -s build_type=${{ env.BUILD_TYPE }} \
-          -s compiler.cppstd=gnu20 \
           -o vtx/*:tool_example=True \
           -o vtx/*:tool_mdprep=True \
-          -o vtx/*:tool_topology_editor=True \
-          -c tools.system.package_manager:mode=install \
-          -c tools.system.package_manager:sudo=True
+          -o vtx/*:tool_topology_editor=True
 
     - name: Configure
       working-directory: ${{env.DEV_DIR}}

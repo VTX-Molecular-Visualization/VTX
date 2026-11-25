@@ -48,7 +48,7 @@ namespace VTX::App::Action::Selection
 			const Core::Struct::IndexRangeList atoms	 = Helper::System::getAtomRangeList<ITEM>( p_ent, p_ranges );
 			Util::Math::BitSet				   current	 = selection.atoms;
 
-			if ( not p_append )
+			if ( p_selected && not p_append )
 			{
 				current.clear();
 			}

@@ -46,18 +46,31 @@ namespace VTX::App::PythonBinding::Preset
 
 	void bindColorLayout( Module & p_vtxModule, pybind11::class_<ColorLayoutHandle> & p_binding )
 	{
-		VTX::PythonBinding::Helper::declareEnum<Renderer::Color::E_LAYOUT_COLOR_INDEX>( p_vtxModule.pyModule(),
-																						"COLOR_LAYOUT_INDEX" );
+		VTX::PythonBinding::Helper::declareEnum<Renderer::Color::E_LAYOUT_COLOR_INDEX>(
+			p_vtxModule.pyModule(), "COLOR_LAYOUT_INDEX", "Named color indices of a color layout."
+		);
 
 		p_binding
 			.def_property(
-				"colors", []( const ColorLayoutHandle & p_preset ) { return getData( p_preset ).colors; }, &_setColors )
+				"colors",
+				[]( const ColorLayoutHandle & p_preset ) { return getData( p_preset ).colors; },
+				&_setColors,
+				"All colors of the layout."
+			)
 			.def_property_readonly(
-				"colorCount", []( const ColorLayoutHandle & p_preset ) { return getData( p_preset ).colors.size(); } )
-			.def( "getColor", &_getColor, py::arg( "index" ) )
-			.def( "randomize", &_randomize )
+				"colorCount",
+				[]( const ColorLayoutHandle & p_preset ) { return getData( p_preset ).colors.size(); },
+				"Number of colors."
+			)
+			.def(
+				"getColor",
+				&_getColor,
+				"Return a color by index. Raises IndexError if out of range.",
+				py::arg( "index" )
+			)
+			.def( "randomize", &_randomize, "Randomize the colors." )
 			.def( "__len__", []( const ColorLayoutHandle & p_preset ) { return getData( p_preset ).colors.size(); } )
-			.def( "__getitem__", &_getColor )
-			.def( "__setitem__", &_setColor );
+			.def( "__getitem__", &_getColor, py::arg( "index" ) )
+			.def( "__setitem__", &_setColor, py::arg( "index" ), py::arg( "color" ) );
 	}
 } // namespace VTX::App::PythonBinding::Preset
