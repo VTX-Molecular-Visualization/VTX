@@ -170,20 +170,23 @@ namespace VTX::App::Action::Selection
 	struct Pick
 	{ void execute( const Vec2i &, E_GRANULARITY = E_GRANULARITY::RESIDUE, bool = false ); };
 
-	struct ExtendSelectionRes
+	/**
+	 * @brief Select whole residues from selected atoms.
+	 */
+	struct ExtendSelectionToResidue
 	{ void execute(); };
 
-	struct RevertSelection
+	/**
+	 * @brief Invert current selection.
+	 */
+	struct InvertSelection
 	{ void execute(); };
 
+	/**
+	 * @brief Extend current selection to given distance (angstrom).
+	 */
 	struct ExtendSelection
-	{ void execute( float threshold ); };
-
-	struct ExtendSelectionFromSelec
-	{ void execute( float threshold ); };
-
-	struct ExtendSelectionFromNonSelec
-	{ void execute( float threshold ); };
+	{ void execute( float p_distance ); };
 } // namespace VTX::App::Action::Selection
 
 #endif

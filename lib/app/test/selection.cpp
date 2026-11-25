@@ -194,7 +194,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelecti
 	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system2, toSelect );
 	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system2, toMask, false );
 
-	App::ACTION().execute<App::Action::Selection::ExtendSelectionRes>();
+	App::ACTION().execute<App::Action::Selection::ExtendSelectionToResidue>();
 
 	int count { 0 };
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
@@ -231,7 +231,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelecti
 	atomList = { 0, 5 };
 	expected2.set( atomList );
 
-	App::ACTION().execute<App::Action::Selection::ExtendSelectionRes>();
+	App::ACTION().execute<App::Action::Selection::ExtendSelectionToResidue>();
 
 	CHECK( selection3.atoms == expected1 );
 	CHECK( selection4.atoms == expected2 );
@@ -256,7 +256,7 @@ TEST_CASE( "VTX_APP - Selection - RevertSelection", "[revertSelection][selection
 	toMask = static_cast<Index>( selection1.atoms.size() - 1 );
 	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
 
-	App::ACTION().execute<App::Action::Selection::RevertSelection>();
+	App::ACTION().execute<App::Action::Selection::InvertSelection>();
 
 	int count { 0 };
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
@@ -295,7 +295,7 @@ TEST_CASE( "VTX_APP - Selection - RevertSelection", "[revertSelection][selection
 	visible4.atoms.reset( 0 );
 	expected2.set( atomList );
 
-	App::ACTION().execute<App::Action::Selection::RevertSelection>();
+	App::ACTION().execute<App::Action::Selection::InvertSelection>();
 
 	CHECK( selection3.atoms == expected1 );
 	CHECK( selection4.atoms == expected2 );
