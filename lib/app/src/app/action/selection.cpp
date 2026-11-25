@@ -297,30 +297,33 @@ namespace VTX::App::Action::Selection
 			const Vec3f & p1,
 			const Vec3f & p2,
 			const Vec3f & p_scale,
-			const float	  p_distance,
-			const float	  p_distance2
+			const double  p_distance,
+			const double  p_distance2
 		)
 		{
 			// checking distance on axes before calculating distance i - j
-			const float dx = ( p1.x - p2.x ) * p_scale.x;
+			const double dx
+				= ( static_cast<double>( p1.x ) - static_cast<double>( p2.x ) ) * static_cast<double>( p_scale.x );
 			if ( dx > p_distance || dx < -p_distance )
 			{
 				return false;
 			}
 
-			const float dy = ( p1.y - p2.y ) * p_scale.y;
+			const double dy
+				= ( static_cast<double>( p1.y ) - static_cast<double>( p2.y ) ) * static_cast<double>( p_scale.y );
 			if ( dy > p_distance || dy < -p_distance )
 			{
 				return false;
 			}
 
-			const float dz = ( p1.z - p2.z ) * p_scale.z;
+			const double dz
+				= ( static_cast<double>( p1.z ) - static_cast<double>( p2.z ) ) * static_cast<double>( p_scale.z );
 			if ( dz > p_distance || dz < -p_distance )
 			{
 				return false;
 			}
 
-			const float dist2 = dx * dx + dy * dy + dz * dz;
+			const double dist2 = dx * dx + dy * dy + dz * dz;
 			return dist2 <= p_distance2;
 		}
 
@@ -407,7 +410,7 @@ namespace VTX::App::Action::Selection
 			std::vector<SystemData> systems = collectSystems( p_distance );
 
 			// square to avoid using square root during distance calculation
-			const float distance2 = p_distance * p_distance;
+			const double distance2 = static_cast<double>( p_distance ) * static_cast<double>( p_distance );
 
 			// system loop
 			for ( SystemData & testedSystem : systems )
@@ -490,7 +493,7 @@ namespace VTX::App::Action::Selection
 			std::vector<SystemData> systems = collectSystems( p_distance );
 
 			// square to avoid using square root during distance calculation
-			const float distance2 = p_distance * p_distance;
+			const double distance2 = static_cast<double>( p_distance ) * static_cast<double>( p_distance );
 
 			// systems loop
 			for ( const SystemData & testingSystem : systems )
