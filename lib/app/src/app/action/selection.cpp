@@ -350,6 +350,20 @@ namespace VTX::App::Action::Selection
 		Vec3f transformPoint( const Mat4f & p_matrix, const Vec3f & p_point )
 		{ return Vec3f( p_matrix * Vec4f( p_point, 1.f ) ); }
 
+		std::vector<Mat4f> computeRelativeTransforms(
+			const std::vector<SystemData> & p_systems,
+			const Mat4f &					p_sourceLocalToWorld
+		)
+		{
+			std::vector<Mat4f> transforms;
+			transforms.reserve( p_systems.size() );
+			for ( const SystemData & system : p_systems )
+			{
+				transforms.emplace_back( system.worldToLocal * p_sourceLocalToWorld );
+			}
+			return transforms;
+		}
+
 		std::vector<SystemData> collectSystems( const float p_distance )
 		{
 			std::vector<SystemData> systems;
@@ -398,6 +412,9 @@ namespace VTX::App::Action::Selection
 			// system loop
 			for ( SystemData & testedSystem : systems )
 			{
+				const std::vector<Mat4f> toTestingLocal
+					= computeRelativeTransforms( systems, testedSystem.localToWorld );
+
 				// system's atoms loop
 				for ( Index i = 0; i < testedSystem.selection.atoms.size(); ++i )
 				{
@@ -406,14 +423,14 @@ namespace VTX::App::Action::Selection
 						continue;
 					}
 
-					// coord atom i
-					const Vec3f p1 = transformPoint( testedSystem.localToWorld, testedSystem.positions[ i ] );
-
 					bool found = false;
 					// system loop
-					for ( SystemData & testingSystem : systems )
+					for ( size_t k = 0; k < systems.size(); ++k )
 					{
-						const Vec3f q1 = transformPoint( testingSystem.worldToLocal, p1 );
+						SystemData & testingSystem = systems[ k ];
+						const Vec3f	 q1			   = &testingSystem == &testedSystem
+														 ? testedSystem.positions[ i ]
+														 : transformPoint( toTestingLocal[ k ], testedSystem.positions[ i ] );
 						// atom i voxel
 						const Util::Math::Grid<Index>::CellPosition cell = testingSystem.grid.gridPosition( q1 );
 						// neighbor voxels loop
@@ -478,16 +495,19 @@ namespace VTX::App::Action::Selection
 			// systems loop
 			for ( const SystemData & testingSystem : systems )
 			{
+				const std::vector<Mat4f> toTestedLocal
+					= computeRelativeTransforms( systems, testingSystem.localToWorld );
+
 				// selected atoms loop
 				for ( const size_t i : testingSystem.selection.atoms )
 				{
-					// coord atom i
-					const Vec3f p1 = transformPoint( testingSystem.localToWorld, testingSystem.positions[ i ] );
-
 					// systems loop
-					for ( SystemData & testedSystem : systems )
+					for ( size_t k = 0; k < systems.size(); ++k )
 					{
-						const Vec3f q1 = transformPoint( testedSystem.worldToLocal, p1 );
+						SystemData & testedSystem = systems[ k ];
+						const Vec3f	 q1			  = &testedSystem == &testingSystem
+														? testingSystem.positions[ i ]
+														: transformPoint( toTestedLocal[ k ], testingSystem.positions[ i ] );
 						// atom i voxel
 						const Util::Math::Grid<Index>::CellPosition cell = testedSystem.grid.gridPosition( q1 );
 						// neighbor voxels loop
