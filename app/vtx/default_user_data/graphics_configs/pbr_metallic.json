@@ -1,0 +1,76 @@
+{
+    "version": 1,
+    "name": "PBR Metallic",
+    "data": {
+        "shading": {
+            "mode": "PBR",
+            "colorLight": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "colorBackground": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "specularFactor": 0.4,
+            "shininess": 32.0,
+            "toonSteps": 4,
+            "lightIntensity": 2.5,
+            "ambientIntensity": 0.05,
+            "backgroundMode": "COLOR",
+            "environmentPath": null,
+            "environmentFaceSize": 1024,
+            "skyboxIntensity": 1.0,
+            "iblIntensity": 1.0,
+            "environmentRotation": 0.0,
+            "material": {
+                "name": "Brushed metal",
+                "emissiveColor": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "emissiveIntensity": 0.0,
+                "metallic": 1.0,
+                "roughness": 0.55,
+                "opacity": 1.0,
+                "textureScale": 1.0,
+                "albedoTexture": null,
+                "normalTexture": null,
+                "metallicTexture": null,
+                "roughnessTexture": null,
+                "ambientOcclusionTexture": null,
+                "emissiveTexture": null,
+                "doubleSided": false
+            }
+        },
+        "ssao": {
+            "method": "SSAO",
+            "intensity": 2.5,
+            "radius": 0.5,
+            "scale": 2.0,
+            "blurSize": 11.0
+        },
+        "outline": null,
+        "fog": null,
+        "chromaticAberration": null,
+        "pixelize": null,
+        "crt": null,
+        "selection": {
+            "color": [
+                0.3137255,
+                1.0,
+                0.47058824,
+                1.0
+            ]
+        },
+        "toneMapping": {
+            "mode": "UNCHARTED",
+            "exposure": 1.0
+        }
+    }
+}

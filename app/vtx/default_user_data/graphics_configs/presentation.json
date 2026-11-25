@@ -1,0 +1,76 @@
+{
+    "version": 1,
+    "name": "Presentation",
+    "data": {
+        "shading": {
+            "mode": "GLOSSY",
+            "colorLight": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ],
+            "colorBackground": [
+                0.07058824,
+                0.078431375,
+                0.09411765,
+                1.0
+            ],
+            "specularFactor": 0.55,
+            "shininess": 56.0,
+            "toonSteps": 4,
+            "lightIntensity": 2.0,
+            "ambientIntensity": 0.01,
+            "backgroundMode": "COLOR",
+            "environmentPath": null,
+            "environmentFaceSize": 1024,
+            "skyboxIntensity": 1.0,
+            "iblIntensity": 1.0,
+            "environmentRotation": 0.0,
+            "material": {
+                "name": "Default",
+                "emissiveColor": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "emissiveIntensity": 0.0,
+                "metallic": 0.0,
+                "roughness": 1.0,
+                "opacity": 1.0,
+                "textureScale": 1.0,
+                "albedoTexture": null,
+                "normalTexture": null,
+                "metallicTexture": null,
+                "roughnessTexture": null,
+                "ambientOcclusionTexture": null,
+                "emissiveTexture": null,
+                "doubleSided": false
+            }
+        },
+        "ssao": {
+            "method": "SSAO",
+            "intensity": 4.0,
+            "radius": 0.5,
+            "scale": 2.0,
+            "blurSize": 21.0
+        },
+        "outline": null,
+        "fog": null,
+        "chromaticAberration": null,
+        "pixelize": null,
+        "crt": null,
+        "selection": {
+            "color": [
+                0.3137255,
+                1.0,
+                0.47058824,
+                1.0
+            ]
+        },
+        "toneMapping": {
+            "mode": "REINHARD",
+            "exposure": 1.0
+        }
+    }
+}

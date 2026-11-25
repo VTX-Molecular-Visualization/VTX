@@ -1,0 +1,21 @@
+{
+    "version": 1,
+    "name": "Sticks and Ribbons",
+    "data": {
+        "hasSphere": false,
+        "radiusSphereFixed": 0.5,
+        "radiusSphereAdd": 0.0,
+        "isRadiusSphereFixed": true,
+        "hasCylinder": true,
+        "radiusCylinder": 0.15,
+        "cylinderColorBlending": false,
+        "hasRibbon": true,
+        "ribbonColorBlending": true,
+        "hasSes": false,
+        "sesComputeMode": [
+            "POLYMER",
+            "CARBOHYDRATE"
+        ],
+        "sesProbeRadius": 1.4
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "version": 1,
+    "name": "SES",
+    "data": {
+        "hasSphere": false,
+        "radiusSphereFixed": 0.5,
+        "radiusSphereAdd": 0.0,
+        "isRadiusSphereFixed": false,
+        "hasCylinder": false,
+        "radiusCylinder": 0.1,
+        "cylinderColorBlending": false,
+        "hasRibbon": false,
+        "ribbonColorBlending": false,
+        "hasSes": true,
+        "sesComputeMode": [
+            "POLYMER",
+            "CARBOHYDRATE"
+        ],
+        "sesProbeRadius": 1.4
+    }
+}
