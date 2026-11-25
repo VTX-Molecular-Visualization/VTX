@@ -33,6 +33,9 @@ namespace VTX::App::PythonBinding
 			bool						  isEmpty( const Topology::System & p_system ) const;
 			void						  show() const;
 			void						  hide() const;
+			void						  extend( float p_distance ) const;
+			void						  extendToResidue() const;
+			void						  invert() const;
 			void						  setRepresentation( const std::string & p_name ) const;
 			void						  setRepresentation( const Preset::RepresentationHandle & p_preset ) const;
 			void						  setColorScheme(
@@ -129,6 +132,20 @@ namespace VTX::App::PythonBinding
 
 		void SelectionView::hide() const { executeAction<App::Action::Visibility::SetVisibleSelected>( false ); }
 
+		void SelectionView::extend( const float p_distance ) const
+		{
+			if ( p_distance < 0.f )
+			{
+				throw pybind11::value_error( "Distance must not be negative." );
+			}
+			executeAction<App::Action::Selection::ExtendSelection>( p_distance );
+		}
+
+		void SelectionView::extendToResidue() const
+		{ executeAction<App::Action::Selection::ExtendSelectionToResidue>(); }
+
+		void SelectionView::invert() const { executeAction<App::Action::Selection::InvertSelection>(); }
+
 		void SelectionView::setRepresentation( const std::string & p_name ) const
 		{
 			THREAD().synchronize(
@@ -199,6 +216,23 @@ namespace VTX::App::PythonBinding
 			)
 			.def( "show", &SelectionView::show, "Show the selection." )
 			.def( "hide", &SelectionView::hide, "Hide the selection." )
+			.def(
+				"extend",
+				&SelectionView::extend,
+				"Add to the selection all visible atoms within the given distance (angstrom) of a selected atom. "
+				"Does nothing if the distance is zero. Raises ValueError if the distance is negative.",
+				pybind11::arg( "distance" )
+			)
+			.def(
+				"extendToResidue",
+				&SelectionView::extendToResidue,
+				"Add to the selection all visible atoms of the residues containing a selected atom."
+			)
+			.def(
+				"invert",
+				&SelectionView::invert,
+				"Invert the selection among visible atoms. Hidden atoms end up unselected."
+			)
 			.def(
 				"setRepresentation",
 				pybind11::overload_cast<const std::string &>( &SelectionView::setRepresentation, pybind11::const_ ),
