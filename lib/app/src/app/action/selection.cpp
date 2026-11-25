@@ -281,9 +281,9 @@ namespace VTX::App::Action::Selection
 			Mat4f							worldToLocal;
 			Vec3f							scale;
 			int								neighbourDist;
-			App::System::Selection &		selection;
+			const App::System::Selection &	selection;
 			const Util::Math::Grid<Index> & grid;
-			App::System::Visibility &		visibility;
+			const App::System::Visibility & visibility;
 			Core::Struct::IndexRangeList	toSelect;
 		};
 
@@ -334,12 +334,11 @@ namespace VTX::App::Action::Selection
 
 		int neighbourCellDist(
 			const Util::Math::Grid<Index> & p_grid,
-			const Util::Math::Transform &	p_transform,
+			const Vec3f &					p_scale,
 			const float						p_distance
 		)
 		{
-			const Vec3f & scale	   = p_transform.getScale();
-			const float	  minScale = std::min( { scale.x, scale.y, scale.z } );
+			const float minScale = std::min( { p_scale.x, p_scale.y, p_scale.z } );
 			assert( minScale > 0.f );
 
 			const Vec3f & cellSize = p_grid.getCellSize();
@@ -375,7 +374,7 @@ namespace VTX::App::Action::Selection
 					localToWorld,
 					Util::Math::inverse( localToWorld ),
 					transform.getScale(),
-					neighbourCellDist( grid, transform, p_distance ),
+					neighbourCellDist( grid, transform.getScale(), p_distance ),
 					REG().get<App::System::Selection>( system ),
 					grid,
 					REG().get<App::System::Visibility>( system ),
@@ -533,16 +532,27 @@ namespace VTX::App::Action::Selection
 	void ExtendSelection::execute( const float p_distance )
 	{
 		// Selects the most efficient extension strategy depending on selection density.
+		if ( p_distance <= 0.f )
+		{
+			return;
+		}
+
 		unselectMaskedItems();
 		size_t selec { 0 };
 		size_t tot { 0 };
 		// System loop
-		for ( const Entity system : REG().view<App::System::Selection>() )
+		for ( const Entity system : REG().view<App::System::Selection, App::System::Visibility>() )
 		{
-			auto & selection = REG().get<App::System::Selection>( system );
+			const auto & selection	= REG().get<App::System::Selection>( system );
+			const auto & visibility = REG().get<App::System::Visibility>( system );
 
-			tot += selection.atoms.size();
+			tot += visibility.atoms.count();
 			selec += selection.atoms.count();
+		}
+
+		if ( selec == 0 )
+		{
+			return;
 		}
 
 		if ( selec > tot / 2 )
