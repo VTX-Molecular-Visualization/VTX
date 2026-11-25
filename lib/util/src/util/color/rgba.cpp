@@ -1,7 +1,13 @@
 #include "util/color/rgba.hpp"
 #include "util/math.hpp"
+#include <algorithm>
 #include <array>
+#include <charconv>
+#include <cmath>
+#include <cstdint>
+#include <fmt/format.h>
 #include <limits>
+#include <stdexcept>
 
 namespace VTX::Util::Color
 {
@@ -84,7 +90,7 @@ namespace VTX::Util::Color
 
 		result = result.withMinBrightness( 0.5f );
 		result.saturate();
-		return result;
+		return Rgba( result.r(), result.g(), result.b(), a() );
 	}
 
 	Rgba Rgba::toColorblind() const noexcept
@@ -141,6 +147,7 @@ namespace VTX::Util::Color
 		_v.x = Util::Math::clamp( _v.x, 0.f, 1.f );
 		_v.y = Util::Math::clamp( _v.y, 0.f, 1.f );
 		_v.z = Util::Math::clamp( _v.z, 0.f, 1.f );
+		_v.w = Util::Math::clamp( _v.w, 0.f, 1.f );
 	}
 
 	void Rgba::applyGamma( const float & p_gamma ) noexcept
@@ -156,6 +163,51 @@ namespace VTX::Util::Color
 		_v.y = 1.f - _v.y;
 		_v.z = 1.f - _v.z;
 	}
+
+	namespace
+	{
+		uint32_t _toPacked( const Vec4f & p_color ) noexcept
+		{
+			const auto toByte = []( const float p_channel ) -> uint32_t
+			{ return static_cast<uint32_t>( std::lround( std::clamp( p_channel, 0.f, 1.f ) * 255.f ) ); };
+
+			return toByte( p_color.x ) << 24 | toByte( p_color.y ) << 16 | toByte( p_color.z ) << 8 | toByte( p_color.w );
+		}
+	} // namespace
+
+	std::string Rgba::toHexaString() const { return fmt::format( "#{:08X}", _toPacked( _v ) ); }
+
+	std::string Rgba::toHexaString( const Rgba & p_color ) { return p_color.toHexaString(); }
+
+	void Rgba::fromHexaString( const std::string_view p_hexa )
+	{
+		const bool hasAlpha = p_hexa.size() == 9;
+		if ( ( p_hexa.size() == 7 || hasAlpha ) && p_hexa.front() == '#' )
+		{
+			const char * const end	  = p_hexa.data() + p_hexa.size();
+			uint32_t		   packed = 0;
+
+			if ( std::from_chars( p_hexa.data() + 1, end, packed, 16 ).ptr == end )
+			{
+				if ( not hasAlpha )
+				{
+					packed = packed << 8 | 0xFF;
+				}
+
+				*this = Rgba(
+					static_cast<int>( packed >> 24 ),
+					static_cast<int>( packed >> 16 & 0xFF ),
+					static_cast<int>( packed >> 8 & 0xFF ),
+					static_cast<int>( packed & 0xFF )
+				);
+				return;
+			}
+		}
+
+		throw std::invalid_argument( "Invalid color \"" + std::string( p_hexa ) + "\", expected #RRGGBB or #RRGGBBAA" );
+	}
+
+	void Rgba::fromHexaString( const std::string_view p_hexa, Rgba & p_color ) { p_color.fromHexaString( p_hexa ); }
 
 	Rgba Rgba::random()
 	{ return Rgba( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() ); }

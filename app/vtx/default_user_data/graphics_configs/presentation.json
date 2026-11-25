@@ -4,18 +4,8 @@
     "data": {
         "shading": {
             "mode": "GLOSSY",
-            "colorLight": [
-                1.0,
-                1.0,
-                1.0,
-                1.0
-            ],
-            "colorBackground": [
-                0.07058824,
-                0.078431375,
-                0.09411765,
-                1.0
-            ],
+            "colorLight": "#FFFFFFFF",
+            "colorBackground": "#121418FF",
             "specularFactor": 0.55,
             "shininess": 56.0,
             "toonSteps": 4,
@@ -61,12 +51,7 @@
         "pixelize": null,
         "crt": null,
         "selection": {
-            "color": [
-                0.3137255,
-                1.0,
-                0.47058824,
-                1.0
-            ]
+            "color": "#50FF78FF"
         },
         "toneMapping": {
             "mode": "REINHARD",

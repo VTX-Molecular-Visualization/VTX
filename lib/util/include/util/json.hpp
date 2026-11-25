@@ -8,6 +8,7 @@
 #include <entt/core/enum.hpp>
 #include <magic_enum/magic_enum.hpp>
 #include <nlohmann/json.hpp>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -40,20 +41,11 @@ namespace nlohmann
 	{
 		template<typename BasicJsonType>
 		static void to_json( BasicJsonType & p_json, const VTX::Util::Color::Rgba & p_color )
-		{
-			const VTX::Vec4f & v = p_color.vec();
-			p_json				 = BasicJsonType::array( { v.x, v.y, v.z, v.w } );
-		}
+		{ p_json = p_color.toHexaString(); }
 
 		template<typename BasicJsonType>
 		static void from_json( const BasicJsonType & p_json, VTX::Util::Color::Rgba & p_color )
-		{
-			VTX::Vec4f & v = p_color.vec();
-			p_json.at( 0 ).get_to( v.x );
-			p_json.at( 1 ).get_to( v.y );
-			p_json.at( 2 ).get_to( v.z );
-			v.w = p_json.size() > 3 ? p_json.at( 3 ).template get<float>() : 1.f;
-		}
+		{ p_color.fromHexaString( p_json.template get<std::string>() ); }
 	};
 
 	/**
@@ -164,7 +156,7 @@ namespace nlohmann
 			if constexpr ( entt::enum_as_bitmask_v<E> )
 			{
 				Bits value = 0;
-				for ( const auto & item : p_json )
+				for ( const BasicJsonType & item : p_json )
 				{
 					value |= static_cast<Bits>( magic_enum::enum_integer( _cast( item ) ) );
 				}
@@ -182,8 +174,8 @@ namespace nlohmann
 		template<typename BasicJsonType>
 		static E _cast( const BasicJsonType & p_json )
 		{
-			const std::string name	= p_json.template get<std::string>();
-			const auto		  value = magic_enum::enum_cast<E>( name );
+			const std::string	   name  = p_json.template get<std::string>();
+			const std::optional<E> value = magic_enum::enum_cast<E>( name );
 			if ( not value )
 			{
 				throw std::invalid_argument(

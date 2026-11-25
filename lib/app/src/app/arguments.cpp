@@ -2,6 +2,7 @@
 #include "app/session.hpp"
 #include <argparse/argparse.hpp>
 #include <cassert>
+#include <sstream>
 
 namespace VTX::App
 {

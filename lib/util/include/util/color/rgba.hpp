@@ -3,9 +3,9 @@
 
 #include "util/types.hpp"
 #include <cassert>
-#include <iomanip>
-#include <sstream>
+#include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace VTX::Util::Color
@@ -40,148 +40,145 @@ namespace VTX::Util::Color
 
 		constexpr explicit Rgba( const Vec4f & p_v ) noexcept : _v( p_v ) {}
 
+		explicit Rgba( const std::string_view p_hexa ) { fromHexaString( p_hexa ); }
+
 		constexpr Vec4f & vec() noexcept { return _v; }
 
 		constexpr const Vec4f & vec() const noexcept { return _v; }
 
-		std::vector<float> toStdVector() const { return { _v.x, _v.y, _v.z }; }
+		std::vector<float> toStdVector() const { return { _v.x, _v.y, _v.z, _v.w }; }
 
-		[[nodiscard]] std::string toHexaString() const
+		[[nodiscard]] std::string toHexaString() const;
+
+		[[nodiscard]] static std::string toHexaString( const Rgba & p_color );
+
+		void fromHexaString( const std::string_view p_hexa );
+
+		static void fromHexaString( const std::string_view p_hexa, Rgba & p_color );
+
+		constexpr Rgba & operator+=( const Rgba & p_color ) noexcept
 		{
-			std::stringstream ss;
-			ss << "#";
-			setSingleChannelHexaInStream( _v.x, ss );
-			setSingleChannelHexaInStream( _v.y, ss );
-			setSingleChannelHexaInStream( _v.z, ss );
-			return ss.str();
-		}
-
-		std::string toHexaStringAlpha() const
-		{
-			std::stringstream ss;
-			ss << "#";
-			setSingleChannelHexaInStream( _v.x, ss );
-			setSingleChannelHexaInStream( _v.y, ss );
-			setSingleChannelHexaInStream( _v.z, ss );
-			setSingleChannelHexaInStream( _v.w, ss );
-			return ss.str();
-		}
-
-		static void setSingleChannelHexaInStream( float v, std::stringstream & ss )
-		{ ss << std::hex << std::setw( 2 ) << std::setfill( '0' ) << static_cast<int>( v * 255 ); }
-
-		constexpr Rgba & operator+=( const Rgba & p ) noexcept
-		{
-			_v.x += p._v.x;
-			_v.y += p._v.y;
-			_v.z += p._v.z;
+			_v.x += p_color._v.x;
+			_v.y += p_color._v.y;
+			_v.z += p_color._v.z;
+			_v.w += p_color._v.w;
 			return *this;
 		}
 
-		constexpr Rgba & operator+=( float f ) noexcept
+		constexpr Rgba & operator+=( const float p_value ) noexcept
 		{
-			_v.x += f;
-			_v.y += f;
-			_v.z += f;
+			_v.x += p_value;
+			_v.y += p_value;
+			_v.z += p_value;
+			_v.w += p_value;
 			return *this;
 		}
 
-		constexpr Rgba & operator-=( const Rgba & p ) noexcept
+		constexpr Rgba & operator-=( const Rgba & p_color ) noexcept
 		{
-			_v.x -= p._v.x;
-			_v.y -= p._v.y;
-			_v.z -= p._v.z;
+			_v.x -= p_color._v.x;
+			_v.y -= p_color._v.y;
+			_v.z -= p_color._v.z;
+			_v.w -= p_color._v.w;
 			return *this;
 		}
 
-		constexpr Rgba & operator-=( float f ) noexcept
+		constexpr Rgba & operator-=( const float p_value ) noexcept
 		{
-			_v.x -= f;
-			_v.y -= f;
-			_v.z -= f;
+			_v.x -= p_value;
+			_v.y -= p_value;
+			_v.z -= p_value;
+			_v.w -= p_value;
 			return *this;
 		}
 
-		constexpr Rgba & operator*=( const Rgba & p ) noexcept
+		constexpr Rgba & operator*=( const Rgba & p_color ) noexcept
 		{
-			_v.x *= p._v.x;
-			_v.y *= p._v.y;
-			_v.z *= p._v.z;
+			_v.x *= p_color._v.x;
+			_v.y *= p_color._v.y;
+			_v.z *= p_color._v.z;
+			_v.w *= p_color._v.w;
 			return *this;
 		}
 
-		constexpr Rgba & operator*=( float f ) noexcept
+		constexpr Rgba & operator*=( const float p_value ) noexcept
 		{
-			_v.x *= f;
-			_v.y *= f;
-			_v.z *= f;
+			_v.x *= p_value;
+			_v.y *= p_value;
+			_v.z *= p_value;
+			_v.w *= p_value;
 			return *this;
 		}
 
-		constexpr Rgba & operator/=( const Rgba & p ) noexcept
+		constexpr Rgba & operator/=( const Rgba & p_color ) noexcept
 		{
-			assert( p._v.x != 0 && p._v.y != 0 && p._v.z != 0 );
-			_v.x /= p._v.x;
-			_v.y /= p._v.y;
-			_v.z /= p._v.z;
+			assert( p_color._v.x != 0 && p_color._v.y != 0 && p_color._v.z != 0 && p_color._v.w != 0 );
+			_v.x /= p_color._v.x;
+			_v.y /= p_color._v.y;
+			_v.z /= p_color._v.z;
+			_v.w /= p_color._v.w;
 			return *this;
 		}
 
-		constexpr Rgba & operator/=( float f ) noexcept
+		constexpr Rgba & operator/=( const float p_value ) noexcept
 		{
-			assert( f != 0 );
-			_v.x /= f;
-			_v.y /= f;
-			_v.z /= f;
+			assert( p_value != 0 );
+			_v.x /= p_value;
+			_v.y /= p_value;
+			_v.z /= p_value;
+			_v.w /= p_value;
 			return *this;
 		}
 
-		constexpr Rgba operator+( const Rgba & p ) const noexcept
-		{ return Rgba( _v.x + p._v.x, _v.y + p._v.y, _v.z + p._v.z ); }
+		constexpr Rgba operator+( const Rgba & p_color ) const noexcept
+		{ return Rgba( _v.x + p_color._v.x, _v.y + p_color._v.y, _v.z + p_color._v.z, _v.w + p_color._v.w ); }
 
-		constexpr Rgba operator-( const Rgba & p ) const noexcept
-		{ return Rgba( _v.x - p._v.x, _v.y - p._v.y, _v.z - p._v.z ); }
+		constexpr Rgba operator-( const Rgba & p_color ) const noexcept
+		{ return Rgba( _v.x - p_color._v.x, _v.y - p_color._v.y, _v.z - p_color._v.z, _v.w - p_color._v.w ); }
 
-		constexpr Rgba operator*( const Rgba & p ) const noexcept
-		{ return Rgba( _v.x * p._v.x, _v.y * p._v.y, _v.z * p._v.z ); }
+		constexpr Rgba operator*( const Rgba & p_color ) const noexcept
+		{ return Rgba( _v.x * p_color._v.x, _v.y * p_color._v.y, _v.z * p_color._v.z, _v.w * p_color._v.w ); }
 
-		constexpr Rgba operator/( const Rgba & p ) const noexcept
+		constexpr Rgba operator/( const Rgba & p_color ) const noexcept
 		{
-			assert( p._v.x != 0 && p._v.y != 0 && p._v.z != 0 );
-			return Rgba( _v.x / p._v.x, _v.y / p._v.y, _v.z / p._v.z );
+			assert( p_color._v.x != 0 && p_color._v.y != 0 && p_color._v.z != 0 && p_color._v.w != 0 );
+			return Rgba( _v.x / p_color._v.x, _v.y / p_color._v.y, _v.z / p_color._v.z, _v.w / p_color._v.w );
 		}
 
-		constexpr Rgba operator+( float f ) const noexcept { return Rgba( _v.x + f, _v.y + f, _v.z + f ); }
+		constexpr Rgba operator+( const float p_value ) const noexcept
+		{ return Rgba( _v.x + p_value, _v.y + p_value, _v.z + p_value, _v.w + p_value ); }
 
-		constexpr Rgba operator-( float f ) const noexcept { return Rgba( _v.x - f, _v.y - f, _v.z - f ); }
+		constexpr Rgba operator-( const float p_value ) const noexcept
+		{ return Rgba( _v.x - p_value, _v.y - p_value, _v.z - p_value, _v.w - p_value ); }
 
-		constexpr Rgba operator*( float f ) const noexcept { return Rgba( _v.x * f, _v.y * f, _v.z * f ); }
+		constexpr Rgba operator*( const float p_value ) const noexcept
+		{ return Rgba( _v.x * p_value, _v.y * p_value, _v.z * p_value, _v.w * p_value ); }
 
-		constexpr Rgba operator/( float f ) const noexcept
+		constexpr Rgba operator/( const float p_value ) const noexcept
 		{
-			assert( f != 0 );
-			return Rgba( _v.x / f, _v.y / f, _v.z / f );
+			assert( p_value != 0 );
+			return Rgba( _v.x / p_value, _v.y / p_value, _v.z / p_value, _v.w / p_value );
 		}
 
-		friend constexpr Rgba operator+( float f, const Rgba & p ) noexcept
-		{ return Rgba( f + p._v.x, f + p._v.y, f + p._v.z ); }
+		friend constexpr Rgba operator+( const float p_value, const Rgba & p_color ) noexcept
+		{ return Rgba( p_value + p_color._v.x, p_value + p_color._v.y, p_value + p_color._v.z, p_value + p_color._v.w ); }
 
-		friend constexpr Rgba operator-( float f, const Rgba & p ) noexcept
-		{ return Rgba( f - p._v.x, f - p._v.y, f - p._v.z ); }
+		friend constexpr Rgba operator-( const float p_value, const Rgba & p_color ) noexcept
+		{ return Rgba( p_value - p_color._v.x, p_value - p_color._v.y, p_value - p_color._v.z, p_value - p_color._v.w ); }
 
-		friend constexpr Rgba operator*( float f, const Rgba & p ) noexcept
-		{ return Rgba( f * p._v.x, f * p._v.y, f * p._v.z ); }
+		friend constexpr Rgba operator*( const float p_value, const Rgba & p_color ) noexcept
+		{ return Rgba( p_value * p_color._v.x, p_value * p_color._v.y, p_value * p_color._v.z, p_value * p_color._v.w ); }
 
-		friend constexpr Rgba operator/( float f, const Rgba & p ) noexcept
+		friend constexpr Rgba operator/( const float p_value, const Rgba & p_color ) noexcept
 		{
-			assert( p._v.x != 0 && p._v.y != 0 && p._v.z != 0 );
-			return Rgba( f / p._v.x, f / p._v.y, f / p._v.z );
+			assert( p_color._v.x != 0 && p_color._v.y != 0 && p_color._v.z != 0 && p_color._v.w != 0 );
+			return Rgba( p_value / p_color._v.x, p_value / p_color._v.y, p_value / p_color._v.z, p_value / p_color._v.w );
 		}
 
-		constexpr bool operator==( const Rgba & p ) const noexcept
-		{ return _v.x == p._v.x && _v.y == p._v.y && _v.z == p._v.z && _v.w == p._v.w; }
+		constexpr bool operator==( const Rgba & p_color ) const noexcept
+		{ return _v.x == p_color._v.x && _v.y == p_color._v.y && _v.z == p_color._v.z && _v.w == p_color._v.w; }
 
-		constexpr bool operator!=( const Rgba & p ) const noexcept { return !( *this == p ); }
+		constexpr bool operator!=( const Rgba & p_color ) const noexcept { return !( *this == p_color ); }
 
 		friend std::ostream & operator<<( std::ostream & p_os, const Rgba & p_c )
 		{
@@ -227,16 +224,16 @@ namespace VTX::Util::Color
 
 		static Rgba random();
 
-		Rgba mixedWith( const Rgba &, float ) const noexcept;
-		Rgba withMinBrightness( float ) const noexcept;
-		Rgba withSaturation( float ) const noexcept;
+		Rgba mixedWith( const Rgba & p_other, const float p_factor ) const noexcept;
+		Rgba withMinBrightness( const float p_minBrightness ) const noexcept;
+		Rgba withSaturation( const float p_factor ) const noexcept;
 		Rgba toLinear() const noexcept;
 		Rgba toSRGB() const noexcept;
 		Rgba toHighContrast() const noexcept;
 		Rgba toColorblind() const noexcept;
 
 		void saturate() noexcept;
-		void applyGamma( const float & ) noexcept;
+		void applyGamma( const float & p_gamma ) noexcept;
 		void oppose() noexcept;
 
 	  private:

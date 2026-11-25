@@ -4,18 +4,8 @@
     "data": {
         "shading": {
             "mode": "TOON",
-            "colorLight": [
-                1.0,
-                1.0,
-                1.0,
-                1.0
-            ],
-            "colorBackground": [
-                0.9607843,
-                0.9607843,
-                0.9490196,
-                1.0
-            ],
+            "colorLight": "#FFFFFFFF",
+            "colorBackground": "#F5F5F2FF",
             "specularFactor": 0.0,
             "shininess": 0.0,
             "toonSteps": 4,
@@ -56,12 +46,7 @@
             "blurSize": 11.0
         },
         "outline": {
-            "color": [
-                0.10980392,
-                0.10980392,
-                0.10980392,
-                1.0
-            ],
+            "color": "#1C1C1CFF",
             "sensitivity": 0.35,
             "thickness": 2
         },
@@ -70,12 +55,7 @@
         "pixelize": null,
         "crt": null,
         "selection": {
-            "color": [
-                1.0,
-                0.2509804,
-                0.2509804,
-                1.0
-            ]
+            "color": "#FF4040FF"
         },
         "toneMapping": {
             "mode": "REINHARD",

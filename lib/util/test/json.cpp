@@ -63,13 +63,38 @@ TEST_CASE( "Util::Json::Rgba", "[unit]" )
 {
 	using VTX::Util::Json::Document;
 
-	const VTX::Util::Color::Rgba color { 0.25f, 0.5f, 0.75f, 0.5f };
-	const Document				 json = color;
-	REQUIRE( json.size() == 4 );
-	CHECK( json.get<VTX::Util::Color::Rgba>().vec() == color.vec() );
+	using VTX::Util::Color::Rgba;
 
-	const Document jsonNoAlpha = Document::array( { 0.1f, 0.2f, 0.3f } );
-	CHECK( jsonNoAlpha.get<VTX::Util::Color::Rgba>().vec().w == 1.f );
+	const Rgba	   opaque { 18, 20, 24 };
+	const Document jsonOpaque = opaque;
+	REQUIRE( jsonOpaque.is_string() );
+	CHECK( jsonOpaque.get<std::string>() == "#121418FF" );
+	CHECK( jsonOpaque.get<Rgba>() == opaque );
+
+	const Rgba	   transparent { 255, 64, 0, 128 };
+	const Document jsonTransparent = transparent;
+	CHECK( jsonTransparent.get<std::string>() == "#FF400080" );
+	CHECK( jsonTransparent.get<Rgba>() == transparent );
+
+	CHECK( Document( "#ff4000" ).get<Rgba>() == Rgba( 255, 64, 0 ) );
+	CHECK( Rgba( 1.5f, -0.2f, 0.5f ).toHexaString() == "#FF0080FF" );
+	CHECK( Rgba::toHexaString( transparent ) == "#FF400080" );
+	CHECK( Rgba( std::string_view( "#FF400080" ) ) == transparent );
+
+	Rgba color;
+	color.fromHexaString( "#121418" );
+	CHECK( color == opaque );
+
+	Rgba staticColor;
+	Rgba::fromHexaString( "#FF400080", staticColor );
+	CHECK( staticColor == transparent );
+	CHECK_THROWS_AS( color.fromHexaString( "#12141" ), std::invalid_argument );
+
+	CHECK_THROWS_AS( Document( "FF4000" ).get<Rgba>(), std::invalid_argument );
+	CHECK_THROWS_AS( Document( "#FF40" ).get<Rgba>(), std::invalid_argument );
+	CHECK_THROWS_AS( Document( "#FF40GG" ).get<Rgba>(), std::invalid_argument );
+	CHECK_THROWS_AS( Document( "#-F4000" ).get<Rgba>(), std::invalid_argument );
+	CHECK_THROWS_AS( Document::array( { 0.1f, 0.2f, 0.3f } ).get<Rgba>(), nlohmann::json::type_error );
 }
 
 TEST_CASE( "Util::Json::Enum", "[unit]" )

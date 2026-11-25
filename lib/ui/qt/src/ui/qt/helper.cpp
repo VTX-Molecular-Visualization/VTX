@@ -13,7 +13,7 @@ namespace VTX::UI::QT::Helper
 	QColor toQColor( const Util::Color::Rgba & p_color )
 	{
 		// return QColor( p_color.x * 255, p_color.y * 255, p_color.z * 255, p_color.w * 255 );
-		return QColor( QString::fromStdString( p_color.toHexaString() ) );
+		return QColor::fromRgbF( p_color.r(), p_color.g(), p_color.b(), p_color.a() );
 	}
 
 	Util::Color::Rgba fromQColor( const QColor & p_color )
