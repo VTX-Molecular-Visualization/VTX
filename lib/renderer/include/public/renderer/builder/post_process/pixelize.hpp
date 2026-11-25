@@ -18,8 +18,8 @@ namespace VTX::Renderer
 
 	struct PixelizeConfig
 	{
-		uint size;
-		bool background;
+		uint size = PIXELIZE_SIZE_DEFAULT;
+		bool background = PIXELIZE_BACKGROUND_DEFAULT;
 	};
 
 	namespace GraphicsConfigs

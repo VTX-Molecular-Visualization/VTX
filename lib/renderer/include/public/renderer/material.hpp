@@ -79,18 +79,6 @@ namespace VTX::Renderer
 					   << static_cast<uint8_t>( E_TEXTURE::EMISSIVE ) );
 		}
 	};
-
-	namespace Materials
-	{
-		inline constexpr auto DEFAULT = [] { return Material { .name = "Default" }; };
-		inline constexpr auto MATTE	  = [] { return Material { .name = "Matte", .metallic = 0.f, .roughness = 0.9f }; };
-		inline constexpr auto PLASTIC
-			= [] { return Material { .name = "Plastic", .metallic = 0.f, .roughness = 0.35f }; };
-		inline constexpr auto POLISHED_METAL
-			= [] { return Material { .name = "Polished metal", .metallic = 1.f, .roughness = 0.1f }; };
-		inline constexpr auto BRUSHED_METAL
-			= [] { return Material { .name = "Brushed metal", .metallic = 1.f, .roughness = 0.55f }; };
-	} // namespace Materials
 } // namespace VTX::Renderer
 
 #endif

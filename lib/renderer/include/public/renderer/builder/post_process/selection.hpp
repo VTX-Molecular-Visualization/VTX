@@ -14,7 +14,7 @@ namespace VTX::Renderer
 
 	struct SelectionConfig
 	{
-		Util::Color::Rgba color;
+		Util::Color::Rgba color = COLOR_SELECTION_DEFAULT;
 	};
 
 	namespace GraphicsConfigs

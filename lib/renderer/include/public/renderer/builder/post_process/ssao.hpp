@@ -37,11 +37,11 @@ namespace VTX::Renderer
 
 	struct SSAOConfig
 	{
-		E_SSAO_METHOD method;
-		float		  intensity;
-		float		  radius;
-		float		  scale;
-		float		  blurSize;
+		E_SSAO_METHOD method = SSAO_METHOD_DEFAULT;
+		float		  intensity = SSAO_INTENSITY_DEFAULT;
+		float		  radius = SSAO_RADIUS_DEFAULT;
+		float		  scale = SSAO_SCALE_DEFAULT;
+		float		  blurSize = BLUR_SIZE_DEFAULT;
 	};
 
 	namespace GraphicsConfigs

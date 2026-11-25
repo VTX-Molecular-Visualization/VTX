@@ -18,9 +18,9 @@ namespace VTX::Renderer
 
 	struct ChromaticAberrationConfig
 	{
-		float red;
-		float green;
-		float blue;
+		float red = CHROMAB_RED_DEFAULT;
+		float green = CHROMAB_GREEN_DEFAULT;
+		float blue = CHROMAB_BLUE_DEFAULT;
 	};
 
 	namespace GraphicsConfigs

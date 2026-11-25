@@ -30,8 +30,8 @@ namespace VTX::Renderer
 
 	struct ToneMappingConfig
 	{
-		E_TONE_MAPPING mode;
-		float		   exposure;
+		E_TONE_MAPPING mode = TONE_MAPPING_MODE_DEFAULT;
+		float		   exposure = TONE_MAPPING_EXPOSURE_DEFAULT;
 	};
 
 	namespace GraphicsConfigs

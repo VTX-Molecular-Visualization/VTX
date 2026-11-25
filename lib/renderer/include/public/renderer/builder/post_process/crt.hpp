@@ -33,14 +33,14 @@ namespace VTX::Renderer
 
 	struct CRTConfig
 	{
-		float curvatureX;
-		float curvatureY;
-		float ratio;
-		float graninessX;
-		float graninessY;
-		float vignetteRoundness;
-		float vignetteIntensity;
-		float brightness;
+		float curvatureX = CRT_CURVATURE_X_DEFAULT;
+		float curvatureY = CRT_CURVATURE_Y_DEFAULT;
+		float ratio = CRT_RATIO_DEFAULT;
+		float graninessX = CRT_GRANINESS_X_DEFAULT;
+		float graninessY = CRT_GRANINESS_Y_DEFAULT;
+		float vignetteRoundness = CRT_VIGNETTE_ROUNDNESS_DEFAULT;
+		float vignetteIntensity = CRT_VIGNETTE_INTENSITY_DEFAULT;
+		float brightness = CRT_BRIGHTNESS_DEFAULT;
 	};
 
 	namespace GraphicsConfigs

@@ -21,9 +21,9 @@ namespace VTX::Renderer
 
 	struct OutlineConfig
 	{
-		Util::Color::Rgba color;
-		float			  sensitivity;
-		uint			  thickness;
+		Util::Color::Rgba color = COLOR_OUTLINE_DEFAULT;
+		float			  sensitivity = OUTLINE_SENSITIVITY_DEFAULT;
+		uint			  thickness = OUTLINE_THICKNESS_DEFAULT;
 	};
 
 	namespace GraphicsConfigs

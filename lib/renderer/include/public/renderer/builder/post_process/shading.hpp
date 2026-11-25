@@ -69,8 +69,8 @@ namespace VTX::Renderer
 	struct ShadingConfig
 	{
 		E_SHADING				mode = SHADING_MODE_DEFAULT;
-		Util::Color::Rgba		colorLight;
-		Util::Color::Rgba		colorBackground;
+		Util::Color::Rgba		colorLight = COLOR_LIGHT_DEFAULT;
+		Util::Color::Rgba		colorBackground = COLOR_BACKGROUND_DEFAULT;
 		float					specularFactor	 = SPECULAR_FACTOR_DEFAULT;
 		float					shininess		 = SHININESS_DEFAULT;
 		uint					toonSteps		 = TOON_STEPS_DEFAULT;
@@ -82,15 +82,15 @@ namespace VTX::Renderer
 		float					skyboxIntensity		= 1.f;
 		float					iblIntensity		= 1.f;
 		float					environmentRotation = ENVIRONMENT_ROTATION_DEFAULT;
-		Material				material			= Materials::DEFAULT();
+		Material				material			= Material { .name = "Default" };
 	};
 
 	struct FogConfig
 	{
-		Util::Color::Rgba color;
-		float			  near;
-		float			  far;
-		float			  density;
+		Util::Color::Rgba color = COLOR_FOG_DEFAULT;
+		float			  near = FOG_NEAR_DEFAULT;
+		float			  far = FOG_FAR_DEFAULT;
+		float			  density = FOG_DENSITY_DEFAULT;
 	};
 
 	namespace GraphicsConfigs
