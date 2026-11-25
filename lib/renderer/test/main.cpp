@@ -671,7 +671,7 @@ TEST_CASE( "ResourceHandler: erase(handle) is safe for out-of-range and null slo
 	REQUIRE_FALSE( h.contains( handle ) );
 }
 
-TEST_CASE( "ResourceHandler: validate(key, desc) matches by hash and clears invalid state", "[ResourceHandler]" )
+TEST_CASE( "ResourceHandler: validate(key / desc) matches by hash and clears invalid state", "[ResourceHandler]" )
 {
 	ResourceHandler<TestRes, Key, FakeDesc> h;
 

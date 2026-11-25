@@ -7,7 +7,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include <core/struct/topology.hpp>
 
-TEST_CASE( "VTX_APP - System - Load", "[arguments]" )
+TEST_CASE( "VTX_APP - Arguments - Load system", "[arguments]" )
 {
 	using namespace VTX;
 	using namespace VTX::App;

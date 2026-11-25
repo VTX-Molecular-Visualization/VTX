@@ -927,6 +927,51 @@ vtx.setResolution(*original_resolution)
 require(vtx.getResolution() == original_resolution, "Resolution should be restored")
 
 vtx.clearSelection()
+vtx.selection.extend(4.0)
+require(vtx.selection.isEmpty(topology_system), "Extending an empty selection should keep it empty")
+topology_system.getResidues([0]).setSelected()
+residue_atom_count = len(vtx.selection.getAtoms(topology_system))
+vtx.selection.extend(4.0)
+require(
+    len(vtx.selection.getAtoms(topology_system)) > residue_atom_count,
+    "Extending the selection should add neighbouring atoms",
+)
+extended_atom_count = len(vtx.selection.getAtoms(topology_system))
+vtx.selection.extend(0.0)
+require(
+    len(vtx.selection.getAtoms(topology_system)) == extended_atom_count,
+    "A zero extension distance should not change the selection",
+)
+try:
+    vtx.selection.extend(-1.0)
+except ValueError:
+    pass
+else:
+    raise AssertionError("A negative extension distance should raise ValueError")
+
+vtx.clearSelection()
+residue_atoms = topology_system.getResidue(0).getAtoms()
+residue_atoms[0:1].setSelected()
+require(len(vtx.selection.getAtoms(topology_system)) == 1, "A single atom should be selected")
+vtx.selection.extendToResidue()
+require(
+    [atom.index for atom in vtx.selection.getAtoms(topology_system)] == [atom.index for atom in residue_atoms],
+    "Extending to residue should select the whole residue",
+)
+
+selected_atom_count = len(vtx.selection.getAtoms(topology_system))
+vtx.selection.invert()
+require(
+    len(vtx.selection.getAtoms(topology_system)) == topology_system.atomCount - selected_atom_count,
+    "Inverting the selection should select the other atoms",
+)
+vtx.selection.invert()
+require(
+    len(vtx.selection.getAtoms(topology_system)) == selected_atom_count,
+    "Inverting twice should restore the selection",
+)
+
+vtx.clearSelection()
 require(topology_system.selectionState == vtx.SELECTION_STATE.NONE, "Selection should be cleared")
 require(vtx.selection.isEmpty(topology_system), "System selection should be empty")
 require(len(vtx.selection.getSystems()) == 0, "Selected system collection should be empty")

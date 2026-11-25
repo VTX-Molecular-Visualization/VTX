@@ -32,7 +32,7 @@ TEST_CASE( "VTX_IO - Test filepath", "[reader][topology][metadata]" )
 	CHECK( metadata.pdbIDCode == "8OIT" );
 }
 
-TEST_CASE( "VTX_IO - Test filepath", "[reader][positions]" )
+TEST_CASE( "VTX_IO - Test positions", "[reader][positions]" )
 {
 	using namespace VTX;
 	using namespace VTX::IO;

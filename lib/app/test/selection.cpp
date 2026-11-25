@@ -329,7 +329,7 @@ TEST_CASE( "VTX_APP - Selection - SetSelected maps items to atom selections", "[
 	app.loadSystem();
 	const auto [ system, topology, selection ] = App::ECS::getFirstEntityWithComponents<Topology, System::Selection>();
 
-	SECTION( "atom overloads support replace, append and subtract" )
+	SECTION( "atom overloads support replace / append / subtract" )
 	{
 		const auto residueIndexOpt = _findResidueWithMinimumAtomCount( topology, 2 );
 		REQUIRE( residueIndexOpt.has_value() );
@@ -404,7 +404,7 @@ TEST_CASE( "VTX_APP - Selection - SetSelected maps items to atom selections", "[
 	}
 }
 
-TEST_CASE( "VTX_APP - Selection - Clear handles this system, others and all systems", "[integration][selection]" )
+TEST_CASE( "VTX_APP - Selection - Clear handles this system / others / all systems", "[integration][selection]" )
 {
 	using namespace VTX;
 
