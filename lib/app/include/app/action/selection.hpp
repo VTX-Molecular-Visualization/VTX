@@ -172,6 +172,7 @@ namespace VTX::App::Action::Selection
 
 	/**
 	 * @brief Select whole residues from selected atoms.
+	 * Only visible atoms are added.
 	 */
 	struct ExtendSelectionToResidue
 	{ void execute(); };
@@ -184,6 +185,7 @@ namespace VTX::App::Action::Selection
 
 	/**
 	 * @brief Extend current selection to given distance (angstrom).
+	 * Only visible atoms are added.
 	 */
 	struct ExtendSelection
 	{ void execute( float p_distance ); };

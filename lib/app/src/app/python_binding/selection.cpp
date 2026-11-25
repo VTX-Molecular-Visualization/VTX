@@ -220,13 +220,16 @@ namespace VTX::App::PythonBinding
 				"extend",
 				&SelectionView::extend,
 				"Add to the selection all visible atoms within the given distance (angstrom) of a selected atom. "
-				"Does nothing if the distance is zero. Raises ValueError if the distance is negative.",
+				"For a positive distance, hidden selected atoms are unselected first and only visible selected atoms "
+				"are used as seeds. Does nothing if the distance is zero. Raises ValueError if the distance is "
+				"negative.",
 				pybind11::arg( "distance" )
 			)
 			.def(
 				"extendToResidue",
 				&SelectionView::extendToResidue,
-				"Add to the selection all visible atoms of the residues containing a selected atom."
+				"Add to the selection all visible atoms of the residues containing a selected atom. Hidden selected "
+				"atoms are unselected first and only visible selected atoms are used as seeds."
 			)
 			.def(
 				"invert",
@@ -256,7 +259,9 @@ namespace VTX::App::PythonBinding
 			);
 		module.attr( "selection" ) = SelectionView {};
 
-		p_vtxModule.bindAction<App::Action::Selection::SelectAll>( "selectAll", "Select all systems." );
+		p_vtxModule.bindAction<App::Action::Selection::SelectAll>(
+			"selectAll", "Select all visible atoms of all systems."
+		);
 		p_vtxModule.bindAction<App::Action::Selection::Clear>(
 			"clearSelection", "Clear the selection of all systems."
 		);

@@ -49,16 +49,9 @@ namespace VTX::App::Action::Selection
 
 	void SelectAll::execute()
 	{
-		REG().view<System::Selection>().each(
-			[]( const Entity p_ent, System::Selection & p_selection )
-			{
-				if ( p_selection.atoms.all() )
-				{
-					return;
-				}
-
-				patchSelection( p_ent, Util::Math::BitSet( p_selection.atoms.size(), true ) );
-			}
+		REG().view<System::Selection, System::Visibility>().each(
+			[]( const Entity p_ent, const System::Selection &, const System::Visibility & p_visibility )
+			{ patchSelection( p_ent, p_visibility.atoms ); }
 		);
 	}
 

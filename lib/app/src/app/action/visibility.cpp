@@ -1,4 +1,6 @@
+#include <app/action/selection.hpp>
 #include <app/ecs.hpp>
+#include <app/system/selection.hpp>
 #include <app/system/visibility.hpp>
 //
 #include <app/action/visibility.hpp>
@@ -17,6 +19,16 @@ namespace VTX::App::Action::Visibility
 
 		reg.patch<System::Visibility>(
 			p_ent, [ &p_atoms ]( System::Visibility & p_visibility ) { p_visibility.atoms = std::move( p_atoms ); } );
+
+		const auto * const selection = reg.try_get<System::Selection>( p_ent );
+		if ( selection == nullptr || selection->atoms.none() )
+		{
+			return;
+		}
+
+		Util::Math::BitSet visibleSelection = selection->atoms;
+		visibleSelection &= visibility.atoms;
+		Action::Selection::patchSelection( p_ent, std::move( visibleSelection ) );
 	}
 
 	void SetVisibleAll::execute( const bool p_visible )
