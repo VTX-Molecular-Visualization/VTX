@@ -32,7 +32,39 @@ namespace VTX::Util::Json
 } // namespace VTX::Util::Json
 
 namespace nlohmann
-{
+{ /**
+   * @brief JSon serializer for std::optionnal.
+   */
+	template<typename T>
+	struct adl_serializer<std::optional<T>>
+	{
+		template<typename BasicJsonType>
+		static void to_json( BasicJsonType & p_json, const std::optional<T> & p_value )
+		{
+			if ( p_value.has_value() )
+			{
+				p_json = *p_value;
+			}
+			else
+			{
+				p_json = nullptr;
+			}
+		}
+
+		template<typename BasicJsonType>
+		static void from_json( const BasicJsonType & p_json, std::optional<T> & p_value )
+		{
+			if ( p_json.is_null() )
+			{
+				p_value = std::nullopt;
+			}
+			else
+			{
+				p_value = p_json.template get<T>();
+			}
+		}
+	};
+
 	/**
 	 * @brief JSon serializer for Util::Color::Rgba.
 	 */
@@ -174,7 +206,7 @@ namespace nlohmann
 		template<typename BasicJsonType>
 		static E _cast( const BasicJsonType & p_json )
 		{
-			const std::string	   name  = p_json.template get<std::string>();
+			const std::string	   name	 = p_json.template get<std::string>();
 			const std::optional<E> value = magic_enum::enum_cast<E>( name );
 			if ( not value )
 			{

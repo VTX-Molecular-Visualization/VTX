@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <filesystem>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <util/color/rgba.hpp>
@@ -134,6 +135,28 @@ TEST_CASE( "Util::Json::RoundTrip", "[unit]" )
 
 	const VTX::Vec3f vec { 0.1f, 0.2f, 0.3f };
 	CHECK( roundTrip( roundTrip( vec ) ) == vec );
+}
+
+TEST_CASE( "Util::Json::Optional", "[unit]" )
+{
+	using VTX::Util::Json::Document;
+
+	const std::optional<VTX::Vec3f> value { VTX::Vec3f { 1.f, 2.f, 3.f } };
+	const std::optional<VTX::Vec3f> empty {};
+
+	const Document jsonValue = value;
+	const Document jsonEmpty = empty;
+	CHECK( jsonValue.is_array() );
+	CHECK( jsonEmpty.is_null() );
+	CHECK( jsonValue.get<std::optional<VTX::Vec3f>>() == value );
+	CHECK( jsonEmpty.get<std::optional<VTX::Vec3f>>() == empty );
+
+	Document object;
+	object[ "present" ] = value;
+	object[ "null" ]	= empty;
+	CHECK( object.value( "present", empty ) == value );
+	CHECK( object.value( "null", value ) == empty );
+	CHECK( object.value( "missing", value ) == value );
 }
 
 TEST_CASE( "Util::Json::Enum", "[unit]" )
