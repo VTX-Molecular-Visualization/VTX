@@ -182,14 +182,51 @@ namespace VTX::Util::Math
 		{
 			auto && func = std::forward<F>( p_func );
 
-			for ( int z = -p_neighbourDist; z <= p_neighbourDist; ++z )
+			if ( _data.empty() || p_neighbourDist < 0 )
 			{
-				for ( int y = -p_neighbourDist; y <= p_neighbourDist; ++y )
+				return;
+			}
+
+			const CellPosition lower(
+				std::max( p_gridPosition.x - p_neighbourDist, _minCell.x ),
+				std::max( p_gridPosition.y - p_neighbourDist, _minCell.y ),
+				std::max( p_gridPosition.z - p_neighbourDist, _minCell.z )
+			);
+			const CellPosition upper(
+				std::min( p_gridPosition.x + p_neighbourDist, _maxCell.x ),
+				std::min( p_gridPosition.y + p_neighbourDist, _maxCell.y ),
+				std::min( p_gridPosition.z + p_neighbourDist, _maxCell.z )
+			);
+
+			if ( lower.x > upper.x || lower.y > upper.y || lower.z > upper.z )
+			{
+				return;
+			}
+
+			const size_t rangeCellCount = static_cast<size_t>( upper.x - lower.x + 1 )
+										  * static_cast<size_t>( upper.y - lower.y + 1 )
+										  * static_cast<size_t>( upper.z - lower.z + 1 );
+
+			if ( rangeCellCount > _data.size() )
+			{
+				for ( const auto & [ position, cell ] : _data )
 				{
-					for ( int x = -p_neighbourDist; x <= p_neighbourDist; ++x )
+					if ( position.x >= lower.x && position.x <= upper.x && position.y >= lower.y && position.y <= upper.y
+						 && position.z >= lower.z && position.z <= upper.z )
 					{
-						const CellPosition neighbourPosition = p_gridPosition + CellPosition( x, y, z );
-						const auto		   it				 = _data.find( neighbourPosition );
+						func( position, cell );
+					}
+				}
+				return;
+			}
+
+			for ( int z = lower.z; z <= upper.z; ++z )
+			{
+				for ( int y = lower.y; y <= upper.y; ++y )
+				{
+					for ( int x = lower.x; x <= upper.x; ++x )
+					{
+						const auto it = _data.find( CellPosition( x, y, z ) );
 
 						if ( it != _data.end() )
 						{
