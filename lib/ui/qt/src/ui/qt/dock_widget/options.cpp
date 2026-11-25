@@ -389,7 +389,7 @@ namespace VTX::UI::QT::DockWidget
 		auto * layout	= Helper::makeQObject<QVBoxLayout>( groupBox );
 
 		_addDiskUsageRow( layout, "Data", App::SESSION().getCacheDir(), _labelCacheSize );
-		_addDiskUsageRow( layout, "HDRI", App::SESSION().getHdriDir(), _labelHdriSize );
+		_addDiskUsageRow( layout, "HDRIs", App::SESSION().getHdrisDir(), _labelHdriSize );
 		_addDiskUsageRow( layout, "Snapshots", App::SESSION().getSnapshotsDir(), _labelSnapshotsSize );
 		_addDiskUsageRow( layout, "Logs", App::SESSION().getLogsDir(), _labelLogsSize );
 
@@ -448,7 +448,7 @@ namespace VTX::UI::QT::DockWidget
 	void Options::_refreshFoldersInfos()
 	{
 		_refreshFolderInfos( App::SESSION().getCacheDir(), _labelCacheSize, "Data" );
-		_refreshFolderInfos( App::SESSION().getHdriDir(), _labelHdriSize, "HDRI" );
+		_refreshFolderInfos( App::SESSION().getHdrisDir(), _labelHdriSize, "HDRI" );
 		_refreshFolderInfos( App::SESSION().getSnapshotsDir(), _labelSnapshotsSize, "Snapshots" );
 		_refreshFolderInfos( App::SESSION().getLogsDir(), _labelLogsSize, "Logs" );
 	}

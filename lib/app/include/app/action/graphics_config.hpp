@@ -48,7 +48,7 @@ namespace VTX::App::Action::GraphicsConfig
 				return std::nullopt;
 			}
 
-			FilePath ktxPath = SESSION().getHdriDir() / FilePath( p_path.filename() ).replace_extension( ".ktx2" );
+			FilePath ktxPath = SESSION().getHdrisDir() / FilePath( p_path.filename() ).replace_extension( ".ktx2" );
 			if ( ( not std::filesystem::exists( ktxPath )
 				   || std::filesystem::last_write_time( p_path ) > std::filesystem::last_write_time( ktxPath ) )
 				 && not Renderer::Baker::bakeEnvironmentMapToKtx( p_path, ktxPath, p_faceSize ) )

@@ -415,10 +415,9 @@ namespace VTX::UI::QT
 			inline App::UI::DescAction invertAction()
 			{
 				App::UI::DescAction action;
-				action.key		= INVERT;
-				action.name		= "Invert";
-				action.tip		= "Invert selection among visible atoms";
-				action.shortcut = "Ctrl+I";
+				action.key	= INVERT;
+				action.name = "Invert";
+				action.tip	= "Invert selection among visible atoms";
 				return action;
 			}
 

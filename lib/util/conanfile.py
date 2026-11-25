@@ -22,12 +22,13 @@ class VTXUtilRecipe(ConanFile):
         self.requires("entt/4.0.0", transitive_headers=True)
         self.requires("assimp/6.0.5", transitive_headers=True)
         self.requires("minizip/1.3.2", force=True)
-        self.requires("cpr/1.14.2")
+        self.requires("cpr/1.15.1")
         self.requires("stb/cci.20261021", force=True)
         self.requires("tinyexr/1.0.7")
         self.requires("exiv2/0.28.3")
         self.requires("catch2/3.16.1")
         self.requires("platformfolders/4.3.0")
+        self.requires("nlohmann_json/3.12.0", transitive_headers=True)
         
     def config_options(self):
         if self.settings.os == "Windows":

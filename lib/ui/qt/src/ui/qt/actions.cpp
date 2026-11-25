@@ -24,9 +24,9 @@
 #include <app/action/visibility.hpp>
 #include <app/constants.hpp>
 #include <app/services.hpp>
+#include <optional>
 #include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
-#include <optional>
 #include <util/types.hpp>
 #include <utility>
 
@@ -199,20 +199,6 @@ namespace VTX::UI::QT::Action
 			)
 		);
 		p_registry.registerAction(
-			Selection::invertAction(),
-			handler(
-				[]()
-				{
-					if ( UI_ACTIONS().isChecked( Selection::LOCK ) )
-					{
-						return;
-					}
-
-					App::ACTION().execute<App::Action::Selection::InvertSelection>();
-				}
-			)
-		);
-		p_registry.registerAction(
 			Selection::extendAction(),
 			[]( const ActionRegistry::ActionContext & p_context )
 			{
@@ -226,15 +212,15 @@ namespace VTX::UI::QT::Action
 				{
 					bool		 accepted = false;
 					const double value	  = QInputDialog::getDouble(
-						 &MAIN_WINDOW(),
-						 "Extend selection",
-						 "Distance (Å):",
-						 SETTINGS().value( SETTING_KEY_EXTEND_DISTANCE, 5.0 ).toDouble(),
-						 0.01,
-						 1000.0,
-						 2,
-						 &accepted
-					 );
+						&MAIN_WINDOW(),
+						"Extend selection",
+						"Distance (Å):",
+						SETTINGS().value( SETTING_KEY_EXTEND_DISTANCE, 5.0 ).toDouble(),
+						0.01,
+						1000.0,
+						2,
+						&accepted
+					);
 					if ( not accepted )
 					{
 						return;
@@ -258,6 +244,20 @@ namespace VTX::UI::QT::Action
 					}
 
 					App::ACTION().execute<App::Action::Selection::ExtendSelectionToResidue>();
+				}
+			)
+		);
+		p_registry.registerAction(
+			Selection::invertAction(),
+			handler(
+				[]()
+				{
+					if ( UI_ACTIONS().isChecked( Selection::LOCK ) )
+					{
+						return;
+					}
+
+					App::ACTION().execute<App::Action::Selection::InvertSelection>();
 				}
 			)
 		);

@@ -163,7 +163,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 				const QString initialPath
 					= config.shading.environmentPath
 						  ? QString::fromStdString( config.shading.environmentPath->parent_path().string() )
-						  : QString::fromStdString( App::SESSION().getHdriDir().string() );
+						  : QString::fromStdString( App::SESSION().getHdrisDir().string() );
 				const QString selectedPath = QFileDialog::getOpenFileName(
 					this,
 					"Select environment map",
@@ -208,7 +208,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	{
 		_listEnvironmentMaps->clear();
 
-		const FilePath hdriDir = App::SESSION().getHdriDir();
+		const FilePath hdriDir = App::SESSION().getHdrisDir();
 		if ( not std::filesystem::is_directory( hdriDir ) )
 		{
 			return;

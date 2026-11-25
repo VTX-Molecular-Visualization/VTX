@@ -194,7 +194,8 @@ namespace VTX::App
 				}
 				_impl->updateCheckReady = true;
 				return 0;
-			} );
+			}
+		);
 
 		_impl->updateCheckConnection.release();
 
@@ -283,7 +284,8 @@ namespace VTX::App
 										= static_cast<Util::Thread::BaseThread *>( p_userData );
 									thread->setProgress( static_cast<float>( p_progress ) / 100.f );
 								},
-								&p_thread );
+								&p_thread
+							);
 						p_thread.setProgress( 1.f );
 						VTX_TRACE( "downloadUpdate: DownloadUpdates completed" );
 						_impl->updateDownloadSucceeded = true;
@@ -303,7 +305,8 @@ namespace VTX::App
 
 					_impl->updateDownloadReady = true;
 					return 0;
-				} );
+				}
+			);
 			_impl->updateDownloadThreadId = downloadThread.getId();
 
 			_impl->updateDownloadConnection.release();
@@ -335,7 +338,8 @@ namespace VTX::App
 			_impl->updateDownloadInProgress = false;
 			VTX_TRACE( "downloadUpdate: download phase failed" );
 			HUB().trigger<Events::UpdateDownloadFailed>(
-				_impl->updateDownloadError.empty() ? "Update download failed." : _impl->updateDownloadError );
+				_impl->updateDownloadError.empty() ? "Update download failed." : _impl->updateDownloadError
+			);
 			return;
 		}
 
@@ -498,7 +502,7 @@ namespace VTX::App
 
 	FilePath Session::getDefaultEffectsDir() const { return getDefaultUserData() / "effects"; }
 
-	FilePath Session::getDefaultHdriDir() const { return getDefaultUserData() / "hdri"; }
+	FilePath Session::getDefaultHdrisDir() const { return getDefaultUserData() / "hdris"; }
 
 	FilePath Session::getDefaultMaterialsDir() const { return getDefaultUserData() / "materials"; }
 
@@ -518,7 +522,7 @@ namespace VTX::App
 
 	FilePath Session::getEffectsDir() const { return getDataHome() / "effects"; }
 
-	FilePath Session::getHdriDir() const { return getDataHome() / "hdri"; }
+	FilePath Session::getHdrisDir() const { return getDataHome() / "hdris"; }
 
 	FilePath Session::getMaterialsDir() const { return getDataHome() / "materials"; }
 
