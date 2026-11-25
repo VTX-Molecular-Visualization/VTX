@@ -484,7 +484,8 @@ namespace VTX::Tool::Structalign::backend
 		{
 			const int	 MAX_SWEEPS = 50;
 			const double TOLERANCE	= 1e-14;
-			Mat4d		 V			= MAT4D_ID;
+			Mat4d		 transformedMatrix
+				= MAT4D_ID; // Matrix that will hold the rotation accumulation to form the quaternion eventually
 
 			double normSq = 0.0;
 			for ( int it_cellIdx = 0; it_cellIdx < 16; it_cellIdx++ )
@@ -497,23 +498,23 @@ namespace VTX::Tool::Structalign::backend
 			{
 				return QUATD_ID;
 			}
+			const double normalizedTolerance = normSq * TOLERANCE;
 
 			for ( int it_sweep = 0; it_sweep < MAX_SWEEPS; it_sweep++ )
 			{
-				double off = 0.0;
-				for ( int p = 0; p < 3; p++ )
-				{
-					for ( int q = p + 1; q < 4; q++ )
-					{
-						off += 2.0 * p_transportMatrix[ p ][ q ] * p_transportMatrix[ p ][ q ];
-					}
-				}
+				double offDiagonalValueSq = +2.0 * p_transportMatrix[ 0 ][ 1 ] * p_transportMatrix[ 0 ][ 1 ]
+											+ 2.0 * p_transportMatrix[ 0 ][ 2 ] * p_transportMatrix[ 0 ][ 2 ]
+											+ 2.0 * p_transportMatrix[ 0 ][ 3 ] * p_transportMatrix[ 0 ][ 3 ]
+											+ 2.0 * p_transportMatrix[ 1 ][ 2 ] * p_transportMatrix[ 1 ][ 2 ]
+											+ 2.0 * p_transportMatrix[ 1 ][ 3 ] * p_transportMatrix[ 1 ][ 3 ]
+											+ 2.0 * p_transportMatrix[ 2 ][ 3 ] * p_transportMatrix[ 2 ][ 3 ];
 
-				if ( off <= TOLERANCE * normSq ) // convergeance check
+				if ( offDiagonalValueSq <= normalizedTolerance ) // convergeance check
 				{
 					break;
 				}
 
+				// off-diagonal bottom part of the matrix is being swept
 				for ( int it_p = 0; it_p < 3; it_p++ )
 				{
 					for ( int it_q = it_p + 1; it_q < 4; it_q++ )
@@ -527,6 +528,11 @@ namespace VTX::Tool::Structalign::backend
 											 / ( 2.0 * p_transportMatrix[ it_p ][ it_q ] );
 						const double t
 							= 1.0 / ( std::abs( theta ) + std::copysign( std::sqrt( theta * theta + 1.0 ), theta ) );
+						double sqqqqq = 0.;
+						if ( std::isinf( t ) )
+						{
+							sqqqqq = std::sqrt( theta * theta + 1.0 );
+						}
 						const double c = 1.0 / std::sqrt( t * t + 1.0 );
 						const double s = t * c;
 
@@ -554,10 +560,10 @@ namespace VTX::Tool::Structalign::backend
 						// accumulate this rotation into the eigenvector matrix
 						for ( int r = 0; r < 4; r++ )
 						{
-							const double vrp = V[ r ][ it_p ];
-							const double vrq = V[ r ][ it_q ];
-							V[ r ][ it_p ]	 = c * vrp - s * vrq;
-							V[ r ][ it_q ]	 = s * vrp + c * vrq;
+							const double vrp			   = transformedMatrix[ r ][ it_p ];
+							const double vrq			   = transformedMatrix[ r ][ it_q ];
+							transformedMatrix[ r ][ it_p ] = c * vrp - s * vrq;
+							transformedMatrix[ r ][ it_q ] = s * vrp + c * vrq;
 						}
 					}
 				}
@@ -565,21 +571,21 @@ namespace VTX::Tool::Structalign::backend
 			int highestEigenValueColumnIndex = 0;
 			for ( int it_diagCellIdx = 1; it_diagCellIdx < 4; it_diagCellIdx++ )
 			{
-				if ( V[ it_diagCellIdx ][ it_diagCellIdx ]
-					 > V[ highestEigenValueColumnIndex ][ highestEigenValueColumnIndex ] )
+				if ( transformedMatrix[ it_diagCellIdx ][ it_diagCellIdx ]
+					 > transformedMatrix[ highestEigenValueColumnIndex ][ highestEigenValueColumnIndex ] )
 				{
 					highestEigenValueColumnIndex = it_diagCellIdx;
 				}
 			}
-			return Quatd { V[ highestEigenValueColumnIndex ][ 0 ],
-						   { V[ highestEigenValueColumnIndex ][ 1 ],
-							 V[ highestEigenValueColumnIndex ][ 2 ],
-							 V[ highestEigenValueColumnIndex ][ 3 ] } };
+			return Quatd { transformedMatrix[ highestEigenValueColumnIndex ][ 0 ],
+						   { transformedMatrix[ highestEigenValueColumnIndex ][ 1 ],
+							 transformedMatrix[ highestEigenValueColumnIndex ][ 2 ],
+							 transformedMatrix[ highestEigenValueColumnIndex ][ 3 ] } };
 		}
 
 		/**
-		 * @brief Compute cross variance matrix and use it to create the transport matrix before returning it. Assumes
-		 * source and destination shared their center.
+		 * @brief Compute cross variance matrix and use it to create the transport matrix before returning it.
+		 * Assumes source and destination shared their center.
 		 */
 		Mat4d computeTransportMatrix( const std::vector<Vec3d> & p_a, const std::vector<Vec3d> & p_b )
 		{
@@ -728,7 +734,8 @@ namespace VTX::Tool::Structalign::backend
 			// Math::Matrix<float> vtxI = Math::Matrix<float>( 3, 3 );
 			// vtxI.set( 2, 2, vtxD );
 
-			// const Math::Matrix<float> rotation = Util::Math::matMult( vtxV, Util::Math::matMult( vtxI, vtxTransposedU
+			// const Math::Matrix<float> rotation = Util::Math::matMult( vtxV, Util::Math::matMult( vtxI,
+			// vtxTransposedU
 			// )
 			// );
 
@@ -767,10 +774,11 @@ namespace VTX::Tool::Structalign::backend
 		{
 			PathSelection result;
 
-			for ( int i = 0; i < p_results.size(); i++ )
+			for ( size_t it_pathIdx = 0; it_pathIdx < p_results.size(); it_pathIdx++ )
 			{
-				const Path &   curPath		  = p_results[ i ];
-				const uint32_t positionsCount = static_cast<uint32_t>( p_parameters.windowSize * curPath.size() );
+				const Path & it_path = p_results[ it_pathIdx ];
+
+				const uint32_t positionsCount = static_cast<uint32_t>( p_parameters.windowSize * it_path.size() );
 
 				std::vector<Vec3f> residuePositionsA = std::vector<Vec3f>();
 				residuePositionsA.resize( positionsCount );
@@ -781,18 +789,18 @@ namespace VTX::Tool::Structalign::backend
 				Vec3f centerOfMassA = VEC3F_ZERO;
 				Vec3f centerOfMassB = VEC3F_ZERO;
 
-				for ( int i = 0; i < curPath.size(); i++ )
+				for ( int it_pairIdx = 0; it_pairIdx < it_path.size(); it_pairIdx++ )
 				{
-					const size_t startIndexA = curPath[ i ].first;
-					const size_t startIndexB = curPath[ i ].second;
+					const size_t startIndexA = it_path[ it_pairIdx ].first;
+					const size_t startIndexB = it_path[ it_pairIdx ].second;
 
-					for ( uint32_t k = 0; k < p_parameters.windowSize; k++ )
+					for ( uint32_t it_offsetValue = 0; it_offsetValue < p_parameters.windowSize; it_offsetValue++ )
 					{
-						const Vec3f positionA = p_residuePositionsA[ startIndexA + k ];
-						const Vec3f positionB = p_residuePositionsB[ startIndexB + k ];
+						const Vec3f positionA = p_residuePositionsA[ startIndexA + it_offsetValue ];
+						const Vec3f positionB = p_residuePositionsB[ startIndexB + it_offsetValue ];
 
-						residuePositionsA[ i * p_parameters.windowSize + k ] = positionA;
-						residuePositionsB[ i * p_parameters.windowSize + k ] = positionB;
+						residuePositionsA[ it_pairIdx * p_parameters.windowSize + it_offsetValue ] = positionA;
+						residuePositionsB[ it_pairIdx * p_parameters.windowSize + it_offsetValue ] = positionB;
 
 						centerOfMassA += positionA / float( positionsCount );
 						centerOfMassB += positionB / float( positionsCount );
@@ -801,35 +809,24 @@ namespace VTX::Tool::Structalign::backend
 				centerOfMassA /= float( positionsCount );
 				centerOfMassB /= float( positionsCount );
 
-				for ( size_t i = 0; i < positionsCount; i++ )
+				for ( size_t it_residueIdx = 0; it_residueIdx < positionsCount; it_residueIdx++ )
 				{
-					residuePositionsA[ i ] -= centerOfMassA;
-					residuePositionsB[ i ] -= centerOfMassB;
+					residuePositionsA[ it_residueIdx ] -= centerOfMassA;
+					residuePositionsB[ it_residueIdx ] -= centerOfMassB;
 				}
-
-				// VG : Why are we doing this ??
-				// Eigen::Matrix3Xd in	 = Eigen::Matrix3Xd( 3, positionsCount );
-				// Eigen::Matrix3Xd out = Eigen::Matrix3Xd( 3, positionsCount );
-
-				// for ( int i = 0; i < positionsCount; i++ )
-				//{
-				//	in.col( i ) << residuePositionsA[ i ].x, residuePositionsA[ i ].y, residuePositionsA[ i ].z;
-				//	out.col( i ) << residuePositionsB[ i ].x, residuePositionsB[ i ].y, residuePositionsB[ i ].z;
-				// }
 
 				const Mat4f eigenMatrix
 					= find3DAffineTransform( residuePositionsA, residuePositionsB, centerOfMassA, centerOfMassB );
 				Mat3f rotationMatrix = { { eigenMatrix[ 0 ][ 0 ], eigenMatrix[ 0 ][ 1 ], eigenMatrix[ 0 ][ 2 ] },
 										 { eigenMatrix[ 1 ][ 0 ], eigenMatrix[ 1 ][ 1 ], eigenMatrix[ 1 ][ 2 ] },
 										 { eigenMatrix[ 2 ][ 0 ], eigenMatrix[ 2 ][ 1 ], eigenMatrix[ 2 ][ 2 ] } };
-				const float rmsd	 = float(
-					Util::Math::computeRmsd( residuePositionsA, residuePositionsB, MAT3F_ID, rotationMatrix )
-				);
+				const float rmsd
+					= Util::Math::computeRmsd( residuePositionsA, residuePositionsB, MAT3F_ID, rotationMatrix );
 
 				if ( result.rmsd != VTX::TypeMax<float> or rmsd < result.rmsd
 					 or ( rmsd == result.rmsd and positionsCount > result.positionsCount ) )
 				{
-					result.pathIndex	  = i;
+					result.pathIndex	  = static_cast<Index>( it_pathIdx );
 					result.rmsd			  = rmsd;
 					result.tranformMatrix = eigenMatrix;
 					result.positionsCount = positionsCount;
