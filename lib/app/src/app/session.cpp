@@ -498,9 +498,9 @@ namespace VTX::App
 
 	FilePath Session::getDefaultRepresentationsDir() const { return getDefaultUserData() / "representations"; }
 
-	FilePath Session::getDefaultColorLayoutsDir() const { return getDefaultUserData() / "colors"; }
+	FilePath Session::getDefaultColorLayoutsDir() const { return getDefaultUserData() / "color_layouts"; }
 
-	FilePath Session::getDefaultEffectsDir() const { return getDefaultUserData() / "effects"; }
+	FilePath Session::getDefaultGraphicsConfigsDir() const { return getDefaultUserData() / "graphics_configs"; }
 
 	FilePath Session::getDefaultHdrisDir() const { return getDefaultUserData() / "hdris"; }
 
@@ -518,9 +518,9 @@ namespace VTX::App
 
 	FilePath Session::getRepresentationsDir() const { return getDataHome() / "representations"; }
 
-	FilePath Session::getColorLayoutsDir() const { return getDataHome() / "colors"; }
+	FilePath Session::getColorLayoutsDir() const { return getDataHome() / "color_layouts"; }
 
-	FilePath Session::getEffectsDir() const { return getDataHome() / "effects"; }
+	FilePath Session::getGraphicsConfigsDir() const { return getDataHome() / "graphics_configs"; }
 
 	FilePath Session::getHdrisDir() const { return getDataHome() / "hdris"; }
 

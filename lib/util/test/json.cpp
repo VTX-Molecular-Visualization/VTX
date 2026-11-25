@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <string>
 #include <util/color/rgba.hpp>
+#include <util/enum.hpp>
 #include <util/exceptions.hpp>
 #include <util/filesystem.hpp>
 #include <util/json.hpp>
@@ -15,9 +16,19 @@ namespace VTX::Test::Json
 		ALPHA,
 		BETA
 	};
+
+	enum class E_JSON_TEST_BITMASK : uint8_t
+	{
+		VTX_ENUM_ENABLE_BITMASK,
+		NONE  = 0,
+		RED	  = 1u << 0,
+		GREEN = 1u << 1,
+		BLUE  = 1u << 2,
+	};
 } // namespace VTX::Test::Json
 
 using VTX::Test::Json::E_JSON_TEST;
+using VTX::Test::Json::E_JSON_TEST_BITMASK;
 
 TEST_CASE( "Util::Json::Glm", "[unit]" )
 {
@@ -71,6 +82,20 @@ TEST_CASE( "Util::Json::Enum", "[unit]" )
 	CHECK( json.get<E_JSON_TEST>() == E_JSON_TEST::BETA );
 
 	CHECK_THROWS_AS( Document( "GAMMA" ).get<E_JSON_TEST>(), std::invalid_argument );
+
+	const E_JSON_TEST_BITMASK flags	   = E_JSON_TEST_BITMASK::RED | E_JSON_TEST_BITMASK::BLUE;
+	const Document			  jsonBits = flags;
+	REQUIRE( jsonBits.is_array() );
+	REQUIRE( jsonBits.size() == 2 );
+	CHECK( jsonBits.at( 0 ).get<std::string>() == "RED" );
+	CHECK( jsonBits.at( 1 ).get<std::string>() == "BLUE" );
+	CHECK( jsonBits.get<E_JSON_TEST_BITMASK>() == flags );
+
+	const Document jsonNone = E_JSON_TEST_BITMASK::NONE;
+	CHECK( jsonNone.empty() );
+	CHECK( jsonNone.get<E_JSON_TEST_BITMASK>() == E_JSON_TEST_BITMASK::NONE );
+
+	CHECK_THROWS_AS( Document::array( { "RED", "PURPLE" } ).get<E_JSON_TEST_BITMASK>(), std::invalid_argument );
 }
 
 TEST_CASE( "Util::Json::File", "[unit]" )

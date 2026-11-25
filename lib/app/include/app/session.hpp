@@ -78,7 +78,7 @@ namespace VTX::App
 		FilePath getDefaultUserData() const;
 		FilePath getDefaultRepresentationsDir() const;
 		FilePath getDefaultColorLayoutsDir() const;
-		FilePath getDefaultEffectsDir() const;
+		FilePath getDefaultGraphicsConfigsDir() const;
 		FilePath getDefaultHdrisDir() const;
 		FilePath getDefaultMaterialsDir() const;
 		FilePath getDefaultScriptsDir() const;
@@ -87,7 +87,7 @@ namespace VTX::App
 		FilePath getSnapshotsDir() const;
 		FilePath getRepresentationsDir() const;
 		FilePath getColorLayoutsDir() const;
-		FilePath getEffectsDir() const;
+		FilePath getGraphicsConfigsDir() const;
 		FilePath getHdrisDir() const;
 		FilePath getMaterialsDir() const;
 		FilePath getScriptsDir() const;

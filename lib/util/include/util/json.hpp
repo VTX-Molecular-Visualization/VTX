@@ -4,6 +4,8 @@
 #include "util/color/rgba.hpp"
 #include "util/filesystem.hpp"
 #include "util/types.hpp"
+#include <bit>
+#include <entt/core/enum.hpp>
 #include <magic_enum/magic_enum.hpp>
 #include <nlohmann/json.hpp>
 #include <stdexcept>
@@ -134,10 +136,51 @@ namespace nlohmann
 	{
 		template<typename BasicJsonType>
 		static void to_json( BasicJsonType & p_json, const E p_value )
-		{ p_json = std::string( magic_enum::enum_name( p_value ) ); }
+		{
+			// Array of enums for bitmasks.
+			if constexpr ( entt::enum_as_bitmask_v<E> )
+			{
+				const Bits value = static_cast<Bits>( magic_enum::enum_integer( p_value ) );
+				p_json			 = BasicJsonType::array();
+				for ( const E flag : magic_enum::enum_values<E>() )
+				{
+					const Bits bit = static_cast<Bits>( magic_enum::enum_integer( flag ) );
+					if ( std::has_single_bit( bit ) && ( value & bit ) == bit )
+					{
+						p_json.push_back( std::string( magic_enum::enum_name( flag ) ) );
+					}
+				}
+			}
+			// Single enum value.
+			else
+			{
+				p_json = std::string( magic_enum::enum_name( p_value ) );
+			}
+		}
 
 		template<typename BasicJsonType>
 		static void from_json( const BasicJsonType & p_json, E & p_value )
+		{
+			if constexpr ( entt::enum_as_bitmask_v<E> )
+			{
+				Bits value = 0;
+				for ( const auto & item : p_json )
+				{
+					value |= static_cast<Bits>( magic_enum::enum_integer( _cast( item ) ) );
+				}
+				p_value = static_cast<E>( value );
+			}
+			else
+			{
+				p_value = _cast( p_json );
+			}
+		}
+
+	  private:
+		using Bits = std::make_unsigned_t<std::underlying_type_t<E>>;
+
+		template<typename BasicJsonType>
+		static E _cast( const BasicJsonType & p_json )
 		{
 			const std::string name	= p_json.template get<std::string>();
 			const auto		  value = magic_enum::enum_cast<E>( name );
@@ -147,7 +190,7 @@ namespace nlohmann
 					"Invalid value \"" + name + "\" for enum " + std::string( magic_enum::enum_type_name<E>() )
 				);
 			}
-			p_value = *value;
+			return *value;
 		}
 	};
 } // namespace nlohmann
