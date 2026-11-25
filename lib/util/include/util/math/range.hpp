@@ -2,6 +2,7 @@
 #define VTX_UTIL_MATH_RANGE_HPP
 
 #include "util/constants.hpp"
+#include "util/math.hpp"
 #include <cassert>
 #include <concepts>
 #include <numeric>
@@ -51,7 +52,7 @@ namespace VTX::Util::Math
 		 * @brief Constructs a range from first (inclusive) to last (exclusive).
 		 */
 		constexpr Range( const T p_first, const T p_last ) noexcept :
-			first( std::min( p_first, p_last ) ), last( std::max( p_first, p_last ) )
+			first( min( p_first, p_last ) ), last( max( p_first, p_last ) )
 		{
 		}
 
@@ -182,8 +183,8 @@ namespace VTX::Util::Math
 		 */
 		[[nodiscard]] constexpr std::optional<Range> intersection( const Range & p_other ) const noexcept
 		{
-			const T f = std::max( first, p_other.first );
-			const T l = std::min( last, p_other.last );
+			const T f = max( first, p_other.first );
+			const T l = min( last, p_other.last );
 			if ( f >= l )
 			{
 				return std::nullopt;
@@ -198,7 +199,7 @@ namespace VTX::Util::Math
 		{
 			if ( intersects( p_other ) || touches( p_other ) )
 			{
-				return Range( std::min( first, p_other.first ), std::max( last, p_other.last ) );
+				return Range( min( first, p_other.first ), max( last, p_other.last ) );
 			}
 			return std::nullopt;
 		}
@@ -210,8 +211,8 @@ namespace VTX::Util::Math
 		{
 			if ( intersects( p_other ) || touches( p_other ) )
 			{
-				first = std::min( first, p_other.first );
-				last  = std::max( last, p_other.last );
+				first = min( first, p_other.first );
+				last  = max( last, p_other.last );
 				return true;
 			}
 			return false;
@@ -250,8 +251,8 @@ namespace VTX::Util::Math
 				*this = p_other;
 				return;
 			}
-			first = std::min( first, p_other.first );
-			last  = std::max( last, p_other.last );
+			first = min( first, p_other.first );
+			last  = max( last, p_other.last );
 		}
 
 		/**

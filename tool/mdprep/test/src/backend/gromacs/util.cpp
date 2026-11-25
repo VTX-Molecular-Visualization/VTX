@@ -151,7 +151,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - one line", "[pdb2gmx][par
 	CHECK( args == expectedArgs );
 }
 
-TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - one line, no line feed",
+TEST_CASE( "VTX_TOOL_MdPrep - parsePdb2gmxUserScript - one line without line feed",
 		   "[pdb2gmx][parsePdb2gmxUserScript][one_line]" )
 {
 	using namespace VTX::Tool::Mdprep::backends::Gromacs;

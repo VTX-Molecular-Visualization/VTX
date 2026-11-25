@@ -12,9 +12,9 @@
 #include <QScreen>
 #include <QScrollArea>
 #include <QToolButton>
-#include <algorithm>
 #include <memory>
 #include <utility>
+#include <util/math.hpp>
 
 namespace VTX::UI::QT::Util
 {
@@ -228,8 +228,8 @@ namespace VTX::UI::QT::Util
 				const QScreen * scr	  = screen();
 				const QRect		avail = scr ? scr->availableGeometry() : QRect( 0, 0, 800, 600 );
 
-				const QSize maxSize( std::min( 480, avail.width() - 2 * BUTTON_SIDE ),
-									 std::min( 360, avail.height() - 2 * BUTTON_SIDE ) );
+				const QSize maxSize( VTX::Util::Math::min( 480, avail.width() - 2 * BUTTON_SIDE ),
+									 VTX::Util::Math::min( 360, avail.height() - 2 * BUTTON_SIDE ) );
 				// Constrain the label width so the text wraps (rather than forcing a horizontal scrollbar) and
 				// let adjustSize() resolve the height; the popup max size then bounds the whole tooltip.
 				_label->setMaximumWidth( maxSize.width() );
@@ -246,8 +246,8 @@ namespace VTX::UI::QT::Util
 				{
 					pos.setY( mapToGlobal( rect().topRight() ).y() - sz.height() );
 				}
-				pos.setX( std::max( pos.x(), avail.left() ) );
-				pos.setY( std::max( pos.y(), avail.top() ) );
+				pos.setX( VTX::Util::Math::max( pos.x(), avail.left() ) );
+				pos.setY( VTX::Util::Math::max( pos.y(), avail.top() ) );
 
 				popup->move( pos );
 				popup->show();

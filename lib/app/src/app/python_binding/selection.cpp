@@ -8,6 +8,7 @@
 #include "app/python_binding/topology/actions.hpp"
 #include "app/python_binding/topology/types.hpp"
 #include "app/system/selection.hpp"
+#include <cmath>
 #include <core/struct/topology.hpp>
 #include <optional>
 #include <pybind11/pybind11.h>
@@ -33,6 +34,9 @@ namespace VTX::App::PythonBinding
 			bool						  isEmpty( const Topology::System & p_system ) const;
 			void						  show() const;
 			void						  hide() const;
+			void						  extend( float p_distance ) const;
+			void						  extendToResidue() const;
+			void						  invert() const;
 			void						  setRepresentation( const std::string & p_name ) const;
 			void						  setRepresentation( const Preset::RepresentationHandle & p_preset ) const;
 			void						  setColorScheme(
@@ -129,6 +133,24 @@ namespace VTX::App::PythonBinding
 
 		void SelectionView::hide() const { executeAction<App::Action::Visibility::SetVisibleSelected>( false ); }
 
+		void SelectionView::extend( const float p_distance ) const
+		{
+			if ( not std::isfinite( p_distance ) )
+			{
+				throw pybind11::value_error( "Distance must be finite." );
+			}
+			if ( p_distance < 0.f )
+			{
+				throw pybind11::value_error( "Distance must not be negative." );
+			}
+			executeAction<App::Action::Selection::ExtendSelection>( p_distance );
+		}
+
+		void SelectionView::extendToResidue() const
+		{ executeAction<App::Action::Selection::ExtendSelectionToResidue>(); }
+
+		void SelectionView::invert() const { executeAction<App::Action::Selection::InvertSelection>(); }
+
 		void SelectionView::setRepresentation( const std::string & p_name ) const
 		{
 			THREAD().synchronize(
@@ -200,6 +222,26 @@ namespace VTX::App::PythonBinding
 			.def( "show", &SelectionView::show, "Show the selection." )
 			.def( "hide", &SelectionView::hide, "Hide the selection." )
 			.def(
+				"extend",
+				&SelectionView::extend,
+				"Add to the selection all visible atoms within the given distance (angstrom) of a selected atom. "
+				"For a positive distance, hidden selected atoms are unselected first and only visible selected atoms "
+				"are used as seeds. Does nothing if the distance is zero. Raises ValueError if the distance is "
+				"negative or not finite.",
+				pybind11::arg( "distance" )
+			)
+			.def(
+				"extendToResidue",
+				&SelectionView::extendToResidue,
+				"Add to the selection all visible atoms of the residues containing a selected atom. Hidden selected "
+				"atoms are unselected first and only visible selected atoms are used as seeds."
+			)
+			.def(
+				"invert",
+				&SelectionView::invert,
+				"Invert the selection among visible atoms. Hidden atoms end up unselected."
+			)
+			.def(
 				"setRepresentation",
 				pybind11::overload_cast<const std::string &>( &SelectionView::setRepresentation, pybind11::const_ ),
 				"Apply a representation preset by name to the selection.",
@@ -222,7 +264,9 @@ namespace VTX::App::PythonBinding
 			);
 		module.attr( "selection" ) = SelectionView {};
 
-		p_vtxModule.bindAction<App::Action::Selection::SelectAll>( "selectAll", "Select all systems." );
+		p_vtxModule.bindAction<App::Action::Selection::SelectAll>(
+			"selectAll", "Select all visible atoms of all systems."
+		);
 		p_vtxModule.bindAction<App::Action::Selection::Clear>(
 			"clearSelection", "Clear the selection of all systems."
 		);

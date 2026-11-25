@@ -480,7 +480,7 @@ namespace VTX::Renderer::Builder
 						sesRepresentation = representationIndex;
 						hasSesProbeRadius = true;
 					}
-					else if ( std::abs( sesProbeRadius - representationProbeRadius ) > EPSILON )
+					else if ( Util::Math::abs( sesProbeRadius - representationProbeRadius ) > EPSILON )
 					{
 						VTX_WARNING(
 							"Multiple visible SES probe radii on the same system. Using {} and ignoring {}.",
@@ -514,7 +514,7 @@ namespace VTX::Renderer::Builder
 			}
 			else if (
 				p_geometries.ses.built( p_handle )
-				&& ( std::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON
+				&& ( Util::Math::abs( p_geometries.ses.probeRadius( p_handle ) - sesProbeRadius ) > EPSILON
 					 || p_geometries.ses.computeMode( p_handle ) != sesComputeMode )
 			)
 			{
@@ -745,7 +745,7 @@ namespace VTX::Renderer::Builder
 				Desc::Handle lastHandle = 0;
 				for ( const auto entry : p_representations.entries() )
 				{
-					lastHandle = std::max( lastHandle, entry.handle );
+					lastHandle = Util::Math::max( lastHandle, entry.handle );
 				}
 
 				for ( Desc::Handle handle = 0; handle <= lastHandle; ++handle )

@@ -2,8 +2,7 @@
 #include "ui/qt/widget/tree/trajectory_slider.hpp"
 #include <QPainter>
 #include <QStyleOptionSlider>
-#include <algorithm>
-#include <cmath>
+#include <util/math.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -41,12 +40,14 @@ namespace VTX::UI::QT::Widget::Tree
 
 		// Map frame ranges to segments so a single loaded frame remains visible.
 		const double pixelPerValue = static_cast<double>( grooveRect.width() ) / valueCount;
-		int xStart = grooveRect.x() + static_cast<int>( std::floor( ( _loadedLower - minimum() ) * pixelPerValue ) );
-		int xEnd   = grooveRect.x() + static_cast<int>( std::ceil( ( _loadedUpper - minimum() + 1 ) * pixelPerValue ) );
+		int xStart
+			= grooveRect.x() + static_cast<int>( Util::Math::floor( ( _loadedLower - minimum() ) * pixelPerValue ) );
+		int xEnd
+			= grooveRect.x() + static_cast<int>( Util::Math::ceil( ( _loadedUpper - minimum() + 1 ) * pixelPerValue ) );
 
 		// Clamp to groove bounds.
-		xStart = std::max( xStart, grooveRect.x() );
-		xEnd   = std::min( xEnd, grooveRect.x() + grooveRect.width() );
+		xStart = Util::Math::max( xStart, grooveRect.x() );
+		xEnd   = Util::Math::min( xEnd, grooveRect.x() + grooveRect.width() );
 
 		// Paint the overlay.
 		const QRect overlay( xStart, grooveRect.y(), xEnd - xStart, grooveRect.height() );

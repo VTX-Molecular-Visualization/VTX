@@ -4,6 +4,7 @@
 #include <io/metadata.hpp>
 #include <io/writer/system.hpp>
 #include <stdexcept>
+#include <util/math.hpp>
 
 namespace VTX::App::Helper::Trajectory
 {
@@ -20,16 +21,16 @@ namespace VTX::App::Helper::Trajectory
 			return {};
 		}
 
-		const uint windowFrameCount = static_cast<uint>(
-			std::min( static_cast<size_t>( p_frameCount ), std::max( static_cast<size_t>( 1 ), p_windowFrameCount ) )
-		);
+		const uint windowFrameCount = static_cast<uint>( Util::Math::min(
+			static_cast<size_t>( p_frameCount ), Util::Math::max( static_cast<size_t>( 1 ), p_windowFrameCount )
+		) );
 		if ( p_direction == App::Trajectory::TRAJECTORY_READ_DIRECTION::FORWARD )
 		{
-			const uint firstFrame = std::min( p_frame, p_frameCount - windowFrameCount );
+			const uint firstFrame = Util::Math::min( p_frame, p_frameCount - windowFrameCount );
 			return App::Trajectory::FrameRange::fromFirstCount( firstFrame, windowFrameCount );
 		}
 
-		const uint lastFrame = std::max( p_frame + 1, windowFrameCount );
+		const uint lastFrame = Util::Math::max( p_frame + 1, windowFrameCount );
 		return App::Trajectory::FrameRange( lastFrame - windowFrameCount, lastFrame );
 	}
 

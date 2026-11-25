@@ -9,6 +9,7 @@ namespace VTX::UI::QT
 	constexpr QUtf8StringView SETTING_KEY_STATE { "main/state" };
 
 	constexpr QUtf8StringView SETTING_KEY_GRANULARITY { "selection/granularity" };
+	constexpr QUtf8StringView SETTING_KEY_EXTEND_DISTANCE { "selection/extend_distance" };
 
 	constexpr QUtf8StringView SETTING_KEY_URL { "dialog/download/history/url" };
 	constexpr QUtf8StringView SETTING_KEY_PDB { "dialog/download/history/pdb" };

@@ -6,6 +6,7 @@
 #include <util/chrono.hpp>
 #include <util/enum.hpp>
 #include <util/logger.hpp>
+#include <util/math.hpp>
 #include <utility>
 #include <vector>
 #ifdef VTX_CUDA_ENABLED
@@ -365,10 +366,10 @@ namespace VTX::Renderer::Geometry
 
 		for ( const auto & [ surfaceID, existingConstruction ] : _constructions )
 		{
-			construction->probeOffset = std::max(
+			construction->probeOffset = Util::Math::max(
 				construction->probeOffset, existingConstruction->probeOffset + existingConstruction->probeNb
 			);
-			construction->sectorOffset = std::max(
+			construction->sectorOffset = Util::Math::max(
 				construction->sectorOffset, existingConstruction->sectorOffset + existingConstruction->sectorNb
 			);
 		}
@@ -421,13 +422,13 @@ namespace VTX::Renderer::Geometry
 						const Desc::BufferRef atomsRef { Desc::Key { BUFFER_ATOMS }, construction->surface.id };
 						p_context.ensureBufferChunk( atomsRef );
 						p_context.setBuffer<Vec4f>(
-							atomsRef, std::max<uint32_t>( 1u, static_cast<uint32_t>( atomCount ) )
+							atomsRef, Util::Math::max<uint32_t>( 1u, static_cast<uint32_t>( atomCount ) )
 						);
 
 						const Desc::BufferRef atomIdsRef { Desc::Key { BUFFER_ATOM_IDS }, construction->surface.id };
 						p_context.ensureBufferChunk( atomIdsRef );
 						p_context.setBuffer<uint32_t>(
-							atomIdsRef, std::max<uint32_t>( 1u, static_cast<uint32_t>( atomCount ) )
+							atomIdsRef, Util::Math::max<uint32_t>( 1u, static_cast<uint32_t>( atomCount ) )
 						);
 
 						mappings = p_context.mapInteropBuffers( Desc::E_INTEROP_API::CUDA, buffers );
@@ -458,13 +459,13 @@ namespace VTX::Renderer::Geometry
 						const Desc::BufferRef atomsRef { Desc::Key { BUFFER_ATOMS }, construction->surface.id };
 						p_context.ensureBufferChunk( atomsRef );
 						p_context.setBuffer<Vec4f>(
-							atomsRef, std::max<uint32_t>( 1u, static_cast<uint32_t>( atomCount ) )
+							atomsRef, Util::Math::max<uint32_t>( 1u, static_cast<uint32_t>( atomCount ) )
 						);
 
 						const Desc::BufferRef atomIdsRef { Desc::Key { BUFFER_ATOM_IDS }, construction->surface.id };
 						p_context.ensureBufferChunk( atomIdsRef );
 						p_context.setBuffer<uint32_t>(
-							atomIdsRef, std::max<uint32_t>( 1u, static_cast<uint32_t>( atomCount ) )
+							atomIdsRef, Util::Math::max<uint32_t>( 1u, static_cast<uint32_t>( atomCount ) )
 						);
 
 						mappings = p_context.mapInteropBuffers( Desc::E_INTEROP_API::CUDA, buffers );
@@ -577,40 +578,40 @@ namespace VTX::Renderer::Geometry
 
 			const Desc::BufferRef probesRef { Desc::Key { BUFFER_PROBES }, chunk };
 			p_context.ensureBufferChunk( probesRef );
-			p_context.setBuffer<Vec4f>( probesRef, std::max<uint32_t>( 1u, construction->probeNb ) );
+			p_context.setBuffer<Vec4f>( probesRef, Util::Math::max<uint32_t>( 1u, construction->probeNb ) );
 
 			const Desc::BufferRef probeAtomIndicesRef { Desc::Key { BUFFER_PROBE_ATOM_INDICES }, chunk };
 			p_context.ensureBufferChunk( probeAtomIndicesRef );
 			p_context.setBuffer<std::array<int32_t, 4>>(
-				probeAtomIndicesRef, std::max<uint32_t>( 1u, construction->probeNb )
+				probeAtomIndicesRef, Util::Math::max<uint32_t>( 1u, construction->probeNb )
 			);
 
 			const Desc::BufferRef probeNeighborsRef { Desc::Key { BUFFER_PROBE_NEIGHBORS }, chunk };
 			p_context.ensureBufferChunk( probeNeighborsRef );
 			p_context.setBuffer<Vec4f>(
-				probeNeighborsRef, std::max<uint32_t>( 1u, construction->probeNb * MAX_PROBE_NEIGHBOR_NB )
+				probeNeighborsRef, Util::Math::max<uint32_t>( 1u, construction->probeNb * MAX_PROBE_NEIGHBOR_NB )
 			);
 
 			const Desc::BufferRef sectorsRef { Desc::Key { BUFFER_SECTORS }, chunk };
 			p_context.ensureBufferChunk( sectorsRef );
-			p_context.setBuffer<Vec4f>( sectorsRef, std::max<uint32_t>( 1u, construction->sectorNb ) );
+			p_context.setBuffer<Vec4f>( sectorsRef, Util::Math::max<uint32_t>( 1u, construction->sectorNb ) );
 
 			const Desc::BufferRef convexRef { Desc::Key { BUFFER_CONVEX_PATCH_ELEMENTS }, chunk };
 			p_context.ensureBufferChunk( convexRef );
 			p_context.setBuffer<std::array<uint32_t, 2>>(
-				convexRef, std::max<uint32_t>( 1u, construction->convexPatchNb )
+				convexRef, Util::Math::max<uint32_t>( 1u, construction->convexPatchNb )
 			);
 
 			const Desc::BufferRef circleRef { Desc::Key { BUFFER_CIRCLE_PATCH_ATOMS }, chunk };
 			p_context.ensureBufferChunk( circleRef );
 			p_context.setBuffer<std::array<uint32_t, 2>>(
-				circleRef, std::max<uint32_t>( 1u, construction->circlePatchNb )
+				circleRef, Util::Math::max<uint32_t>( 1u, construction->circlePatchNb )
 			);
 
 			const Desc::BufferRef segmentRef { Desc::Key { BUFFER_SEGMENT_PATCH_IDS }, chunk };
 			p_context.ensureBufferChunk( segmentRef );
 			p_context.setBuffer<std::array<uint32_t, 4>>(
-				segmentRef, std::max<uint32_t>( 1u, construction->segmentPatchNb )
+				segmentRef, Util::Math::max<uint32_t>( 1u, construction->segmentPatchNb )
 			);
 		}
 

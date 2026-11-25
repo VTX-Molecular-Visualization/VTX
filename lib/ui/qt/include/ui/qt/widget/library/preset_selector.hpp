@@ -23,6 +23,7 @@
 #include <optional>
 #include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
+#include <util/math.hpp>
 #include <utility>
 #include <vector>
 
@@ -240,7 +241,7 @@ namespace VTX::UI::QT::Widget::Library
 
 			if ( _comboBox->count() > 0 )
 			{
-				indexToSelect = std::clamp( indexToSelect, 0, _comboBox->count() - 1 );
+				indexToSelect = VTX::Util::Math::clamp( indexToSelect, 0, _comboBox->count() - 1 );
 				_comboBox->setCurrentIndex( indexToSelect );
 			}
 

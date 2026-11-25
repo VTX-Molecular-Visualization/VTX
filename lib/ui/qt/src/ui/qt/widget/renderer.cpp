@@ -15,12 +15,12 @@
 #include <QPalette>
 #include <QScopedValueRollback>
 #include <QStyleHints>
-#include <algorithm>
 #include <app/action/application.hpp>
 #include <app/action/camera.hpp>
 #include <array>
 #include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
+#include <util/math.hpp>
 #include <utility>
 
 namespace
@@ -99,7 +99,7 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		const int	maxSide	 = std::max( 1, std::min( std::min( width(), height() ) / 3, 180 ) );
+		const int	maxSide	 = Util::Math::max( 1, Util::Math::min( Util::Math::min( width(), height() ) / 3, 180 ) );
 		const QSize logoSize = _backgroundLogo.size().scaled( maxSide, maxSide, Qt::KeepAspectRatio );
 		const QRect logoRect(
 			( width() - logoSize.width() ) / 2,

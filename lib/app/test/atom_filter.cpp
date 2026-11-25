@@ -19,7 +19,7 @@ TEST_CASE( "VTX_APP - AtomFilter - Visible", "[atomFilter][Visible]" )
 	CHECK( filter( 7 ) == true );
 }
 
-TEST_CASE( "VTX_APP - AtomFilter - Visible", "[atomFilter][Selected]" )
+TEST_CASE( "VTX_APP - AtomFilter - Selected", "[atomFilter][Selected]" )
 {
 	using namespace VTX::App::System;
 	Selection vis { VTX::Util::Math::BitSet { 10 } };

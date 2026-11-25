@@ -95,8 +95,8 @@ namespace VTX::Util::Math
 
 			while ( it != _ranges.end() && not( it->getFirst() > r.last || it->getLast() < r.first ) )
 			{
-				r.first = std::min( r.first, it->getFirst() );
-				r.last	= std::max( r.last, it->getLast() );
+				r.first = min( r.first, it->getFirst() );
+				r.last	= max( r.last, it->getLast() );
 				it		= _ranges.erase( it );
 			}
 
@@ -373,8 +373,8 @@ namespace VTX::Util::Math
 					continue;
 				}
 
-				const T f = std::max( a->first, b->first );
-				const T l = std::min( a->last, b->last );
+				const T f = max( a->first, b->first );
+				const T l = min( a->last, b->last );
 				if ( f < l )
 				{
 					out.emplace_back( f, l );

@@ -1,6 +1,5 @@
 #include "util/color/rgba.hpp"
 #include "util/math.hpp"
-#include <algorithm>
 #include <array>
 #include <limits>
 
@@ -54,7 +53,7 @@ namespace VTX::Util::Color
 			return *this;
 		}
 
-		const float factor = ( p_minBrightness - current ) / std::max( 1.f - current, 1e-4f );
+		const float factor = ( p_minBrightness - current ) / Util::Math::max( 1.f - current, 1e-4f );
 		Rgba		result = mixedWith( Rgba( 1.f, 1.f, 1.f, a() ), factor );
 		result.saturate();
 		return result;
@@ -77,7 +76,7 @@ namespace VTX::Util::Color
 		}
 
 		Rgba		result	   = withSaturation( 1.35f ).withMinBrightness( 0.42f );
-		const float maxChannel = std::max( { result.r(), result.g(), result.b() } );
+		const float maxChannel = Util::Math::max( result.r(), Util::Math::max( result.g(), result.b() ) );
 		if ( maxChannel > 0.f )
 		{
 			result /= maxChannel;
@@ -110,9 +109,9 @@ namespace VTX::Util::Color
 			return Rgba( 0.45f, 0.45f, 0.45f, a() );
 		}
 
-		if ( std::abs( r() - g() ) < 0.08f && std::abs( g() - b() ) < 0.08f )
+		if ( Util::Math::abs( r() - g() ) < 0.08f && Util::Math::abs( g() - b() ) < 0.08f )
 		{
-			const float target = std::clamp( std::max( brightnessValue, 0.38f ), 0.f, 1.f );
+			const float target = Util::Math::clamp( Util::Math::max( brightnessValue, 0.38f ), 0.f, 1.f );
 			return Rgba( target, target, target, a() );
 		}
 
@@ -129,7 +128,9 @@ namespace VTX::Util::Color
 		}
 
 		Rgba result = palette[ bestIndex ];
-		result		= result.mixedWith( Rgba( 1.f, 1.f, 1.f, a() ), std::max( 0.f, brightnessValue - 0.6f ) * 0.35f );
+		result		= result.mixedWith(
+			Rgba( 1.f, 1.f, 1.f, a() ), Util::Math::max( 0.f, brightnessValue - 0.6f ) * 0.35f
+		);
 		result		= result.withMinBrightness( 0.38f );
 		result.saturate();
 		return Rgba( result.r(), result.g(), result.b(), a() );

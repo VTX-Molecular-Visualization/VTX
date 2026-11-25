@@ -15,7 +15,7 @@ TEST_CASE( "Next power of two rejects overflow", "[math][constexpr-audit]" )
 
 namespace
 {
-	bool closeEnough( const float & v1, const float & v2 ) { return std::abs( v1 - v2 ) < 0.001f; }
+	bool closeEnough( const float & v1, const float & v2 ) { return VTX::Util::Math::abs( v1 - v2 ) < 0.001f; }
 
 	bool checkTorsion( const VTX::Vec3f & p1,
 					   const VTX::Vec3f & p2,

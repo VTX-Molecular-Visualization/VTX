@@ -37,7 +37,7 @@ namespace Test
 
 using AsyncJobResult = VTX::App::PythonBinding::Interpretor::AsyncJobResult;
 
-TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types", "[app][python][integration][types][random]" )
+TEST_CASE( "VTX_PYTHON_BINDING - VTX API Selection return types - random", "[app][python][integration][types][random]" )
 {
 	/**
 	 * @brief The intend of this test is to diagnose a bug that occurs randomly in release mode.
@@ -529,7 +529,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Python trajectory binding smoke test", "[python
 	CHECK( result.success == true );
 }
 
-TEST_CASE( "VTX_PYTHON_BINDING - Script execution via command", "[python][nothing]" )
+TEST_CASE( "VTX_PYTHON_BINDING - Simple command execution", "[python][nothing]" )
 {
 	/**
 	 * @brief We test one of the most basic python (i.e. assigning an int to a named var) command to make sure

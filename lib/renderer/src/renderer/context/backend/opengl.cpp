@@ -7,6 +7,7 @@
 #include <util/constants.hpp>
 #include <util/enum.hpp>
 #include <util/exceptions.hpp>
+#include <util/math.hpp>
 #include <utility>
 
 namespace
@@ -734,8 +735,8 @@ namespace VTX::Renderer::Context::Backend
 			{
 				texWidth  = static_cast<uint32_t>( static_cast<float>( _width ) * sizePtr->width );
 				texHeight = static_cast<uint32_t>( static_cast<float>( _height ) * sizePtr->height );
-				texWidth  = std::max( 1u, texWidth );
-				texHeight = std::max( 1u, texHeight );
+				texWidth  = Util::Math::max( 1u, texWidth );
+				texHeight = Util::Math::max( 1u, texHeight );
 			}
 
 			assert( texWidth <= static_cast<uint32_t>( TypeMax<GLsizei> ) );
@@ -859,8 +860,8 @@ namespace VTX::Renderer::Context::Backend
 		{
 			width  = static_cast<uint32_t>( static_cast<float>( _width ) * sizePtr->width );
 			height = static_cast<uint32_t>( static_cast<float>( _height ) * sizePtr->height );
-			width  = std::max( 1u, width );
-			height = std::max( 1u, height );
+			width  = Util::Math::max( 1u, width );
+			height = Util::Math::max( 1u, height );
 		}
 
 		const GLPixelFormat glFormat = _toGL( p_text.format );
