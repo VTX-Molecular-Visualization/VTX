@@ -20,3 +20,5 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 install(TARGETS vtx_app FILE_SET public_headers)
 vtx_install_source_directory("vendor/velopack/lib-static" DESTINATION "vendor/velopack")
+vtx_install_source_directory("default_user_data")
+vtx_install_build_modules()

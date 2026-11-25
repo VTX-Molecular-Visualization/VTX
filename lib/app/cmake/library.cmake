@@ -1,3 +1,5 @@
+include("${CMAKE_CURRENT_LIST_DIR}/vtx_app_copy_default_user_data.cmake")
+
 # Lib.
 add_library(vtx_app)
 add_library(vtx_app::vtx_app ALIAS vtx_app)
@@ -78,6 +80,7 @@ if(VTX_BUILD_TESTS)
 	endif()
 
 	vtx_copy_directory(vtx_app_test "${CMAKE_CURRENT_LIST_DIR}/../test/data" "$<TARGET_FILE_DIR:vtx_app_test>/data")
+	vtx_app_copy_default_user_data(vtx_app_test)
 
 	include(CTest)
 	include(Catch)
