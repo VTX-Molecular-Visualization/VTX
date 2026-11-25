@@ -3,7 +3,7 @@
     "name": "JMol",
     "data": {
         "atoms": {
-            "UNKNOWN": "#00FFFFFF",
+            "UNKNOWN": "#FF1493FF",
             "H": "#FFFFFFFF",
             "HE": "#D9FFFFFF",
             "LI": "#CC80FFFF",
@@ -104,7 +104,7 @@
             "CF": "#A136D4FF",
             "ES": "#B31FD4FF",
             "FM": "#B31FBAFF",
-            "MD": "#B30D10FF",
+            "MD": "#B30DA6FF",
             "NO": "#BD0D87FF",
             "LR": "#C70066FF",
             "RF": "#CC0059FF",
@@ -124,7 +124,7 @@
             "UUO": "#FFFFFFFF"
         },
         "residues": {
-            "UNKNOWN": "#00FFFFFF",
+            "UNKNOWN": "#BEA06EFF",
             "ALA": "#C8C8C8FF",
             "ARG": "#145AFFFF",
             "ASN": "#00DCDCFF",
@@ -166,7 +166,7 @@
             "SOL": "#FFFFFFFF"
         },
         "chains": {
-            "UNKNOWN": "#00FFFFFF",
+            "UNKNOWN": "#FFFFFFFF",
             "A": "#C0D0FFFF",
             "B": "#B0FFB0FF",
             "C": "#FFC0C8FF",
@@ -221,14 +221,14 @@
             "HETATM_Z": "#C23232FF"
         },
         "ribbons": {
-            "UNKNOWN": "#00FFFFFF",
+            "UNKNOWN": "#FFFFFFFF",
             "HELIX_ALPHA_RIGHT": "#FF0080FF",
             "HELIX_ALPHA_LEFT": "#FF0080FF",
-            "HELIX_3_10_RIGHT": "#9E0080FF",
-            "HELIX_3_10_LEFT": "#9E0080FF",
-            "HELIX_PI": "#5E0080FF",
-            "STRAND": "#FFC700FF",
-            "TURN": "#5E80FFFF",
+            "HELIX_3_10_RIGHT": "#A00080FF",
+            "HELIX_3_10_LEFT": "#A00080FF",
+            "HELIX_PI": "#600080FF",
+            "STRAND": "#FFC800FF",
+            "TURN": "#6080FFFF",
             "COIL": "#FFFFFFFF"
         },
         "custom": [

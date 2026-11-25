@@ -97,6 +97,45 @@ TEST_CASE( "Util::Json::Rgba", "[unit]" )
 	CHECK_THROWS_AS( Document::array( { 0.1f, 0.2f, 0.3f } ).get<Rgba>(), nlohmann::json::type_error );
 }
 
+TEST_CASE( "Util::Json::RoundTrip", "[unit]" )
+{
+	using VTX::Util::Color::Rgba;
+	using VTX::Util::Json::Document;
+
+	const auto roundTrip = []<typename T>( const T & p_value ) -> T
+	{ return Document::parse( Document( p_value ).dump() ).template get<T>(); };
+
+	for ( int channel = 0; channel < 256; ++channel )
+	{
+		const Rgba color { channel, 255 - channel, channel, 255 - channel };
+		Rgba	   current = color;
+		for ( int i = 0; i < 5; ++i )
+		{
+			current = roundTrip( current );
+			REQUIRE( current == color );
+		}
+	}
+
+	const Rgba arbitrary { 0.62f, 0.37f, 0.123456f, 0.999f };
+	const Rgba quantized = roundTrip( arbitrary );
+	CHECK( quantized != arbitrary );
+	CHECK( roundTrip( quantized ) == quantized );
+	CHECK( roundTrip( roundTrip( quantized ) ) == quantized );
+
+	for ( const float value : { 0.f, 0.1f, 0.15f, 1.4f, -2.5f, 3.14159265f, 1e-7f, 123456.789f } )
+	{
+		float current = value;
+		for ( int i = 0; i < 5; ++i )
+		{
+			current = roundTrip( current );
+			REQUIRE( current == value );
+		}
+	}
+
+	const VTX::Vec3f vec { 0.1f, 0.2f, 0.3f };
+	CHECK( roundTrip( roundTrip( vec ) ) == vec );
+}
+
 TEST_CASE( "Util::Json::Enum", "[unit]" )
 {
 	using VTX::Util::Json::Document;

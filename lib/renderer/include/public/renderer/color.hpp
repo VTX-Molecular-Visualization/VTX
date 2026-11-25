@@ -614,7 +614,7 @@ namespace VTX::Renderer::Color
 
 	namespace Layouts
 	{
-		inline constexpr Layout JMOL { LayoutArray { COLOR_CYAN,		// UNKNOWN
+		inline constexpr Layout JMOL { LayoutArray { { 255, 20, 147 }, // UNKNOWN
 													 { 255, 255, 255 }, // H
 													 { 217, 255, 255 }, // HE
 													 { 204, 128, 255 }, // LI
@@ -715,7 +715,7 @@ namespace VTX::Renderer::Color
 													 { 161, 54, 212 },	// CF
 													 { 179, 31, 212 },	// ES
 													 { 179, 31, 186 },	// FM
-													 { 179, 13, 16 },	// MD
+													 { 179, 13, 166 },	// MD
 													 { 189, 13, 135 },	// NO
 													 { 199, 0, 102 },	// LR
 													 { 204, 0, 89 },	// RF
@@ -736,7 +736,7 @@ namespace VTX::Renderer::Color
 													 {},
 													 {},
 
-													 COLOR_CYAN,		// UNKNOWN
+													 { 190, 160, 110 }, // UNKNOWN
 													 { 200, 200, 200 }, // ALA
 													 { 20, 90, 255 },	// ARG
 													 { 0, 220, 220 },	// ASN
@@ -779,7 +779,7 @@ namespace VTX::Renderer::Color
 													 {},
 													 {},
 
-													 COLOR_CYAN,		// Unknown
+													 COLOR_WHITE,		// Unknown
 													 { 192, 208, 255 }, // A, a,
 													 { 176, 255, 176 }, // B, b,
 													 { 255, 192, 200 }, // C, c,
@@ -835,14 +835,14 @@ namespace VTX::Renderer::Color
 													 {},
 													 {},
 
-													 COLOR_CYAN,		   // Unknown
-													 { 1.f, 0.f, 0.5f },   // HELIX_ALPHA_RIGHT
-													 { 1.f, 0.f, 0.5f },   // HELIX_ALPHA_LEFT
-													 { 0.62f, 0.f, 0.5f }, // HELIX_3_10_RIGHT
-													 { 0.62f, 0.f, 0.5f }, // HELIX_3_10_LEFT
-													 { 0.37f, 0.f, 0.5f }, // HELIX_PI
-													 { 1.f, 0.78f, 0.f },  // STRAND
-													 { 0.37f, 0.5f, 1.f }, // TURN
+													 COLOR_WHITE,		   // Unknown
+													 { 255, 0, 128 },  // HELIX_ALPHA_RIGHT
+													 { 255, 0, 128 },  // HELIX_ALPHA_LEFT
+													 { 160, 0, 128 },  // HELIX_3_10_RIGHT
+													 { 160, 0, 128 },  // HELIX_3_10_LEFT
+													 { 96, 0, 128 },   // HELIX_PI
+													 { 255, 200, 0 },  // STRAND
+													 { 96, 128, 255 }, // TURN
 													 COLOR_WHITE,		   // COIL
 													 {},
 
