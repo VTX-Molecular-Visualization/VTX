@@ -8,5 +8,7 @@ Contributions are welcome!
    For a first contribution, a maintainer has to approve the CI run.
 4. Once reviewed, a maintainer merges the pull request (squash merge).
 
+Commit messages and pull request titles follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification.
+
 The [developer manual](https://vtx.drugdesign.fr/doc/) explains how to build VTX locally.
 For bugs or ideas, [open an issue](https://github.com/VTX-Molecular-Visualization/VTX/issues).
