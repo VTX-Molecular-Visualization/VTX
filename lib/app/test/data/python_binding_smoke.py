@@ -948,6 +948,17 @@ except ValueError:
     pass
 else:
     raise AssertionError("A negative extension distance should raise ValueError")
+for invalid_distance in (float("nan"), float("inf"), float("-inf")):
+    try:
+        vtx.selection.extend(invalid_distance)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("A non-finite extension distance should raise ValueError")
+require(
+    len(vtx.selection.getAtoms(topology_system)) == extended_atom_count,
+    "Invalid extension distances should not change the selection",
+)
 
 vtx.clearSelection()
 residue_atoms = topology_system.getResidue(0).getAtoms()

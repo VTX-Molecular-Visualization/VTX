@@ -8,6 +8,7 @@
 #include "app/python_binding/topology/actions.hpp"
 #include "app/python_binding/topology/types.hpp"
 #include "app/system/selection.hpp"
+#include <cmath>
 #include <core/struct/topology.hpp>
 #include <optional>
 #include <pybind11/pybind11.h>
@@ -134,6 +135,10 @@ namespace VTX::App::PythonBinding
 
 		void SelectionView::extend( const float p_distance ) const
 		{
+			if ( not std::isfinite( p_distance ) )
+			{
+				throw pybind11::value_error( "Distance must be finite." );
+			}
 			if ( p_distance < 0.f )
 			{
 				throw pybind11::value_error( "Distance must not be negative." );
@@ -222,7 +227,7 @@ namespace VTX::App::PythonBinding
 				"Add to the selection all visible atoms within the given distance (angstrom) of a selected atom. "
 				"For a positive distance, hidden selected atoms are unselected first and only visible selected atoms "
 				"are used as seeds. Does nothing if the distance is zero. Raises ValueError if the distance is "
-				"negative.",
+				"negative or not finite.",
 				pybind11::arg( "distance" )
 			)
 			.def(

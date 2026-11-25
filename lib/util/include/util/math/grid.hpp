@@ -118,6 +118,8 @@ namespace VTX::Util::Math
 		using CellPosition = Vec3i;
 		using Cell		   = std::vector<T>;
 
+		static constexpr int64_t MAX_NEIGHBOUR_DIST = static_cast<int64_t>( TypeMax<int> ) - TypeMin<int>;
+
 		/**
 		 * @brief Constructors.
 		 */
@@ -146,9 +148,9 @@ namespace VTX::Util::Math
 		{
 			CellPosition gridPos;
 
-			gridPos.x = static_cast<int>( floor( ( p_worldPosition.x - _worldOrigin.x ) / _cellSize.x ) );
-			gridPos.y = static_cast<int>( floor( ( p_worldPosition.y - _worldOrigin.y ) / _cellSize.y ) );
-			gridPos.z = static_cast<int>( floor( ( p_worldPosition.z - _worldOrigin.z ) / _cellSize.z ) );
+			gridPos.x = _toCellCoordinate( ( p_worldPosition.x - _worldOrigin.x ) / _cellSize.x );
+			gridPos.y = _toCellCoordinate( ( p_worldPosition.y - _worldOrigin.y ) / _cellSize.y );
+			gridPos.z = _toCellCoordinate( ( p_worldPosition.z - _worldOrigin.z ) / _cellSize.z );
 
 			return gridPos;
 		}
@@ -176,7 +178,7 @@ namespace VTX::Util::Math
 		void forEachNeighbourCell(
 			const CellPosition & p_gridPosition,
 			F &&				 p_func,
-			const int			 p_neighbourDist = 1
+			const int64_t		 p_neighbourDist = 1
 		) const
 		{
 			auto && func = std::forward<F>( p_func );
@@ -189,7 +191,7 @@ namespace VTX::Util::Math
 			using WidePosition = vec<3, int64_t>;
 
 			const WidePosition center( p_gridPosition );
-			const WidePosition dist( p_neighbourDist );
+			const WidePosition dist( min( p_neighbourDist, MAX_NEIGHBOUR_DIST ) );
 			const WidePosition lower = max( center - dist, WidePosition( _minCell ) );
 			const WidePosition upper = min( center + dist, WidePosition( _maxCell ) );
 
@@ -206,8 +208,8 @@ namespace VTX::Util::Math
 			{
 				for ( const auto & [ position, cell ] : _data )
 				{
-					if ( position.x >= lower.x && position.x <= upper.x && position.y >= lower.y && position.y <= upper.y
-						 && position.z >= lower.z && position.z <= upper.z )
+					if ( position.x >= lower.x && position.x <= upper.x && position.y >= lower.y
+						 && position.y <= upper.y && position.z >= lower.z && position.z <= upper.z )
 					{
 						func( position, cell );
 					}
@@ -328,6 +330,9 @@ namespace VTX::Util::Math
 		 */
 		std::unordered_map<CellPosition, Cell, CellPositionHasher> _data;
 
+		/**
+		 * @brief Extends grid to given position.
+		 */
 		void _extend( const CellPosition & p_gridPosition )
 		{
 			if ( _data.size() == 1 )
@@ -344,6 +349,18 @@ namespace VTX::Util::Math
 			_maxCell.x = max( _maxCell.x, p_gridPosition.x );
 			_maxCell.y = max( _maxCell.y, p_gridPosition.y );
 			_maxCell.z = max( _maxCell.z, p_gridPosition.z );
+		}
+
+		/**
+		 * @brief Clamp.
+		 */
+		static int _toCellCoordinate( const float p_value ) noexcept
+		{
+			return static_cast<int>( clamp(
+				floor( static_cast<double>( p_value ) ),
+				static_cast<double>( TypeMin<int> ),
+				static_cast<double>( TypeMax<int> )
+			) );
 		}
 	};
 } // namespace VTX::Util::Math

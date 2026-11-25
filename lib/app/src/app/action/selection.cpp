@@ -10,6 +10,7 @@
 #include "util/math/range_list.hpp"
 #include "util/math/transform.hpp"
 #include <cassert>
+#include <cmath>
 #include <optional>
 #include <renderer/renderer.hpp>
 #include <util/action_manager.hpp>
@@ -271,7 +272,7 @@ namespace VTX::App::Action::Selection
 			Mat4f							localToWorld;
 			Mat4f							worldToLocal;
 			Vec3f							scale;
-			int								neighbourDist;
+			int64_t							neighbourDist;
 			const App::System::Selection &	selection;
 			const Util::Math::Grid<Index> & grid;
 			const App::System::Visibility & visibility;
@@ -323,7 +324,7 @@ namespace VTX::App::Action::Selection
 			return dist2 <= p_distance2;
 		}
 
-		int neighbourCellDist(
+		int64_t neighbourCellDist(
 			const Util::Math::Grid<Index> & p_grid,
 			const Vec3f &					p_scale,
 			const float						p_distance
@@ -337,7 +338,13 @@ namespace VTX::App::Action::Selection
 			const Vec3f & cellSize = p_grid.getCellSize();
 			const float	  minSide  = min( cellSize.x, min( cellSize.y, cellSize.z ) );
 
-			return static_cast<int>( ceil( p_distance / minScale / minSide ) );
+			const double radius = ceil( static_cast<double>( p_distance ) / minScale / minSide );
+			if ( not( radius < static_cast<double>( Grid<Index>::MAX_NEIGHBOUR_DIST ) ) )
+			{
+				return Grid<Index>::MAX_NEIGHBOUR_DIST;
+			}
+
+			return static_cast<int64_t>( radius );
 		}
 
 		Vec3f transformPoint( const Mat4f & p_matrix, const Vec3f & p_point )
@@ -525,6 +532,10 @@ namespace VTX::App::Action::Selection
 	void ExtendSelection::execute( const float p_distance )
 	{
 		// Selects the most efficient extension strategy depending on selection density.
+		if ( not std::isfinite( p_distance ) )
+		{
+			throw VTXException( "Distance must be finite" );
+		}
 		if ( p_distance <= 0.f )
 		{
 			return;
