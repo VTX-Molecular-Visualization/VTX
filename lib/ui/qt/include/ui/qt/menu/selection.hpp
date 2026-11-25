@@ -21,6 +21,7 @@ namespace VTX::UI::QT::Menu
 	  private:
 		QPointer<ColorScheme>	 _colorSchemeMenu;
 		QPointer<Representation> _representationMenu;
+		QPointer<QMenu>			 _extendMenu;
 
 		void _refresh();
 	};
