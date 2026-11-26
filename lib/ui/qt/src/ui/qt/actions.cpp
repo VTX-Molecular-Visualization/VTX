@@ -151,6 +151,7 @@ namespace VTX::UI::QT::Action
 		);
 
 		p_registry.registerAction( Script::runAction(), handler( []() { App::HUB().trigger<Events::ScriptRun>(); } ) );
+		p_registry.registerAction( Script::saveAction(), handler( []() { App::HUB().trigger<Events::ScriptSave>(); } ) );
 
 		p_registry.registerAction(
 			Selection::lockAction(),
