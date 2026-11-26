@@ -6,7 +6,9 @@
 #include <QHBoxLayout>
 #include <QSignalBlocker>
 #include <QVBoxLayout>
+#include <app/action/scene.hpp>
 #include <app/generic/name.hpp>
+#include <app/scene/material.hpp>
 #include <string_view>
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig
@@ -91,8 +93,14 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 					 &QPushButton::clicked,
 					 [ this, textureType, label ]
 					 {
-						 const auto &  config  = App::REG().get<VTX::Renderer::GraphicsConfig>( _currentPreset );
-						 const auto &  texture = _texture( config.shading.material, textureType );
+						 if ( not App::REG().valid( _currentMaterial ) )
+						 {
+							 return;
+						 }
+
+						 const VTX::Renderer::Material & material
+							 = App::REG().get<VTX::Renderer::Material>( _currentMaterial );
+						 const std::optional<VTX::Renderer::MaterialTexture> & texture = _texture( material, textureType );
 						 const QString initialPath
 							 = texture ? QString::fromStdString( FilePath( texture->path ).parent_path().string() )
 									   : QString {};
@@ -116,25 +124,33 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 				 [ this ]( QListWidgetItem * const p_item )
 				 {
 					 const Entity materialPreset = p_item->data( Qt::UserRole ).value<Entity>();
-					 _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL, Material>(
-						 App::REG().get<Material>( materialPreset ) );
+					 App::ACTION().execute<App::Action::Scene::SetMaterial>( materialPreset );
 				 } );
 		connect( _sliderMetallic,
 				 &EditableSlider::valueChanged,
 				 [ this ]( const float p_value )
-				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_METALLIC, float>( p_value ); } );
+				 { _changeValue<E_MATERIAL_VALUES::METALLIC, float>( p_value ); } );
 		connect( _sliderRoughness,
 				 &EditableSlider::valueChanged,
 				 [ this ]( const float p_value )
-				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_ROUGHNESS, float>( p_value ); } );
+				 { _changeValue<E_MATERIAL_VALUES::ROUGHNESS, float>( p_value ); } );
 		connect( _sliderEmissiveIntensity,
 				 &EditableSlider::valueChanged,
 				 [ this ]( const float p_value )
-				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_EMISSIVE_INTENSITY, float>( p_value ); } );
+				 { _changeValue<E_MATERIAL_VALUES::EMISSIVE_INTENSITY, float>( p_value ); } );
 		connect( _sliderTextureScale,
 				 &EditableSlider::valueChanged,
 				 [ this ]( const float p_value )
-				 { _changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_TEXTURE_SCALE, float>( p_value ); } );
+				 { _changeValue<E_MATERIAL_VALUES::TEXTURE_SCALE, float>( p_value ); } );
+
+		Registry & reg = App::REG();
+		_sceneMaterialConstructedConnection
+			= reg.on_construct<App::Scene::Material>().connect<&MaterialSection::_onSceneMaterial>( this );
+		_sceneMaterialUpdatedConnection
+			= reg.on_update<App::Scene::Material>().connect<&MaterialSection::_onSceneMaterial>( this );
+		_materialUpdatedConnection = reg.on_update<Material>().connect<&MaterialSection::_onMaterialUpdated>( this );
+
+		_refresh();
 	}
 
 	const std::optional<VTX::Renderer::MaterialTexture> & MaterialSection::_texture(
@@ -160,59 +176,83 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		switch ( p_texture )
 		{
 		case Material::E_TEXTURE::ALBEDO:
-			_changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_ALBEDO_TEXTURE, FilePath>( p_path );
+			_changeValue<E_MATERIAL_VALUES::ALBEDO_TEXTURE, FilePath>( p_path );
 			break;
 		case Material::E_TEXTURE::NORMAL:
-			_changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_NORMAL_TEXTURE, FilePath>( p_path );
+			_changeValue<E_MATERIAL_VALUES::NORMAL_TEXTURE, FilePath>( p_path );
 			break;
 		case Material::E_TEXTURE::METALLIC:
-			_changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_METALLIC_TEXTURE, FilePath>( p_path );
+			_changeValue<E_MATERIAL_VALUES::METALLIC_TEXTURE, FilePath>( p_path );
 			break;
 		case Material::E_TEXTURE::ROUGHNESS:
-			_changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_ROUGHNESS_TEXTURE, FilePath>( p_path );
+			_changeValue<E_MATERIAL_VALUES::ROUGHNESS_TEXTURE, FilePath>( p_path );
 			break;
 		case Material::E_TEXTURE::AMBIENT_OCCLUSION:
-			_changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_AMBIENT_OCCLUSION_TEXTURE, FilePath>( p_path );
+			_changeValue<E_MATERIAL_VALUES::AMBIENT_OCCLUSION_TEXTURE, FilePath>( p_path );
 			break;
 		case Material::E_TEXTURE::EMISSIVE:
-			_changeValue<E_GRAPHICS_CONFIG_VALUES::MATERIAL_EMISSIVE_TEXTURE, FilePath>( p_path );
+			_changeValue<E_MATERIAL_VALUES::EMISSIVE_TEXTURE, FilePath>( p_path );
 			break;
 		case Material::E_TEXTURE::COUNT: break;
 		}
 	}
 
-	void MaterialSection::setConfig( const Entity p_preset, const VTX::Renderer::GraphicsConfig & p_config )
+	void MaterialSection::setConfig( const VTX::Renderer::GraphicsConfig & p_config )
+	{ setVisible( p_config.shading.mode == VTX::Renderer::E_SHADING::PBR ); }
+
+	void MaterialSection::_onSceneMaterial( Registry &, Entity ) { _refresh(); }
+
+	void MaterialSection::_onMaterialUpdated( Registry &, const Entity p_e )
 	{
-		_currentPreset = p_preset;
+		if ( p_e == _currentMaterial )
+		{
+			_refresh();
+		}
+	}
+
+	void MaterialSection::_refresh()
+	{
 		const QSignalBlocker blockerMaterial( _listMaterials );
 		const QSignalBlocker blockerMetallic( _sliderMetallic );
 		const QSignalBlocker blockerRoughness( _sliderRoughness );
 		const QSignalBlocker blockerEmissiveIntensity( _sliderEmissiveIntensity );
 		const QSignalBlocker blockerTextureScale( _sliderTextureScale );
 
+		auto sceneMaterials = App::REG().view<App::Scene::Material>();
+		_currentMaterial	= sceneMaterials.begin() == sceneMaterials.end()
+								  ? InvalidEntity
+								  : sceneMaterials.get<App::Scene::Material>( *sceneMaterials.begin() ).preset;
+
 		_listMaterials->setCurrentRow( -1 );
+		if ( not App::REG().valid( _currentMaterial ) || not App::REG().all_of<VTX::Renderer::Material>( _currentMaterial ) )
+		{
+			_currentMaterial = InvalidEntity;
+			return;
+		}
+
 		for ( int i = 0; i < _listMaterials->count(); ++i )
 		{
-			const Entity materialPreset = _listMaterials->item( i )->data( Qt::UserRole ).value<Entity>();
-			if ( App::REG().get<VTX::Renderer::Material>( materialPreset ).name == p_config.shading.material.name )
+			if ( _listMaterials->item( i )->data( Qt::UserRole ).value<Entity>() == _currentMaterial )
 			{
 				_listMaterials->setCurrentRow( i );
 				break;
 			}
 		}
-		_sliderMetallic->setValue( p_config.shading.material.metallic );
-		_sliderRoughness->setValue( p_config.shading.material.roughness );
-		_sliderEmissiveIntensity->setValue( p_config.shading.material.emissiveIntensity );
-		_sliderTextureScale->setValue( p_config.shading.material.textureScale );
+
+		const VTX::Renderer::Material & material = App::REG().get<VTX::Renderer::Material>( _currentMaterial );
+		_sliderMetallic->setValue( material.metallic );
+		_sliderRoughness->setValue( material.roughness );
+		_sliderEmissiveIntensity->setValue( material.emissiveIntensity );
+		_sliderTextureScale->setValue( material.textureScale );
 		for ( size_t i = 0; i < _textureWidgets.size(); ++i )
 		{
-			const auto &  texture = _texture( p_config.shading.material, VTX::Renderer::Material::E_TEXTURE( i ) );
-			const QString path	  = texture ? QString::fromStdString( texture->path ) : QString {};
-			auto &		  widgets = _textureWidgets[ i ];
+			const std::optional<VTX::Renderer::MaterialTexture> & texture
+				= _texture( material, VTX::Renderer::Material::E_TEXTURE( i ) );
+			const QString	 path	 = texture ? QString::fromStdString( texture->path ) : QString {};
+			TextureWidgets & widgets = _textureWidgets[ i ];
 			widgets.linePath->setText( path );
 			widgets.linePath->setToolTip( path );
 			widgets.buttonClear->setEnabled( texture.has_value() );
 		}
-		setVisible( p_config.shading.mode == VTX::Renderer::E_SHADING::PBR );
 	}
 } // namespace VTX::UI::QT::Widget::Library::GraphicsConfig
