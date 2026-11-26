@@ -12,6 +12,7 @@
 #include <future>
 #include <python_binding/interpretor.hpp>
 #include <source_location>
+#include <sstream>
 #include <util/math/range_list.hpp>
 
 namespace Test

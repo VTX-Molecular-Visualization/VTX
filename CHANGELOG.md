@@ -16,6 +16,7 @@
   - Select all atoms within a given distance (Å) of the current selection
   - Extend the selection to complete residues
   - Invert the current selection
+- Added built-in presets
 
 ### UI
 
@@ -25,6 +26,7 @@
 - Added trajectory loading progress
 - Added environment map selector with thumbnails
 - Prevented residue labels from overlapping in the sequence viewer
+- Added color tints to the scene trees
 
 ### Performance
 

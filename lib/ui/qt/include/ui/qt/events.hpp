@@ -40,6 +40,15 @@ namespace VTX::UI::QT::Events
 	{
 	};
 
+	struct ScriptSave
+	{
+	};
+
+	struct ScriptCopied
+	{
+		FilePath path;
+	};
+
 } // namespace VTX::UI::QT::Events
 
 #endif

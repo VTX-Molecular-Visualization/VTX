@@ -57,6 +57,10 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_listEnvironmentMaps->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 		addWidget( _listEnvironmentMaps );
 
+		_labelExperimental = Helper::makeQObject<QLabel>( "Experimental", this );
+		_labelExperimental->setEnabled( false );
+		addWidget( _labelExperimental );
+
 		auto * const environmentPathWidget = Helper::makeQObject<QWidget>( this );
 		auto * const environmentPathLayout = Helper::makeQObject<QHBoxLayout>( environmentPathWidget );
 		environmentPathLayout->setContentsMargins( 0, 0, 0, 0 );
@@ -91,8 +95,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		addWidget( _labelSkyboxIntensity );
 		_sliderSkyboxIntensity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderSkyboxIntensity );
-		_sliderSkyboxIntensity->setMinimum( TONE_MAPPING_EXPOSURE_EV_MIN );
-		_sliderSkyboxIntensity->setMaximum( TONE_MAPPING_EXPOSURE_EV_MAX );
+		_sliderSkyboxIntensity->setMinimum( SKYBOX_INTENSITY_EV_MIN );
+		_sliderSkyboxIntensity->setMaximum( SKYBOX_INTENSITY_EV_MAX );
 		_sliderSkyboxIntensity->setStep( 0.1f );
 		_sliderSkyboxIntensity->setDecimals( 2 );
 		_sliderSkyboxIntensity->setSuffix( "EV" );
@@ -101,8 +105,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		addWidget( _labelIblIntensity );
 		_sliderIblIntensity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderIblIntensity );
-		_sliderIblIntensity->setMinimum( TONE_MAPPING_EXPOSURE_EV_MIN );
-		_sliderIblIntensity->setMaximum( TONE_MAPPING_EXPOSURE_EV_MAX );
+		_sliderIblIntensity->setMinimum( IBL_INTENSITY_EV_MIN );
+		_sliderIblIntensity->setMaximum( IBL_INTENSITY_EV_MAX );
 		_sliderIblIntensity->setStep( 0.1f );
 		_sliderIblIntensity->setDecimals( 2 );
 		_sliderIblIntensity->setSuffix( "EV" );
@@ -163,7 +167,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 				const QString initialPath
 					= config.shading.environmentPath
 						  ? QString::fromStdString( config.shading.environmentPath->parent_path().string() )
-						  : QString::fromStdString( App::SESSION().getHdriDir().string() );
+						  : QString::fromStdString( App::SESSION().getHdrisDir().string() );
 				const QString selectedPath = QFileDialog::getOpenFileName(
 					this,
 					"Select environment map",
@@ -208,7 +212,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	{
 		_listEnvironmentMaps->clear();
 
-		const FilePath hdriDir = App::SESSION().getHdriDir();
+		const FilePath hdriDir = App::SESSION().getHdrisDir();
 		if ( not std::filesystem::is_directory( hdriDir ) )
 		{
 			return;
@@ -239,7 +243,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	void BackgroundSection::setConfig( const Entity p_preset, const VTX::Renderer::GraphicsConfig & p_config )
 	{
 		_setCurrentPreset( p_preset );
-		_refreshEnvironmentMaps();
+		// _refreshEnvironmentMaps();
 		const QSignalBlocker blockerBackgroundColor( _radioBackgroundColor );
 		const QSignalBlocker blockerBackgroundEnvironment( _radioBackgroundEnvironment );
 		const QSignalBlocker blockerColor( _colorPicker );
@@ -259,20 +263,20 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_lineEnvironmentPath->setText( environmentPath );
 		_lineEnvironmentPath->setToolTip( environmentPath );
 		_buttonEnvironmentClear->setEnabled( p_config.shading.environmentPath.has_value() );
-		_listEnvironmentMaps->setCurrentRow( -1 );
-		if ( p_config.shading.environmentPath )
-		{
-			const QString currentPath
-				= QString::fromStdString( _normalizedPathString( *p_config.shading.environmentPath ) );
-			for ( int i = 0; i < _listEnvironmentMaps->count(); ++i )
-			{
-				if ( _listEnvironmentMaps->item( i )->data( Qt::UserRole ).toString() == currentPath )
-				{
-					_listEnvironmentMaps->setCurrentRow( i );
-					break;
-				}
-			}
-		}
+		// _listEnvironmentMaps->setCurrentRow( -1 );
+		// if ( p_config.shading.environmentPath )
+		// {
+		// 	const QString currentPath
+		// 		= QString::fromStdString( _normalizedPathString( *p_config.shading.environmentPath ) );
+		// 	for ( int i = 0; i < _listEnvironmentMaps->count(); ++i )
+		// 	{
+		// 		if ( _listEnvironmentMaps->item( i )->data( Qt::UserRole ).toString() == currentPath )
+		// 		{
+		// 			_listEnvironmentMaps->setCurrentRow( i );
+		// 			break;
+		// 		}
+		// 	}
+		// }
 		_sliderSkyboxIntensity->setValue( _exposureEvFromMultiplier( p_config.shading.skyboxIntensity ) );
 		_sliderIblIntensity->setValue( _exposureEvFromMultiplier( p_config.shading.iblIntensity ) );
 		_sliderEnvironmentRotation->setValue( Util::Math::degrees( p_config.shading.environmentRotation ) );
@@ -280,7 +284,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const bool hasEnvironment  = environmentMode && p_config.shading.environmentPath.has_value();
 		const bool pbr			   = p_config.shading.mode == VTX::Renderer::E_SHADING::PBR;
 		_colorPicker->setVisible( p_config.shading.backgroundMode == VTX::Renderer::E_BACKGROUND_MODE::COLOR );
-		_listEnvironmentMaps->setVisible( environmentMode );
+		_listEnvironmentMaps->setVisible( false );
+		_labelExperimental->setVisible( environmentMode );
 		_lineEnvironmentPath->parentWidget()->setVisible( environmentMode );
 		_labelSkyboxIntensity->setVisible( hasEnvironment );
 		_sliderSkyboxIntensity->setVisible( hasEnvironment );

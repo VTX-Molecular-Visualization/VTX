@@ -38,7 +38,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const QSignalBlocker blockerGroup( this );
 		const QSignalBlocker blockerSize( _sliderSize );
 		const QSignalBlocker blockerBackground( _checkBoxBackground );
-		const auto			 config = p_config.pixelize.value_or( VTX::Renderer::GraphicsConfigs::PIXELIZE_DEFAULT );
+		const auto			 config = p_config.pixelize.value_or( VTX::Renderer::PixelizeConfig {} );
 		setChecked( p_config.pixelize.has_value() );
 		_sliderSize->setValue( config.size );
 		_checkBoxBackground->setChecked( config.background );

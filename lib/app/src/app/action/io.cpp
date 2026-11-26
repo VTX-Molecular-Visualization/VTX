@@ -1,8 +1,10 @@
 #include "app/action/io.hpp"
+#include "app/action/preset.hpp"
 #include "app/constants.hpp"
 #include "app/extractor/mesh.hpp"
 #include "app/extractor/system.hpp"
 #include "app/helper/io.hpp"
+#include "app/helper/script.hpp"
 #include <util/action_manager.hpp>
 #if VTX_PYTHON_BINDING
 #include "app/python_binding/interpretor.hpp"
@@ -11,6 +13,7 @@
 #include "app/services.hpp"
 #include "app/session.hpp"
 #include "app/system/writer.hpp"
+#include <filesystem>
 #include <fmt/format.h>
 #include <io/file_format.hpp>
 #include <io/mesh_reader.hpp>
@@ -44,13 +47,11 @@ namespace VTX::App::Action::IO
 	{
 		if ( VTX::IO::isScriptFileFormat( p_path ) )
 		{
-			if ( ARGS().noPython )
-			{
-				VTX_WARNING( "Python is disabled. VTX will skip script <{}>.", p_path.string() );
-				return;
-			}
-
-			ACTION().execute<RunPythonScript>( std::move( p_path ) );
+			ACTION().execute<ImportScript>( p_path );
+		}
+		else if ( VTX::IO::isPresetFileFormat( p_path ) )
+		{
+			ACTION().execute<Preset::Import>( p_path );
 		}
 		else if ( VTX::IO::MeshReader::isMeshFileFormat( p_path ) )
 		{
@@ -126,21 +127,39 @@ namespace VTX::App::Action::IO
 	void RunPythonScript::execute( const FilePath & p_path )
 	{
 #if VTX_PYTHON_BINDING
-		INTERPRETOR().runScript( p_path );
-#else
-		VTX_WARNING( "Python is disabled. VTX will skip script <{}>.", p_path.string() );
+		if ( not ARGS().noPython )
+		{
+			INTERPRETOR().runScript( p_path );
+			return;
+		}
 #endif
+		VTX_WARNING( "Python is disabled. VTX will skip script <{}>.", p_path.string() );
 	}
 
-	void DownloadSystem::execute( const std::string & p_systemId )
-	{ execute( Helper::IO::getSystemDownloadUrl( p_systemId ), Helper::IO::getSystemDownloadFilename( p_systemId ) ); }
+	void ImportScript::execute( const FilePath & p_path )
+	{ ACTION().execute<RunPythonScript>( Helper::Script::copyToUserDirectory( p_path ) ); }
+
+	void DownloadSystem::execute( const std::string & p_systemId, const bool p_force )
+	{
+		execute(
+			Helper::IO::getSystemDownloadUrl( p_systemId ), Helper::IO::getSystemDownloadFilename( p_systemId ), p_force
+		);
+	}
 
 	DownloadSystem::DownloadSystem( Util::Thread::ThreadData p_threadData ) : _threadData( std::move( p_threadData ) )
 	{
 	}
 
-	void DownloadSystem::execute( const std::string & p_url, FilePath p_path )
+	void DownloadSystem::execute( const std::string & p_url, FilePath p_path, const bool p_force )
 	{
+		const FilePath cachePath = SESSION().getCacheDir() / p_path;
+		if ( not p_force && std::filesystem::exists( cachePath ) )
+		{
+			VTX_INFO( "Loading {} from cache", p_path.string() );
+			LoadSystem( _threadData ).execute( cachePath );
+			return;
+		}
+
 		if ( _threadData.thrRef )
 		{
 			_threadData.thrRef->get().setProgressText( "Downloading " + p_path.string() );

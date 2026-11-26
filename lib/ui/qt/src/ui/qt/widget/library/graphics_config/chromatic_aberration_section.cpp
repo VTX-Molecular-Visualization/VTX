@@ -60,7 +60,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const QSignalBlocker blockerGreen( _sliderGreen );
 		const QSignalBlocker blockerBlue( _sliderBlue );
 		const auto			 config
-			= p_config.chromaticAberration.value_or( VTX::Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT );
+			= p_config.chromaticAberration.value_or( VTX::Renderer::ChromaticAberrationConfig {} );
 		setChecked( p_config.chromaticAberration.has_value() );
 		_sliderRed->setValue( _toUi( config.red ) );
 		_sliderGreen->setValue( _toUi( config.green ) );

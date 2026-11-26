@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "type": "representation",
+    "name": "Balls and sticks",
+    "data": {
+        "hasSphere": true,
+        "radiusSphereFixed": 0.4,
+        "radiusSphereAdd": 0.0,
+        "isRadiusSphereFixed": true,
+        "hasCylinder": true,
+        "radiusCylinder": 0.15,
+        "cylinderColorBlending": false,
+        "hasRibbon": false,
+        "ribbonColorBlending": false,
+        "hasSes": false,
+        "sesComputeMode": [
+            "POLYMER",
+            "CARBOHYDRATE"
+        ],
+        "sesProbeRadius": 1.4
+    }
+}

@@ -5,6 +5,7 @@
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/tree/color_layout_presets.hpp"
 #include "ui/qt/widget/tree/graphics_config_presets.hpp"
 #include "ui/qt/widget/tree/representation_presets.hpp"
@@ -44,6 +45,11 @@ namespace VTX::UI::QT::DockWidget
 		_treeColorLayoutPresets	   = Helper::makeQObject<Widget::Tree::ColorLayoutPresets>( this );
 		_treeRepresentationPresets = Helper::makeQObject<Widget::Tree::RepresentationPresets>( this );
 		_treeScripts			   = Helper::makeQObject<Widget::Tree::Scripts>( this );
+
+		_treeGraphicsConfigPresets->setTint( Style::HUE_GRAPHICS_CONFIG );
+		_treeColorLayoutPresets->setTint( Style::HUE_COLOR_LAYOUT );
+		_treeRepresentationPresets->setTint( Style::HUE_REPRESENTATION );
+		_treeScripts->setTint( Style::HUE_SCRIPTS );
 
 		_layout->addWidget( _treeGraphicsConfigPresets );
 		_layout->addWidget( _treeColorLayoutPresets );
@@ -89,6 +95,7 @@ namespace VTX::UI::QT::DockWidget
 	void Scene::_onCameraConstruct( Registry &, Entity p_e )
 	{
 		_treeCamera = Helper::makeQObject<Widget::Tree::Camera>( p_e, this );
+		_treeCamera->setTint( Style::HUE_CAMERA );
 		SELECTION().add( _treeCamera->selectionModel(), E_SELECTION_GROUP::CAMERA );
 		_layout->insertWidget( _layout->indexOf( _filler ), _treeCamera );
 		_setSelectionEnabled( _treeCamera, not UI_ACTIONS().isChecked( Action::Selection::LOCK ) );
@@ -100,6 +107,8 @@ namespace VTX::UI::QT::DockWidget
 		auto *	   tree	  = Helper::makeQObject<Widget::Tree::System>( entity, this );
 
 		tree->setSelectionMode( QAbstractItemView::NoSelection );
+		const uint lightnessIndex = _systemTreeCount++ % Style::LIGHTNESS_SYSTEM.size();
+		tree->setTint( Style::HUE_SYSTEM, Style::LIGHTNESS_SYSTEM[ lightnessIndex ] );
 
 		assert( not _mapSystemTreeWidgets.contains( entity ) );
 		_mapSystemTreeWidgets.emplace( entity, tree );

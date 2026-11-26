@@ -78,6 +78,31 @@ namespace VTX::UI::QT
 		}
 	}
 
+	void SelectionManager::selectPreset( const E_SELECTION_GROUP p_group, const Entity p_preset )
+	{
+		const auto it = _views.find( p_group );
+		if ( it == _views.end() )
+		{
+			return;
+		}
+
+		for ( QItemSelectionModel * const view : it->second )
+		{
+			const QAbstractItemModel * const model	 = view->model();
+			const QModelIndexList			 matches = model->match(
+				   model->index( 0, 0 ),
+				   Qt::UserRole,
+				   QVariant::fromValue<Entity>( p_preset ),
+				   1,
+				   Qt::MatchExactly | Qt::MatchRecursive
+			   );
+			if ( not matches.isEmpty() )
+			{
+				view->setCurrentIndex( matches.first(), QItemSelectionModel::ClearAndSelect );
+			}
+		}
+	}
+
 	void SelectionManager::clearBut( const E_SELECTION_GROUP p_group )
 	{
 		for ( auto & [ group, _ ] : _views )

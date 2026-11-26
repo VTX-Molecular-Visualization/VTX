@@ -58,7 +58,7 @@ class VTXAppRecipe(ConanFile):
     
     generators = "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "vendor/*", "test/*", "data/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "vendor/*", "test/*", "data/*", "default_user_data/*"
 
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -129,3 +129,4 @@ class VTXAppRecipe(ConanFile):
         self.cpp_info.libs.append(_conan_lib_name(velopack_lib_filename))
         if os_name == "Windows":
             self.cpp_info.system_libs.append("ntdll")
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_app_copy_default_user_data.cmake"])

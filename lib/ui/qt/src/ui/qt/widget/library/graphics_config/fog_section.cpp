@@ -62,7 +62,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const QSignalBlocker blockerNear( _sliderNear );
 		const QSignalBlocker blockerFar( _sliderFar );
 		const QSignalBlocker blockerDensity( _sliderDensity );
-		const auto			 config = p_config.fog.value_or( VTX::Renderer::GraphicsConfigs::FOG_DEFAULT );
+		const auto			 config = p_config.fog.value_or( VTX::Renderer::FogConfig {} );
 		setChecked( p_config.fog.has_value() );
 		_colorPicker->setColor( Helper::toQColor( config.color ) );
 		_sliderNear->setValue( config.near );

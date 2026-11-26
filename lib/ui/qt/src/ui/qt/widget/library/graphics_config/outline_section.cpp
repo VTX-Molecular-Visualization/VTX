@@ -59,7 +59,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const QSignalBlocker blockerColor( _colorPicker );
 		const QSignalBlocker blockerSensitivity( _sliderSensitivity );
 		const QSignalBlocker blockerThickness( _sliderThickness );
-		const auto			 config = p_config.outline.value_or( VTX::Renderer::GraphicsConfigs::OUTLINE_DEFAULT );
+		const auto			 config = p_config.outline.value_or( VTX::Renderer::OutlineConfig {} );
 		setChecked( p_config.outline.has_value() );
 		_colorPicker->setColor( Helper::toQColor( config.color ) );
 		_sliderSensitivity->setValue( config.sensitivity );

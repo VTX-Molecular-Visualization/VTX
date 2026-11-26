@@ -49,12 +49,14 @@ namespace VTX::App::Pass
 		 */
 		void _onUpdateGraphicsConfig( Registry &, Entity );
 		void _onUpdateColorLayout( Registry &, Entity );
+		void _onUpdateMaterial( Registry &, Entity );
 
 		/**
 		 * @brief Update renderer when a preset is updated.
 		 */
 		void _onUpdateGraphicsConfigPreset( Registry &, Entity );
 		void _onUpdateColorLayoutPreset( Registry &, Entity );
+		void _onUpdateMaterialPreset( Registry &, Entity );
 
 		/**
 		 * @brief Update renderer when global accessibility settings are updated.
@@ -73,6 +75,9 @@ namespace VTX::App::Pass
 		Util::EventHub::ScopedConnection _colorLayoutUpdatedConnection;
 		Util::EventHub::ScopedConnection _graphicsConfigPresetUpdatedConnection;
 		Util::EventHub::ScopedConnection _colorLayoutPresetUpdatedConnection;
+		Util::EventHub::ScopedConnection _materialConstructedConnection;
+		Util::EventHub::ScopedConnection _materialUpdatedConnection;
+		Util::EventHub::ScopedConnection _materialPresetUpdatedConnection;
 		Util::EventHub::ScopedConnection _accessibilityUpdatedConnection;
 	};
 } // namespace VTX::App::Pass

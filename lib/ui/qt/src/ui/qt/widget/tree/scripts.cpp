@@ -4,124 +4,65 @@
 #include "ui/qt/settings.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
-#include <QDir>
+#include <QSignalBlocker>
+#include <algorithm>
 #include <app/action/io.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
+#include <filesystem>
+#include <system_error>
 #include <util/action_manager.hpp>
+#include <util/string.hpp>
+#include <vector>
 
 namespace VTX::UI::QT::Widget::Tree
 {
 	namespace
 	{
-		class ScriptsProxyModel : public QSortFilterProxyModel
+		constexpr int REFRESH_DELAY = 200;
+
+		bool _isHidden( const FilePath & p_path )
 		{
-		  public:
-			ScriptsProxyModel( const QString & p_scriptsDir, QObject * const p_parent ) :
-				QSortFilterProxyModel( p_parent ), _scriptsDir( _normalize( p_scriptsDir ) )
-			{
-			}
+			const std::string name = p_path.filename().string();
+			return name.starts_with( '.' ) || name == "__pycache__";
+		}
 
-			QVariant data( const QModelIndex & p_index, const int p_role ) const override
-			{
-				if ( p_index.column() == 0 )
-				{
-					const auto * const fileModel = qobject_cast<const QFileSystemModel *>( sourceModel() );
-					if ( fileModel != nullptr
-						 && _normalize( fileModel->filePath( mapToSource( p_index ) ) ) == _scriptsDir )
-					{
-						if ( p_role == Qt::DisplayRole )
-						{
-							return "Scripts";
-						}
-						if ( p_role == Qt::DecorationRole )
-						{
-							return STYLE().iconFromCodepoint( Style::Icons::SCRIPT );
-						}
-					}
-				}
-
-				return QSortFilterProxyModel::data( p_index, p_role );
-			}
-
-		  protected:
-			bool filterAcceptsRow( const int p_sourceRow, const QModelIndex & p_sourceParent ) const override
-			{
-				const auto * const fileModel = qobject_cast<const QFileSystemModel *>( sourceModel() );
-				if ( fileModel == nullptr )
-				{
-					return false;
-				}
-
-				const QModelIndex index = fileModel->index( p_sourceRow, 0, p_sourceParent );
-				const QString	  path	= _normalize( fileModel->filePath( index ) );
-				return _isSameOrChild( path, _scriptsDir ) || _isSameOrChild( _scriptsDir, path );
-			}
-
-		  private:
-			const QString _scriptsDir;
-
-			static QString _normalize( const QString & p_path )
-			{ return QDir::fromNativeSeparators( QDir::cleanPath( p_path ) ); }
-
-			static bool _isSameOrChild( const QString & p_path, const QString & p_parent )
-			{
-#ifdef _WIN32
-				constexpr Qt::CaseSensitivity caseSensitivity = Qt::CaseInsensitive;
-#else
-				constexpr Qt::CaseSensitivity caseSensitivity = Qt::CaseSensitive;
-#endif
-				if ( p_path.compare( p_parent, caseSensitivity ) == 0 )
-				{
-					return true;
-				}
-
-				QString parentPrefix = p_parent;
-				if ( not parentPrefix.endsWith( '/' ) )
-				{
-					parentPrefix += '/';
-				}
-				return p_path.startsWith( parentPrefix, caseSensitivity );
-			}
-		};
+		bool _isScript( const std::filesystem::directory_entry & p_entry )
+		{ return p_entry.is_regular_file() && p_entry.path().extension() == ".py"; }
 	} // namespace
 
 	Scripts::Scripts( QWidget * const p_parent ) : BaseTree( p_parent )
 	{
-		const FilePath scriptsDir  = App::SESSION().getDefaultScriptsDir();
-		const FilePath parentDir   = scriptsDir.parent_path();
-		const QString  scriptsPath = QString::fromStdString( scriptsDir.string() );
-		const QString  parentPath  = QString::fromStdString( parentDir.string() );
+		QTreeWidgetItem * const root = new QTreeWidgetItem( QStringList { "Scripts" } );
+		root->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::SCRIPT ) );
+		root->setFlags( Qt::ItemIsEnabled );
+		addTopLevelItem( root );
 
-		_fileModel = Helper::makeQObject<QFileSystemModel>( this );
-		_fileModel->setFilter( QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot );
-		_fileModel->setNameFilters( { "*.py" } );
-		_fileModel->setNameFilterDisables( false );
-		_fileModel->setReadOnly( true );
-		_fileModel->setRootPath( parentPath );
+		_builtInItem = new QTreeWidgetItem( root, QStringList { "Built-in" } );
+		_builtInItem->setFlags( Qt::ItemIsEnabled );
+		_userItem = new QTreeWidgetItem( root, QStringList { "User" } );
+		_userItem->setFlags( Qt::ItemIsEnabled );
 
-		_proxyModel = Helper::makeQObject<ScriptsProxyModel>( scriptsPath, this );
-		_proxyModel->setSourceModel( _fileModel );
-		_proxyModel->setDynamicSortFilter( true );
-		_proxyModel->sort( 0, Qt::AscendingOrder );
+		_watcher	  = Helper::makeQObject<QFileSystemWatcher>( this );
+		_refreshTimer = Helper::makeQObject<QTimer>( this );
+		_refreshTimer->setSingleShot( true );
+		_refreshTimer->setInterval( REFRESH_DELAY );
+		connect( _watcher, &QFileSystemWatcher::directoryChanged, _refreshTimer, qOverload<>( &QTimer::start ) );
+		connect( _refreshTimer, &QTimer::timeout, this, &Scripts::_refresh );
 
-		setModel( _proxyModel );
-		setRootIndex( _proxyModel->mapFromSource( _fileModel->index( parentPath ) ) );
-		setColumnHidden( 1, true );
-		setColumnHidden( 2, true );
-		setColumnHidden( 3, true );
+		_refresh();
 
-		const QModelIndex scriptsIndex = _proxyModel->mapFromSource( _fileModel->index( scriptsPath ) );
-		setExpanded( scriptsIndex, SETTINGS().value( SETTING_KEY_SCRIPTS_EXPANDED, true ).toBool() );
+		root->setExpanded( SETTINGS().value( SETTING_KEY_SCRIPTS_EXPANDED, true ).toBool() );
+		_builtInItem->setExpanded( true );
+		_userItem->setExpanded( true );
 
-		connect( this, &QTreeView::doubleClicked, this, &Scripts::_runScript );
 		connect(
 			this,
-			&QTreeView::expanded,
+			&QTreeWidget::itemExpanded,
 			this,
-			[ this, scriptsPath ]( const QModelIndex & p_index )
+			[ root ]( QTreeWidgetItem * const p_item )
 			{
-				if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
+				if ( p_item == root )
 				{
 					SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, true );
 				}
@@ -129,61 +70,191 @@ namespace VTX::UI::QT::Widget::Tree
 		);
 		connect(
 			this,
-			&QTreeView::collapsed,
+			&QTreeWidget::itemCollapsed,
 			this,
-			[ this, scriptsPath ]( const QModelIndex & p_index )
+			[ root ]( QTreeWidgetItem * const p_item )
 			{
-				if ( _fileModel->filePath( _proxyModel->mapToSource( p_index ) ) == scriptsPath )
+				if ( p_item == root )
 				{
 					SETTINGS().setValue( SETTING_KEY_SCRIPTS_EXPANDED, false );
 				}
 			}
 		);
 		connect(
-			_fileModel, &QFileSystemModel::directoryLoaded, this, [ this ]( const QString & ) { updateGeometry(); }
-		);
-		connect(
-			_proxyModel,
-			&QAbstractItemModel::rowsInserted,
 			this,
-			[ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); }
-		);
-		connect(
-			_proxyModel,
-			&QAbstractItemModel::rowsRemoved,
+			&QTreeWidget::itemDoubleClicked,
 			this,
-			[ this ]( const QModelIndex &, const int, const int ) { updateGeometry(); }
+			[]( QTreeWidgetItem * const p_item, const int )
+			{
+				if ( p_item == nullptr || not( p_item->flags() & Qt::ItemIsSelectable ) )
+				{
+					return;
+				}
+
+				App::ACTION().execute<App::Action::IO::RunPythonScript>(
+					FilePath( p_item->data( 0, PATH_ROLE ).toString().toStdString() )
+				);
+			}
 		);
+
+		_scriptCopiedConnection = App::HUB().connect<Events::ScriptCopied, &Scripts::_onScriptCopied>( this );
 	}
 
-	QItemSelectionModel::SelectionFlags Scripts::selectionCommand(
-		const QModelIndex &	 p_index,
-		const QEvent * const p_event
-	) const
+	void Scripts::_refresh()
 	{
-		if ( p_index.isValid() && _fileModel->isDir( _proxyModel->mapToSource( p_index ) ) )
+		std::error_code error;
+		std::filesystem::create_directories( App::SESSION().getScriptsDir(), error );
+
+		const QList<QTreeWidgetItem *> selected = selectedItems();
+		const QString selectedPath = selected.isEmpty() ? QString() : selected.first()->data( 0, PATH_ROLE ).toString();
+		if ( not selectedPath.isEmpty() && not std::filesystem::exists( FilePath( selectedPath.toStdString() ) ) )
 		{
-			return QItemSelectionModel::NoUpdate;
+			clearSelection();
 		}
 
-		return QTreeView::selectionCommand( p_index, p_event );
+		{
+			const QSignalBlocker blocker( selectionModel() );
+
+			QSet<QString> expanded;
+			_collectExpanded( *_builtInItem, expanded );
+			_collectExpanded( *_userItem, expanded );
+
+			qDeleteAll( _builtInItem->takeChildren() );
+			qDeleteAll( _userItem->takeChildren() );
+
+			if ( not _watcher->directories().isEmpty() )
+			{
+				_watcher->removePaths( _watcher->directories() );
+			}
+
+			_fill( *_builtInItem, App::SESSION().getDefaultScriptsDir() / "examples", expanded );
+			_fill( *_userItem, App::SESSION().getScriptsDir(), expanded );
+
+			if ( QTreeWidgetItem * const item = _find( selectedPath ) )
+			{
+				item->setSelected( true );
+			}
+		}
+
+		updateGeometry();
 	}
 
-	void Scripts::_runScript( const QModelIndex & p_index )
+	void Scripts::_fill( QTreeWidgetItem & p_parent, const FilePath & p_directory, const QSet<QString> & p_expanded )
 	{
-		if ( not p_index.isValid() )
+		std::error_code error;
+		if ( not std::filesystem::is_directory( p_directory, error ) )
 		{
 			return;
 		}
 
-		const QModelIndex sourceIndex = _proxyModel->mapToSource( p_index );
-		if ( _fileModel->isDir( sourceIndex ) )
+		_watcher->addPath( QString::fromStdString( p_directory.string() ) );
+
+		std::vector<std::filesystem::directory_entry> entries;
+		for ( const std::filesystem::directory_entry & entry : std::filesystem::directory_iterator( p_directory, error ) )
+		{
+			const bool isDirectory = entry.is_directory() && not entry.is_symlink();
+			if ( not _isHidden( entry.path() ) && ( isDirectory || _isScript( entry ) ) )
+			{
+				entries.push_back( entry );
+			}
+		}
+
+		std::ranges::sort(
+			entries,
+			[]( const std::filesystem::directory_entry & p_left, const std::filesystem::directory_entry & p_right )
+			{
+				if ( p_left.is_directory() != p_right.is_directory() )
+				{
+					return p_left.is_directory();
+				}
+				return Util::String::toLower( p_left.path().filename().string() )
+					   < Util::String::toLower( p_right.path().filename().string() );
+			}
+		);
+
+		for ( const std::filesystem::directory_entry & entry : entries )
+		{
+			const QString path = QString::fromStdString( entry.path().string() );
+			QTreeWidgetItem * const item
+				= new QTreeWidgetItem( &p_parent, QStringList { QString::fromStdString( entry.path().filename().string() ) } );
+			item->setData( 0, PATH_ROLE, path );
+
+			if ( entry.is_directory() )
+			{
+				item->setFlags( Qt::ItemIsEnabled );
+				_fill( *item, entry.path(), p_expanded );
+				item->setExpanded( p_expanded.contains( path ) );
+			}
+			else
+			{
+				item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsSelectable );
+			}
+		}
+	}
+
+	void Scripts::_collectExpanded( const QTreeWidgetItem & p_item, QSet<QString> & p_expanded ) const
+	{
+		for ( int i = 0; i < p_item.childCount(); ++i )
+		{
+			const QTreeWidgetItem * const child = p_item.child( i );
+			if ( child->isExpanded() )
+			{
+				p_expanded.insert( child->data( 0, PATH_ROLE ).toString() );
+			}
+			_collectExpanded( *child, p_expanded );
+		}
+	}
+
+	QTreeWidgetItem * Scripts::_find( const QTreeWidgetItem & p_item, const QString & p_path ) const
+	{
+		for ( int i = 0; i < p_item.childCount(); ++i )
+		{
+			QTreeWidgetItem * const child = p_item.child( i );
+			if ( child->data( 0, PATH_ROLE ).toString() == p_path )
+			{
+				return child;
+			}
+			if ( QTreeWidgetItem * const found = _find( *child, p_path ) )
+			{
+				return found;
+			}
+		}
+		return nullptr;
+	}
+
+	QTreeWidgetItem * Scripts::_find( const QString & p_path ) const
+	{
+		if ( p_path.isEmpty() )
+		{
+			return nullptr;
+		}
+
+		if ( QTreeWidgetItem * const item = _find( *_builtInItem, p_path ) )
+		{
+			return item;
+		}
+		return _find( *_userItem, p_path );
+	}
+
+	void Scripts::_select( const FilePath & p_path )
+	{
+		QTreeWidgetItem * const item = _find( QString::fromStdString( p_path.string() ) );
+		if ( item == nullptr )
 		{
 			return;
 		}
 
-		App::ACTION().execute<App::Action::IO::RunPythonScript>(
-			FilePath( _fileModel->filePath( sourceIndex ).toStdString() )
-		);
+		for ( QTreeWidgetItem * parent = item->parent(); parent != nullptr; parent = parent->parent() )
+		{
+			parent->setExpanded( true );
+		}
+		setCurrentItem( item );
+		scrollToItem( item );
+	}
+
+	void Scripts::_onScriptCopied( const Events::ScriptCopied & p_event )
+	{
+		_refresh();
+		_select( p_event.path );
 	}
 } // namespace VTX::UI::QT::Widget::Tree

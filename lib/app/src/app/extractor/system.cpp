@@ -249,8 +249,7 @@ namespace VTX::App::Extractor
 			// Representation: set default representation.
 			// TODO: configure default representation in settings?
 			representation.presetAtoms
-				[ Helper::Preset::getByName<Renderer::Representation>( "Sticks and Ribbons" )
-					  .value_or( ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Representation>() ) ]
+				[ *Helper::Preset::getDefault<Renderer::Representation>() ]
 				= Core::Struct::IndexRangeList( data.getAtomRange() );
 
 			// Trigger system load.

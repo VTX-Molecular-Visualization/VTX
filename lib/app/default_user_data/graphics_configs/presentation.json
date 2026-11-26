@@ -1,0 +1,42 @@
+{
+    "version": 1,
+    "type": "graphics_config",
+    "name": "Presentation",
+    "data": {
+        "shading": {
+            "mode": "GLOSSY",
+            "colorLight": "#FFFFFFFF",
+            "colorBackground": "#121418FF",
+            "specularFactor": 0.55,
+            "shininess": 56.0,
+            "toonSteps": 4,
+            "lightIntensity": 2.0,
+            "ambientIntensity": 0.01,
+            "backgroundMode": "COLOR",
+            "environmentPath": null,
+            "environmentFaceSize": 1024,
+            "skyboxIntensity": 1.0,
+            "iblIntensity": 1.0,
+            "environmentRotation": 0.0
+        },
+        "ssao": {
+            "method": "SSAO",
+            "intensity": 4.0,
+            "radius": 0.5,
+            "scale": 2.0,
+            "blurSize": 21.0
+        },
+        "outline": null,
+        "fog": null,
+        "chromaticAberration": null,
+        "pixelize": null,
+        "crt": null,
+        "selection": {
+            "color": "#50FF78FF"
+        },
+        "toneMapping": {
+            "mode": "REINHARD",
+            "exposure": 1.0
+        }
+    }
+}

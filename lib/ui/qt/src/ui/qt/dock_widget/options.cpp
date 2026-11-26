@@ -14,7 +14,10 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QGroupBox>
+#include <QProxyStyle>
 #include <QPushButton>
+#include <QStandardItemModel>
+#include <QStyleFactory>
 #include <app/action/accessibility.hpp>
 #include <app/action/application.hpp>
 #include <app/services.hpp>
@@ -39,6 +42,27 @@ namespace
 		return VTX::UI::QT::ActionRegistry::ActionParams { { std::string( VTX::UI::QT::Action::Theme::PARAM_THEME ),
 															 static_cast<int>( VTX::toUnderlying( p_theme ) ) } };
 	}
+
+	// To limit font combobox height.
+	class ComboBoxListStyle : public QProxyStyle
+	{
+	  public:
+		ComboBoxListStyle() : QProxyStyle( QStyleFactory::create( QApplication::style()->name() ) ) {}
+
+		int styleHint(
+			const StyleHint			 p_hint,
+			const QStyleOption *	 p_option,
+			const QWidget *			 p_widget,
+			QStyleHintReturn * const p_returnData
+		) const override
+		{
+			if ( p_hint == QStyle::SH_ComboBox_Popup )
+			{
+				return 0;
+			}
+			return QProxyStyle::styleHint( p_hint, p_option, p_widget, p_returnData );
+		}
+	};
 
 } // namespace
 
@@ -151,13 +175,40 @@ namespace VTX::UI::QT::DockWidget
 		_comboBoxFont = Helper::makeQObject<QComboBox>( this );
 		_comboBoxFont->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxFont->setMinimumWidth( 0 );
+		auto * const comboBoxFontStyle = new ComboBoxListStyle();
+		comboBoxFontStyle->setParent( this );
+		_comboBoxFont->setStyle( comboBoxFontStyle );
+		_comboBoxFont->setMaxVisibleItems( 20 );
 
-		uint i = 0;
-		for ( const QString & fontName : STYLE().getAvailableFonts() )
+		auto * const fontModel = qobject_cast<QStandardItemModel *>( _comboBoxFont->model() );
+		assert( fontModel != nullptr );
+
+		const auto addFontHeader = [ this, fontModel ]( const QString & p_title )
 		{
-			_comboBoxFont->addItem( fontName );
-			_comboBoxFont->setItemData( i++, QFont( fontName, Style::DEFAULT_FONT_SIZE ), Qt::FontRole );
-		}
+			_comboBoxFont->addItem( p_title );
+			QStandardItem * const item = fontModel->item( _comboBoxFont->count() - 1 );
+			QFont				  font = item->font();
+			font.setBold( true );
+			item->setFont( font );
+			item->setEnabled( false );
+		};
+
+		const auto addFonts = [ this ]( const QStringList & p_fonts )
+		{
+			for ( const QString & fontName : p_fonts )
+			{
+				_comboBoxFont->addItem( fontName );
+				_comboBoxFont->setItemData(
+					_comboBoxFont->count() - 1, QFont( fontName, Style::DEFAULT_FONT_SIZE ), Qt::FontRole
+				);
+			}
+		};
+
+		addFontHeader( "Bundled" );
+		addFonts( STYLE().getBundledFonts() );
+		_comboBoxFont->insertSeparator( _comboBoxFont->count() );
+		addFontHeader( "System" );
+		addFonts( STYLE().getSystemFonts() );
 
 		const QSignalBlocker blocker( _comboBoxFont );
 		const auto &		 accessibility	   = App::ECS::getFirstComponent<App::Setting::Accessibility>();
@@ -389,7 +440,7 @@ namespace VTX::UI::QT::DockWidget
 		auto * layout	= Helper::makeQObject<QVBoxLayout>( groupBox );
 
 		_addDiskUsageRow( layout, "Data", App::SESSION().getCacheDir(), _labelCacheSize );
-		_addDiskUsageRow( layout, "HDRI", App::SESSION().getHdriDir(), _labelHdriSize );
+		_addDiskUsageRow( layout, "HDRIs", App::SESSION().getHdrisDir(), _labelHdriSize );
 		_addDiskUsageRow( layout, "Snapshots", App::SESSION().getSnapshotsDir(), _labelSnapshotsSize );
 		_addDiskUsageRow( layout, "Logs", App::SESSION().getLogsDir(), _labelLogsSize );
 
@@ -448,7 +499,7 @@ namespace VTX::UI::QT::DockWidget
 	void Options::_refreshFoldersInfos()
 	{
 		_refreshFolderInfos( App::SESSION().getCacheDir(), _labelCacheSize, "Data" );
-		_refreshFolderInfos( App::SESSION().getHdriDir(), _labelHdriSize, "HDRI" );
+		_refreshFolderInfos( App::SESSION().getHdrisDir(), _labelHdriSize, "HDRI" );
 		_refreshFolderInfos( App::SESSION().getSnapshotsDir(), _labelSnapshotsSize, "Snapshots" );
 		_refreshFolderInfos( App::SESSION().getLogsDir(), _labelLogsSize, "Logs" );
 	}

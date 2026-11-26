@@ -2,6 +2,7 @@
 #define VTX_APP_ACTION_GRAPHICS_CONFIG_HPP
 
 #include "app/ecs.hpp"
+#include "app/helper/preset.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
 #include <filesystem>
@@ -26,12 +27,6 @@ namespace VTX::App::Action::GraphicsConfig
 			return *p_config;
 		}
 
-		inline void setMaterialTexture( std::optional<Renderer::MaterialTexture> & p_texture, const FilePath & p_path )
-		{
-			p_texture
-				= p_path.empty() ? std::nullopt : std::optional<Renderer::MaterialTexture> { { p_path.string(), 0 } };
-		}
-
 		inline std::optional<FilePath> prepareEnvironmentPath( const FilePath & p_path, const uint p_faceSize )
 		{
 			if ( p_path.empty() || not std::filesystem::exists( p_path ) )
@@ -48,15 +43,17 @@ namespace VTX::App::Action::GraphicsConfig
 				return std::nullopt;
 			}
 
-			FilePath ktxPath = SESSION().getHdriDir() / FilePath( p_path.filename() ).replace_extension( ".ktx2" );
-			if ( ( not std::filesystem::exists( ktxPath )
-				   || std::filesystem::last_write_time( p_path ) > std::filesystem::last_write_time( ktxPath ) )
-				 && not Renderer::Baker::bakeEnvironmentMapToKtx( p_path, ktxPath, p_faceSize ) )
-			{
-				return std::nullopt;
-			}
+			// FilePath ktxPath = SESSION().getHdrisDir() / FilePath( p_path.filename() ).replace_extension( ".ktx2" );
+			// if ( ( not std::filesystem::exists( ktxPath )
+			//	   || std::filesystem::last_write_time( p_path ) > std::filesystem::last_write_time( ktxPath ) )
+			//	 && not Renderer::Baker::bakeEnvironmentMapToKtx( p_path, ktxPath, p_faceSize ) )
+			// {
+			//	return std::nullopt;
+			// }
 
-			return ktxPath;
+			// return ktxPath;
+
+			return p_path;
 		}
 	} // namespace Detail
 
@@ -68,6 +65,7 @@ namespace VTX::App::Action::GraphicsConfig
 	{
 		void execute( const Entity p_e, const T & p_value )
 		{
+			Helper::Preset::checkEditable( p_e );
 			REG().patch<Renderer::GraphicsConfig>(
 				p_e,
 				[ p_value ]( Renderer::GraphicsConfig & p_config )
@@ -108,50 +106,6 @@ namespace VTX::App::Action::GraphicsConfig
 					{
 						p_config.shading.toonSteps = p_value;
 					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL )
-					{
-						p_config.shading.material = p_value;
-					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_METALLIC )
-					{
-						p_config.shading.material.metallic = p_value;
-					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_ROUGHNESS )
-					{
-						p_config.shading.material.roughness = p_value;
-					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_EMISSIVE_INTENSITY )
-					{
-						p_config.shading.material.emissiveIntensity = p_value;
-					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_TEXTURE_SCALE )
-					{
-						p_config.shading.material.textureScale = p_value;
-					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_ALBEDO_TEXTURE )
-					{
-						Detail::setMaterialTexture( p_config.shading.material.albedoTexture, p_value );
-					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_NORMAL_TEXTURE )
-					{
-						Detail::setMaterialTexture( p_config.shading.material.normalTexture, p_value );
-					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_METALLIC_TEXTURE )
-					{
-						Detail::setMaterialTexture( p_config.shading.material.metallicTexture, p_value );
-					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_ROUGHNESS_TEXTURE )
-					{
-						Detail::setMaterialTexture( p_config.shading.material.roughnessTexture, p_value );
-					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_AMBIENT_OCCLUSION_TEXTURE )
-					{
-						Detail::setMaterialTexture( p_config.shading.material.ambientOcclusionTexture, p_value );
-					}
-					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::MATERIAL_EMISSIVE_TEXTURE )
-					{
-						Detail::setMaterialTexture( p_config.shading.material.emissiveTexture, p_value );
-					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ENVIRONMENT_PATH )
 					{
 						p_config.shading.environmentPath
@@ -180,166 +134,166 @@ namespace VTX::App::Action::GraphicsConfig
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_SSAO )
 					{
 						p_config.ssao
-							= p_value ? std::optional<Renderer::SSAOConfig> { Renderer::GraphicsConfigs::SSAO_DEFAULT }
+							= p_value ? std::optional<Renderer::SSAOConfig> { Renderer::SSAOConfig {} }
 									  : std::nullopt;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::SSAO_INTENSITY )
 					{
-						Detail::ensure( p_config.ssao, Renderer::GraphicsConfigs::SSAO_DEFAULT ).intensity = p_value;
+						Detail::ensure( p_config.ssao, Renderer::SSAOConfig {} ).intensity = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::SSAO_METHOD )
 					{
-						Detail::ensure( p_config.ssao, Renderer::GraphicsConfigs::SSAO_DEFAULT ).method
+						Detail::ensure( p_config.ssao, Renderer::SSAOConfig {} ).method
 							= static_cast<Renderer::E_SSAO_METHOD>( p_value );
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::SSAO_SCALE )
 					{
-						Detail::ensure( p_config.ssao, Renderer::GraphicsConfigs::SSAO_DEFAULT ).scale = p_value;
+						Detail::ensure( p_config.ssao, Renderer::SSAOConfig {} ).scale = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::BLUR_SIZE )
 					{
-						Detail::ensure( p_config.ssao, Renderer::GraphicsConfigs::SSAO_DEFAULT ).blurSize = p_value;
+						Detail::ensure( p_config.ssao, Renderer::SSAOConfig {} ).blurSize = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_FOG )
 					{
 						p_config.fog
-							= p_value ? std::optional<Renderer::FogConfig> { Renderer::GraphicsConfigs::FOG_DEFAULT }
+							= p_value ? std::optional<Renderer::FogConfig> { Renderer::FogConfig {} }
 									  : std::nullopt;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::COLOR_FOG )
 					{
-						Detail::ensure( p_config.fog, Renderer::GraphicsConfigs::FOG_DEFAULT ).color = p_value;
+						Detail::ensure( p_config.fog, Renderer::FogConfig {} ).color = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::FOG_NEAR )
 					{
-						Detail::ensure( p_config.fog, Renderer::GraphicsConfigs::FOG_DEFAULT ).near = p_value;
+						Detail::ensure( p_config.fog, Renderer::FogConfig {} ).near = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::FOG_FAR )
 					{
-						Detail::ensure( p_config.fog, Renderer::GraphicsConfigs::FOG_DEFAULT ).far = p_value;
+						Detail::ensure( p_config.fog, Renderer::FogConfig {} ).far = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::FOG_DENSITY )
 					{
-						Detail::ensure( p_config.fog, Renderer::GraphicsConfigs::FOG_DEFAULT ).density = p_value;
+						Detail::ensure( p_config.fog, Renderer::FogConfig {} ).density = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_OUTLINE )
 					{
 						p_config.outline
 							= p_value ? std::optional<
-											Renderer::OutlineConfig> { Renderer::GraphicsConfigs::OUTLINE_DEFAULT }
+											Renderer::OutlineConfig> { Renderer::OutlineConfig {} }
 									  : std::nullopt;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::COLOR_OUTLINE )
 					{
-						Detail::ensure( p_config.outline, Renderer::GraphicsConfigs::OUTLINE_DEFAULT ).color = p_value;
+						Detail::ensure( p_config.outline, Renderer::OutlineConfig {} ).color = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::OUTLINE_SENSITIVITY )
 					{
-						Detail::ensure( p_config.outline, Renderer::GraphicsConfigs::OUTLINE_DEFAULT ).sensitivity
+						Detail::ensure( p_config.outline, Renderer::OutlineConfig {} ).sensitivity
 							= p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::OUTLINE_THICKNESS )
 					{
-						Detail::ensure( p_config.outline, Renderer::GraphicsConfigs::OUTLINE_DEFAULT ).thickness
+						Detail::ensure( p_config.outline, Renderer::OutlineConfig {} ).thickness
 							= p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_CHROMAB )
 					{
 						p_config.chromaticAberration
-							= p_value ? std::optional<
-											Renderer::ChromaticAberrationConfig> { Renderer::GraphicsConfigs::
-																					   CHROMATIC_ABERRATION_DEFAULT }
+							= p_value ? std::optional<Renderer::ChromaticAberrationConfig> { Renderer::ChromaticAberrationConfig {} }
 									  : std::nullopt;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CHROMAB_RED )
 					{
 						Detail::ensure( p_config.chromaticAberration,
-										Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT )
+										Renderer::ChromaticAberrationConfig {} )
 							.red = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CHROMAB_GREEN )
 					{
 						Detail::ensure( p_config.chromaticAberration,
-										Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT )
+										Renderer::ChromaticAberrationConfig {} )
 							.green = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CHROMAB_BLUE )
 					{
 						Detail::ensure( p_config.chromaticAberration,
-										Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT )
+										Renderer::ChromaticAberrationConfig {} )
 							.blue = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_PIXELIZE )
 					{
 						p_config.pixelize
 							= p_value ? std::optional<
-											Renderer::PixelizeConfig> { Renderer::GraphicsConfigs::PIXELIZE_DEFAULT }
+											Renderer::PixelizeConfig> { Renderer::PixelizeConfig {} }
 									  : std::nullopt;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::PIXELIZE_SIZE )
 					{
-						Detail::ensure( p_config.pixelize, Renderer::GraphicsConfigs::PIXELIZE_DEFAULT ).size = p_value;
+						Detail::ensure( p_config.pixelize, Renderer::PixelizeConfig {} ).size = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::PIXELIZE_BACKGROUND )
 					{
-						Detail::ensure( p_config.pixelize, Renderer::GraphicsConfigs::PIXELIZE_DEFAULT ).background
+						Detail::ensure( p_config.pixelize, Renderer::PixelizeConfig {} ).background
 							= p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_CRT )
 					{
 						p_config.crt
-							= p_value ? std::optional<Renderer::CRTConfig> { Renderer::GraphicsConfigs::CRT_DEFAULT }
+							= p_value ? std::optional<Renderer::CRTConfig> { Renderer::CRTConfig {} }
 									  : std::nullopt;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_CURVATURE_X )
 					{
-						Detail::ensure( p_config.crt, Renderer::GraphicsConfigs::CRT_DEFAULT ).curvatureX = p_value;
+						Detail::ensure( p_config.crt, Renderer::CRTConfig {} ).curvatureX = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_CURVATURE_Y )
 					{
-						Detail::ensure( p_config.crt, Renderer::GraphicsConfigs::CRT_DEFAULT ).curvatureY = p_value;
+						Detail::ensure( p_config.crt, Renderer::CRTConfig {} ).curvatureY = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_RATIO )
 					{
-						Detail::ensure( p_config.crt, Renderer::GraphicsConfigs::CRT_DEFAULT ).ratio = p_value;
+						Detail::ensure( p_config.crt, Renderer::CRTConfig {} ).ratio = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_GRANINESS_X )
 					{
-						Detail::ensure( p_config.crt, Renderer::GraphicsConfigs::CRT_DEFAULT ).graninessX = p_value;
+						Detail::ensure( p_config.crt, Renderer::CRTConfig {} ).graninessX = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_GRANINESS_Y )
 					{
-						Detail::ensure( p_config.crt, Renderer::GraphicsConfigs::CRT_DEFAULT ).graninessY = p_value;
+						Detail::ensure( p_config.crt, Renderer::CRTConfig {} ).graninessY = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_VIGNETTE_ROUNDNESS )
 					{
-						Detail::ensure( p_config.crt, Renderer::GraphicsConfigs::CRT_DEFAULT ).vignetteRoundness
+						Detail::ensure( p_config.crt, Renderer::CRTConfig {} ).vignetteRoundness
 							= p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_VIGNETTE_INTENSITY )
 					{
-						Detail::ensure( p_config.crt, Renderer::GraphicsConfigs::CRT_DEFAULT ).vignetteIntensity
+						Detail::ensure( p_config.crt, Renderer::CRTConfig {} ).vignetteIntensity
 							= p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::CRT_BRIGHTNESS )
 					{
-						Detail::ensure( p_config.crt, Renderer::GraphicsConfigs::CRT_DEFAULT ).brightness = p_value;
+						Detail::ensure( p_config.crt, Renderer::CRTConfig {} ).brightness = p_value;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::ACTIVE_SELECTION )
 					{
 						p_config.selection
 							= p_value ? std::optional<
-											Renderer::SelectionConfig> { Renderer::GraphicsConfigs::SELECTION_DEFAULT }
+											Renderer::SelectionConfig> { Renderer::SelectionConfig {} }
 									  : std::nullopt;
 					}
 					else if constexpr ( S == Renderer::E_GRAPHICS_CONFIG_VALUES::COLOR_SELECTION )
 					{
-						Detail::ensure( p_config.selection, Renderer::GraphicsConfigs::SELECTION_DEFAULT ).color
+						Detail::ensure( p_config.selection, Renderer::SelectionConfig {} ).color
 							= p_value;
 					}
 					else
 					{
 					}
+
+					p_config.clamp();
 				} );
 		}
 	};

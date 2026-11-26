@@ -5,6 +5,7 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include <string_view>
+#include <util/math.hpp>
 #include <util/types.hpp>
 #include <utility>
 
@@ -18,14 +19,11 @@ namespace VTX::Renderer
 
 	struct PixelizeConfig
 	{
-		uint size;
-		bool background;
-	};
+		uint size = PIXELIZE_SIZE_DEFAULT;
+		bool background = PIXELIZE_BACKGROUND_DEFAULT;
 
-	namespace GraphicsConfigs
-	{
-		inline const PixelizeConfig PIXELIZE_DEFAULT { PIXELIZE_SIZE_DEFAULT, PIXELIZE_BACKGROUND_DEFAULT };
-	} // namespace GraphicsConfigs
+		void clamp() { size = Util::Math::clamp( size, PIXELIZE_SIZE_MIN, PIXELIZE_SIZE_MAX ); }
+	};
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess
