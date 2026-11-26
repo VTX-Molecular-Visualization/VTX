@@ -279,10 +279,7 @@ namespace VTX::App
 		PASS().addPass<Pass::TrajectoryUpdater>();
 
 		// Default presets.
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::Material>>();
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
+		ACTION().execute<Action::Preset::LoadAll>();
 	}
 
 	void VTXApp::finishStartup()
@@ -305,15 +302,9 @@ namespace VTX::App
 		}
 #endif
 
-		const Entity defaultGraphicsConfig
-			= Helper::Preset::getByName<Renderer::GraphicsConfig>( "Default" )
-				  .value_or( ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::GraphicsConfig>() );
-		ACTION().execute<Action::Scene::SetGraphicsConfig>( defaultGraphicsConfig );
-
-		const Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" ).value_or(
-			ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Color::Layout>()
-		);
-		ACTION().execute<Action::Scene::SetColorLayout>( defaultColorLayout );
+		ACTION().execute<Action::Scene::SetGraphicsConfig>( *Helper::Preset::getDefault<Renderer::GraphicsConfig>() );
+		ACTION().execute<Action::Scene::SetColorLayout>( *Helper::Preset::getDefault<Renderer::Color::Layout>() );
+		ACTION().execute<Action::Scene::SetMaterial>( *Helper::Preset::getDefault<Renderer::Material>() );
 
 		HUB().trigger<Events::ApplicationStart>();
 
