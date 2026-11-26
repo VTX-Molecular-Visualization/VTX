@@ -24,6 +24,20 @@ namespace VTX::Renderer
 	constexpr float MATERIAL_TEXTURE_SCALE_MIN			= 0.01f;
 	constexpr float MATERIAL_TEXTURE_SCALE_MAX			= 10.f;
 
+	enum struct E_MATERIAL_VALUES : uint8_t
+	{
+		METALLIC,
+		ROUGHNESS,
+		EMISSIVE_INTENSITY,
+		TEXTURE_SCALE,
+		ALBEDO_TEXTURE,
+		NORMAL_TEXTURE,
+		METALLIC_TEXTURE,
+		ROUGHNESS_TEXTURE,
+		AMBIENT_OCCLUSION_TEXTURE,
+		EMISSIVE_TEXTURE
+	};
+
 	struct MaterialTexture
 	{
 		std::string path;
@@ -48,7 +62,6 @@ namespace VTX::Renderer
 			COUNT
 		};
 
-		std::string name;
 		Vec3f		emissiveColor { 0.f };
 		float		emissiveIntensity = MATERIAL_EMISSIVE_INTENSITY_DEFAULT;
 		float		metallic		  = MATERIAL_METALLIC_DEFAULT;

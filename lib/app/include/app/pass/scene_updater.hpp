@@ -49,12 +49,14 @@ namespace VTX::App::Pass
 		 */
 		void _onUpdateGraphicsConfig( Registry &, Entity );
 		void _onUpdateColorLayout( Registry &, Entity );
+		void _onUpdateMaterial( Registry &, Entity );
 
 		/**
 		 * @brief Update renderer when a preset is updated.
 		 */
 		void _onUpdateGraphicsConfigPreset( Registry &, Entity );
 		void _onUpdateColorLayoutPreset( Registry &, Entity );
+		void _onUpdateMaterialPreset( Registry &, Entity );
 
 		/**
 		 * @brief Update renderer when global accessibility settings are updated.
