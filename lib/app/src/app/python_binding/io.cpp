@@ -13,7 +13,11 @@ namespace VTX::App::PythonBinding
 {
 	namespace
 	{
-		void _openFile( const std::string & p_path ) { App::Action::IO::LoadSystem().execute( FilePath( p_path ) ); }
+		void _openFile( const std::string & p_path )
+		{
+			App::Action::IO::LoadSystem().execute( FilePath( p_path ) );
+			waitCameraAnimation();
+		}
 
 		void _download( const std::string & p_systemId, const bool p_force )
 		{
@@ -23,6 +27,7 @@ namespace VTX::App::PythonBinding
 			}
 
 			App::Action::IO::DownloadSystem().execute( p_systemId, p_force );
+			waitCameraAnimation();
 		}
 	} // namespace
 
