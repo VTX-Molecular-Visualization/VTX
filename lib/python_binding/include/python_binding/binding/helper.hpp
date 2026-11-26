@@ -4,6 +4,7 @@
 #include <pybind11/native_enum.h>
 #include <pybind11/pybind11.h>
 #include <string>
+#include <string_view>
 #include <util/enum.hpp>
 
 namespace VTX::PythonBinding
@@ -16,7 +17,8 @@ namespace VTX::PythonBinding
 		static void declareEnum(
 			const pybind11::module_ & p_module,
 			const std::string &		  p_enumName,
-			const std::string &		  p_doc
+			const std::string &		  p_doc,
+			const std::string_view	  p_valuePrefix = {}
 		)
 		{
 			pybind11::native_enum<EnumType> pyEnum
@@ -24,8 +26,12 @@ namespace VTX::PythonBinding
 
 			for ( const EnumType enumValue : magic_enum::enum_values<EnumType>() )
 			{
-				const std::string enumName( Util::Enum::enumName<EnumType>( enumValue ) );
-				pyEnum.value( enumName.c_str(), enumValue );
+				std::string_view enumName = Util::Enum::enumName<EnumType>( enumValue );
+				if ( not p_valuePrefix.empty() && enumName.starts_with( p_valuePrefix ) )
+				{
+					enumName.remove_prefix( p_valuePrefix.size() );
+				}
+				pyEnum.value( std::string( enumName ).c_str(), enumValue );
 			}
 
 			pyEnum.finalize();

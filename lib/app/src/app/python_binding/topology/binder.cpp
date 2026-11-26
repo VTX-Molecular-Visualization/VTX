@@ -14,7 +14,7 @@ namespace VTX::App::PythonBinding
 			module, "RESIDUE_SYMBOL", "Residue type."
 		);
 		VTX::PythonBinding::Helper::declareEnum<Core::ChemDB::Atom::SYMBOL>(
-			module, "ATOM_SYMBOL", "Chemical element."
+			module, "ATOM_SYMBOL", "Chemical element.", "A_"
 		);
 		VTX::PythonBinding::Helper::declareEnum<Core::ChemDB::Atom::TYPE>(
 			module, "ATOM_TYPE", "Atom type (normal, solvent or ion)."

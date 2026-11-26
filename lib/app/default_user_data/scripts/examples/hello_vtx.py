@@ -1,3 +1,5 @@
+# Python API documentation: https://vtx.drugdesign.fr/doc/python-api/
+
 """Download a structure from the Protein Data Bank and print a summary of its content."""
 
 import vtx
