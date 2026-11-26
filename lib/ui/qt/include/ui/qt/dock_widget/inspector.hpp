@@ -8,6 +8,7 @@
 #include "ui/qt/widget/selection.hpp"
 #include "ui/qt/widget/viewpoint.hpp"
 #include <QPushButton>
+#include <app/events.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -36,6 +37,7 @@ namespace VTX::UI::QT::DockWidget
 
 		bool _hasSystemSelection() const;
 		void _onSystemSelectionUpdated( Registry &, Entity );
+		void _onSystemDestroyed( const App::Events::SystemDestroyed & );
 
 		VTX::Util::EventHub::ScopedConnection _selectionUpdatedConnection;
 		VTX::Util::EventHub::ScopedConnection _systemDestroyedConnection;

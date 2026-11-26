@@ -248,7 +248,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 			}
 		}
 
-		_refresh();
+		_refresh( p_ignored );
 	}
 
 	void MaterialSection::_onMaterialUpdated( Registry &, const Entity p_e )
@@ -259,7 +259,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		}
 	}
 
-	void MaterialSection::_refresh()
+	void MaterialSection::_refresh( const Entity p_ignored )
 	{
 		const QSignalBlocker blockerMaterial( _listMaterials );
 		const QSignalBlocker blockerMetallic( _sliderMetallic );
@@ -273,7 +273,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 								  : sceneMaterials.get<App::Scene::Material>( *sceneMaterials.begin() ).preset;
 
 		_listMaterials->setCurrentRow( -1 );
-		if ( not App::REG().valid( _currentMaterial ) || not App::REG().all_of<VTX::Renderer::Material>( _currentMaterial ) )
+		if ( _currentMaterial == p_ignored || not App::REG().valid( _currentMaterial )
+			 || not App::REG().all_of<VTX::Renderer::Material>( _currentMaterial ) )
 		{
 			_currentMaterial = InvalidEntity;
 			_readOnlyNotice->setVisible( false );

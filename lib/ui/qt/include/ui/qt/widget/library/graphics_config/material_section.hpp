@@ -54,7 +54,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 																			   VTX::Renderer::Material::E_TEXTURE );
 		void _changeTexture( VTX::Renderer::Material::E_TEXTURE, const FilePath & );
 
-		void _refresh();
+		void _refresh( Entity p_ignored = InvalidEntity );
 		void _refreshList( Entity );
 		void _duplicateCurrentMaterial();
 		void _onSceneMaterial( Registry &, Entity );

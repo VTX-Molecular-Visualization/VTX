@@ -17,9 +17,10 @@
 #include <QPushButton>
 #include <QUrl>
 #include <algorithm>
+#include <app/events.hpp>
 #include <app/helper/script.hpp>
+#include <app/services.hpp>
 #include <app/system/selection.hpp>
-#include <core/struct/topology.hpp>
 #include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
 
@@ -58,10 +59,11 @@ namespace VTX::UI::QT::DockWidget
 				const Entity   preset	 = data.value<Entity>();
 				const bool	   hasPreset = data.isValid();
 
-				const QVariant scopeData = ( hasPreset ? index.parent() : index ).data( Widget::Library::PRESET_SCOPE_ROLE );
-				const Widget::Library::E_PRESET_SCOPE scope
-					= scopeData.isValid() ? Widget::Library::E_PRESET_SCOPE( scopeData.toInt() )
-										  : Widget::Library::E_PRESET_SCOPE::ALL;
+				const QVariant scopeData
+					= ( hasPreset ? index.parent() : index ).data( Widget::Library::PRESET_SCOPE_ROLE );
+				const Widget::Library::E_PRESET_SCOPE scope = scopeData.isValid()
+																  ? Widget::Library::E_PRESET_SCOPE( scopeData.toInt() )
+																  : Widget::Library::E_PRESET_SCOPE::ALL;
 
 				// Insert widget.
 				switch ( p_group )
@@ -184,7 +186,9 @@ namespace VTX::UI::QT::DockWidget
 					if ( App::Helper::Script::isReadOnly( path ) )
 					{
 						auto * const notice = Helper::makeQObject<Widget::Library::ReadOnlyNotice>(
-							this, "Built-in scripts are read-only\nDuplicate to edit", "Copy this script into your scripts"
+							this,
+							"Built-in scripts are read-only\nDuplicate to edit",
+							"Copy this script into your scripts"
 						);
 						notice->setVisible( true );
 						_layout->insertWidget( _layout->indexOf( _filler ), notice );
@@ -223,7 +227,9 @@ namespace VTX::UI::QT::DockWidget
 						copyButton->setIcon( STYLE().iconFromCodepoint( Style::Icons::COPY ) );
 						copyButton->setToolTip( "Duplicate this script next to it" );
 						_layout->insertWidget( _layout->indexOf( _filler ), copyButton );
-						connect( copyButton, &QPushButton::clicked, this, [ path ]() { Helper::duplicateScript( path ); } );
+						connect(
+							copyButton, &QPushButton::clicked, this, [ path ]() { Helper::duplicateScript( path ); }
+						);
 					}
 
 					_layout->insertWidget( _layout->indexOf( _filler ), runButton );
@@ -237,7 +243,7 @@ namespace VTX::UI::QT::DockWidget
 		_selectionUpdatedConnection
 			= App::REG().on_update<App::System::Selection>().connect<&Inspector::_onSystemSelectionUpdated>( this );
 		_systemDestroyedConnection
-			= App::REG().on_destroy<Core::Struct::Topology>().connect<&Inspector::_onSystemSelectionUpdated>( this );
+			= App::HUB().connect<App::Events::SystemDestroyed, &Inspector::_onSystemDestroyed>( this );
 	}
 
 	void Inspector::_clear()
@@ -268,6 +274,7 @@ namespace VTX::UI::QT::DockWidget
 					_viewPointWidget = nullptr;
 				}
 				_layout->removeWidget( w );
+				w->hide();
 				w->deleteLater();
 			}
 		}
@@ -305,5 +312,8 @@ namespace VTX::UI::QT::DockWidget
 		_selectionListWidget = Helper::makeQObject<Widget::Selection>( this );
 		_layout->insertWidget( _layout->indexOf( _filler ), _selectionListWidget );
 	}
+
+	void Inspector::_onSystemDestroyed( const App::Events::SystemDestroyed & p_event )
+	{ _onSystemSelectionUpdated( App::REG(), p_event.system ); }
 
 } // namespace VTX::UI::QT::DockWidget

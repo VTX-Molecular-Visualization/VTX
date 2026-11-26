@@ -123,11 +123,15 @@ namespace VTX::UI::QT::DockWidget
 	void Scene::_onSystemDestroy( Registry &, Entity p_e )
 	{
 		assert( _mapSystemTreeWidgets.contains( p_e ) );
-		_mapSystemTreeWidgets[ p_e ]->deleteLater();
+		auto * const tree = _mapSystemTreeWidgets[ p_e ].data();
+		tree->hide();
+		tree->setModel( nullptr );
+		tree->deleteLater();
 		_mapSystemTreeWidgets.erase( p_e );
 
 		if ( _mapTrajTreeWidgets.contains( p_e ) )
 		{
+			_mapTrajTreeWidgets[ p_e ]->hide();
 			_mapTrajTreeWidgets[ p_e ]->deleteLater();
 			_mapTrajTreeWidgets.erase( p_e );
 		}
@@ -180,6 +184,7 @@ namespace VTX::UI::QT::DockWidget
 
 		if ( _mapTrajTreeWidgets.contains( p_entity ) )
 		{
+			_mapTrajTreeWidgets[ p_entity ]->hide();
 			_mapTrajTreeWidgets[ p_entity ]->deleteLater();
 			_mapTrajTreeWidgets.erase( p_entity );
 		}
@@ -195,6 +200,7 @@ namespace VTX::UI::QT::DockWidget
 			return;
 		}
 
+		_mapTrajTreeWidgets[ p_entity ]->hide();
 		_mapTrajTreeWidgets[ p_entity ]->deleteLater();
 		_mapTrajTreeWidgets.erase( p_entity );
 	}
