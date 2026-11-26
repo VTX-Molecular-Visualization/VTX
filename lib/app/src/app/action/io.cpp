@@ -11,6 +11,7 @@
 #include "app/services.hpp"
 #include "app/session.hpp"
 #include "app/system/writer.hpp"
+#include <filesystem>
 #include <fmt/format.h>
 #include <io/file_format.hpp>
 #include <io/mesh_reader.hpp>
@@ -132,15 +133,27 @@ namespace VTX::App::Action::IO
 #endif
 	}
 
-	void DownloadSystem::execute( const std::string & p_systemId )
-	{ execute( Helper::IO::getSystemDownloadUrl( p_systemId ), Helper::IO::getSystemDownloadFilename( p_systemId ) ); }
+	void DownloadSystem::execute( const std::string & p_systemId, const bool p_force )
+	{
+		execute(
+			Helper::IO::getSystemDownloadUrl( p_systemId ), Helper::IO::getSystemDownloadFilename( p_systemId ), p_force
+		);
+	}
 
 	DownloadSystem::DownloadSystem( Util::Thread::ThreadData p_threadData ) : _threadData( std::move( p_threadData ) )
 	{
 	}
 
-	void DownloadSystem::execute( const std::string & p_url, FilePath p_path )
+	void DownloadSystem::execute( const std::string & p_url, FilePath p_path, const bool p_force )
 	{
+		const FilePath cachePath = SESSION().getCacheDir() / p_path;
+		if ( not p_force && std::filesystem::exists( cachePath ) )
+		{
+			VTX_INFO( "Loading {} from cache", p_path.string() );
+			LoadSystem( _threadData ).execute( cachePath );
+			return;
+		}
+
 		if ( _threadData.thrRef )
 		{
 			_threadData.thrRef->get().setProgressText( "Downloading " + p_path.string() );

@@ -15,14 +15,14 @@ namespace VTX::App::PythonBinding
 	{
 		void _openFile( const std::string & p_path ) { App::Action::IO::LoadSystem().execute( FilePath( p_path ) ); }
 
-		void _download( const std::string & p_systemId )
+		void _download( const std::string & p_systemId, const bool p_force )
 		{
 			if ( not Helper::IO::isValidSystemId( p_systemId ) )
 			{
 				throw pybind11::value_error( "Invalid system id: " + p_systemId + "." );
 			}
 
-			App::Action::IO::DownloadSystem().execute( p_systemId );
+			App::Action::IO::DownloadSystem().execute( p_systemId, p_force );
 		}
 	} // namespace
 
@@ -60,9 +60,10 @@ namespace VTX::App::PythonBinding
 		p_vtxModule.def(
 			"download",
 			&_download,
-			"Download a system from the RCSB PDB and wait until it is loaded. Raises ValueError for an invalid "
-			"identifier.",
-			VTX::PythonBinding::Wrapper::Arg( "systemId" )
+			"Load a system from the RCSB PDB and wait until it is loaded. The cached copy is used if it exists, "
+			"unless force is true. Raises ValueError for an invalid identifier.",
+			VTX::PythonBinding::Wrapper::Arg( "systemId" ),
+			VTX::PythonBinding::Wrapper::VArg<bool>( "force", false )
 		);
 	}
 } // namespace VTX::App::PythonBinding

@@ -136,7 +136,7 @@ namespace VTX::UI::QT::Dialog
 						 if ( urlTemplate.find( App::SYSTEM_REPLACEMENT_TOKEN ) != std::string::npos )
 						 {
 							 App::ACTION().execute<App::Action::IO::DownloadSystem>(
-								 App::Helper::IO::getSystemDownloadUrl( pdb, urlTemplate ), filename
+								 App::Helper::IO::getSystemDownloadUrl( pdb, urlTemplate ), filename, true
 							 );
 						 }
 						 else

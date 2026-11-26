@@ -96,8 +96,8 @@ namespace VTX::App::Action::IO
 		DownloadSystem() = default;
 		DownloadSystem( Util::Thread::ThreadData );
 
-		void execute( const std::string & p_url, FilePath p_path );
-		void execute( const std::string & p_systemId );
+		void execute( const std::string & p_url, FilePath p_path, const bool p_force = false );
+		void execute( const std::string & p_systemId, const bool p_force = false );
 
 	  private:
 		Util::Thread::ThreadData _threadData;
