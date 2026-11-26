@@ -787,7 +787,7 @@ namespace VTX::Renderer::Builder
 			p_buffer.write( static_cast<uint>( isSphereRadiusFixed ) );
 			p_buffer.write( p_representation.radiusCylinder );
 			p_buffer.write( static_cast<uint>( p_representation.cylinderColorBlending ) );
-			p_buffer.write( p_representation.ribbonColorBlending );
+			p_buffer.write( static_cast<uint>( p_representation.ribbonColorBlending ) );
 			p_buffer.write( p_representation.sesProbeRadius );
 			p_buffer.write( Geometry::SES::MAX_PROBE_NEIGHBOR_NB );
 		}

@@ -82,7 +82,7 @@ namespace VTX::Renderer
 
 		// Ribbon.
 		bool hasRibbon			 = HAS_RIBBON_DEFAULT;
-		uint ribbonColorBlending = RIBBON_COLOR_BLENDING_DEFAULT;
+		bool ribbonColorBlending = RIBBON_COLOR_BLENDING_DEFAULT;
 
 		// SES.
 		bool			   hasSes		  = HAS_SES_DEFAULT;
