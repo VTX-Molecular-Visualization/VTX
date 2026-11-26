@@ -1,8 +1,8 @@
 #include "ui/qt/dock_widget/options.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
-#include "ui/qt/application.hpp"
 #include "ui/qt/events.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/model/system_model.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
@@ -14,22 +14,28 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QGroupBox>
+#include <QProxyStyle>
 #include <QPushButton>
-#include <app/action/action_manager.hpp>
+#include <QStandardItemModel>
+#include <QStyleFactory>
+#include <app/action/accessibility.hpp>
 #include <app/action/application.hpp>
-#include <app/network/network_manager.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
+#include <app/setting/accessibility.hpp>
+#include <memory>
 #include <string>
+#include <ui/qt/widget/sequence.hpp>
+#include <util/action_manager.hpp>
 #include <util/enum.hpp>
 #include <util/event_hub.hpp>
 #include <util/string.hpp>
-#include <util/type_traits.hpp>
 #include <util/types.hpp>
+#include <utility>
 
 namespace
 {
-	const QString _TEXT_DISK_USAGE = "%1 : %2";
+	constexpr QUtf8StringView TEXT_DISK_USAGE { "%1 : %2" };
 
 	VTX::UI::QT::ActionRegistry::ActionParams _themeParams( const VTX::UI::QT::Style::E_THEME p_theme )
 	{
@@ -37,12 +43,33 @@ namespace
 															 static_cast<int>( VTX::toUnderlying( p_theme ) ) } };
 	}
 
+	// To limit font combobox height.
+	class ComboBoxListStyle : public QProxyStyle
+	{
+	  public:
+		ComboBoxListStyle() : QProxyStyle( QStyleFactory::create( QApplication::style()->name() ) ) {}
+
+		int styleHint(
+			const StyleHint			 p_hint,
+			const QStyleOption *	 p_option,
+			const QWidget *			 p_widget,
+			QStyleHintReturn * const p_returnData
+		) const override
+		{
+			if ( p_hint == QStyle::SH_ComboBox_Popup )
+			{
+				return 0;
+			}
+			return QProxyStyle::styleHint( p_hint, p_option, p_widget, p_returnData );
+		}
+	};
+
 } // namespace
 
 namespace VTX::UI::QT::DockWidget
 {
 
-	Options::Options( QWidget * p_parent ) : BaseDockWidget( p_parent, "Options" )
+	Options::Options( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Options" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::OPTIONS ) );
@@ -50,10 +77,10 @@ namespace VTX::UI::QT::DockWidget
 		using namespace Widget;
 
 		// Tree.
-		auto * groupBoxTree = new QGroupBox( "Tree" );
-		auto * layoutTree	= new QVBoxLayout( groupBoxTree );
+		auto * groupBoxTree = new QGroupBox( "System tree" );
+		auto * layoutTree	= Helper::makeQObject<QVBoxLayout>( groupBoxTree );
 
-		_comboBoxTreeViewMode = new QComboBox( this );
+		_comboBoxTreeViewMode = Helper::makeQObject<QComboBox>( this );
 		_comboBoxTreeViewMode->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxTreeViewMode->setMinimumWidth( 0 );
 
@@ -83,12 +110,46 @@ namespace VTX::UI::QT::DockWidget
 
 		layoutTree->addWidget( _comboBoxTreeViewMode );
 
+		// Sequence.
+		auto * groupBoxSeq = new QGroupBox( "Sequence viewer" );
+		auto * layoutSeq   = Helper::makeQObject<QVBoxLayout>( groupBoxSeq );
+
+		_comboBoxSeqViewMode = Helper::makeQObject<QComboBox>( this );
+		_comboBoxSeqViewMode->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		_comboBoxSeqViewMode->setMinimumWidth( 0 );
+
+		_comboBoxSeqViewMode->addItem( "Author Residue IDs", toUnderlying( Model::SystemModel::ViewMode::ByChain ) );
+		_comboBoxSeqViewMode->addItem( "Contiguous IDs", toUnderlying( Model::SystemModel::ViewMode::ByCategory ) );
+
+		const int seqViewMode
+			= SETTINGS()
+				  .value( SETTING_KEY_SEQUENCE_VTX_RESID, toUnderlying( Widget::Sequence::Mode::OriginalResId ) )
+				  .toInt();
+		const int seqViewModeIndex = _comboBoxSeqViewMode->findData( seqViewMode );
+		if ( seqViewModeIndex != -1 )
+		{
+			_comboBoxSeqViewMode->setCurrentIndex( seqViewModeIndex );
+		}
+
+		connect(
+			_comboBoxSeqViewMode,
+			&QComboBox::currentIndexChanged,
+			[ this ]( const int )
+			{
+				const int viewMode = _comboBoxSeqViewMode->currentData().toInt();
+				SETTINGS().setValue( SETTING_KEY_SEQUENCE_VTX_RESID, viewMode );
+				App::HUB().trigger<Events::SequenceResIdChanged>( viewMode );
+			}
+		);
+
+		layoutSeq->addWidget( _comboBoxSeqViewMode );
+
 		// Display.
 		// Theme.
 		auto * groupBoxDisplay = new QGroupBox( "Display" );
-		auto * layoutDisplay   = new QVBoxLayout( groupBoxDisplay );
+		auto * layoutDisplay   = Helper::makeQObject<QVBoxLayout>( groupBoxDisplay );
 
-		_comboBoxTheme = new QComboBox( this );
+		_comboBoxTheme = Helper::makeQObject<QComboBox>( this );
 		_comboBoxTheme->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxTheme->setMinimumWidth( 0 );
 
@@ -106,44 +167,149 @@ namespace VTX::UI::QT::DockWidget
 				UI_ACTIONS().trigger( Action::Theme::SET, _themeParams( theme ) );
 			}
 		);
-		App::HUB().connect<Events::ThemeChanged, &Options::_onThemeChanged>( this );
+		_themeChangedConnection = App::HUB().connect<Events::ThemeChanged, &Options::_onThemeChanged>( this );
 
 		layoutDisplay->addWidget( _comboBoxTheme );
 
 		// Font.
-		_comboBoxFont = new QComboBox( this );
+		_comboBoxFont = Helper::makeQObject<QComboBox>( this );
 		_comboBoxFont->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxFont->setMinimumWidth( 0 );
+		auto * const comboBoxFontStyle = new ComboBoxListStyle();
+		comboBoxFontStyle->setParent( this );
+		_comboBoxFont->setStyle( comboBoxFontStyle );
+		_comboBoxFont->setMaxVisibleItems( 20 );
 
-		uint i = 0;
-		for ( const QString & fontName : STYLE().getAvailableFonts() )
+		auto * const fontModel = qobject_cast<QStandardItemModel *>( _comboBoxFont->model() );
+		assert( fontModel != nullptr );
+
+		const auto addFontHeader = [ this, fontModel ]( const QString & p_title )
 		{
-			_comboBoxFont->addItem( fontName );
-			_comboBoxFont->setItemData( i++, QFont( fontName, Style::DEFAULT_FONT_SIZE ), Qt::FontRole );
-		}
+			_comboBoxFont->addItem( p_title );
+			QStandardItem * const item = fontModel->item( _comboBoxFont->count() - 1 );
+			QFont				  font = item->font();
+			font.setBold( true );
+			item->setFont( font );
+			item->setEnabled( false );
+		};
 
-		QSignalBlocker blocker( _comboBoxFont );
-		_comboBoxFont->setCurrentText( STYLE().getCurrentFontFamily() );
+		const auto addFonts = [ this ]( const QStringList & p_fonts )
+		{
+			for ( const QString & fontName : p_fonts )
+			{
+				_comboBoxFont->addItem( fontName );
+				_comboBoxFont->setItemData(
+					_comboBoxFont->count() - 1, QFont( fontName, Style::DEFAULT_FONT_SIZE ), Qt::FontRole
+				);
+			}
+		};
+
+		addFontHeader( "Bundled" );
+		addFonts( STYLE().getBundledFonts() );
+		_comboBoxFont->insertSeparator( _comboBoxFont->count() );
+		addFontHeader( "System" );
+		addFonts( STYLE().getSystemFonts() );
+
+		const QSignalBlocker blocker( _comboBoxFont );
+		const auto &		 accessibility	   = App::ECS::getFirstComponent<App::Setting::Accessibility>();
+		const bool			 forceDyslexicFont = accessibility.forceDyslexicFont;
+		_comboBoxFont->setCurrentText(
+			forceDyslexicFont ? SETTINGS().value( SETTING_KEY_FONT, Style::DEFAULT_FONT_FAMILY.toString() ).toString()
+							  : STYLE().getCurrentFontFamily()
+		);
 
 		connect(
 			_comboBoxFont,
 			&QComboBox::currentTextChanged,
-			[ this ]( const QString & p_fontName ) { STYLE().setFontFamily( p_fontName ); }
+			[ this ]( const QString & p_fontName )
+			{
+				SETTINGS().setValue( SETTING_KEY_FONT, p_fontName );
+				if ( not _checkBoxForceDyslexicFont->isChecked() )
+				{
+					STYLE().setFontFamily( p_fontName );
+				}
+			}
 		);
 
 		layoutDisplay->addWidget( _comboBoxFont );
 
 		// Reset layout.
 		auto * buttonResetLayout
-			= new ActionablePushButton( UI_ACTIONS().getAction( Action::Theme::RESET_LAYOUT ), this );
+			= Helper::makeQObject<ActionablePushButton>( UI_ACTIONS().getAction( Action::Theme::RESET_LAYOUT ), this );
 		buttonResetLayout->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		buttonResetLayout->setMinimumWidth( 0 );
 		layoutDisplay->addWidget( buttonResetLayout );
 
+		// Accessibility.
+		auto * groupBoxAccessibility = new QGroupBox( "Accessibility" );
+		auto * layoutAccessibility	 = Helper::makeQObject<QVBoxLayout>( groupBoxAccessibility );
+
+		layoutAccessibility->addWidget( Helper::makeQObject<QLabel>( "Color", this ) );
+
+		_comboBoxColorAccessibilityMode = Helper::makeQObject<QComboBox>( this );
+		_comboBoxColorAccessibilityMode->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		_comboBoxColorAccessibilityMode->setMinimumWidth( 0 );
+		_comboBoxColorAccessibilityMode->addItem(
+			"Default", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::DEFAULT )
+		);
+		_comboBoxColorAccessibilityMode->addItem(
+			"High contrast", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::HIGH_CONTRAST )
+		);
+		_comboBoxColorAccessibilityMode->addItem(
+			"Colorblind-friendly", toUnderlying( App::Setting::E_COLOR_ACCESSIBILITY_MODE::COLORBLIND )
+		);
+
+		const int colorModeIndex = _comboBoxColorAccessibilityMode->findData( toUnderlying( accessibility.colorMode ) );
+		if ( colorModeIndex != -1 )
+		{
+			_comboBoxColorAccessibilityMode->setCurrentIndex( colorModeIndex );
+		}
+
+		connect(
+			_comboBoxColorAccessibilityMode,
+			&QComboBox::currentIndexChanged,
+			[ this ]( const int )
+			{
+				const auto colorMode = static_cast<App::Setting::E_COLOR_ACCESSIBILITY_MODE>(
+					_comboBoxColorAccessibilityMode->currentData().toUInt()
+				);
+				App::ACTION().execute<App::Action::Accessibility::SetColorMode>( colorMode );
+			}
+		);
+
+		_checkBoxForceDyslexicFont = Helper::makeQObject<QCheckBox>( "Dyslexia-friendly font", this );
+		_checkBoxForceDyslexicFont->setToolTip( "Use OpenDyslexic as the application font" );
+		_checkBoxForceDyslexicFont->setWhatsThis( _checkBoxForceDyslexicFont->toolTip() );
+		_checkBoxForceDyslexicFont->setChecked( forceDyslexicFont );
+		_comboBoxFont->setEnabled( not forceDyslexicFont );
+
+		connect(
+			_checkBoxForceDyslexicFont,
+			&QCheckBox::checkStateChanged,
+			[ this ]( const int p_state )
+			{
+				const bool forceDyslexicFont = p_state == Qt::Checked;
+				App::ACTION().execute<App::Action::Accessibility::SetForceDyslexicFont>( forceDyslexicFont );
+				_comboBoxFont->setEnabled( not forceDyslexicFont );
+
+				if ( forceDyslexicFont )
+				{
+					STYLE().setFontFamily( Style::DYSLEXIC_FONT_FAMILY );
+				}
+				else
+				{
+					STYLE().setFontFamily( _comboBoxFont->currentText() );
+				}
+			}
+		);
+
+		layoutAccessibility->addWidget( _comboBoxColorAccessibilityMode );
+		layoutAccessibility->addWidget( _checkBoxForceDyslexicFont );
+
 		// Inputs.
 		auto * groupBoxInputs = new QGroupBox( "Inputs" );
-		auto * layoutInputs	  = new QVBoxLayout( groupBoxInputs );
-		_comboBoxKBLayout	  = new QComboBox( this );
+		auto * layoutInputs	  = Helper::makeQObject<QVBoxLayout>( groupBoxInputs );
+		_comboBoxKBLayout	  = Helper::makeQObject<QComboBox>( this );
 		_comboBoxKBLayout->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		_comboBoxKBLayout->setMinimumWidth( 0 );
 
@@ -153,17 +319,17 @@ namespace VTX::UI::QT::DockWidget
 			SETTINGS().value( SETTING_KEY_KEYBOARD_LAYOUT, toUnderlying( defaultLayout ) ).toUInt()
 		);
 
-		for ( int l = 0; l < toUnderlying( Widget::KB_LAYOUT::COUNT ); l++ )
+		for ( int l = 0; std::cmp_less( l, toUnderlying( Widget::KB_LAYOUT::COUNT ) ); l++ )
 		{
 			const Widget::KB_LAYOUT kbLayout   = static_cast<Widget::KB_LAYOUT>( l );
-			QString					layoutName = QString::fromStdString( Util::Enum::enumName( kbLayout ).data() );
+			const QString			layoutName = QString::fromUtf8( Util::Enum::enumName( kbLayout ) );
 			_comboBoxKBLayout->addItem( layoutName, QVariant::fromValue( kbLayout ) );
 		}
 
 		connect(
 			_comboBoxKBLayout,
 			&QComboBox::currentIndexChanged,
-			[ this ]( int p_layout ) { App::HUB().trigger<Events::KeyboardLayoutChanged>( p_layout ); }
+			[]( int p_layout ) { App::HUB().trigger<Events::KeyboardLayoutChanged>( p_layout ); }
 		);
 
 		_comboBoxKBLayout->setCurrentIndex( toUnderlying( layout ) );
@@ -172,28 +338,28 @@ namespace VTX::UI::QT::DockWidget
 
 		// Graphics.
 		auto * groupBoxGraphics = new QGroupBox( "Graphics" );
-		auto * layoutGraphics	= new QVBoxLayout( groupBoxGraphics );
-		_checkBoxVSync			= new QCheckBox( "Vertical synchronization", this );
+		auto * layoutGraphics	= Helper::makeQObject<QVBoxLayout>( groupBoxGraphics );
+		_checkBoxVSync			= Helper::makeQObject<QCheckBox>( "Vertical synchronization", this );
 		_checkBoxVSync->setToolTip( "Synchronize the frame rate with the screen refresh rate" );
 		_checkBoxVSync->setWhatsThis( "Synchronize the frame rate with the screen refresh rate" );
 
 		connect(
 			_checkBoxVSync,
 			&QCheckBox::checkStateChanged,
-			[ this ]( const int p_state )
+			[]( const int p_state )
 			{ App::ACTION().execute<App::Action::Application::SetVSync>( p_state == Qt::Checked ); }
 		);
 
 		layoutGraphics->addWidget( _checkBoxVSync );
 
-		_checkBoxSavePower = new QCheckBox( "Save GPU power", this );
+		_checkBoxSavePower = Helper::makeQObject<QCheckBox>( "Save GPU power", this );
 		_checkBoxSavePower->setToolTip( "Render frame only on update" );
 		_checkBoxSavePower->setWhatsThis( "Render frame only on update" );
 
 		connect(
 			_checkBoxSavePower,
 			&QCheckBox::checkStateChanged,
-			[ this ]( const int p_state )
+			[]( const int p_state )
 			{ App::ACTION().execute<App::Action::Application::SetSavePower>( p_state == Qt::Checked ); }
 		);
 
@@ -202,18 +368,24 @@ namespace VTX::UI::QT::DockWidget
 		auto * groupBoxDiskUsage = _createDiskUsageGroupBox();
 
 		_layout->addWidget( groupBoxTree );
+		_layout->addWidget( groupBoxSeq );
 		_layout->addWidget( groupBoxDisplay );
+		_layout->addWidget( groupBoxAccessibility );
 		_layout->addWidget( groupBoxInputs );
 		_layout->addWidget( groupBoxGraphics );
 		_layout->addWidget( groupBoxDiskUsage );
-		_layout->addSpacerItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+		_layout->addSpacerItem(
+			std::make_unique<QSpacerItem>( 0, 0, QSizePolicy::Expanding, QSizePolicy::Expanding ).release()
+		);
 
 		_refreshFoldersInfos();
 
 		// Settings.
-		QSignalBlocker b( _checkBoxVSync ); // Do not emit, opengl widget already knows.
+		const QSignalBlocker b( _checkBoxVSync ); // Do not emit, opengl widget already knows.
 		_checkBoxVSync->setChecked( SETTINGS().value( SETTING_KEY_VSYNC, Renderer::VSYNC_DEFAULT ).toBool() );
+		const QSignalBlocker bSavePower( _checkBoxSavePower );
 		_checkBoxSavePower->setChecked( SETTINGS().value( SETTING_KEY_SAVE_POWER, SAVE_POWER_DEFAULT ).toBool() );
+		App::ACTION().execute<App::Action::Application::SetSavePower>( _checkBoxSavePower->isChecked() );
 
 		connect(
 			this,
@@ -255,7 +427,7 @@ namespace VTX::UI::QT::DockWidget
 		const int index = _comboBoxTheme->findData( theme );
 		if ( index != -1 )
 		{
-			QSignalBlocker blocker( _comboBoxTheme );
+			const QSignalBlocker blocker( _comboBoxTheme );
 			_comboBoxTheme->setCurrentIndex( index );
 		}
 	}
@@ -265,9 +437,10 @@ namespace VTX::UI::QT::DockWidget
 	QGroupBox * Options::_createDiskUsageGroupBox()
 	{
 		auto * groupBox = new QGroupBox( "Disk usage" );
-		auto * layout	= new QVBoxLayout( groupBox );
+		auto * layout	= Helper::makeQObject<QVBoxLayout>( groupBox );
 
 		_addDiskUsageRow( layout, "Data", App::SESSION().getCacheDir(), _labelCacheSize );
+		_addDiskUsageRow( layout, "HDRIs", App::SESSION().getHdrisDir(), _labelHdriSize );
 		_addDiskUsageRow( layout, "Snapshots", App::SESSION().getSnapshotsDir(), _labelSnapshotsSize );
 		_addDiskUsageRow( layout, "Logs", App::SESSION().getLogsDir(), _labelLogsSize );
 
@@ -281,8 +454,8 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QLabel> & p_labelSize
 	)
 	{
-		auto * layoutRow  = new QHBoxLayout();
-		auto * buttonOpen = new QPushButton( this );
+		auto * layoutRow  = Helper::makeChildLayout<QHBoxLayout>( *p_layout );
+		auto * buttonOpen = Helper::makeQObject<QPushButton>( this );
 
 		buttonOpen->setIcon( STYLE().iconFromCodepoint( Style::Icons::OPEN ) );
 		buttonOpen->setToolTip( QString( "Open %1 folder" ).arg( p_title.toLower() ) );
@@ -296,13 +469,12 @@ namespace VTX::UI::QT::DockWidget
 			[ p_path ]() { QDesktopServices::openUrl( QUrl::fromLocalFile( QDir( p_path ).absolutePath() ) ); }
 		);
 
-		p_labelSize = new QLabel( this );
+		p_labelSize = Helper::makeQObject<QLabel>( this );
 		p_labelSize->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
 		p_labelSize->setMinimumWidth( 0 );
 
 		layoutRow->addWidget( p_labelSize );
 		layoutRow->addWidget( buttonOpen );
-		p_layout->addLayout( layoutRow );
 	}
 
 	void Options::_refreshFolderInfos(
@@ -320,13 +492,14 @@ namespace VTX::UI::QT::DockWidget
 		}
 
 		p_labelSize->setText(
-			_TEXT_DISK_USAGE.arg( p_title, QString::fromStdString( Util::String::memSizeToStr( size ) ) )
+			TEXT_DISK_USAGE.arg( p_title, QString::fromStdString( Util::String::memSizeToStr( size ) ) )
 		);
 	}
 
 	void Options::_refreshFoldersInfos()
 	{
 		_refreshFolderInfos( App::SESSION().getCacheDir(), _labelCacheSize, "Data" );
+		_refreshFolderInfos( App::SESSION().getHdrisDir(), _labelHdriSize, "HDRI" );
 		_refreshFolderInfos( App::SESSION().getSnapshotsDir(), _labelSnapshotsSize, "Snapshots" );
 		_refreshFolderInfos( App::SESSION().getLogsDir(), _labelLogsSize, "Logs" );
 	}

@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_EDITCONF_GROMACS__
-#define __VTX_TOOL_TOOLS_EDITCONF_GROMACS__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_EDITCONF_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_EDITCONF_HPP
 
 #include <array>
 #include <filesystem>
@@ -15,7 +15,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	struct GromacsJobData;
 	struct CumulativeOuputFiles;
 
-	enum class E_EDITCONF_BOX_SHAPE
+	enum class E_EDITCONF_BOX_SHAPE : uint8_t
 	{
 		dodecahedron,
 		octahedron,
@@ -23,8 +23,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		triclinic,
 		COUNT
 	};
-	std::string string( const E_EDITCONF_BOX_SHAPE & ) noexcept;
-	enum class E_EDITCONF_BOX_DIMENSION_MODE
+	std::string string( const E_EDITCONF_BOX_SHAPE & );
+	enum class E_EDITCONF_BOX_DIMENSION_MODE : uint8_t
 	{
 		distance // uses the distance from the solute to the box to determine box's size
 		,
@@ -32,8 +32,8 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 		,
 		COUNT
 	};
-	std::string string( const E_EDITCONF_BOX_DIMENSION_MODE & ) noexcept;
-	enum class E_EDITCONF_PURPOSE
+	std::string string( const E_EDITCONF_BOX_DIMENSION_MODE & );
+	enum class E_EDITCONF_PURPOSE : uint8_t
 	{
 		setup_box,
 		producing_pdb
@@ -53,17 +53,15 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	};
 
 	// Setup job folder and place input files as the job need them
-	void prepareJob(
-		const CumulativeOuputFiles &,
-		const FilePath &		 p_root,
-		const std::string_view & p_folderName,
-		EditconfInstructions &
-	) noexcept;
+	void prepareJob( const CumulativeOuputFiles &,
+					 const FilePath &		  p_root,
+					 const std::string_view & p_folderName,
+					 EditconfInstructions & );
 
 	// Convert editconf instructions to gromacs command
 	//  Do not perform filesystem check
 	//  Does nothing if in or out is empty
-	void convert( const EditconfInstructions &, GromacsJobData & ) noexcept;
+	void convert( const EditconfInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

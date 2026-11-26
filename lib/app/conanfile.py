@@ -58,7 +58,7 @@ class VTXAppRecipe(ConanFile):
     
     generators = "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "vendor/*", "test/*", "data/*"
+    exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "vendor/*", "test/*", "data/*", "default_user_data/*"
 
     def requirements(self):
         self.requires("vtx_util/1.0")
@@ -68,7 +68,7 @@ class VTXAppRecipe(ConanFile):
             self.requires("vtx_renderer/1.0", transitive_headers=True) # Need for transitive header as action/visibility ends up including renderer stuff
         if self.options.python_binding:
             self.requires("vtx_python_binding/1.0")
-        self.requires("catch2/3.15.0")
+        self.requires("catch2/3.16.1")
         self.requires("argparse/3.2")
         
 
@@ -94,14 +94,15 @@ class VTXAppRecipe(ConanFile):
             tc.cache_variables["CPYTHON_VERSION_PATCH"] = python_binding_conf.get("user.python_binding:cpython_version_patch")
             tc.cache_variables["VTX_PYTHON_BINDING_RUNTIME_ROOT"] = python_binding_conf.get("user.python_binding:runtime_root")
         versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
-        tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
-        tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
-        tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch
-        tc.cache_variables["VTX_RENDERER"] = 1 if self.options.renderer else 0
-        tc.cache_variables["VTX_PYTHON_BINDING"] = 1 if self.options.python_binding else 0
+        tc.cache_variables["VTX_VERSION_MAJOR"] = str(versionMajor)
+        tc.cache_variables["VTX_VERSION_MINOR"] = str(versionMinor)
+        tc.cache_variables["VTX_VERSION_PATCH"] = str(versionPatch)
+        tc.cache_variables["VTX_RENDERER"] = "1" if self.options.renderer else "0"
+        tc.cache_variables["VTX_PYTHON_BINDING"] = "1" if self.options.python_binding else "0"
         tc.cache_variables["VTX_VELOPACK_LIB"] = velopack_lib_name(
             str(self.settings.os), str(self.settings.arch)
         )
+        tc.cache_variables["VTX_BUILD_TESTS"] = "ON" if self.options.test else "OFF"
         tc.generate()
         VirtualRunEnv(self).generate()
 
@@ -128,3 +129,4 @@ class VTXAppRecipe(ConanFile):
         self.cpp_info.libs.append(_conan_lib_name(velopack_lib_filename))
         if os_name == "Windows":
             self.cpp_info.system_libs.append("ntdll")
+        self.cpp_info.set_property("cmake_build_modules", ["cmake/vtx_app_copy_default_user_data.cmake"])

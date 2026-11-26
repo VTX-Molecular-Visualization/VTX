@@ -1,22 +1,34 @@
-#ifndef __VTX_APP_ACTION_PRESET__
-#define __VTX_APP_ACTION_PRESET__
+#ifndef VTX_APP_ACTION_PRESET_HPP
+#define VTX_APP_ACTION_PRESET_HPP
 
-#include "app/action/action_manager.hpp"
 #include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
 #include "app/events.hpp"
+#include "app/generic/file.hpp"
 #include "app/generic/name.hpp"
+#include "app/generic/readonly.hpp"
 #include "app/helper/preset.hpp"
 #include "app/scene/tag_root.hpp"
+#include "app/serialization/renderer.hpp"
 #include "app/services.hpp"
+#include <algorithm>
+#include <exception>
+#include <filesystem>
 #include <optional>
 #include <renderer/color.hpp>
 #include <renderer/graphics_config.hpp>
+#include <renderer/material.hpp>
 #include <renderer/renderer.hpp>
 #include <renderer/representation.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 #include <util/exceptions.hpp>
+#include <util/filesystem.hpp>
+#include <util/json.hpp>
+#include <util/logger.hpp>
 #include <util/type_traits.hpp>
+#include <util/types.hpp>
+#include <vector>
 
 namespace VTX::App::Action::Preset
 {
@@ -39,12 +51,7 @@ namespace VTX::App::Action::Preset
 		)
 		{
 			auto &		reg	 = REG();
-			std::string name = std::string { p_name.has_value() ? p_name.value() : DEFAULT_PRESET_NAME };
-
-			while ( Helper::Preset::exists<T>( name ) )
-			{
-				name += " (2)";
-			}
+			const std::string name = std::string { p_name.has_value() ? p_name.value() : DEFAULT_PRESET_NAME };
 
 			auto e = reg.create();
 			reg.emplace<App::Generic::Name>( e, name );
@@ -52,17 +59,10 @@ namespace VTX::App::Action::Preset
 			{
 				reg.emplace<T>( e, *p_data );
 			}
-			else if constexpr ( std::is_same_v<T, Renderer::Color::Layout> )
+			else if ( const std::optional<Entity> source = Helper::Preset::getDefault<T>() )
 			{
-				reg.emplace<T>( e, Renderer::Color::Layouts::JMOL );
-			}
-			else if constexpr ( std::is_same_v<T, Renderer::GraphicsConfig> )
-			{
-				reg.emplace<T>( e, Renderer::GraphicsConfigs::DEFAULT );
-			}
-			else if constexpr ( std::is_same_v<T, Renderer::Representation> )
-			{
-				reg.emplace<T>( e, Renderer::Representations::STICKS_AND_RIBBONS );
+				const T data = reg.get<T>( *source );
+				reg.emplace<T>( e, data );
 			}
 			else
 			{
@@ -79,17 +79,14 @@ namespace VTX::App::Action::Preset
 	{
 		void execute( const Entity p_e, const std::string_view p_dest )
 		{
-			std::string name { p_dest };
+			Helper::Preset::checkEditable( p_e );
+
+			const std::string name { p_dest };
 
 			auto & src = REG().get<App::Generic::Name>( p_e );
 			if ( src.name == p_dest )
 			{
 				return;
-			}
-
-			while ( Helper::Preset::exists<T>( name ) )
-			{
-				name += " (2)";
 			}
 
 			auto & nameComponent = REG().get<App::Generic::Name>( p_e );
@@ -109,16 +106,12 @@ namespace VTX::App::Action::Preset
 			auto & reg = REG();
 			auto & src = reg.get<App::Generic::Name>( p_e );
 
-			std::string name = std::string { p_dest.has_value() ? p_dest.value() : src.name + "_copy" };
+			const std::string name = std::string { p_dest.has_value() ? p_dest.value() : src.name + " (copy)" };
 
-			while ( Helper::Preset::exists<T>( name ) )
-			{
-				name += "_copy";
-			}
-
-			auto e = reg.create();
+			const T data = reg.get<T>( p_e );
+			const Entity e	 = reg.create();
 			reg.emplace<App::Generic::Name>( e, name );
-			reg.emplace<T>( e, reg.get<T>( p_e ) );
+			reg.emplace<T>( e, data );
 		}
 	};
 
@@ -130,6 +123,8 @@ namespace VTX::App::Action::Preset
 	{
 		void execute( const Entity p_e )
 		{
+			Helper::Preset::checkEditable( p_e );
+
 			auto view = REG().view<App::Generic::Name, T>();
 
 			if ( view.size_hint() == 1 )
@@ -154,6 +149,9 @@ namespace VTX::App::Action::Preset
 		}
 	};
 
+	/**
+	 * @brief Apply a preset to the scene.
+	 */
 	template<typename T>
 	struct Apply
 	{
@@ -167,10 +165,14 @@ namespace VTX::App::Action::Preset
 			{
 				ACTION().execute<Scene::SetGraphicsConfig>( p_e );
 			}
+			else if constexpr ( std::is_same_v<T, Renderer::Material> )
+			{
+				ACTION().execute<Scene::SetMaterial>( p_e );
+			}
 			else if constexpr ( std::is_same_v<T, Renderer::Representation> )
 			{
 				// Loop over all systems and apply the representation preset to each of them.
-				auto view = REG().view<System::Representation>();
+				auto view = REG().view<App::System::Representation>();
 				for ( const Entity entity : view )
 				{
 					ACTION().execute<Action::Representation::Add<Core::Struct::E_SYSTEM_ITEM::SYSTEM>>( entity, p_e );
@@ -183,60 +185,154 @@ namespace VTX::App::Action::Preset
 		}
 	};
 
+	namespace Detail
+	{
+		template<typename T>
+		T read( const Util::Json::Document & p_document )
+		{
+			const uint version = p_document.at( "version" ).get<uint>();
+			if ( version > Helper::Preset::VERSION<T> )
+			{
+				throw VTXException(
+					"version {} is newer than supported version {}", version, Helper::Preset::VERSION<T>
+				);
+			}
+
+			const std::string type = p_document.at( "type" ).get<std::string>();
+			if ( type != Helper::Preset::TYPE_NAME<T> )
+			{
+				throw VTXException(
+					"type \"{}\" does not match expected type \"{}\"", type, Helper::Preset::TYPE_NAME<T>
+				);
+			}
+
+			T data = p_document.at( "data" ).get<T>();
+			if constexpr ( requires { data.clamp(); } )
+			{
+				data.clamp();
+			}
+			return data;
+		}
+
+		template<typename T>
+		Entity create(
+			const std::string &				p_name,
+			T &&							p_data,
+			const std::optional<FilePath> & p_path,
+			const bool						p_readOnly
+		)
+		{
+			Registry &	 reg	= REG();
+			const Entity entity = reg.create();
+			reg.emplace<Generic::Name>( entity, p_name );
+			if ( p_path )
+			{
+				reg.emplace<Generic::File>( entity, *p_path );
+			}
+			if ( p_readOnly )
+			{
+				reg.emplace<Generic::ReadOnly>( entity );
+			}
+			reg.emplace<T>( entity, std::move( p_data ) );
+			return entity;
+		}
+	} // namespace Detail
+
 	/**
-	 * @brief Create default preset.
+	 * @brief Load a preset from a file.
 	 */
 	template<typename T>
-	struct CreateDefault
+	struct LoadFile
 	{
-		void execute() {}
+		void execute( const FilePath & p_path, const bool p_readOnly )
+		{
+			try
+			{
+				const Util::Json::Document document = Util::Json::read( p_path );
+				T						   data		= Detail::read<T>( document );
+
+				const std::string name = document.at( "name" ).get<std::string>();
+				Detail::create<T>( name, std::move( data ), p_path, p_readOnly );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_WARNING( "Can not load preset {}: {}", p_path.string(), p_e.what() );
+			}
+		}
 	};
 
 	/**
-	 * @brief Create default color layout preset.
+	 * @brief Load all presets from a directory.
 	 */
-	template<>
-	struct CreateDefault<Renderer::Color::Layout>
+	template<typename T>
+	struct LoadDirectory
 	{
-		void execute()
+		void execute( const FilePath & p_directory, const bool p_readOnly )
 		{
-			ACTION().execute<Add<Renderer::Color::Layout>>( "JMol", Renderer::Color::Layouts::JMOL );
-			ACTION().execute<Add<Renderer::Color::Layout>>(
-				"JMol High Contrast", Renderer::Color::Layouts::HIGH_CONTRAST
-			);
-			ACTION().execute<Add<Renderer::Color::Layout>>( "JMol Colorblind", Renderer::Color::Layouts::COLORBLIND );
+			if ( not std::filesystem::is_directory( p_directory ) )
+			{
+				return;
+			}
+
+			std::vector<FilePath> files;
+			for ( const std::filesystem::directory_entry & entry : std::filesystem::directory_iterator( p_directory ) )
+			{
+				if ( entry.is_regular_file() && entry.path().extension() == ".json" )
+				{
+					files.push_back( entry.path() );
+				}
+			}
+			std::ranges::sort( files );
+
+			for ( const FilePath & file : files )
+			{
+				ACTION().execute<LoadFile<T>>( file, p_readOnly );
+			}
 		}
 	};
 
-	template<>
-	struct CreateDefault<Renderer::Representation>
+	/**
+	 * @brief Load all presets of a given type (default an user).
+	 */
+	template<typename T>
+	struct Load
 	{
-		void execute()
+		void execute( const FilePath & p_defaultDirectory, const FilePath & p_userDirectory )
 		{
-			ACTION().execute<Add<Renderer::Representation>>( "Sticks", Renderer::Representations::STICKS );
-			ACTION().execute<Add<Renderer::Representation>>(
-				"Sticks and Ribbons", Renderer::Representations::STICKS_AND_RIBBONS
-			);
-			ACTION().execute<Add<Renderer::Representation>>(
-				"Balls and sticks", Renderer::Representations::BALLS_AND_STICKS
-			);
-			ACTION().execute<Add<Renderer::Representation>>(
-				"Van der Waals", Renderer::Representations::VAN_DER_WAALS
-			);
-			ACTION().execute<Add<Renderer::Representation>>( "Ribbons", Renderer::Representations::RIBBONS );
-			ACTION().execute<Add<Renderer::Representation>>( "SES", Renderer::Representations::SES );
+			ACTION().execute<LoadDirectory<T>>( p_defaultDirectory, true );
+			ACTION().execute<LoadDirectory<T>>( p_userDirectory, false );
+
+			if ( Helper::Preset::getDefault<T>() )
+			{
+				return;
+			}
+
+			VTX_ERROR( "No preset found in {}, using default values", p_defaultDirectory.string() );
+
+			Registry &	 reg	= REG();
+			const Entity entity = reg.create();
+			reg.emplace<Generic::Name>( entity, std::string( Helper::Preset::DEFAULT_NAME<T> ) );
+			reg.emplace<Generic::ReadOnly>( entity );
+			reg.emplace<T>( entity );
 		}
 	};
 
-	template<>
-	struct CreateDefault<Renderer::GraphicsConfig>
+	/**
+	 * @brief Load all presets of all types.
+	 */
+	struct LoadAll
+	{ void execute(); };
+
+	/**
+	 * @brief Import a preset file into user data and apply it.
+	 */
+	struct Import
 	{
-		void execute()
-		{
-			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Default", Renderer::GraphicsConfigs::DEFAULT );
-			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Presentation", Renderer::GraphicsConfigs::PRESENTATION );
-			ACTION().execute<Add<Renderer::GraphicsConfig>>( "Illustration", Renderer::GraphicsConfigs::ILLUSTRATION );
-		}
+		void execute( const FilePath & p_path );
+
+	  private:
+		template<typename T>
+		void _import( Util::Json::Document & p_document, const FilePath & p_path, const FilePath & p_userDirectory );
 	};
 } // namespace VTX::App::Action::Preset
 #endif

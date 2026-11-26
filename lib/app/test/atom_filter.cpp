@@ -11,7 +11,7 @@ TEST_CASE( "VTX_APP - AtomFilter - Visible", "[atomFilter][Visible]" )
 	Visibility vis { VTX::Util::Math::BitSet { 10 } };
 	vis.atoms.set( 2 );
 	vis.atoms.set( 7 );
-	atomFilters::Visible filter( vis );
+	const atomFilters::Visible filter( vis );
 
 	CHECK( filter( 1 ) == false );
 	CHECK( filter( 2 ) == true );
@@ -19,13 +19,13 @@ TEST_CASE( "VTX_APP - AtomFilter - Visible", "[atomFilter][Visible]" )
 	CHECK( filter( 7 ) == true );
 }
 
-TEST_CASE( "VTX_APP - AtomFilter - Visible", "[atomFilter][Selected]" )
+TEST_CASE( "VTX_APP - AtomFilter - Selected", "[atomFilter][Selected]" )
 {
 	using namespace VTX::App::System;
 	Selection vis { VTX::Util::Math::BitSet { 10 } };
 	vis.atoms.set( 2 );
 	vis.atoms.set( 7 );
-	atomFilters::Selected filter( vis );
+	const atomFilters::Selected filter( vis );
 
 	CHECK( filter( 1 ) == false );
 	CHECK( filter( 2 ) == true );

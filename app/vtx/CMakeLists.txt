@@ -1,5 +1,5 @@
-message("vtx")
-cmake_minimum_required(VERSION 3.23)
+message(STATUS "VTX - vtx")
+cmake_minimum_required(VERSION 3.28)
 
 project(vtx)
 
@@ -40,6 +40,7 @@ endif()
 if (VTX_PYTHON_BINDING OR VTX_TOOL_MDPREP)
 	vtx_install_target_directory(vtx "external" USE_SOURCE_PERMISSIONS)
 endif()
+vtx_install_target_directory(vtx "default_user_data")
 install(FILES license.txt DESTINATION .)
 # Runtime DLLs.
 #install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS} DESTINATION .)

@@ -3,7 +3,7 @@
 #include <re2/re2.h>
 #include <thread>
 //
-#include <app/threading/base_thread.hpp>
+#include <util/thread/base_thread.hpp>
 //
 #include "tool/mdprep/backends/gromacs/job.hpp"
 #include <tool/mdprep/backends/gromacs/util.hpp>
@@ -18,11 +18,9 @@ namespace VTX::test
 	{
 		using namespace VTX::Tool::Mdprep::backends::Gromacs;
 		in.pdb2gmx.forcefields = listForcefields( VTX::Tool::Mdprep::backends::Gromacs::defaultFfDirectoryPath() );
-		auto it				   = std::find_if(
-			in.pdb2gmx.forcefields.begin(),
-			in.pdb2gmx.forcefields.end(),
-			[ & ]( const forcefield & p_ ) { return p_.getName() == p_ffName; }
-		);
+		auto it				   = std::find_if( in.pdb2gmx.forcefields.begin(),
+											   in.pdb2gmx.forcefields.end(),
+											   [ & ]( const forcefield & p_ ) { return p_.getName() == p_ffName; } );
 		if ( it != std::end( in.pdb2gmx.forcefields ) )
 		{
 			in.pdb2gmx.forcefieldIndex = std::distance( in.pdb2gmx.forcefields.begin(), it );
@@ -59,7 +57,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 1ubq", "[prepareStructure][1ubq]"
 		fs::remove_all( in.rootDir );
 	}
 	fs::create_directories( in.rootDir );
-	VTX::App::Threading::ThreadData dummy;
+	VTX::Util::Thread::ThreadData dummy;
 	prepareStructure( dummy, VTX::App::SESSION().getDataDir() / "1ubq.pdb", in );
 	int i = 0;
 	for ( auto & jobData : in.jobData )
@@ -105,7 +103,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepareStructure 2wfv", "[prepareStructure][2wfv]"
 	}
 	fs::create_directories( in.rootDir );
 
-	VTX::App::Threading::ThreadData dummy;
+	VTX::Util::Thread::ThreadData dummy;
 
 	prepareStructure( dummy, VTX::App::SESSION().getDataDir() / "2wfv.pdb", in );
 	int i = 0;
@@ -182,7 +180,7 @@ TEST_CASE( "VTX_TOOL_MdPrep - prepPy", "[prepPy]" ) // temporary UT meant to gen
 	}
 	fs::create_directories( in.rootDir );
 
-	VTX::App::Threading::ThreadData dummy;
+	VTX::Util::Thread::ThreadData dummy;
 	prepareStructure( dummy, VTX::App::SESSION().getDataDir() / "1gcn.pdb", in );
 	int i = 0;
 	for ( auto & jobData : in.jobData )

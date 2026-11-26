@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_LAYOUT_FLOW_LAYOUT__
-#define __VTX_UI_QT_LAYOUT_FLOW_LAYOUT__
+#ifndef VTX_UI_QT_LAYOUT_FLOW_LAYOUT_HPP
+#define VTX_UI_QT_LAYOUT_FLOW_LAYOUT_HPP
 
 #include <QLayout>
 #include <QRect>
@@ -16,7 +16,7 @@ namespace VTX::UI::QT::Layout
 	  public:
 		explicit FlowLayout( QWidget *, int = -1, int = -1, int = -1 );
 		explicit FlowLayout( int = -1, int = -1, int = -1 );
-		~FlowLayout();
+		~FlowLayout() override;
 
 		void			 addItem( QLayoutItem * ) override;
 		int				 horizontalSpacing() const;

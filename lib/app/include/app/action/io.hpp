@@ -1,20 +1,11 @@
-#ifndef __VTX_APP_ACTION_IO__
-#define __VTX_APP_ACTION_IO__
+#ifndef VTX_APP_ACTION_IO_HPP
+#define VTX_APP_ACTION_IO_HPP
 
 #include "app/ecs.hpp"
-#include "app/threading/base_thread.hpp"
-#include <app/action/action_manager.hpp>
+#include <optional>
 #include <util/image.hpp>
-#include <util/thread.hpp>
+#include <util/thread/base_thread.hpp>
 #include <util/types.hpp>
-#include <util/url.hpp>
-
-namespace VTX::Util::Url
-{
-
-	class SystemId;
-	class UrlFull;
-} // namespace VTX::Util::Url
 
 namespace VTX::App::Action::IO
 {
@@ -24,33 +15,23 @@ namespace VTX::App::Action::IO
 	 */
 	struct Open
 	{
-		void execute( const FilePath & p_path );
+		void execute( FilePath p_path );
 		void execute( const std::string & p_path );
 	};
-
-	struct _SystemIo;
-
-	struct _SystemIoDel
-	{
-		void operator()( _SystemIo * ) noexcept;
-	};
-
-	using _SystemIoPtr = std::unique_ptr<_SystemIo, _SystemIoDel>;
 
 	/**
 	 * @brief Load a molecular system from disk or buffer.
 	 */
 	struct LoadSystem
 	{
-		LoadSystem();
-		LoadSystem( Threading::ThreadData );
+		LoadSystem() = default;
+		LoadSystem( Util::Thread::ThreadData );
 
-		void execute( FilePath p_path );
-		void execute( FilePath p_path, std::string && p_buffer );
-		void wait() noexcept;
+		void execute( FilePath p_path ) const;
+		void execute( FilePath p_path, std::string && p_buffer ) const;
 
 	  private:
-		_SystemIoPtr _data;
+		Util::Thread::ThreadData _threadData;
 	};
 
 	/**
@@ -59,13 +40,12 @@ namespace VTX::App::Action::IO
 	struct LoadMesh
 	{
 		LoadMesh() = default;
-		LoadMesh( Util::StopToken, Threading::OptionalThreadReference );
+		LoadMesh( Util::Thread::ThreadData );
 
-		void execute( FilePath p_path );
+		void execute( FilePath p_path ) const;
 
 	  private:
-		Util::StopToken					   _stopToken;
-		Threading::OptionalThreadReference _threadRef;
+		Util::Thread::ThreadData _threadData;
 	};
 
 	/**
@@ -73,21 +53,7 @@ namespace VTX::App::Action::IO
 	 */
 	struct WriteSelection
 	{
-		WriteSelection();
-		WriteSelection( Threading::ThreadData );
-
 		void execute( FilePath p_path );
-		void wait() noexcept;
-
-	  private:
-		struct _WriterIo;
-
-		struct _del
-		{
-			void operator()( _WriterIo * ) const noexcept;
-		};
-
-		std::unique_ptr<_WriterIo, _del> _data = nullptr;
 	};
 
 	/**
@@ -95,21 +61,7 @@ namespace VTX::App::Action::IO
 	 */
 	struct WriteVisible
 	{
-		WriteVisible();
-		WriteVisible( Threading::ThreadData );
-
 		void execute( FilePath p_path );
-		void wait() noexcept;
-
-	  private:
-		struct _WriterIo;
-
-		struct _del
-		{
-			void operator()( _WriterIo * ) const noexcept;
-		};
-
-		std::unique_ptr<_WriterIo, _del> _data = nullptr;
 	};
 
 	/**
@@ -118,19 +70,29 @@ namespace VTX::App::Action::IO
 	 */
 	struct AssociateTrajectory
 	{
-		AssociateTrajectory();
-		AssociateTrajectory( Threading::ThreadData );
-		void execute( const FilePath & p_path, const Entity & );
-		void execute( const std::string & p_path, const Entity & );
-		void wait() noexcept;
+		AssociateTrajectory() = default;
+		AssociateTrajectory( Util::Thread::ThreadData );
+		void execute( FilePath p_path, const Entity & ) const;
+		void execute( const std::string & p_path, const Entity & ) const;
 
 	  private:
-		_SystemIoPtr _data;
+		Util::Thread::ThreadData _threadData;
 	};
 
+	/**
+	 * @brief Run script.
+	 */
 	struct RunPythonScript
 	{
 		void execute( const FilePath & );
+	};
+
+	/**
+	 * @brief Import a script into the user scripts directory and run it.
+	 */
+	struct ImportScript
+	{
+		void execute( const FilePath & p_path );
 	};
 
 	/**
@@ -139,10 +101,16 @@ namespace VTX::App::Action::IO
 	struct DownloadSystem
 	{
 	  public:
-		void execute( VTX::Util::Url::SystemId );
-		void execute( VTX::Util::Url::SystemId, FilePath );
-		void execute( VTX::Util::Url::UrlFull, FilePath );
-		void execute( const std::string & p_systemId );
+		DownloadSystem() = default;
+		DownloadSystem( Util::Thread::ThreadData );
+
+		void execute( const std::string & p_url, FilePath p_path, const bool p_force = false );
+		void execute( const std::string & p_url, const char * const p_path, const bool p_force = false )
+		{ execute( p_url, FilePath( p_path ), p_force ); }
+		void execute( const std::string & p_systemId, const bool p_force = false );
+
+	  private:
+		Util::Thread::ThreadData _threadData;
 	};
 
 	/**
@@ -152,13 +120,15 @@ namespace VTX::App::Action::IO
 	{
 	  public:
 		void execute();
-		void execute( const FilePath, const Util::Image::E_FORMAT, const size_t, const size_t );
-
-	  private:
-		FilePath			  _path;
-		Util::Image::E_FORMAT _format;
-		size_t				  _width;
-		size_t				  _height;
+		void execute(
+			const std::optional<FilePath> & p_path,
+			const std::optional<FilePath> & p_filename,
+			Util::Image::E_FORMAT			p_format,
+			std::optional<size_t>			p_width,
+			std::optional<size_t>			p_height,
+			std::optional<float>			p_backgroundOpacity
+		);
+		void execute( const FilePath &, Util::Image::E_FORMAT, size_t, size_t, std::optional<float> = std::nullopt );
 	};
 
 } // namespace VTX::App::Action::IO

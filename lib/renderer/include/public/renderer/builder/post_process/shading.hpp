@@ -1,38 +1,69 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_SHADING__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_SHADING__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_SHADING_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_SHADING_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/builder/post_process/ssao.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
+#include "renderer/material.hpp"
+#include <cassert>
 #include <optional>
 #include <string_view>
 #include <util/constants.hpp>
+#include <util/math.hpp>
 #include <utility>
 
 namespace VTX::Renderer
 {
-	enum struct E_SHADING
+	enum struct E_SHADING : uint8_t
 	{
 		DIFFUSE,
 		GLOSSY,
 		TOON,
 		FLAT,
+		PBR,
 		COUNT
 	};
 
-	constexpr E_SHADING		SHADING_MODE_DEFAULT	 = E_SHADING::DIFFUSE;
-	const Util::Color::Rgba COLOR_LIGHT_DEFAULT		 = COLOR_WHITE;
-	const Util::Color::Rgba COLOR_BACKGROUND_DEFAULT = COLOR_BLACK;
-	constexpr float			SPECULAR_FACTOR_DEFAULT	 = 0.4f;
-	constexpr float			SPECULAR_FACTOR_MIN		 = 0.f;
-	constexpr float			SPECULAR_FACTOR_MAX		 = 1.f;
-	constexpr float			SHININESS_DEFAULT		 = 32.f;
-	constexpr float			SHININESS_MIN			 = 0.f;
-	constexpr float			SHININESS_MAX			 = 128.f;
-	constexpr uint			TOON_STEPS_DEFAULT		 = 4;
-	constexpr uint			TOON_STEPS_MIN			 = 1;
-	constexpr uint			TOON_STEPS_MAX			 = 15;
+	enum struct E_BACKGROUND_MODE : uint8_t
+	{
+		COLOR,
+		ENVIRONMENT,
+		COUNT
+	};
+
+	constexpr E_SHADING			SHADING_MODE_DEFAULT		 = E_SHADING::DIFFUSE;
+	constexpr E_BACKGROUND_MODE BACKGROUND_MODE_DEFAULT		 = E_BACKGROUND_MODE::COLOR;
+	const Util::Color::Rgba		COLOR_LIGHT_DEFAULT			 = COLOR_WHITE;
+	const Util::Color::Rgba		COLOR_BACKGROUND_DEFAULT	 = COLOR_BLACK;
+	constexpr float				SPECULAR_FACTOR_DEFAULT		 = 0.4f;
+	constexpr float				SPECULAR_FACTOR_MIN			 = 0.f;
+	constexpr float				SPECULAR_FACTOR_MAX			 = 1.f;
+	constexpr float				SHININESS_DEFAULT			 = 32.f;
+	constexpr float				SHININESS_MIN				 = 0.f;
+	constexpr float				SHININESS_MAX				 = 128.f;
+	constexpr uint				TOON_STEPS_DEFAULT			 = 4;
+	constexpr uint				TOON_STEPS_MIN				 = 1;
+	constexpr uint				TOON_STEPS_MAX				 = 15;
+	constexpr float				LIGHT_INTENSITY_DEFAULT		 = 2.f;
+	constexpr float				LIGHT_INTENSITY_MIN			 = 0.f;
+	constexpr float				LIGHT_INTENSITY_MAX			 = 10.f;
+	constexpr float				AMBIENT_INTENSITY_DEFAULT	 = 0.01f;
+	constexpr float				AMBIENT_INTENSITY_MIN		 = 0.f;
+	constexpr float				AMBIENT_INTENSITY_MAX		 = 10.f;
+	constexpr float				ENVIRONMENT_ROTATION_DEFAULT = 0.f;
+	constexpr float				ENVIRONMENT_ROTATION_MIN	 = 0.f;
+	constexpr float				ENVIRONMENT_ROTATION_MAX	 = TWO_PIf;
+	constexpr float				SKYBOX_INTENSITY_DEFAULT	 = 1.f;
+	constexpr float				SKYBOX_INTENSITY_MIN		 = 1.f / 1024.f;
+	constexpr float				SKYBOX_INTENSITY_MAX		 = 1024.f;
+	constexpr float				SKYBOX_INTENSITY_EV_MIN		 = -10.f;
+	constexpr float				SKYBOX_INTENSITY_EV_MAX		 = 10.f;
+	constexpr float				IBL_INTENSITY_DEFAULT		 = 1.f;
+	constexpr float				IBL_INTENSITY_MIN			 = 1.f / 1024.f;
+	constexpr float				IBL_INTENSITY_MAX			 = 1024.f;
+	constexpr float				IBL_INTENSITY_EV_MIN		 = -10.f;
+	constexpr float				IBL_INTENSITY_EV_MAX		 = 10.f;
 
 	constexpr bool			ACTIVE_FOG_DEFAULT	= false;
 	const Util::Color::Rgba COLOR_FOG_DEFAULT	= COLOR_GREY;
@@ -48,100 +79,166 @@ namespace VTX::Renderer
 
 	struct ShadingConfig
 	{
-		E_SHADING				mode;
-		Util::Color::Rgba		colorLight;
-		Util::Color::Rgba		colorBackground;
-		float					specularFactor;
-		float					shininess;
-		uint					toonSteps;
+		E_SHADING				mode = SHADING_MODE_DEFAULT;
+		Util::Color::Rgba		colorLight = COLOR_LIGHT_DEFAULT;
+		Util::Color::Rgba		colorBackground = COLOR_BACKGROUND_DEFAULT;
+		float					specularFactor	 = SPECULAR_FACTOR_DEFAULT;
+		float					shininess		 = SHININESS_DEFAULT;
+		uint					toonSteps		 = TOON_STEPS_DEFAULT;
+		float					lightIntensity	 = LIGHT_INTENSITY_DEFAULT;
+		float					ambientIntensity = AMBIENT_INTENSITY_DEFAULT;
+		E_BACKGROUND_MODE		backgroundMode	 = BACKGROUND_MODE_DEFAULT;
 		std::optional<FilePath> environmentPath;
-		uint32_t				environmentFaceSize = 1024;
-		float					environmentExposure = 1.f;
-		float					environmentRotation = 0.f;
+		uint					environmentFaceSize = 1024;
+		float					skyboxIntensity		= SKYBOX_INTENSITY_DEFAULT;
+		float					iblIntensity		= IBL_INTENSITY_DEFAULT;
+		float					environmentRotation = ENVIRONMENT_ROTATION_DEFAULT;
+		Material				material;
+
+		void clamp()
+		{
+			specularFactor		= Util::Math::clamp( specularFactor, SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX );
+			shininess			= Util::Math::clamp( shininess, SHININESS_MIN, SHININESS_MAX );
+			toonSteps			= Util::Math::clamp( toonSteps, TOON_STEPS_MIN, TOON_STEPS_MAX );
+			lightIntensity		= Util::Math::clamp( lightIntensity, LIGHT_INTENSITY_MIN, LIGHT_INTENSITY_MAX );
+			ambientIntensity	= Util::Math::clamp( ambientIntensity, AMBIENT_INTENSITY_MIN, AMBIENT_INTENSITY_MAX );
+			skyboxIntensity		= Util::Math::clamp( skyboxIntensity, SKYBOX_INTENSITY_MIN, SKYBOX_INTENSITY_MAX );
+			iblIntensity		= Util::Math::clamp( iblIntensity, IBL_INTENSITY_MIN, IBL_INTENSITY_MAX );
+			environmentRotation = Util::Math::clamp( environmentRotation, ENVIRONMENT_ROTATION_MIN, ENVIRONMENT_ROTATION_MAX );
+		}
 	};
 
 	struct FogConfig
 	{
-		Util::Color::Rgba color;
-		float			  near;
-		float			  far;
-		float			  density;
+		Util::Color::Rgba color = COLOR_FOG_DEFAULT;
+		float			  near = FOG_NEAR_DEFAULT;
+		float			  far = FOG_FAR_DEFAULT;
+		float			  density = FOG_DENSITY_DEFAULT;
+
+		void clamp()
+		{
+			near	= Util::Math::clamp( near, FOG_NEAR_MIN, FOG_NEAR_MAX );
+			far		= Util::Math::clamp( far, FOG_FAR_MIN, FOG_FAR_MAX );
+			density = Util::Math::clamp( density, FOG_DENSITY_MIN, FOG_DENSITY_MAX );
+		}
 	};
-
-	namespace GraphicsConfigs
-	{
-		inline const ShadingConfig SHADING_DEFAULT { SHADING_MODE_DEFAULT,	   COLOR_LIGHT_DEFAULT,
-													 COLOR_BACKGROUND_DEFAULT, SPECULAR_FACTOR_DEFAULT,
-													 SHININESS_DEFAULT,		   TOON_STEPS_DEFAULT };
-
-		inline const FogConfig FOG_DEFAULT { COLOR_FOG_DEFAULT,
-											 FOG_NEAR_DEFAULT,
-											 FOG_FAR_DEFAULT,
-											 FOG_DENSITY_DEFAULT };
-	} // namespace GraphicsConfigs
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess
 {
 	struct Shading
 	{
-		inline static const Desc::Key PASS				  = "Shading";
-		inline static const Desc::Key OUTPUT			  = "Shaded";
-		inline static const Desc::Key ENVIRONMENT_TEXTURE = "EnvMap";
-		inline static const Desc::Key ENVIRONMENT_SAMPLER = "EnvMapSampler";
+		static constexpr std::string_view PASS				  = "Shading";
+		static constexpr std::string_view OUTPUT			  = "Shaded";
+		static constexpr std::string_view ENVIRONMENT_TEXTURE = "EnvMap";
+		static constexpr std::string_view ENVIRONMENT_SAMPLER = "EnvMapSampler";
 
-		static Desc::Key build( GraphBuilder & p_graph, const bool p_enableSSAO )
+		static constexpr std::string_view MATERIAL_ALBEDO_TEXTURE	 = "MaterialAlbedoMap";
+		static constexpr std::string_view MATERIAL_NORMAL_TEXTURE	 = "MaterialNormalMap";
+		static constexpr std::string_view MATERIAL_METALLIC_TEXTURE	 = "MaterialMetallicMap";
+		static constexpr std::string_view MATERIAL_ROUGHNESS_TEXTURE = "MaterialRoughnessMap";
+		static constexpr std::string_view MATERIAL_AO_TEXTURE		 = "MaterialAmbientOcclusionMap";
+		static constexpr std::string_view MATERIAL_EMISSIVE_TEXTURE	 = "MaterialEmissiveMap";
+		static constexpr std::string_view MATERIAL_TEXTURE_SAMPLER	 = "MaterialMapSampler";
+
+		static Desc::Key programName( const E_SHADING p_mode )
 		{
-			p_graph.pass( PASS )
+			switch ( p_mode )
+			{
+			case E_SHADING::DIFFUSE: return "Shading.Diffuse";
+			case E_SHADING::GLOSSY: return "Shading.Glossy";
+			case E_SHADING::TOON: return "Shading.Toon";
+			case E_SHADING::FLAT: return "Shading.Flat";
+			case E_SHADING::PBR: return "Shading.PBR";
+			default: assert( false ); return "Shading.Invalid";
+			}
+		}
+
+		static FilePath fragmentShader( const E_SHADING p_mode )
+		{
+			switch ( p_mode )
+			{
+			case E_SHADING::DIFFUSE: return "shading/diffuse.frag";
+			case E_SHADING::GLOSSY: return "shading/glossy.frag";
+			case E_SHADING::TOON: return "shading/toon.frag";
+			case E_SHADING::FLAT: return "shading/flat.frag";
+			case E_SHADING::PBR: return "shading/pbr.frag";
+			default: assert( false ); return {};
+			}
+		}
+
+		static Desc::Key build( GraphBuilder & p_graph, const bool p_enableSSAO, const E_SHADING p_mode )
+		{
+			const Desc::Key program = programName( p_mode );
+
+			p_graph.pass( Desc::Key { PASS } )
 				.in( "Geometry" )
 				.in( "Color" )
 				.in( "BlurY", p_enableSSAO ? "NearestClamp" : "NearestRepeat" )
 				.in( "Depth" )
-				.in( ENVIRONMENT_TEXTURE, ENVIRONMENT_SAMPLER )
-				.out( OUTPUT )
-				.program( PASS )
-				.shaders( { "shading.vert", "shading.frag" } )
+				.in( Desc::Key { ENVIRONMENT_TEXTURE }, Desc::Key { ENVIRONMENT_SAMPLER } )
+				.in( Desc::Key { MATERIAL_ALBEDO_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.in( Desc::Key { MATERIAL_NORMAL_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.in( Desc::Key { MATERIAL_METALLIC_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.in( Desc::Key { MATERIAL_ROUGHNESS_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.in( Desc::Key { MATERIAL_AO_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.in( Desc::Key { MATERIAL_EMISSIVE_TEXTURE }, Desc::Key { MATERIAL_TEXTURE_SAMPLER } )
+				.out( Desc::Key { OUTPUT } )
+				.program( program )
+				.shaders( { "shading/shading.vert", fragmentShader( p_mode ) } )
 				.uniform( "BackgroundColor", COLOR_BACKGROUND_DEFAULT.toLinear() )
 				.uniform( "LightColor", COLOR_LIGHT_DEFAULT.toLinear() )
 				.uniform( "FogColor", COLOR_FOG_DEFAULT.toLinear() )
 				.uniform(
-					"Mode",
-					static_cast<unsigned int>( SHADING_MODE_DEFAULT ),
-					std::pair { static_cast<unsigned int>( E_SHADING::DIFFUSE ),
-								static_cast<unsigned int>( E_SHADING::COUNT ) - 1.0 }
-				)
-				.uniform(
-					"SpecularFactor", SPECULAR_FACTOR_DEFAULT, std::pair { SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX }
-				)
+					"SpecularFactor", SPECULAR_FACTOR_DEFAULT, std::pair { SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX } )
 				.uniform( "Shininess", SHININESS_DEFAULT, std::pair { SHININESS_MIN, SHININESS_MAX } )
 				.uniform( "ToonSteps", TOON_STEPS_DEFAULT, std::pair { TOON_STEPS_MIN, TOON_STEPS_MAX } )
 				.uniform( "FogNear", FOG_NEAR_DEFAULT, std::pair { FOG_NEAR_MIN, FOG_NEAR_MAX } )
 				.uniform( "FogFar", FOG_FAR_DEFAULT, std::pair { FOG_FAR_MIN, FOG_FAR_MAX } )
 				.uniform( "FogDensity", FOG_DENSITY_DEFAULT, std::pair { FOG_DENSITY_MIN, FOG_DENSITY_MAX } )
 				.uniform( "SSAOScale", 1.f, std::pair { SSAO_SCALE_MIN, SSAO_SCALE_MAX } )
-				.uniform( "EnvironmentEnabled", uint32_t( 0 ) )
-				.uniform( "EnvironmentExposure", 1.f )
-				.uniform( "EnvironmentRotation", 0.f )
+				.uniform( "EnvironmentEnabled", static_cast<uint32_t>( 0 ) )
+				.uniform( "SkyboxIntensity", 1.f )
+				.uniform( "IblIntensity", 1.f )
+				.uniform( "EnvironmentRotation",
+						  ENVIRONMENT_ROTATION_DEFAULT,
+						  std::pair { ENVIRONMENT_ROTATION_MIN, ENVIRONMENT_ROTATION_MAX } )
+				.uniform(
+					"LightIntensity", LIGHT_INTENSITY_DEFAULT, std::pair { LIGHT_INTENSITY_MIN, LIGHT_INTENSITY_MAX } )
+				.uniform( "AmbientIntensity",
+						  AMBIENT_INTENSITY_DEFAULT,
+						  std::pair { AMBIENT_INTENSITY_MIN, AMBIENT_INTENSITY_MAX } )
+				.uniform( "MaterialTextureMask", static_cast<uint32_t>( 0 ) )
+				.uniform( "MaterialEmissive", Vec4f( 0.f, 0.f, 0.f, MATERIAL_EMISSIVE_INTENSITY_DEFAULT ) )
+				.uniform( "MaterialMetallic",
+						  MATERIAL_METALLIC_DEFAULT,
+						  std::pair { MATERIAL_METALLIC_MIN, MATERIAL_METALLIC_MAX } )
+				.uniform( "MaterialRoughness",
+						  MATERIAL_ROUGHNESS_DEFAULT,
+						  std::pair { MATERIAL_ROUGHNESS_MIN, MATERIAL_ROUGHNESS_MAX } )
+				.uniform( "MaterialOpacity",
+						  MATERIAL_OPACITY_DEFAULT,
+						  std::pair { MATERIAL_OPACITY_MIN, MATERIAL_OPACITY_MAX } )
+				.uniform( "MaterialTextureScale",
+						  MATERIAL_TEXTURE_SCALE_DEFAULT,
+						  std::pair { MATERIAL_TEXTURE_SCALE_MIN, MATERIAL_TEXTURE_SCALE_MAX } )
 				.endProgram()
 				.endPass();
 
-			return OUTPUT;
+			return Desc::Key { OUTPUT };
 		}
 
-		static void upload(
-			Context::ContextWrapper &		  p_context,
-			const ShadingConfig &			  p_config,
-			const std::optional<FogConfig> &  p_fog,
-			const std::optional<SSAOConfig> & p_ssao
-		)
+		static void upload( Context::ContextWrapper &		  p_context,
+							const ShadingConfig &			  p_config,
+							const std::optional<FogConfig> &  p_fog,
+							const std::optional<SSAOConfig> & p_ssao )
 		{
 			BinaryBuffer140	  buffer;
-			const FogConfig & fog = p_fog.value_or( GraphicsConfigs::FOG_DEFAULT );
+			const FogConfig & fog = p_fog.value_or( FogConfig {} );
 
 			buffer.write( p_config.colorBackground.toLinear() );
 			buffer.write( p_config.colorLight.toLinear() );
 			buffer.write( fog.color.toLinear() );
-			buffer.write( uint32_t( p_config.mode ) );
 			buffer.write( p_config.specularFactor );
 			buffer.write( p_config.shininess );
 			buffer.write( p_config.toonSteps );
@@ -149,15 +246,31 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( fog.far );
 			buffer.write( p_fog ? fog.density : 0.f );
 			buffer.write( p_ssao ? p_ssao->scale : 1.f );
-			buffer.write( uint32_t( p_config.environmentPath.has_value() ) );
-			buffer.write( p_config.environmentExposure );
+			buffer.write( static_cast<uint32_t>( p_config.backgroundMode == E_BACKGROUND_MODE::ENVIRONMENT
+												 && p_config.environmentPath.has_value() ) );
+			buffer.write( p_config.skyboxIntensity );
+			buffer.write( p_config.iblIntensity );
 			buffer.write( p_config.environmentRotation );
+			buffer.write( p_config.lightIntensity );
+			buffer.write( p_config.ambientIntensity );
+			buffer.write( p_config.material.textureMask() );
+			const Util::Color::Rgba emissiveColor( p_config.material.emissiveColor.x,
+												   p_config.material.emissiveColor.y,
+												   p_config.material.emissiveColor.z );
+			const Util::Color::Rgba emissiveLinear = emissiveColor.toLinear();
+			buffer.write( Vec4f(
+				emissiveLinear.r(), emissiveLinear.g(), emissiveLinear.b(), p_config.material.emissiveIntensity ) );
+			buffer.write( p_config.material.metallic );
+			buffer.write( p_config.material.roughness );
+			buffer.write( p_config.material.opacity );
+			buffer.write( p_config.material.textureScale );
 			buffer.close();
 
-			p_context.setBuffer( { PASS }, buffer );
+			p_context.setBuffer( { programName( p_config.mode ) }, buffer.bytes() );
 		}
 
 		static void loadEnvironment( Context::ContextWrapper &, const ShadingConfig & );
+		static void loadMaterialTextures( Context::ContextWrapper &, const ShadingConfig & );
 	};
 } // namespace VTX::Renderer::Builder::PostProcess
 

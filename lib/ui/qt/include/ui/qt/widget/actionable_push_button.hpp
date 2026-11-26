@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_ACTIONABLE_PUSH_BUTTON__
-#define __VTX_UI_QT_WIDGET_ACTIONABLE_PUSH_BUTTON__
+#ifndef VTX_UI_QT_WIDGET_ACTIONABLE_PUSH_BUTTON_HPP
+#define VTX_UI_QT_WIDGET_ACTIONABLE_PUSH_BUTTON_HPP
 
 #include <QPushButton>
 
@@ -11,7 +11,8 @@ namespace VTX::UI::QT::Widget
 	class ActionablePushButton : public QPushButton
 	{
 	  public:
-		explicit ActionablePushButton( const QAction * const p_action, QWidget * p_parent ) : QPushButton( p_parent )
+		explicit ActionablePushButton( const QAction * const p_action, QWidget * const p_parent ) :
+			QPushButton( p_parent )
 		{
 			this->setText( p_action->text() );
 			this->setIcon( p_action->icon() );

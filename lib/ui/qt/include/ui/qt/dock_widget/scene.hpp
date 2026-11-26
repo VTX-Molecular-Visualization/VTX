@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_SCENE__
-#define __VTX_UI_QT_DOCK_WIDGET_SCENE__
+#ifndef VTX_UI_QT_DOCK_WIDGET_SCENE_HPP
+#define VTX_UI_QT_DOCK_WIDGET_SCENE_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/events.hpp"
@@ -7,13 +7,15 @@
 #include "ui/qt/widget/tree/color_layout_presets.hpp"
 #include "ui/qt/widget/tree/graphics_config_presets.hpp"
 #include "ui/qt/widget/tree/representation_presets.hpp"
+#include "ui/qt/widget/tree/scripts.hpp"
 #include "ui/qt/widget/tree/system.hpp"
 #include "ui/qt/widget/tree/trajectory_player.hpp"
 #include <QComboBox>
 #include <QPointer>
 #include <QTimer>
-#include <app/threading/base_thread.hpp>
 #include <ui/qt/widget/thread.hpp>
+#include <util/event_hub.hpp>
+#include <util/thread/base_thread.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -40,6 +42,7 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<Widget::Tree::GraphicsConfigPresets> _treeGraphicsConfigPresets;
 		QPointer<Widget::Tree::ColorLayoutPresets>	  _treeColorLayoutPresets;
 		QPointer<Widget::Tree::RepresentationPresets> _treeRepresentationPresets;
+		QPointer<Widget::Tree::Scripts>				  _treeScripts;
 		QPointer<Widget::Tree::Camera>				  _treeCamera;
 
 		/**
@@ -48,9 +51,14 @@ namespace VTX::UI::QT::DockWidget
 		std::unordered_map<Entity, QPointer<Widget::Tree::System>> _mapSystemTreeWidgets;
 
 		/**
+		 * @brief Counter to alternate tree hints.
+		 */
+		uint _systemTreeCount = 0;
+
+		/**
 		 * @brief Thread widgets.
 		 */
-		std::unordered_map<App::Threading::BaseThread::ID, QPointer<Widget::Thread>> _mapThreadWidgets;
+		std::unordered_map<Util::Thread::ID, QPointer<Widget::Thread>> _mapThreadWidgets;
 
 		/**
 		 * @brief Custom spacer to fill empty space.
@@ -58,7 +66,7 @@ namespace VTX::UI::QT::DockWidget
 		QPointer<QWidget> _filler;
 
 		/**
-		 * @brief Remove tree when system is removed.
+		 * @brief Add tree when camera is constructed.
 		 */
 		void _onCameraConstruct( Registry &, Entity );
 
@@ -73,7 +81,7 @@ namespace VTX::UI::QT::DockWidget
 		void _onSystemDestroy( Registry &, Entity );
 
 		/**
-		 * @brief Update selection.
+		 * @brief Update visibility.
 		 */
 		void _onUpdateVisibility( Registry &, Entity p_e );
 
@@ -98,6 +106,11 @@ namespace VTX::UI::QT::DockWidget
 		void _onTrajectoryCreated( Registry &, Entity p_entity );
 
 		/**
+		 * @brief Called when a trajectory is removed from any system.
+		 */
+		void _onTrajectoryDestroyed( Registry &, Entity p_entity );
+
+		/**
 		 * @brief Add or update thread widget.
 		 */
 		void _onThreadProgress( const App::Events::ThreadProgress & );
@@ -106,6 +119,18 @@ namespace VTX::UI::QT::DockWidget
 		 * @brief Remove thread widget.
 		 */
 		void _onThreadTerminated( const App::Events::ThreadTerminated & );
+
+		VTX::Util::EventHub::ScopedConnection _cameraConstructedConnection;
+		VTX::Util::EventHub::ScopedConnection _systemLoadConnection;
+		VTX::Util::EventHub::ScopedConnection _systemDestroyedConnection;
+		VTX::Util::EventHub::ScopedConnection _visibilityUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _selectionUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _trajectoryCreatedConnection;
+		VTX::Util::EventHub::ScopedConnection _trajectoryDestroyedConnection;
+		VTX::Util::EventHub::ScopedConnection _selectionLockedConnection;
+		VTX::Util::EventHub::ScopedConnection _treeViewModeChangedConnection;
+		VTX::Util::EventHub::ScopedConnection _threadProgressConnection;
+		VTX::Util::EventHub::ScopedConnection _threadTerminatedConnection;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

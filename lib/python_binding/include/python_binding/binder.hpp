@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_BINDING_BINDER__
-#define __VTX_PYTHON_BINDING_BINDER__
+#ifndef VTX_PYTHON_BINDING_BINDER_HPP
+#define VTX_PYTHON_BINDING_BINDER_HPP
 
 #include "python_binding/wrapper/module.hpp"
 #include <string>
@@ -26,20 +26,24 @@ namespace VTX::PythonBinding
 		 * @brief Method to implement to bind actions to commands.
 		 * @param p_pytxModule Module provided by the interpretor to bind actions into.
 		 */
-		inline void bind( Wrapper::Module & p_ )
+		void bind( Wrapper::Module & p_ )
 		{
 			if ( _ptr )
+			{
 				_ptr->bind( p_ );
+			}
 		}
 
 		/**
 		 * @brief [Optional] Submitted class can optionally re-implement this method to add module import instructions
 		 * (e.g. when dealing with package dependancies )
 		 */
-		inline void importHeaders()
+		void importHeaders()
 		{
 			if ( _ptr )
+			{
 				_ptr->importHeaders();
+			}
 		}
 
 	  private:
@@ -49,6 +53,7 @@ namespace VTX::PythonBinding
 			virtual void bind( Wrapper::Module & p_ ) = 0;
 			virtual void importHeaders()			  = 0;
 		};
+
 		template<typename T>
 		class _wrapper final : public _interface
 		{
@@ -56,15 +61,20 @@ namespace VTX::PythonBinding
 
 		  public:
 			_wrapper( T && p_ ) : _obj( std::forward<T>( p_ ) ) {}
-			virtual void bind( Wrapper::Module & p_ ) override { _obj.bind( p_ ); }
-			virtual void importHeaders()
+
+			void bind( Wrapper::Module & p_ ) override { _obj.bind( p_ ); }
+
+			void importHeaders() override
 			{
 				if constexpr ( requires( T & o ) {
 								   { o.importHeaders() };
 							   } )
+				{
 					_obj.importHeaders();
+				}
 			}
 		};
+
 		std::unique_ptr<_interface> _ptr = nullptr;
 
 	  public:
@@ -74,8 +84,9 @@ namespace VTX::PythonBinding
 		{
 		}
 	};
-	void importFullModule( const std::string & p_moduleName ) noexcept;
-	void importObject( const std::string & p_moduleName, const std::string & p_objectName ) noexcept;
+
+	void importFullModule( const std::string & p_moduleName );
+	void importObject( const std::string & p_moduleName, const std::string & p_objectName );
 } // namespace VTX::PythonBinding
 
 #endif

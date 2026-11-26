@@ -1,22 +1,25 @@
 #include "ui/qt/application.hpp"
 #include "ui/qt/action_registry.hpp"
-#include "ui/qt/dialog/trajectory_association.hpp"
-#include "ui/qt/menu/file.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/main_window.hpp"
+#include "ui/qt/widget/opengl_renderer.hpp"
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
+#include <QSurfaceFormat>
 #include <app/constants.hpp>
 #include <app/ecs.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
+#include <cstdlib>
+#include <memory>
 #include <renderer/renderer.hpp>
 #include <ui/qt/actions.hpp>
 #include <util/event_hub.hpp>
+#include <util/logger.hpp>
 
 namespace VTX::UI::QT
 {
@@ -27,35 +30,44 @@ namespace VTX::UI::QT
 		using namespace Resources;
 		using namespace App;
 
-		_splashScreen = new QSplashScreen( QPixmap( Resources::SPRITE_SPLASH.data() ) );
+		QSurfaceFormat::setDefaultFormat( Widget::OpenGLRenderer::surfaceFormat() );
+
+		_splashScreen = std::make_unique<QSplashScreen>( QPixmap( QString::fromUtf8( Resources::SPRITE_SPLASH ) ) );
 		_splashScreen->show();
 
 		// Application info.
 		const std::string version	  = std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
 										+ std::to_string( VERSION_PATCH );
-		std::string		  displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " " ) + version + ( "-beta" );
+		std::string		  displayName = APPLICATION_DISPLAY_NAME.data() + std::string( " " ) + version + "-beta";
 		if ( ARGS().debug )
 		{
 			displayName += " (Debug)";
 		}
 
-		setWindowIcon( QIcon( QPixmap( SPRITE_LOGO.data() ) ) );
+		setWindowIcon( QIcon( QPixmap( QString::fromUtf8( SPRITE_LOGO ) ) ) );
 		setApplicationDisplayName( QString::fromStdString( displayName ) );
-		setApplicationName( QString::fromStdString( APPLICATION_NAME.data() ) );
+		setApplicationName( QString::fromUtf8( APPLICATION_NAME ) );
 		setApplicationVersion( QString::fromStdString( version ) );
-		setOrganizationName( QString::fromStdString( ORGANIZATION_NAME.data() ) );
-		setOrganizationDomain( QString::fromStdString( ORGANIZATION_DOMAIN.data() ) );
+		setOrganizationName( QString::fromUtf8( ORGANIZATION_NAME ) );
+		setOrganizationDomain( QString::fromUtf8( ORGANIZATION_DOMAIN ) );
 
 		// Connect quit.
 		connect(
 			this,
 			&QCoreApplication::aboutToQuit,
-			[ this ]
+			[]() noexcept
 			{
 				VTX_TRACE( "QCoreApplication::aboutToQuit" );
 				try
 				{
 					// Properly destroy graphics resources before Qt kill native surfaces.
+					if ( App::ECS::hasCtx<Widget::MainWindow>() )
+					{
+						if ( Widget::OpenGLRenderer * const openGLRenderer = MAIN_WINDOW().getOpenGLRenderer() )
+						{
+							openGLRenderer->makeCurrent();
+						}
+					}
 					App::RENDERER().clear();
 				}
 				catch ( const std::exception & p_e )
@@ -70,11 +82,9 @@ namespace VTX::UI::QT
 		);
 
 		// Connect the main loop.
-		connect(
-			&_timer,
-			&QTimer::timeout,
-			[ this ] { _app.update( _durationTimer.intervalTime(), _durationTimer.elapsedTime() ); }
-		);
+		_timer.setSingleShot( true );
+		_timer.setTimerType( Qt::PreciseTimer );
+		connect( &_timer, &QTimer::timeout, [ this ]() noexcept { _app.update(); } );
 	}
 
 	Application::~Application()
@@ -104,16 +114,21 @@ namespace VTX::UI::QT
 		{
 			VTX_ERROR( "Failed to save settings: {}", e.what() );
 		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Failed to save settings: unknown exception" );
+		}
 	}
 
-	void Application::start()
+	int Application::start()
 	{
 		QTimer::singleShot( 0, this, &Application::_postQtStartup );
 
 		// Run Qt main loop.
-		exec();
+		const int exitCode = exec();
 		VTX_TRACE( "Application::start(): Qt loop exited" );
 		_timer.stop();
+		return exitCode;
 	}
 
 	void Application::stop()
@@ -123,7 +138,7 @@ namespace VTX::UI::QT
 		QTimer::singleShot( 0, this, &QCoreApplication::quit );
 	}
 
-	bool Application::notify( QObject * const p_receiver, QEvent * const p_event )
+	bool Application::notify( QObject * const p_receiver, QEvent * const p_event ) noexcept
 	{
 		try
 		{
@@ -179,27 +194,25 @@ namespace VTX::UI::QT
 
 			MAIN_WINDOW().restoreLayout();
 
-			App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
+			_applicationStopConnection = App::HUB().connect<App::Events::ApplicationStop, &Application::stop>( this );
 			_app.createInitialEntities();
 
 			// Show the native window before creating the OpenGL context.
 			MAIN_WINDOW().show();
 			QCoreApplication::processEvents();
 
-			try
+			if ( App::ARGS().noGraphics )
 			{
-				Renderer::Desc::NativeContextInfo contextInfo;
-				contextInfo.surface = MAIN_WINDOW().getNativeSurface();
-				contextInfo.display = MAIN_WINDOW().getNativeDisplay();
-				contextInfo.plateform
-					= static_cast<Renderer::Desc::E_NATIVE_PLATEFORM>( MAIN_WINDOW().getNativePlatform() );
-
-				App::RENDERER().setOpenGL( contextInfo, App::SESSION().getApplicationDir() );
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( p_e.what() );
+				VTX_WARNING( "No graphics backend initialization" );
 				App::RENDERER().setDefault();
+			}
+			else if ( not _setQtOpenGL() )
+			{
+				App::RENDERER().setDefault();
+				if ( Widget::OpenGLRenderer * const openGLRenderer = MAIN_WINDOW().getOpenGLRenderer() )
+				{
+					openGLRenderer->deleteLater();
+				}
 				App::HUB().trigger<App::Events::ApplicationError>(
 					"Unable to create OpenGL context. Update your drivers and check your hardware "
 					"compatibility."
@@ -210,18 +223,75 @@ namespace VTX::UI::QT
 
 			_splashScreen->finish( &MAIN_WINDOW() );
 
-			_timer.start( 0 );
-			_durationTimer.start();
+			_app.setFrameScheduler( &Application::_onWake, this );
 		}
 		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "Startup failed: {}", p_e.what() );
-			QCoreApplication::quit();
+			QCoreApplication::exit( EXIT_FAILURE );
 		}
 		catch ( ... )
 		{
 			VTX_ERROR( "Unknown exception during startup" );
-			QCoreApplication::quit();
+			QCoreApplication::exit( EXIT_FAILURE );
+		}
+	}
+
+	bool Application::_setQtOpenGL()
+	{
+		Widget::OpenGLRenderer * const openGLRenderer = MAIN_WINDOW().getOpenGLRenderer();
+		if ( openGLRenderer == nullptr || not openGLRenderer->createGLContext() )
+		{
+			return false;
+		}
+
+		Widget::OpenGLRenderer & glRenderer = *openGLRenderer;
+
+		Renderer::Desc::ExternalContextInfo contextInfo;
+		contextInfo.getProcAddress
+			= [ &glRenderer ]( const char * const p_name ) { return glRenderer.getGLProcAddress( p_name ); };
+		contextInfo.swapBuffers		   = [ &glRenderer ]() { glRenderer.swapGLBuffers(); };
+		contextInfo.defaultFramebuffer = glRenderer.getGLDefaultFramebuffer();
+		contextInfo.setSwapInterval	   = [ &glRenderer ]( const int p_interval )
+		{
+			if ( not glRenderer.setGLSwapInterval( p_interval ) )
+			{
+				VTX_WARNING( "[Qt] Swap interval {} is not supported", p_interval );
+			}
+		};
+
+		try
+		{
+			App::RENDERER().setOpenGL( contextInfo, App::SESSION().getApplicationDir() );
+			return true;
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "{}", p_e.what() );
+			glRenderer.destroyGLContext();
+			return false;
+		}
+	}
+
+	void Application::_scheduleFrame()
+	{
+		if ( not _timer.isActive() )
+		{
+			_timer.start( 0 );
+		}
+	}
+
+	void Application::_onWake( void * const p_application ) noexcept
+	{
+		try
+		{
+			QMetaObject::invokeMethod(
+				static_cast<Application *>( p_application ), &Application::_scheduleFrame, Qt::QueuedConnection
+			);
+		}
+		catch ( ... )
+		{
+			LOGGER::logException( "Failed to schedule frame" );
 		}
 	}
 } // namespace VTX::UI::QT

@@ -1,0 +1,76 @@
+#include "app/python_binding/preset/color_layout.hpp"
+#include "app/action/color_layout.hpp"
+#include "app/python_binding/preset/helpers.hpp"
+#include <pybind11/stl.h>
+#include <python_binding/binding/helper.hpp>
+#include <renderer/color.hpp>
+
+namespace VTX::App::PythonBinding::Preset
+{
+	namespace py = pybind11;
+
+	namespace
+	{
+		Index _resolveColorIndex( const py::ssize_t p_index )
+		{
+			const py::ssize_t size	= static_cast<py::ssize_t>( Renderer::Color::COLOR_LAYOUT_SIZE );
+			const py::ssize_t index = p_index < 0 ? size + p_index : p_index;
+			if ( index < 0 || index >= size )
+			{
+				throw py::index_error( "Color index is outside of the layout." );
+			}
+			return static_cast<Index>( index );
+		}
+
+		Util::Color::Rgba _getColor( const ColorLayoutHandle & p_preset, const py::ssize_t p_index )
+		{ return getData( p_preset ).colors[ _resolveColorIndex( p_index ) ]; }
+
+		void _setColor( const ColorLayoutHandle & p_preset,
+						const py::ssize_t		  p_index,
+						const Util::Color::Rgba & p_color )
+		{
+			executePresetAction<Action::ColorLayout::Change>(
+				p_preset, _resolveColorIndex( p_index ), Util::Color::Rgba( p_color ) );
+		}
+
+		void _setColors( const ColorLayoutHandle & p_preset, const Renderer::Color::LayoutArray & p_colors )
+		{
+			executePresetAction<Action::ColorLayout::ChangeAll>( p_preset, Renderer::Color::LayoutArray( p_colors ) );
+		}
+
+		void _randomize( const ColorLayoutHandle & p_preset )
+		{
+			executePresetAction<Action::ColorLayout::Randomize>( p_preset );
+		}
+	} // namespace
+
+	void bindColorLayout( Module & p_vtxModule, pybind11::class_<ColorLayoutHandle> & p_binding )
+	{
+		VTX::PythonBinding::Helper::declareEnum<Renderer::Color::E_LAYOUT_COLOR_INDEX>(
+			p_vtxModule.pyModule(), "COLOR_LAYOUT_INDEX", "Named color indices of a color layout."
+		);
+
+		p_binding
+			.def_property(
+				"colors",
+				[]( const ColorLayoutHandle & p_preset ) { return getData( p_preset ).colors; },
+				&_setColors,
+				"All colors of the layout."
+			)
+			.def_property_readonly(
+				"colorCount",
+				[]( const ColorLayoutHandle & p_preset ) { return getData( p_preset ).colors.size(); },
+				"Number of colors."
+			)
+			.def(
+				"getColor",
+				&_getColor,
+				"Return a color by index. Raises IndexError if out of range.",
+				py::arg( "index" )
+			)
+			.def( "randomize", &_randomize, "Randomize the colors." )
+			.def( "__len__", []( const ColorLayoutHandle & p_preset ) { return getData( p_preset ).colors.size(); } )
+			.def( "__getitem__", &_getColor, py::arg( "index" ) )
+			.def( "__setitem__", &_setColor, py::arg( "index" ), py::arg( "color" ) );
+	}
+} // namespace VTX::App::PythonBinding::Preset

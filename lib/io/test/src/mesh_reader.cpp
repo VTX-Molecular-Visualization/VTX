@@ -3,7 +3,7 @@
 #include <core/struct/mesh.hpp>
 #include <io/mesh_reader.hpp>
 #include <util/filesystem.hpp>
-#include <util/thread.hpp>
+#include <util/thread/base_thread.hpp>
 
 TEST_CASE( "VTX_IO - Read OBJ mesh", "[reader][mesh]" )
 {
@@ -12,7 +12,7 @@ TEST_CASE( "VTX_IO - Read OBJ mesh", "[reader][mesh]" )
 	const FilePath meshPath = Util::Filesystem::getExecutableDir() / "data" / "two_triangles.obj";
 
 	std::vector<Core::Struct::Mesh> meshes;
-	Util::StopToken					stopToken;
+	const Util::Thread::StopToken	stopToken;
 	IO::MeshReader					reader( meshPath, stopToken );
 	reader.get( meshes );
 
@@ -37,9 +37,9 @@ TEST_CASE( "VTX_IO - Read OBJ mesh", "[reader][mesh]" )
 
 TEST_CASE( "VTX_IO - Detect Assimp mesh formats", "[reader][mesh]" )
 {
-	CHECK( VTX::IO::isMeshFileFormat( "mesh.obj" ) );
-	CHECK( VTX::IO::isMeshFileFormat( "mesh.fbx" ) );
-	CHECK( VTX::IO::isMeshFileFormat( "mesh.gltf" ) );
-	CHECK( VTX::IO::isMeshFileFormat( "mesh.glb" ) );
-	CHECK( not VTX::IO::isMeshFileFormat( "mesh.unknown" ) );
+	CHECK( VTX::IO::MeshReader::isMeshFileFormat( "mesh.obj" ) );
+	CHECK( VTX::IO::MeshReader::isMeshFileFormat( "mesh.fbx" ) );
+	CHECK( VTX::IO::MeshReader::isMeshFileFormat( "mesh.gltf" ) );
+	CHECK( VTX::IO::MeshReader::isMeshFileFormat( "mesh.glb" ) );
+	CHECK( not VTX::IO::MeshReader::isMeshFileFormat( "mesh.unknown" ) );
 }

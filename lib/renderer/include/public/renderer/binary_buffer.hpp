@@ -1,9 +1,10 @@
-#ifndef __VTX_RENDERER_BINARY_BUFFER__
-#define __VTX_RENDERER_BINARY_BUFFER__
+#ifndef VTX_RENDERER_BINARY_BUFFER_HPP
+#define VTX_RENDERER_BINARY_BUFFER_HPP
 
 #include "descriptors.hpp"
 #include <cstring>
 #include <span>
+#include <util/exceptions.hpp>
 #include <util/math.hpp>
 #include <util/types.hpp>
 #include <vector>
@@ -31,36 +32,43 @@ namespace VTX::Renderer
 	{
 		static constexpr size_t align = 4, size = 4;
 	};
+
 	template<>
 	struct LayoutTraitsBase<int>
 	{
 		static constexpr size_t align = 4, size = 4;
 	};
+
 	template<>
 	struct LayoutTraitsBase<uint>
 	{
 		static constexpr size_t align = 4, size = 4;
 	};
+
 	template<>
 	struct LayoutTraitsBase<Vec2f>
 	{
 		static constexpr size_t align = 8, size = 8;
 	};
+
 	template<>
 	struct LayoutTraitsBase<Vec2i>
 	{
 		static constexpr size_t align = 8, size = 8;
 	};
+
 	template<>
 	struct LayoutTraitsBase<Vec4f>
 	{
 		static constexpr size_t align = 16, size = 16;
 	};
+
 	template<>
 	struct LayoutTraitsBase<Mat3f>
 	{
 		static constexpr size_t align = 16, size = 48;
 	};
+
 	template<>
 	struct LayoutTraitsBase<Mat4f>
 	{
@@ -72,6 +80,7 @@ namespace VTX::Renderer
 	static_assert( std::is_standard_layout_v<VTX::Util::Color::Rgba> );
 	static_assert( sizeof( VTX::Util::Color::Rgba ) == sizeof( Vec4f ) );
 	static_assert( alignof( VTX::Util::Color::Rgba ) == alignof( Vec4f ) );
+
 	template<>
 	struct LayoutTraitsBase<VTX::Util::Color::Rgba> : LayoutTraitsBase<Vec4f>
 	{
@@ -196,7 +205,10 @@ namespace VTX::Renderer
 
 			const size_t elemRaw = rawElementSizeBytes( p_type );
 
-			assert( elemRaw > 0 && "Unsupported E_TYPE for BinaryBuffer::write(E_TYPE, SpanBytes)" );
+			if ( elemRaw == 0 )
+			{
+				throw GraphicException( "Unsupported E_TYPE for BinaryBuffer::write(E_TYPE, SpanBytes)" );
+			}
 			assert( ( p_src.size() % elemRaw ) == 0 && "p_src size must be multiple of element raw size" );
 
 			const uint32_t count = static_cast<uint32_t>( p_src.size() / elemRaw );
@@ -206,7 +218,7 @@ namespace VTX::Renderer
 
 			for ( uint32_t i = 0; i < count; ++i )
 			{
-				const size_t byteOffset = size_t( i ) * elemRaw;
+				const size_t byteOffset = static_cast<size_t>( i ) * elemRaw;
 				size_t		 off		= 0;
 
 				switch ( p_type )
@@ -327,7 +339,7 @@ namespace VTX::Renderer
 
 			if constexpr ( L == E_LAYOUT_TYPE::Std140 )
 			{
-				return ( S + 15 ) & ~size_t( 15 ); // Round to 16.
+				return ( S + 15 ) & ~static_cast<size_t>( 15 ); // Round to 16.
 			}
 			else if constexpr ( L == E_LAYOUT_TYPE::Std430 )
 			{
@@ -354,11 +366,15 @@ namespace VTX::Renderer
 		/**
 		 * @brief Accessors.
 		 */
-		inline const value_type * data() const { return _data.data(); }
-		inline value_type *		  data() { return _data.data(); }
-		inline size_t			  size() const { return _data.size(); }
-		inline size_t			  offset() const { return _offset; }
-		inline bool				  empty() const { return _data.empty(); }
+		const value_type * data() const { return _data.data(); }
+
+		value_type * data() { return _data.data(); }
+
+		size_t size() const { return _data.size(); }
+
+		size_t offset() const { return _offset; }
+
+		bool empty() const { return _data.empty(); }
 
 		/**
 		 * @brief Iterators.
@@ -373,7 +389,7 @@ namespace VTX::Renderer
 		/**
 		 * @brief Conversion to span of bytes.
 		 */
-		operator std::span<const std::byte>() const noexcept { return { _data.data(), _data.size() }; }
+		SpanBytes bytes() const noexcept { return { _data.data(), _data.size() }; }
 
 	  private:
 		/**

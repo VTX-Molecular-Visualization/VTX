@@ -1,7 +1,8 @@
-#ifndef __VTX_UTIL_MATH_RANGE__
-#define __VTX_UTIL_MATH_RANGE__
+#ifndef VTX_UTIL_MATH_RANGE_HPP
+#define VTX_UTIL_MATH_RANGE_HPP
 
 #include "util/constants.hpp"
+#include "util/math.hpp"
 #include <cassert>
 #include <concepts>
 #include <numeric>
@@ -20,7 +21,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Enum to specify range edge.
 		 */
-		enum class E_EDGE
+		enum class E_EDGE : uint8_t
 		{
 			FIRST,
 			LAST
@@ -45,15 +46,13 @@ namespace VTX::Util::Math
 		 * @brief Constructs a range containing a single value.
 		 */
 		constexpr Range( const T p_first ) noexcept : first( p_first ), last( static_cast<T>( p_first + 1 ) )
-		{
-			assert( p_first < TypeMax<T> );
-		}
+		{ assert( p_first < TypeMax<T> ); }
 
 		/**
 		 * @brief Constructs a range from first (inclusive) to last (exclusive).
 		 */
 		constexpr Range( const T p_first, const T p_last ) noexcept :
-			first( std::min( p_first, p_last ) ), last( std::max( p_first, p_last ) )
+			first( min( p_first, p_last ) ), last( max( p_first, p_last ) )
 		{
 		}
 
@@ -80,12 +79,24 @@ namespace VTX::Util::Math
 		 * @brief Get first or last value.
 		 */
 		constexpr T getFirst() const noexcept { return first; }
+
 		constexpr T getLast() const noexcept { return last; }
 
 		/**
 		 * @brief Get count of values in the range.
 		 */
 		constexpr Count getCount() const noexcept { return last - first; }
+
+		/**
+		 * @brief Get a sub-range by offset and count.
+		 */
+		[[nodiscard]] constexpr Range subRange( const Count p_firstOffset, const Count p_count ) const noexcept
+		{
+			assert( p_firstOffset <= getCount() );
+			assert( p_count <= getCount() - p_firstOffset );
+
+			return fromFirstCount( static_cast<T>( first + static_cast<T>( p_firstOffset ) ), p_count );
+		}
 
 		/**
 		 * @brief Checks the range validity (first <= last).
@@ -106,9 +117,7 @@ namespace VTX::Util::Math
 		 * @brief Checks if the range contains another range.
 		 */
 		constexpr bool contains( const Range & p_other ) const noexcept
-		{
-			return p_other.first >= first && p_other.last <= last;
-		}
+		{ return p_other.first >= first && p_other.last <= last; }
 
 		/**
 		 * @brief Checks if the range contains all values in a vector.
@@ -161,25 +170,21 @@ namespace VTX::Util::Math
 		 * @brief Checks if the range intersects another range.
 		 */
 		constexpr bool intersects( const Range & p_other ) const noexcept
-		{
-			return not( last <= p_other.first || p_other.last <= first );
-		}
+		{ return not( last <= p_other.first || p_other.last <= first ); }
 
 		/**
 		 * @brief Checks if the range touches another range (i.e. edges are contiguous).
 		 */
 		constexpr bool touches( const Range & p_other ) const noexcept
-		{
-			return last == p_other.first || p_other.last == first;
-		}
+		{ return last == p_other.first || p_other.last == first; }
 
 		/**
 		 * @brief Computes the intersection of this range with another range.
 		 */
 		[[nodiscard]] constexpr std::optional<Range> intersection( const Range & p_other ) const noexcept
 		{
-			const T f = std::max( first, p_other.first );
-			const T l = std::min( last, p_other.last );
+			const T f = max( first, p_other.first );
+			const T l = min( last, p_other.last );
 			if ( f >= l )
 			{
 				return std::nullopt;
@@ -194,7 +199,7 @@ namespace VTX::Util::Math
 		{
 			if ( intersects( p_other ) || touches( p_other ) )
 			{
-				return Range( std::min( first, p_other.first ), std::max( last, p_other.last ) );
+				return Range( min( first, p_other.first ), max( last, p_other.last ) );
 			}
 			return std::nullopt;
 		}
@@ -206,8 +211,8 @@ namespace VTX::Util::Math
 		{
 			if ( intersects( p_other ) || touches( p_other ) )
 			{
-				first = std::min( first, p_other.first );
-				last  = std::max( last, p_other.last );
+				first = min( first, p_other.first );
+				last  = max( last, p_other.last );
 				return true;
 			}
 			return false;
@@ -246,8 +251,8 @@ namespace VTX::Util::Math
 				*this = p_other;
 				return;
 			}
-			first = std::min( first, p_other.first );
-			last  = std::max( last, p_other.last );
+			first = min( first, p_other.first );
+			last  = max( last, p_other.last );
 		}
 
 		/**
@@ -373,8 +378,11 @@ namespace VTX::Util::Math
 		 * @brief Convenience expand/shrink functions.
 		 */
 		constexpr void expandFirst( const Count p_n ) noexcept { expand( p_n, E_EDGE::FIRST ); }
+
 		constexpr void expandLast( const Count p_n ) noexcept { expand( p_n, E_EDGE::LAST ); }
+
 		constexpr void shrinkFirst( const Count p_n ) noexcept { shrink( p_n, E_EDGE::FIRST ); }
+
 		constexpr void shrinkLast( const Count p_n ) noexcept { shrink( p_n, E_EDGE::LAST ); }
 
 		/**
@@ -408,7 +416,7 @@ namespace VTX::Util::Math
 		/**
 		 * @brief To std vector.
 		 */
-		std::vector<T> toStdVector() const
+		constexpr std::vector<T> toStdVector() const
 		{
 			const size_t   count = static_cast<size_t>( getCount() );
 			std::vector<T> vec( count );
@@ -427,16 +435,19 @@ namespace VTX::Util::Math
 		{
 			T cur {};
 
-			constexpr T			 operator*() const noexcept { return cur; }
+			constexpr T operator*() const noexcept { return cur; }
+
 			constexpr iterator & operator++() noexcept
 			{
 				++cur;
 				return *this;
 			}
+
 			constexpr bool operator!=( const iterator & other ) const noexcept { return cur != other.cur; }
 		};
 
 		constexpr iterator begin() const noexcept { return iterator { first }; }
+
 		constexpr iterator end() const noexcept { return iterator { last }; }
 	};
 

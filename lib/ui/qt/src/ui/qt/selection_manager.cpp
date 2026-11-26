@@ -4,15 +4,15 @@
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
 #include <QGuiApplication>
-#include <app/action/action_manager.hpp>
 #include <app/action/selection.hpp>
 #include <app/services.hpp>
+#include <util/action_manager.hpp>
 
 namespace
 {
 	void _clear( QItemSelectionModel * const p_view )
 	{
-		QSignalBlocker blocker( p_view );
+		const QSignalBlocker blocker( p_view );
 		p_view->clearSelection();
 		if ( auto * view = qobject_cast<QAbstractItemView *>( p_view->parent() ) )
 		{
@@ -31,18 +31,16 @@ namespace VTX::UI::QT
 		}
 		_views[ p_group ].push_back( p_view );
 
-		connect(
-			p_view,
-			&QItemSelectionModel::selectionChanged,
-			this,
-			[ this, p_group, p_view ]( const QItemSelection &, const QItemSelection & )
-			{
-				clearBut( p_group );
-				App::ACTION().execute<App::Action::Selection::Clear>();
+		connect( p_view,
+				 &QItemSelectionModel::selectionChanged,
+				 this,
+				 [ this, p_group, p_view ]( const QItemSelection &, const QItemSelection & )
+				 {
+					 clearBut( p_group );
+					 App::ACTION().execute<App::Action::Selection::Clear>();
 
-				emit selectionChanged( p_group, p_view->selection() );
-			}
-		);
+					 emit selectionChanged( p_group, p_view->selection() );
+				 } );
 	}
 
 	void SelectionManager::clear()
@@ -80,6 +78,31 @@ namespace VTX::UI::QT
 		}
 	}
 
+	void SelectionManager::selectPreset( const E_SELECTION_GROUP p_group, const Entity p_preset )
+	{
+		const auto it = _views.find( p_group );
+		if ( it == _views.end() )
+		{
+			return;
+		}
+
+		for ( QItemSelectionModel * const view : it->second )
+		{
+			const QAbstractItemModel * const model	 = view->model();
+			const QModelIndexList			 matches = model->match(
+				   model->index( 0, 0 ),
+				   Qt::UserRole,
+				   QVariant::fromValue<Entity>( p_preset ),
+				   1,
+				   Qt::MatchExactly | Qt::MatchRecursive
+			   );
+			if ( not matches.isEmpty() )
+			{
+				view->setCurrentIndex( matches.first(), QItemSelectionModel::ClearAndSelect );
+			}
+		}
+	}
+
 	void SelectionManager::clearBut( const E_SELECTION_GROUP p_group )
 	{
 		for ( auto & [ group, _ ] : _views )
@@ -100,10 +123,8 @@ namespace VTX::UI::QT
 			App::ACTION().execute<App::Action::Selection::Pick>(
 				p_pos,
 				static_cast<App::Action::Selection::E_GRANULARITY>(
-					SETTINGS().value( SETTING_KEY_GRANULARITY, 0 ).toInt()
-				),
-				p_append
-			);
+					SETTINGS().value( SETTING_KEY_GRANULARITY, 0 ).toInt() ),
+				p_append );
 		}
 	}
 } // namespace VTX::UI::QT

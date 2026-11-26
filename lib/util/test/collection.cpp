@@ -12,6 +12,7 @@ namespace
 	{
 	  public:
 		virtual ~Base() = default;
+
 		// CollectionKey getName() { return "Base"; };
 		virtual int getValue() { return 0; };
 	};
@@ -27,6 +28,7 @@ namespace
 		// CollectionKey getName() { return "DerivedClass1"; };
 		int getValue() override { return 1; };
 	};
+
 	class Derived2 final : public Base //, public CollectionTest::GlobalStorage<Derived2>
 	{
 	  private:
@@ -36,6 +38,7 @@ namespace
 		// CollectionKey getName() { return "DerivedClass2"; };
 		int getValue() override { return 2; };
 	};
+
 	class Derived3 final : public Base
 	{
 	  private:

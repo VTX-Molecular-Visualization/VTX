@@ -3,44 +3,47 @@
 namespace VTX::Util::Math
 {
 
-	Vec3f orthogonalVector( const Vec3f & normal )
+	Vec3f orthogonalVector( const Vec3f & normal ) noexcept
 	{
 		// Solve a*x + b*y + c*z = 0
 		const float a = normal.x;
 		const float b = normal.y;
 		const float c = normal.z;
-		float		x = 0.f, y = 0.f, z = 0.f;
-		if ( std::abs( a ) > VTX::EPSILON && std::abs( b ) > VTX::EPSILON )
+		float		x = 0.f;
+		float		y = 0.f;
+		float		z = 0.f;
+
+		if ( abs( a ) > VTX::EPSILON && abs( b ) > VTX::EPSILON )
 		{
 			x = -glm::sign( a ) * b;
 			y = glm::sign( a ) * a;
 			z = 0.f;
 		}
-		else if ( std::abs( b ) > VTX::EPSILON && std::abs( c ) > VTX::EPSILON )
+		else if ( abs( b ) > VTX::EPSILON && abs( c ) > VTX::EPSILON )
 		{
 			x = 0.f;
 			y = -glm::sign( b ) * c;
 			z = glm::sign( b ) * b;
 		}
-		else if ( std::abs( c ) > VTX::EPSILON && std::abs( a ) > VTX::EPSILON )
+		else if ( abs( c ) > VTX::EPSILON && abs( a ) > VTX::EPSILON )
 		{
 			x = glm::sign( c ) * c;
 			y = 0.f;
 			z = -glm::sign( c ) * a;
 		}
-		else if ( std::abs( a ) > VTX::EPSILON )
+		else if ( abs( a ) > VTX::EPSILON )
 		{
 			x = 0.f;
 			y = 1.f;
 			z = 0.f;
 		}
-		else if ( std::abs( b ) > VTX::EPSILON )
+		else if ( abs( b ) > VTX::EPSILON )
 		{
 			x = 0.f;
 			y = 0.f;
 			z = 1.f;
 		}
-		else if ( std::abs( c ) > VTX::EPSILON )
+		else if ( abs( c ) > VTX::EPSILON )
 		{
 			x = 1.f;
 			y = 0.f;
@@ -52,4 +55,4 @@ namespace VTX::Util::Math
 		return glm::normalize( Vec3f( x, y, z ) );
 	}
 
-}
+} // namespace VTX::Util::Math

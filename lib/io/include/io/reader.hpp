@@ -1,21 +1,19 @@
-#ifndef __VTX_IO_READER__
-#define __VTX_IO_READER__
+#ifndef VTX_IO_READER_HPP
+#define VTX_IO_READER_HPP
 
 #include "io/constants.hpp"
 #include "io/metadata.hpp"
+#include <core/struct/trajectory.hpp>
 #include <memory>
 #include <string>
+#include <util/math/aabb.hpp>
+#include <util/math/grid.hpp>
+#include <util/thread/base_thread.hpp>
 #include <util/types.hpp>
 #include <vector>
 
-namespace VTX::Util
-{
-	class StopToken;
-} // namespace VTX::Util
-
 namespace VTX::Core::Struct
 {
-	using Frame = std::vector<Vec3f>;
 	struct Topology;
 } // namespace VTX::Core::Struct
 
@@ -28,13 +26,14 @@ namespace VTX::IO
 {
 	using MemoryBuffer = std::string;
 	using FrameIndex   = size_t;
+	using StopToken	   = VTX::Util::Thread::StopToken;
 
 	class SystemReader
 	{
 	  public:
 		SystemReader() = delete;
-		SystemReader( const FilePath &, const READER_OPTION, VTX::Util::StopToken & );
-		SystemReader( MemoryBuffer &&, const VTX::FilePath &, const READER_OPTION, VTX::Util::StopToken & );
+		SystemReader( const FilePath &, READER_OPTION, const StopToken & );
+		SystemReader( MemoryBuffer &&, const VTX::FilePath &, READER_OPTION, const StopToken & );
 
 		size_t frameCount() const;
 
@@ -42,27 +41,38 @@ namespace VTX::IO
 		 * @brief Read topology and metadata.
 		 */
 		void get( const VTX::Core::ChemDB::Category::Dictionary &, VTX::Core::Struct::Topology &, Metadata & );
+		void get( const VTX::Core::ChemDB::Category::Dictionary &,
+				  VTX::Core::Struct::Topology &,
+				  Metadata &,
+				  VTX::Util::Math::AABB &,
+				  VTX::Util::Math::Grid<Index> & );
 
 		/**
 		 * @brief Read position-related data.
 		 */
-		void get( VTX::Core::Struct::Frame &, const FrameIndex = 0 );
+		void get( VTX::Core::Struct::Frame &, FrameIndex = 0 );
 
-		void set( VTX::Util::StopToken & ) noexcept;
+		/**
+		 * @brief Free memory.
+		 */
+		void releaseTopologyData();
+
+		/**
+		 * @brief Stop token.
+		 */
+		void set( const StopToken & ) noexcept;
 
 	  private:
-		struct _Impl;
+		struct Impl;
 
 		struct Del
 		{
-			void operator()( _Impl * ) noexcept;
+			void operator()( Impl * ) noexcept;
 		};
 
-		std::unique_ptr<_Impl, Del> _impl = nullptr;
+		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
-
-	bool isTrajectoryFileFormat( const FilePath & p_path ) noexcept;
 
 } // namespace VTX::IO
 
-#endif // !__VTX_IO_READER__
+#endif // !VTX_IO_READER_HPP

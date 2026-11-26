@@ -1,7 +1,12 @@
-#ifndef __VTX_UTIL_EVENT_HUB__
-#define __VTX_UTIL_EVENT_HUB__
+#ifndef VTX_UTIL_EVENT_HUB_HPP
+#define VTX_UTIL_EVENT_HUB_HPP
 
-#include <entt/entt.hpp>
+#include <entt/signal/delegate.hpp>
+#include <entt/signal/dispatcher.hpp>
+#include <entt/signal/sigh.hpp>
+#include <mutex>
+#include <util/atomic_callback.hpp>
+#include <utility>
 
 namespace VTX::Util
 {
@@ -11,6 +16,9 @@ namespace VTX::Util
 	class EventHub
 	{
 	  public:
+		/**
+		 * @brief Aliases.
+		 */
 		using Connection	   = entt::connection;
 		using ScopedConnection = entt::scoped_connection;
 		using Dispatcher	   = entt::dispatcher;
@@ -18,13 +26,21 @@ namespace VTX::Util
 		using Delegate = entt::delegate<Args...>;
 
 		/**
+		 * @brief Constructors.
+		 */
+		EventHub()								 = default;
+		EventHub( const EventHub & )			 = delete;
+		EventHub & operator=( const EventHub & ) = delete;
+		EventHub( EventHub && )					 = delete;
+		EventHub & operator=( EventHub && )		 = delete;
+		~EventHub()								 = default;
+
+		/**
 		 * @brief Connect a function to an event.
 		 */
 		template<typename Ev, auto Fn, typename... Args>
 		Connection connect( Args &&... p_args )
-		{
-			return _bus.sink<Ev>().template connect<Fn>( std::forward<Args>( p_args )... );
-		}
+		{ return _bus.sink<Ev>().template connect<Fn>( std::forward<Args>( p_args )... ); }
 
 		/**
 		 * @brief Connect a callable to an event.
@@ -46,59 +62,67 @@ namespace VTX::Util
 		 */
 		template<typename Obj>
 		void disconnectAllOf( Obj & p_obj )
-		{
-			_bus.disconnect( p_obj );
-		}
+		{ _bus.disconnect( p_obj ); }
 
 		/**
 		 * @brief Disconnect all listeners of a given event type.
 		 */
 		template<typename Ev>
 		void disconnectAllListenersOf()
-		{
-			_bus.sink<Ev>().disconnect();
-		}
+		{ _bus.sink<Ev>().disconnect(); }
 
 		/**
 		 * @brief Trigger an event immediately.
 		 */
 		template<typename Ev>
 		void trigger( Ev p_ev )
-		{
-			_bus.trigger<Ev>( std::move( p_ev ) );
-		}
+		{ _bus.trigger<Ev>( std::move( p_ev ) ); }
 
 		/**
 		 * @brief Trigger an event immediately, constructing it in place.
 		 */
 		template<typename Ev, typename... Args>
 		void trigger( Args &&... p_args )
-		{
-			_bus.trigger<Ev>( Ev( std::forward<Args>( p_args )... ) );
-		}
+		{ _bus.trigger<Ev>( Ev( std::forward<Args>( p_args )... ) ); }
 
 		/**
-		 * @brief Enqueue an event to be triggered at the next update.
+		 * @brief Enqueue an event to be triggered at the next update (thread-safe).
 		 */
 		template<typename Ev>
 		void enqueue( Ev p_ev )
 		{
-			_bus.enqueue<Ev>( std::move( p_ev ) );
+			{
+				const std::scoped_lock lock( _pendingMutex );
+				auto				   sink = _pending.sink<Ev>();
+				if ( sink.empty() )
+				{
+					sink.template connect<&EventHub::_forward<Ev>>( this );
+				}
+				_pending.enqueue<Ev>( std::move( p_ev ) );
+			}
+			_onPending();
 		}
 
 		/**
-		 * @brief Enqueue an event to be triggered at the next update, constructing it in place.
+		 * @brief Enqueue an event to be triggered at the next update, constructing it in place (thread-safe).
 		 */
 		template<typename Ev, typename... Args>
 		void enqueue( Args &&... p_args )
-		{
-			_bus.enqueue<Ev>( Ev( std::forward<Args>( p_args )... ) );
-		}
+		{ enqueue<Ev>( Ev( std::forward<Args>( p_args )... ) ); }
 
 		/**
-		 * @brief Process all queued events.
+		 * @brief Process all queued events (thread-safe).
 		 */
-		void update() { _bus.update(); }
+		void update()
+		{
+			Dispatcher pending;
+			{
+				const std::scoped_lock lock( _pendingMutex );
+				pending.swap( _pending );
+			}
+			pending.update();
+			_bus.update();
+		}
 
 		/**
 		 * @brief Clear all queued events of a given type.
@@ -106,14 +130,46 @@ namespace VTX::Util
 		template<typename Ev>
 		void clear()
 		{
+			{
+				const std::scoped_lock lock( _pendingMutex );
+				_pending.clear<Ev>();
+			}
 			_bus.clear<Ev>();
 		}
 
+		/**
+		 * @brief Set callback.
+		 */
+		void setOnPending( const AtomicCallback::Function p_function, void * const p_context ) noexcept
+		{ _onPending.set( p_function, p_context ); }
+
 	  private:
+		/**
+		 * @brief Forward an event from the pending queue to the main dispatcher.
+		 */
+		template<typename Ev>
+		void _forward( Ev & p_event )
+		{ _bus.enqueue<Ev>( std::move( p_event ) ); }
+
+		/**
+		 * @brief A mutex to protect access to the pending event queue.
+		 */
+		std::mutex _pendingMutex;
+
+		/**
+		 * @brief An instance of the entt::dispatcher class used for pending events.
+		 */
+		Dispatcher _pending;
+
 		/**
 		 * @brief An instance of the entt::dispatcher class used for event dispatching.
 		 */
 		Dispatcher _bus;
+
+		/**
+		 * @brief Pending callback.
+		 */
+		AtomicCallback _onPending;
 	};
 } // namespace VTX::Util
 

@@ -1,0 +1,118 @@
+#include "util/thread/base_thread.hpp"
+#include "util/thread/thread_manager.hpp"
+#include <exception>
+#include <util/logger.hpp>
+#include <util/math.hpp>
+#include <utility>
+
+namespace VTX::Util::Thread
+{
+	BaseThread::BaseThread( ThreadManager & p_manager ) :
+		_manager( p_manager ), _progressCallback( p_manager._progressCallback ),
+		_terminatedCallback( p_manager._terminatedCallback )
+	{
+	}
+
+	BaseThread::~BaseThread()
+	{
+		if ( _thread.joinable() )
+		{
+			_thread.request_stop();
+			try
+			{
+				_thread.join();
+			}
+			catch ( ... )
+			{
+				LOGGER::logException( "Failed to join thread" );
+			}
+		}
+	}
+
+	void BaseThread::_start( const AsyncOp & p_function, const EndCallback & p_callback )
+	{
+		_thread = std::jthread(
+			[ this, p_function, p_callback, terminateHandler = std::get_terminate() ](
+				const std::stop_token & p_stopToken
+			)
+			{
+				std::set_terminate( terminateHandler );
+				uint res = 0;
+				try
+				{
+					res = p_function( p_stopToken, *this );
+					if ( p_callback )
+					{
+						p_callback( *this, res, _stopped.load() );
+					}
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( "Unhandled exception in thread: {}", p_e.what() );
+					setFailed();
+				}
+				catch ( ... )
+				{
+					VTX_ERROR( "Unhandled unknown exception in thread" );
+					setFailed();
+				}
+				_finished.store( true, std::memory_order_release );
+				_manager._onPending();
+			}
+		);
+		_id = _thread.get_id();
+	}
+
+	void BaseThread::wait()
+	{
+		if ( _thread.joinable() )
+		{
+			_thread.join();
+		}
+	}
+
+	void BaseThread::stop()
+	{
+		_stopped.store( true );
+		try
+		{
+			_manager._cancelSynchronizedCalls( _id );
+		}
+		catch ( ... )
+		{
+			LOGGER::logException( "Failed to cancel thread synchronized calls" );
+		}
+		if ( _thread.joinable() )
+		{
+			_thread.request_stop();
+		}
+	}
+
+	void BaseThread::setProgress( const float p_value ) noexcept
+	{
+		const float clampedValue = Util::Math::clamp( p_value, 0.f, 1.f );
+		_progress.store( clampedValue, std::memory_order_relaxed );
+		_manager._onPending();
+	}
+
+	std::string BaseThread::getProgressText() const
+	{
+		const std::scoped_lock lock( _progressTextMutex );
+		return _progressText;
+	}
+
+	void BaseThread::setProgressText( const std::string & p_text )
+	{
+		{
+			const std::scoped_lock lock( _progressTextMutex );
+			_progressText = p_text;
+		}
+		_manager._onPending();
+	}
+
+	void BaseThread::setProgressCallback( ProgressCallback p_callback ) { _progressCallback = std::move( p_callback ); }
+
+	void BaseThread::setTerminatedCallback( TerminatedCallback p_callback )
+	{ _terminatedCallback = std::move( p_callback ); }
+
+} // namespace VTX::Util::Thread

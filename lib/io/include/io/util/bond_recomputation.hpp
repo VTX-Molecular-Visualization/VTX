@@ -1,7 +1,8 @@
-#ifndef __VTX_IO_UTIL_BOND_RECOMPUTATION__
-#define __VTX_IO_UTIL_BOND_RECOMPUTATION__
+#ifndef VTX_IO_UTIL_BOND_RECOMPUTATION_HPP
+#define VTX_IO_UTIL_BOND_RECOMPUTATION_HPP
 
 #include <core/struct/topology.hpp>
+#include <util/math/grid.hpp>
 #include <vector>
 
 namespace VTX::IO::Util::BondRecomputation
@@ -20,11 +21,10 @@ namespace VTX::IO::Util::BondRecomputation
 	/**
 	 * @brief Recompute bonds for a given topology and frame.
 	 */
-	void recomputeBonds(
-		Core::Struct::Topology &	p_topology,
-		std::span<const Vec3f>		p_frame,
-		const BondRecomputeFilter & p_filter = BondRecomputeFilter {}
-	);
+	void recomputeBonds( Core::Struct::Topology &			  p_topology,
+						 std::span<const Vec3f>				  p_frame,
+						 const VTX::Util::Math::Grid<Index> & p_atomGrid,
+						 const BondRecomputeFilter &		  p_filter = BondRecomputeFilter {} );
 
 } // namespace VTX::IO::Util::BondRecomputation
 

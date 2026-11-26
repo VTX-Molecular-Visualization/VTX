@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 3.28)
+
 set(DIR_LIBS ${CMAKE_CURRENT_SOURCE_DIR}/../lib)
 set(DIR_APPS ${CMAKE_CURRENT_SOURCE_DIR}/../app)
 set(DIR_TOOLS ${CMAKE_CURRENT_SOURCE_DIR}/../tool)
@@ -7,24 +9,22 @@ include("${DIR_LIBS}/renderer/cmake/vtx_link_cuda.cmake")
 
 set(PYBIND11_FINDPYTHON ON)
 
-message("vtx")
-cmake_minimum_required(VERSION 3.23)
+message(STATUS "VTX - vtx")
 
 project(vtx)
 
 find_package(glm CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
-find_package(nlohmann_json CONFIG REQUIRED)
 find_package(cpr CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 find_package(chemfiles CONFIG REQUIRED)
 if (VTX_RENDERER)
-	find_package(SDL3 CONFIG REQUIRED)
-	find_package(imgui CONFIG REQUIRED)
+	find_package(Ktx CONFIG REQUIRED)
 endif()
 find_package(stb CONFIG CONFIG REQUIRED)
 find_package(tinyexr CONFIG REQUIRED)
+find_package(exiv2 CONFIG REQUIRED)
 find_package(EnTT CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
 if (VTX_PYTHON_BINDING)
@@ -36,17 +36,17 @@ if (VTX_UI_QT)
 	find_package(Qt6 COMPONENTS Core REQUIRED)
 	find_package(Qt6 COMPONENTS Gui REQUIRED)
 	find_package(Qt6 COMPONENTS Widgets REQUIRED)
+	find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 	find_package(Qt6 COMPONENTS Test REQUIRED)
 endif()
 find_package(fmt CONFIG REQUIRED)
 find_package(re2 CONFIG REQUIRED)
 find_package(platform_folders REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 find_package(argparse REQUIRED)
 
 if(LINUX)
 	find_package(OpenGL REQUIRED COMPONENTS OpenGL EGL)
-	find_package(X11 REQUIRED)
-	find_package(wayland REQUIRED)
 endif()
 
 if (LOCAL_PDB100)
@@ -68,11 +68,6 @@ include("${DIR_LIBS}/io/cmake/library.cmake")
 # Renderer.
 if (VTX_RENDERER)
 	include("${DIR_LIBS}/renderer/cmake/library.cmake")
-endif()
-
-# Bench.
-if (VTX_RENDERER)
-	include("${DIR_APPS}/bench/cmake/library.cmake")
 endif()
 
 # Python binding.

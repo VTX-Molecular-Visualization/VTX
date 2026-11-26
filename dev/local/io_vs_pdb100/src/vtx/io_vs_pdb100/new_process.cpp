@@ -15,7 +15,8 @@ namespace fs = std::filesystem;
 
 namespace
 {
-	std::string	  g_log_name;
+	std::string g_log_name;
+
 	std::ofstream log() { return std::ofstream( g_log_name, std::ios::app ); }
 
 	/**
@@ -39,9 +40,13 @@ namespace
 
 		r = archive_read_open_file( a, src.string().c_str(), 10240 );
 		if ( r != ARCHIVE_OK )
+		{
 			throw VTX::VTXException( "Issue with archive <{}>. Opening error.", src.string() );
+		}
 		if ( archive_read_next_header( a, &entry ) != ARCHIVE_OK )
+		{
 			throw VTX::VTXException( "Issue with archive <{}>. Header readin error.", src.string() );
+		}
 
 		size_t		  redBytes = 0;
 		std::ofstream outStrm( dest );
@@ -53,8 +58,11 @@ namespace
 
 		r = archive_read_free( a );
 		if ( r != ARCHIVE_OK )
+		{
 			throw VTX::VTXException( "Issue with archive <{}>. Freeing error.", src.string() );
+		}
 	}
+
 	/**
 	 * @brief Try read, write, and re-read the input file and give back the results. May crash the entire process beyond
 	 * repair.
@@ -90,16 +98,14 @@ namespace
 
 		fs::remove( structureFile );
 
-		writeFile(
-			WriteArgs {
-				.destination = structureFile,
-				.format		 = E_FILE_FORMATS::none,
-				.system		 = &system,
-			}
-		);
+		writeFile( WriteArgs {
+			.destination = structureFile,
+			.format		 = E_FILE_FORMATS::none,
+			.system		 = &system,
+		} );
 
-		VTX::Core::Struct::Topology system_reread		  = VTX::Core::Struct::Topology();
-		IO::Reader::Topology		  systemReader_reread = IO::Reader::Topology();
+		VTX::Core::Struct::Topology system_reread		= VTX::Core::Struct::Topology();
+		IO::Reader::Topology		systemReader_reread = IO::Reader::Topology();
 
 		systemReader_reread.readFile( structureFile, system_reread );
 
@@ -132,19 +138,25 @@ namespace
 		named_mutex									  mutex( open_or_create, SHM_REREADRSLT_MUTEX );
 		scoped_lock<boost::interprocess::named_mutex> lock( mutex );
 
-		boost::interprocess::managed_shared_memory sharedSegment(
-			boost::interprocess::open_only, VTX::IO::test::SHM_REREADRSLT_MAP_SEGNAME
-		);
+		boost::interprocess::managed_shared_memory sharedSegment( boost::interprocess::open_only,
+																  VTX::IO::test::SHM_REREADRSLT_MAP_SEGNAME );
 		auto rsltMapPair = sharedSegment.find<RereadResultMap>( SHM_REREADRSLT_MAP_OBJNAME );
 		if ( rsltMapPair.first == nullptr )
+		{
 			throw;
+		}
 
 		size_t key = std::hash<std::string>()( str );
 		if ( not rsltMapPair.first->contains( key ) )
+		{
 			rsltMapPair.first->emplace( key, rslt );
+		}
 		else
+		{
 			rsltMapPair.first->at( key ) = rslt;
+		}
 	}
+
 	/**
 	 * @brief Fill the input string with the content of the new structure file path acquired.
 	 * @param out
@@ -157,12 +169,13 @@ namespace
 		named_mutex									  mutex( open_or_create, SHM_FILESTR_MUTEX );
 		scoped_lock<boost::interprocess::named_mutex> lock( mutex );
 
-		boost::interprocess::managed_shared_memory sharedSegment(
-			boost::interprocess::open_only, VTX::IO::test::SHM_FILESTR_DEQUE_SEGNAME
-		);
+		boost::interprocess::managed_shared_memory sharedSegment( boost::interprocess::open_only,
+																  VTX::IO::test::SHM_FILESTR_DEQUE_SEGNAME );
 		auto dequePair = sharedSegment.find<StringDeque>( SHM_FILESTR_DEQUE_OBJNAME );
 		if ( dequePair.first == nullptr )
+		{
 			throw;
+		}
 
 		if ( dequePair.first->empty() )
 		{
@@ -177,12 +190,16 @@ int main( int argc, char * argv[] )
 {
 	g_log_name = fmt::format( "child_log_{}.log", boost::interprocess::ipcdetail::get_current_process_id() );
 	if ( argc != 2 )
+	{
 		return 0;
+	}
 
 	const fs::path outDir  = VTX::Util::Filesystem::getExecutableDir() / "out" / "pdb100";
 	const fs::path tmpFile = outDir / ( std::string( "tmp_" ) + argv[ 1 ] + ".mmcif" );
 	if ( not fs::exists( outDir ) )
+	{
 		fs::create_directories( outDir );
+	}
 
 	std::string					filePathStr;
 	VTX::IO::test::RereadResult result = VTX::IO::test::RereadResult::crashed;
@@ -192,7 +209,9 @@ int main( int argc, char * argv[] )
 		result = VTX::IO::test::RereadResult::crashed;
 		writeResultEntry( filePathStr, result );
 		if ( fs::exists( tmpFile ) )
+		{
 			fs::remove( tmpFile );
+		}
 
 		decompressFile( filePathStr, tmpFile );
 		try

@@ -1,13 +1,14 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_INSPECTOR__
-#define __VTX_UI_QT_DOCK_WIDGET_INSPECTOR__
+#ifndef VTX_UI_QT_DOCK_WIDGET_INSPECTOR_HPP
+#define VTX_UI_QT_DOCK_WIDGET_INSPECTOR_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/widget/library/color_layout.hpp"
-#include "ui/qt/widget/library/graphics_config.hpp"
+#include "ui/qt/widget/library/graphics_config_widget.hpp"
 #include "ui/qt/widget/library/representation.hpp"
 #include "ui/qt/widget/selection.hpp"
 #include "ui/qt/widget/viewpoint.hpp"
-#include <QToolButton>
+#include <QPushButton>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
 {
@@ -20,13 +21,13 @@ namespace VTX::UI::QT::DockWidget
 		Inspector( QWidget * );
 
 	  private:
-		QPointer<QToolButton>					  _lockButton;
-		QPointer<QWidget>						  _filler;
-		QPointer<Widget::Selection>				  _selectionListWidget;
-		QPointer<Widget::Library::GraphicsConfig> _graphicsConfigWidget;
-		QPointer<Widget::Library::ColorLayout>	  _colorLayoutWidget;
-		QPointer<Widget::Library::Representation> _representationWidget;
-		QPointer<Widget::ViewPoint>				  _viewPointWidget;
+		QPointer<QPushButton>							_lockButton;
+		QPointer<QWidget>								_filler;
+		QPointer<Widget::Selection>						_selectionListWidget;
+		QPointer<Widget::Library::GraphicsConfigWidget> _graphicsConfigWidget;
+		QPointer<Widget::Library::ColorLayout>			_colorLayoutWidget;
+		QPointer<Widget::Library::Representation>		_representationWidget;
+		QPointer<Widget::ViewPoint>						_viewPointWidget;
 
 		/**
 		 * @brief Clear all widgets except the filler.
@@ -35,6 +36,9 @@ namespace VTX::UI::QT::DockWidget
 
 		bool _hasSystemSelection() const;
 		void _onSystemSelectionUpdated( Registry &, Entity );
+
+		VTX::Util::EventHub::ScopedConnection _selectionUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _systemDestroyedConnection;
 	};
 
 } // namespace VTX::UI::QT::DockWidget

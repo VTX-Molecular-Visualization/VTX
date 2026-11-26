@@ -106,9 +106,9 @@ class VTXToolMdprepRecipe(ConanFile):
         self.requires("vtx_core/1.0")
         self.requires("vtx_ui_qt/1.0")
         self.requires("vtx_python_binding/1.0")
-        self.requires("re2/20240702")
+        self.requires("re2/20251105")
         self.requires("gromacs/2026.0.1")
-        self.requires("catch2/3.15.0")
+        self.requires("catch2/3.16.1")
 
     def generate(self):
         tc = CMakeToolchain(self)
@@ -124,6 +124,7 @@ class VTXToolMdprepRecipe(ConanFile):
         tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = _cmake_path(executable_folder(self))
         tc.cache_variables["VTX_RENDERER"] = app_conf.get("user.app:renderer")
         tc.cache_variables["VTX_PYTHON_BINDING"] = app_conf.get("user.app:python_binding")
+        tc.cache_variables["VTX_BUILD_TESTS"] = "ON" if self.options.test else "OFF"
         tc.generate()
         do_gromacs_copies(self)
         

@@ -1,9 +1,10 @@
-#ifndef __VTX_UTIL_CONSTANTS__
-#define __VTX_UTIL_CONSTANTS__
+#ifndef VTX_UTIL_CONSTANTS_HPP
+#define VTX_UTIL_CONSTANTS_HPP
 
 #include "util/color/rgba.hpp"
 #include "util/types.hpp"
 #include <limits>
+#include <type_traits>
 
 namespace VTX
 {
@@ -14,6 +15,8 @@ namespace VTX
 	template<typename T>
 	constexpr T TypeLowest = std::numeric_limits<T>::lowest();
 	template<typename T>
+		requires( std::is_integral_v<T> && std::is_unsigned_v<T>
+				  && std::numeric_limits<T>::digits < std::numeric_limits<size_t>::digits )
 	constexpr size_t TypeCount = size_t { 1 } << std::numeric_limits<T>::digits;
 
 	constexpr float EPSILON	 = 1e-4f;
@@ -50,15 +53,15 @@ namespace VTX
 	constexpr float INV_PIf	 = glm::one_over_pi<float>();
 	constexpr float INV_2PIf = glm::one_over_two_pi<float>();
 
-	constexpr Util::Color::Rgba COLOR_BLACK	  = Util::Color::Rgba( 0.f, 0.f, 0.f, 1.f );
-	constexpr Util::Color::Rgba COLOR_WHITE	  = Util::Color::Rgba( 1.f, 1.f, 1.f, 1.f );
-	constexpr Util::Color::Rgba COLOR_GREY	  = Util::Color::Rgba( 0.5f, 0.5f, 0.5f, 1.f );
-	constexpr Util::Color::Rgba COLOR_RED	  = Util::Color::Rgba( 1.f, 0.f, 0.f, 1.f );
-	constexpr Util::Color::Rgba COLOR_GREEN	  = Util::Color::Rgba( 0.f, 1.f, 0.f, 1.f );
-	constexpr Util::Color::Rgba COLOR_BLUE	  = Util::Color::Rgba( 0.f, 0.f, 1.f, 1.f );
-	constexpr Util::Color::Rgba COLOR_YELLOW  = Util::Color::Rgba( 1.f, 1.f, 0.f, 1.f );
-	constexpr Util::Color::Rgba COLOR_MAGENTA = Util::Color::Rgba( 1.f, 0.f, 1.f, 1.f );
-	constexpr Util::Color::Rgba COLOR_CYAN	  = Util::Color::Rgba( 0.f, 1.f, 1.f, 1.f );
+	constexpr Util::Color::Rgba COLOR_BLACK	  = Util::Color::Rgba( 0, 0, 0, 255 );
+	constexpr Util::Color::Rgba COLOR_WHITE	  = Util::Color::Rgba( 255, 255, 255, 255 );
+	constexpr Util::Color::Rgba COLOR_GREY	  = Util::Color::Rgba( 128, 128, 128, 255 );
+	constexpr Util::Color::Rgba COLOR_RED	  = Util::Color::Rgba( 255, 0, 0, 255 );
+	constexpr Util::Color::Rgba COLOR_GREEN	  = Util::Color::Rgba( 0, 255, 0, 255 );
+	constexpr Util::Color::Rgba COLOR_BLUE	  = Util::Color::Rgba( 0, 0, 255, 255 );
+	constexpr Util::Color::Rgba COLOR_YELLOW  = Util::Color::Rgba( 255, 255, 0, 255 );
+	constexpr Util::Color::Rgba COLOR_MAGENTA = Util::Color::Rgba( 255, 0, 255, 255 );
+	constexpr Util::Color::Rgba COLOR_CYAN	  = Util::Color::Rgba( 0, 255, 255, 255 );
 
 	constexpr Index INVALID_INDEX = TypeMax<Index>;
 	constexpr int	INVALID_UID	  = 0;

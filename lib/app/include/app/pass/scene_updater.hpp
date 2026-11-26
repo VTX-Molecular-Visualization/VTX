@@ -1,8 +1,9 @@
-#ifndef __VTX_APP_PASS_SCENE_UPDATER__
-#define __VTX_APP_PASS_SCENE_UPDATER__
+#ifndef VTX_APP_PASS_SCENE_UPDATER_HPP
+#define VTX_APP_PASS_SCENE_UPDATER_HPP
 
 #include "app/ecs.hpp"
 #include "app/pass/pass_manager.hpp"
+#include <util/event_hub.hpp>
 
 namespace VTX::App::Pass
 {
@@ -12,20 +13,26 @@ namespace VTX::App::Pass
 	class SceneUpdater : public IPass
 	{
 	  public:
+		/**
+		 * @brief Flag that trigger update.
+		 */
+		static constexpr E_PENDING_UPDATE UPDATE_TRIGGERS = E_PENDING_UPDATE::NONE;
+
+		/**
+		 * @brief Constructor.
+		 */
 		SceneUpdater( const Entity & );
 
-		inline void update( const float, const float ) noexcept {}
+		/**
+		 * @brief Update each frame.
+		 */
+		void update( const float, const float ) noexcept {}
 
 	  private:
 		/**
 		 * @brief Scene entity.
 		 */
 		const Entity _entity;
-
-		/**
-		 * @brief Update the scene AABB when a system AABB is updated.
-		 */
-		void _onUpdateAABB( Registry &, Entity );
 
 		/**
 		 * @brief Update the scene AABB when a system transform is updated.
@@ -38,21 +45,40 @@ namespace VTX::App::Pass
 		void _onSceneItemDestroy( Registry &, Entity );
 
 		/**
-		 * @brief Recompute scene AABB from all scene items.
-		 */
-		void _recomputeSceneAABB( Registry &, Entity p_excluded = InvalidEntity );
-
-		/**
 		 * @brief Update renderer when a preset is instantiated.
 		 */
 		void _onUpdateGraphicsConfig( Registry &, Entity );
 		void _onUpdateColorLayout( Registry &, Entity );
+		void _onUpdateMaterial( Registry &, Entity );
 
 		/**
 		 * @brief Update renderer when a preset is updated.
 		 */
 		void _onUpdateGraphicsConfigPreset( Registry &, Entity );
 		void _onUpdateColorLayoutPreset( Registry &, Entity );
+		void _onUpdateMaterialPreset( Registry &, Entity );
+
+		/**
+		 * @brief Update renderer when global accessibility settings are updated.
+		 */
+		void _onUpdateAccessibility( Registry &, Entity );
+
+		/**
+		 * @brief Connections.
+		 */
+		Util::EventHub::ScopedConnection _transformUpdatedConnection;
+		Util::EventHub::ScopedConnection _systemDestroyedConnection;
+		Util::EventHub::ScopedConnection _meshDestroyedConnection;
+		Util::EventHub::ScopedConnection _graphicsConfigConstructedConnection;
+		Util::EventHub::ScopedConnection _graphicsConfigUpdatedConnection;
+		Util::EventHub::ScopedConnection _colorLayoutConstructedConnection;
+		Util::EventHub::ScopedConnection _colorLayoutUpdatedConnection;
+		Util::EventHub::ScopedConnection _graphicsConfigPresetUpdatedConnection;
+		Util::EventHub::ScopedConnection _colorLayoutPresetUpdatedConnection;
+		Util::EventHub::ScopedConnection _materialConstructedConnection;
+		Util::EventHub::ScopedConnection _materialUpdatedConnection;
+		Util::EventHub::ScopedConnection _materialPresetUpdatedConnection;
+		Util::EventHub::ScopedConnection _accessibilityUpdatedConnection;
 	};
 } // namespace VTX::App::Pass
 #endif

@@ -1,0 +1,254 @@
+name: deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'Release'
+        type: choice
+        options:
+        - Debug
+        - Release
+      version: 
+        description: 'Version'
+        required: true
+        default: '2026.0.0'
+      tool_example:
+        description: 'Include tool Example'
+        required: false
+        default: false
+        type: boolean
+      tool_mdprep:
+        description: 'Include tool Mdprep'
+        required: false
+        default: true
+        type: boolean
+      tool_topology_editor:
+        description: 'Include tool Topology Editor'
+        required: false
+        default: false
+        type: boolean
+      ui_qt:
+        description: 'Include Qt UI'
+        required: false
+        default: true
+        type: boolean
+      renderer:
+        description: 'Include Renderer'
+        required: false
+        default: true
+        type: boolean
+      python_binding:
+        description: 'Include Python Binding'
+        required: false
+        default: true
+        type: boolean
+      cuda:
+        description: 'Enable CUDA'
+        required: false
+        default: true
+        type: boolean
+      cuda_version:
+        description: 'CUDA version'
+        required: false
+        default: '12.9.0'
+      cuda_arch:
+        description: 'Cuda architectures'
+        required: false
+        default: "52;61;75;80;86;87;89;90"
+      python_version:
+        description: 'Python version (override)'
+        required: false
+
+# Velopack publishes the GitHub release with GITHUB_TOKEN.
+permissions:
+  contents: write
+
+env:
+  ROOT_DIR: ${{github.workspace}}
+  BUILD_TYPE: ${{ inputs.build_type }}
+  VERSION: ${{ inputs.version }}
+  PACKAGE_VERSION: ${{ inputs.version }}-beta
+  TOOL_EXAMPLE: ${{ inputs.tool_example == true && 'True' || 'False' }}
+  TOOL_MDPREP: ${{ inputs.tool_mdprep == true && 'True' || 'False' }}
+  TOOL_TOPOLOGY_EDITOR: ${{ inputs.tool_topology_editor == true && 'True' || 'False' }}
+  UI_QT: ${{ inputs.ui_qt == true && 'True' || 'False' }}
+  VTX_RENDERER: ${{ inputs.renderer == true && 'True' || 'False' }}
+  VTX_PYTHON_BINDING: ${{ inputs.python_binding == true && 'True' || 'False' }}
+  CUDA_VERSION: ${{ inputs.cuda == true && inputs.cuda_version || '' }}
+  CUDA_ARCH: ${{ inputs.cuda_arch }}
+  PYTHON_VERSION: ${{ inputs.python_version }}
+  RELEASE_DIR: ${{ github.workspace }}/release
+
+jobs:
+  deploy:
+    name: deploy (${{ matrix.channel }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: windows-2022
+            channel: win-x64
+            framework: vcredist144-x64
+            main_exe: vtx.exe
+          - os: ubuntu-22.04
+            channel: linux-x64
+            main_exe: vtx
+          # - os: macos-15-intel
+          #   channel: osx-x64
+          #   main_exe: vtx
+          # - os: windows-11-arm
+          #   channel: win-arm64
+          #   framework: vcredist144-arm64
+          #   main_exe: vtx.exe
+          # - os: ubuntu-22.04-arm
+          #   channel: linux-arm64
+          #   main_exe: vtx
+          # - os: macos-15
+          #   channel: osx-arm64
+          #   main_exe: vtx
+      fail-fast: false
+
+    steps:
+    - name: Set git to use CRLF
+      if: runner.os == 'Windows'
+      run: |
+        git config --global core.autocrlf true
+        git config --global core.eol crlf
+        
+    - uses: actions/checkout@v6.0.2
+      with:
+        submodules: recursive
+
+    - name: Setup build environment
+      uses: ./.github/actions/setup-vtx
+      with:
+        conan_user: ${{ secrets.CONAN_SERVER_USER }}
+        conan_password: ${{ secrets.CONAN_SERVER_PASSWORD }}
+        build_type: ${{ env.BUILD_TYPE }}
+        cuda_version: ${{ env.CUDA_VERSION }}
+        cuda_arch: ${{ env.CUDA_ARCH }}
+        python_version: ${{ env.PYTHON_VERSION }}
+
+    - name: Create package
+      working-directory: ${{env.ROOT_DIR}}
+      run: |
+        conan export lib/app
+        conan export lib/core
+        conan export lib/io
+        conan export lib/python_binding        
+        conan export lib/renderer
+        conan export lib/ui/qt
+        conan export lib/ui/qt/conan/wayland
+        conan export lib/util
+        conan export tool/example
+        conan export tool/mdprep
+        conan export tool/topology_editor
+        conan create app/vtx -b missing \
+          -o vtx_app/*:version=${{env.VERSION}} \
+          -o vtx_app/*:renderer=${{env.VTX_RENDERER}} \
+          -o vtx_app/*:python_binding=${{env.VTX_PYTHON_BINDING}} \
+          -o vtx/*:renderer=${{env.VTX_RENDERER}} \
+          -o vtx/*:python_binding=${{env.VTX_PYTHON_BINDING}} \
+          -o vtx/*:tool_example=${{env.TOOL_EXAMPLE}} \
+          -o vtx/*:tool_mdprep=${{env.TOOL_MDPREP}} \
+          -o vtx/*:tool_topology_editor=${{env.TOOL_TOPOLOGY_EDITOR}} \
+          -o vtx/*:ui_qt=${{env.UI_QT}} \
+          --format=json > output.json
+      shell: bash
+
+    - name: Read package path from output.json
+      id: read_package_path
+      working-directory: ${{env.ROOT_DIR}}
+      run: echo "PACKAGE_PATH=$(jq -r '.graph.nodes["1"].package_folder' output.json)" >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Install Velopack CLI
+      run: |
+        dotnet tool install -g vpk --version 1.2.0
+        echo "$HOME/.dotnet/tools" >> "$GITHUB_PATH"
+      shell: bash
+
+    - name: Download previous release for delta generation
+      continue-on-error: true
+      run: |
+        vpk download github \
+          --pre \
+          --repoUrl https://github.com/${{ github.repository }} \
+          --token ${{ secrets.GITHUB_TOKEN }} \
+          --channel ${{ matrix.channel }} \
+          --outputDir "${{ env.RELEASE_DIR }}"
+      shell: bash
+
+    - name: Remove current version from release dir (Linux)
+      if: runner.os != 'Windows'
+      run: find "${{ env.RELEASE_DIR }}" -name "*${{ env.VERSION }}*" -delete 2>/dev/null || true
+
+    - name: Remove current version from release dir (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        Get-ChildItem "${{ env.RELEASE_DIR }}" -Filter "*${{ env.VERSION }}*" `
+          | Remove-Item -Force -ErrorAction SilentlyContinue
+
+    - name: Extract latest changelog
+      shell: bash
+      run: |
+        awk '/^## /{if(found) exit; found=1; next} found{print}' "${{ env.ROOT_DIR }}/CHANGELOG.md" > "$RUNNER_TEMP/latest_changelog.md"
+
+    - name: Remove Conan metadata from Velopack input
+      shell: bash
+      run: |
+        rm -f "${{ steps.read_package_path.outputs.PACKAGE_PATH }}/conaninfo.txt"
+        rm -f "${{ steps.read_package_path.outputs.PACKAGE_PATH }}/conanmanifest.txt"
+
+    - name: Pack installer (Windows)
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        vpk pack \
+          --packId VTX \
+          --packVersion "${{ env.PACKAGE_VERSION }}+${{ matrix.channel }}" \
+          --packTitle "VTX" \
+          --packAuthors "VTX Team" \
+          --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
+          --mainExe ${{ matrix.main_exe }} \
+          --runtime ${{ matrix.channel }} \
+          --releaseNotes "$RUNNER_TEMP/latest_changelog.md" \
+          --icon "${{ env.ROOT_DIR }}/app/vtx/asset/logo.ico" \
+          --splashImage "${{ env.ROOT_DIR }}/app/vtx/asset/splash.png" \
+          --framework ${{ matrix.framework }} \
+          --channel ${{ matrix.channel }} \
+          --outputDir "${{ env.RELEASE_DIR }}"
+
+    - name: Pack installer (Linux)
+      if: runner.os != 'Windows'
+      shell: bash
+      run: |
+        vpk pack \
+          --packId VTX \
+          --packVersion "${{ env.PACKAGE_VERSION }}+${{ matrix.channel }}" \
+          --packTitle "VTX" \
+          --packAuthors "VTX Team" \
+          --packDir "${{ steps.read_package_path.outputs.PACKAGE_PATH }}" \
+          --mainExe ${{ matrix.main_exe }} \
+          --runtime ${{ matrix.channel }} \
+          --releaseNotes "$RUNNER_TEMP/latest_changelog.md" \
+          --icon "${{ env.ROOT_DIR }}/app/vtx/asset/logo.ico" \
+          --channel ${{ matrix.channel }} \
+          --outputDir "${{ env.RELEASE_DIR }}"
+
+    - name: Upload to GitHub release
+      run: |
+        vpk upload github \
+          --pre \
+          --merge \
+          --repoUrl https://github.com/${{ github.repository }} \
+          --releaseName "${{ env.VERSION }} (beta)" \
+          --tag v${{ env.VERSION }} \
+          --token ${{ secrets.GITHUB_TOKEN }} \
+          --channel ${{ matrix.channel }} \
+          --outputDir "${{ env.RELEASE_DIR }}"
+      shell: bash

@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_RENDER_GRAPH__
-#define __VTX_RENDERER_RENDER_GRAPH__
+#ifndef VTX_RENDERER_RENDER_GRAPH_HPP
+#define VTX_RENDERER_RENDER_GRAPH_HPP
 
 #include "renderer/descriptors.hpp"
 #include "renderer/graph_builder.hpp"
@@ -17,9 +17,9 @@ namespace VTX::Renderer
 		/**
 		 * @brief Accessors.
 		 */
-		inline const Desc::Resources & getResources() const { return _resources; }
+		const Desc::Resources & getResources() const noexcept { return _resources; }
 
-		inline const Desc::PassList & getPasses() const { return _passes; }
+		const Desc::PassList & getPasses() const noexcept { return _passes; }
 
 		/**
 		 * @brief Update the active physical chunks for a geometry resource.
@@ -30,7 +30,7 @@ namespace VTX::Renderer
 		 * @brief Validate graph and build render queue.
 		 * @return
 		 */
-		const Desc::RenderQueue build();
+		Desc::RenderQueue build();
 
 		/**
 		 * @brief Add data from builder.

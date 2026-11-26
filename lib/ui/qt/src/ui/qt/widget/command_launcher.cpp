@@ -1,22 +1,35 @@
+#include "ui/qt/widget/command_launcher.hpp"
 #include "app/python_binding/interpretor.hpp"
 #include "app/services.hpp"
-//  pybind MUST be included before any QT because of macro shenanigans
-#include "ui/qt/widget/command_launcher.hpp"
-#include <app/threading/thread_manager.hpp>
+#include "ui/qt/helper.hpp"
+#include "ui/qt/style/style_manager.hpp"
+#include <QAbstractItemView>
 #include <qevent.h>
-#include <util/logger.hpp>
+#include <string>
+#include <utility>
 
 namespace VTX::UI::QT::Widget
 {
 
-	CommandLauncher::CommandLauncher( QWidget * p_parent ) : BaseWidget( p_parent )
+	CommandLauncher::CommandLauncher( QWidget * const p_parent ) :
+		BaseWidget( p_parent ), _completer( Helper::makeQObject<PythonCompleter>( this ) )
 	{
+		QFont font( Style::DEFAULT_FONT_FAMILY_SEQUENCE.toString(), Style::DEFAULT_FONT_SIZE );
+		font.setStyleHint( QFont::Monospace );
+		setFont( font );
 		setPlaceholderText( "help()" );
-		_setupCompleter();
 		setClearButtonEnabled( true );
+		setEnabled( false );
 
 		connect( this, &QLineEdit::returnPressed, this, &CommandLauncher::_launchCommand );
+		connect(
+			_completer, qOverload<const QString &>( &QCompleter::activated ), this, &CommandLauncher::_insertCompletion
+		);
+		_pythonInitializedConnection
+			= App::HUB().connect<App::Events::PythonInitialized, &CommandLauncher::_pythonInitialized>( this );
 	}
+
+	void CommandLauncher::_pythonInitialized( const App::Events::PythonInitialized & ) { setEnabled( true ); }
 
 	void CommandLauncher::launchCommand( std::string p_ )
 	{
@@ -26,6 +39,19 @@ namespace VTX::UI::QT::Widget
 
 	void CommandLauncher::keyPressEvent( QKeyEvent * event )
 	{
+		if ( _completer->popup()->isVisible() )
+		{
+			switch ( event->key() )
+			{
+			case Qt::Key_Enter:
+			case Qt::Key_Return:
+			case Qt::Key_Escape:
+			case Qt::Key_Tab:
+			case Qt::Key_Backtab: event->ignore(); return;
+			default: break;
+			}
+		}
+
 		if ( not _history.empty() )
 		{
 			switch ( event->key() )
@@ -43,12 +69,22 @@ namespace VTX::UI::QT::Widget
 		}
 
 		BaseWidget::keyPressEvent( event );
-		return;
+
+		if ( event->text().isEmpty() || not _completer->updateCompletions( text().left( cursorPosition() ), {} ) )
+		{
+			_completer->popup()->hide();
+			return;
+		}
+
+		_completer->showPopup( cursorRect() );
 	}
 
-	void CommandLauncher::focusInEvent( QFocusEvent * event ) {}
-
-	void CommandLauncher::focusOutEvent( QFocusEvent * event ) {}
+	void CommandLauncher::_insertCompletion( const QString & p_completion )
+	{
+		const int prefixSize = static_cast<int>( _completer->completionPrefix().size() );
+		setSelection( cursorPosition() - prefixSize, prefixSize );
+		insert( p_completion );
+	}
 
 	void CommandLauncher::_launchCommand()
 	{
@@ -59,9 +95,11 @@ namespace VTX::UI::QT::Widget
 
 		// We do not want to register the same command over and over as it give the impression that the browsing doesn't
 		// work from the user perspective.
-		std::string command = text().toStdString();
+		const std::string command = text().toStdString();
 		if ( _history.empty() || command != _history.last() )
+		{
 			_history.add( text().toStdString() );
+		}
 
 		clear();
 		_executeLastHistoryEntry();
@@ -72,24 +110,6 @@ namespace VTX::UI::QT::Widget
 		_history.resetBrowsing();
 
 		App::INTERPRETOR().runCommand( _history.last() );
-	}
-
-	void CommandLauncher::_setupCompleter()
-	{
-		// TODO : Do it nicely
-		//  std::vector<std::string> allCommands = INTERPRETOR().getModule().commands().getFunctionList();
-
-		// QStringList strList;
-
-		// for ( auto & it_cmd : allCommands )
-		//{
-		//	strList.emplaceBack();
-		// }
-
-		//_completer = new QCompleter( strList, this );
-		//_completer->setCaseSensitivity( Qt::CaseSensitivity::CaseInsensitive );
-		//_completer->setCompletionMode( QCompleter::CompletionMode::InlineCompletion );
-		// setCompleter( _completer );
 	}
 
 } // namespace VTX::UI::QT::Widget

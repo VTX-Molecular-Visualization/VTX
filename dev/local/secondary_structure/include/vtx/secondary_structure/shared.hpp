@@ -22,6 +22,7 @@ namespace pdb100
 	using FileCollection = std::vector<std::string>;
 
 	class Reporter;
+
 	struct Context
 	{
 		fs::path							  dbDir = g_pdb100DirectoryPath;

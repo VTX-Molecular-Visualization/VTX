@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_GL_FRAMEBUFFER__
-#define __VTX_RENDERER_CONTEXT_GL_FRAMEBUFFER__
+#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_FRAMEBUFFER_HPP
+#define VTX_RENDERER_CONTEXT_BACKEND_GL_FRAMEBUFFER_HPP
 
 #include "include_opengl.hpp"
 #include "texture.hpp"
@@ -21,7 +21,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			assert( glIsFramebuffer( _id ) );
 		}
 
-		Framebuffer( const GLuint p_id ) noexcept
+		Framebuffer( const GLuint p_id, const bool p_owned ) noexcept : _owned( p_owned )
 		{
 			assert( _id == GL_INVALID_INDEX );
 
@@ -31,14 +31,18 @@ namespace VTX::Renderer::Context::Backend::GL
 		Framebuffer( const Framebuffer & )			   = delete;
 		Framebuffer & operator=( const Framebuffer & ) = delete;
 
-		Framebuffer( Framebuffer && p_other ) noexcept : _id( std::exchange( p_other._id, GL_INVALID_INDEX ) ) {}
+		Framebuffer( Framebuffer && p_other ) noexcept :
+			_id( std::exchange( p_other._id, GL_INVALID_INDEX ) ), _owned( p_other._owned )
+		{
+		}
 
 		Framebuffer & operator=( Framebuffer && p_other ) noexcept
 		{
 			if ( this != &p_other )
 			{
 				destroy();
-				_id = std::exchange( p_other._id, GL_INVALID_INDEX );
+				_id	   = std::exchange( p_other._id, GL_INVALID_INDEX );
+				_owned = p_other._owned;
 			}
 
 			return *this;
@@ -50,14 +54,17 @@ namespace VTX::Renderer::Context::Backend::GL
 		{
 			if ( _id != GL_INVALID_INDEX )
 			{
-				glDeleteFramebuffers( 1, &_id );
+				if ( _owned )
+				{
+					glDeleteFramebuffers( 1, &_id );
+				}
 				_id = GL_INVALID_INDEX;
 			}
 		}
 
-		inline GLuint getId() const noexcept { return _id; }
+		GLuint getId() const noexcept { return _id; }
 
-		inline void bind( const GLenum p_target = GL_FRAMEBUFFER ) const noexcept
+		void bind( const GLenum p_target = GL_FRAMEBUFFER ) const noexcept
 		{
 #ifdef _DEBUG
 			if ( _id != 0 )
@@ -68,7 +75,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			glBindFramebuffer( p_target, _id );
 		}
 
-		inline void attachTexture(
+		void attachTexture(
 			const Texture & p_texture,
 			const GLenum	p_attachment,
 			const GLint		p_level = 0
@@ -78,30 +85,31 @@ namespace VTX::Renderer::Context::Backend::GL
 			assert( glIsTexture( static_cast<GLuint>( p_texture.getId() ) ) );
 			assert( p_texture.getTarget() == GL_TEXTURE_2D );
 
-			glNamedFramebufferTexture( _id, p_attachment, static_cast<GLuint>( p_texture.getId() ), p_level );
+			glNamedFramebufferTexture( _id, p_attachment, p_texture.getId(), p_level );
 		}
 
-		inline void setDrawBuffers( const std::vector<GLenum> & p_drawBuffers ) const noexcept
+		void setDrawBuffers( const std::vector<GLenum> & p_drawBuffers ) const noexcept
 		{
 			assert( glIsFramebuffer( _id ) );
 
 			glNamedFramebufferDrawBuffers( _id, static_cast<GLsizei>( p_drawBuffers.size() ), p_drawBuffers.data() );
 		}
 
-		inline void setReadBuffer( const GLenum p_readBuffer ) const noexcept
+		void setReadBuffer( const GLenum p_readBuffer ) const noexcept
 		{
 			assert( glIsFramebuffer( _id ) );
 
 			glNamedFramebufferReadBuffer( _id, p_readBuffer );
 		}
 
-		inline bool checkStatus() const noexcept
+		bool checkStatus() const noexcept
 
 		{ return glCheckNamedFramebufferStatus( _id, GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE; }
 
 	  private:
-		GLuint _id = GL_INVALID_INDEX;
+		GLuint _id	  = GL_INVALID_INDEX;
+		bool   _owned = true;
 	};
 } // namespace VTX::Renderer::Context::Backend::GL
 
-#endif // __VTX_GL_FRAMEBUFFER__
+#endif // VTX_RENDERER_CONTEXT_BACKEND_GL_FRAMEBUFFER_HPP

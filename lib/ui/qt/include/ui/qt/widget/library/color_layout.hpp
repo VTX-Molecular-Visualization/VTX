@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT__
-#define __VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT__
+#ifndef VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT_HPP
+#define VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT_HPP
 
 #include "base_preset_widget.hpp"
 #include "ui/qt/widget/color_picker.hpp"
@@ -17,7 +17,7 @@ namespace VTX::UI::QT::Widget::Library
 		/**
 		 * @brief Show/hide non usual color buttons.
 		 */
-		void refreshVisibility( const bool p_hide );
+		void refreshVisibility( bool p_hide );
 
 	  protected:
 		/**
@@ -26,35 +26,31 @@ namespace VTX::UI::QT::Widget::Library
 		void _update( Entity ) override;
 
 	  private:
-		inline static const int _BUTTON_SIZE = 32;
+		inline static const int BUTTON_SIZE = 32;
 
-		QPointer<QCheckBox> _checkBoxHideNonUsual;
+		QPointer<QCheckBox>				   _checkBoxHideNonUsual;
 		std::vector<QPointer<ColorPicker>> _buttons;
 
-		void _createGroupBox(
-			const std::string_view			  p_title,
-			const size_t					  p_start,
-			const size_t					  p_count,
-			std::span<const std::string_view> p_text = {},
-			std::span<const std::string_view> p_tip	 = {}
-		);
+		void _createGroupBox( std::string_view					p_title,
+							  size_t							p_start,
+							  size_t							p_count,
+							  std::span<const std::string_view> p_text = {},
+							  std::span<const std::string_view> p_tip  = {} );
 
 		/**
 		 * @brief Update app from widget.
 		 */
-		void _changeColor( const size_t, const QColor & );
+		void _changeColor( size_t, const QColor & );
 
 		/**
 		 * @brief Update widget from app.
 		 */
-		void _updateColor( const size_t, const Util::Color::Rgba & );
+		void _updateColor( size_t, const Util::Color::Rgba & );
 
-		void _refreshButtonVisibility(
-			const bool			  p_hide,
-			const size_t		  p_start,
-			const size_t		  p_count,
-			std::span<const bool> p_isCommonValues
-		);
+		void _refreshButtonVisibility( bool					 p_hide,
+									   size_t				 p_start,
+									   size_t				 p_count,
+									   std::span<const bool> p_isCommonValues );
 
 		// void _onCurrentPresetUpdated()
 	};

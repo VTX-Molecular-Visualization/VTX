@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_EXAMPLE_TOOL_
-#define __VTX_TOOL_EXAMPLE_TOOL_
+#ifndef VTX_TOOL_EXAMPLE_EXAMPLE_TOOL_HPP
+#define VTX_TOOL_EXAMPLE_EXAMPLE_TOOL_HPP
 
 #include <app/tool/base_tool.hpp>
 

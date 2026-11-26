@@ -3,15 +3,17 @@
 #include "app/events.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
-#include "app/threading/thread_manager.hpp"
 #include <renderer/renderer.hpp>
 #include <util/event_hub.hpp>
+#include <util/thread/thread_manager.hpp>
 
 namespace VTX::App::Action::Application
 {
 
 	void Resize::execute( const size_t p_width, const size_t p_height, const bool p_resizeMainWindow )
 	{
+		RENDERER().resize( p_width, p_height );
+
 		REG().patch<Renderer::Camera>(
 			ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>(),
 			[ p_width, p_height ]( Renderer::Camera & p_camera )
@@ -21,7 +23,6 @@ namespace VTX::App::Action::Application
 			}
 		);
 
-		RENDERER().resize( p_width, p_height );
 		HUB().trigger<Events::RendererResize>( p_width, p_height, p_resizeMainWindow );
 	}
 
@@ -37,6 +38,6 @@ namespace VTX::App::Action::Application
 
 	void SetSavePower::execute( const bool p_enable ) { RENDERER().setForceUpdate( not p_enable ); }
 
-	void StopThread::execute( const Threading::BaseThread::ID & p_id ) { THREAD().stop( p_id ); }
+	void StopThread::execute( const Util::Thread::ID & p_id ) { THREAD().stop( p_id ); }
 
 } // namespace VTX::App::Action::Application

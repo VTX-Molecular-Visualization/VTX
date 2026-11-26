@@ -1,0 +1,164 @@
+name: build
+
+on:
+  pull_request:
+    branches: [ "dev" ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'Release'
+        type: choice
+        options:
+        - Debug
+        - Release
+      cuda:
+        description: 'Enable CUDA'
+        required: false
+        default: false
+        type: boolean
+      cuda_version:
+        description: 'CUDA version'
+        required: false
+        default: '12.9.0'
+      cuda_arch:
+        description: 'Cuda architectures'
+        required: false
+        default: "52;61;75;80;86;87;89;90"
+      python_version:
+        description: 'Python version (override)'
+        required: false
+
+# Pull requests: one group per PR, a new commit cancels the previous run.
+# Manual runs: a unique group per run (run_id), so they never wait for or cancel each other.
+concurrency:
+  group: build-${{ github.event_name }}-${{ github.event_name == 'workflow_dispatch' && github.run_id || github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+permissions:
+  contents: read
+
+env:
+  # Inputs are empty on pull_request: CUDA stays disabled unless the workflow is run manually with "Enable CUDA".
+  BUILD_TYPE: ${{ inputs.build_type || 'Release' }}
+  CUDA_VERSION: ${{ inputs.cuda == true && inputs.cuda_version || '' }}
+  CUDA_ARCH: ${{ inputs.cuda == true && inputs.cuda_arch || '' }}
+  PYTHON_VERSION: ${{ inputs.python_version }}
+
+jobs:
+  build:
+    # Explicit name: required status checks of the dev ruleset depend on it.
+    name: build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-2022
+          - ubuntu-22.04
+          - windows-latest
+          - ubuntu-latest
+          # - macos-15-intel
+          # - windows-11-arm
+          # - ubuntu-22.04-arm
+          # - macos-15
+
+    env:
+      CUDAFLAGS: ${{ startsWith(matrix.os, 'windows') && '-allow-unsupported-compiler' || '' }}
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Set git to use CRLF
+      if: runner.os == 'Windows'
+      run: |
+        git config --global core.autocrlf true
+        git config --global core.eol crlf
+
+    - uses: actions/checkout@v6.0.2
+      with:
+        submodules: recursive
+
+    - name: Setup build environment
+      uses: ./.github/actions/setup-vtx
+      with:
+        conan_user: ${{ secrets.CONAN_SERVER_USER }}
+        conan_password: ${{ secrets.CONAN_SERVER_PASSWORD }}
+        build_type: ${{ env.BUILD_TYPE }}
+        cuda_version: ${{ env.CUDA_VERSION }}
+        cuda_arch: ${{ env.CUDA_ARCH }}
+        python_version: ${{ env.PYTHON_VERSION }}
+        # Same options for every package so each VTX package is built (and tested) only once.
+        tests: 'true'
+        xvfb: 'true'
+
+    - name: Export local packages
+      run: |
+        conan export lib/util
+        conan export lib/core
+        conan export lib/io
+        conan export lib/renderer
+        conan export lib/python_binding
+        conan export lib/app
+        conan export lib/ui/qt
+        conan export lib/ui/qt/conan/wayland
+
+    - name: Build vtx_util
+      run: conan create lib/util -b missing
+
+    - name: Build vtx_core
+      run: conan create lib/core -b missing
+
+    - name: Build vtx_io
+      run: conan create lib/io -b missing
+
+    - name: Build vtx_renderer
+      run: conan create lib/renderer -b missing
+
+    - name: Build vtx_python_binding
+      run: conan create lib/python_binding -b missing
+
+    - name: Build vtx_app
+      run: conan create lib/app -b missing
+
+    - name: Build vtx_ui_qt
+      run: conan create lib/ui/qt -b missing
+
+    - name: Build vtx_tool_example
+      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/example -b missing
+
+    - name: Build vtx_tool_mdprep
+      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/mdprep -b missing
+
+    - name: Build vtx_tool_topology_editor
+      run: ${{ runner.os == 'Linux' && 'xvfb-run ' || '' }}conan create tool/topology_editor -b missing
+
+    # Cache third-party binaries on the VTX remote, only when authenticated (never for pull requests from forks, which
+    # have no secrets), even if a VTX package failed: packages missing from the cache only emit a warning.
+    - name: Upload dependencies
+      if: ${{ !cancelled() && env.VTX_CONAN_AUTHENTICATED == 'true' }}
+      run: |
+        for pkg in \
+          glm spdlog magic_enum entt cpr stb tinyexr miniz fmt bzip2 zlib libcurl openssl platformfolders nlohmann_json \
+          assimp clipper draco kuba-zip openddl-parser poly2tri pugixml rapidjson utfcpp minizip exiv2 inih catch2 \
+          argparse chemfiles \
+          ktx zstd \
+          pybind11 cpython expat libffi mpdecimal sqlite3 xz_utils \
+          brotli double-conversion freetype libjpeg libpng pcre2 qt \
+          abseil gromacs re2
+        do
+          conan upload "${pkg}" -r=vtx || echo "::warning::Upload of ${pkg} skipped"
+        done
+
+    - name: Upload Linux dependencies
+      if: ${{ !cancelled() && env.VTX_CONAN_AUTHENTICATED == 'true' && runner.os == 'Linux' }}
+      run: |
+        for pkg in \
+          libxcrypt ncurses util-linux-libuuid \
+          dbus egl/system fontconfig libiconv libxml2 opengl/system wayland xkeyboard-config/system xkbcommon xorg/system
+        do
+          conan upload "${pkg}" -r=vtx || echo "::warning::Upload of ${pkg} skipped"
+        done

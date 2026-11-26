@@ -1,8 +1,10 @@
-#ifndef __VTX_APP_EVENTS__
-#define __VTX_APP_EVENTS__
+#ifndef VTX_APP_EVENTS_HPP
+#define VTX_APP_EVENTS_HPP
 
+#include "app/controller/animation.hpp"
 #include "app/ecs.hpp"
-#include <span>
+#include <core/struct/trajectory.hpp>
+#include <renderer/struct_infos.hpp>
 #include <string>
 #include <thread>
 #include <util/types.hpp>
@@ -64,6 +66,7 @@ namespace VTX::App::Events
 		float delta;
 		float elapsed;
 		bool  rendered;
+		bool  idle;
 	};
 
 	struct RendererResize
@@ -71,6 +74,11 @@ namespace VTX::App::Events
 		size_t width;
 		size_t height;
 		bool   resizeMainWindow;
+	};
+
+	struct RendererReady
+	{
+		Renderer::StructInfos infos;
 	};
 
 	struct BlockingOperationStart
@@ -95,6 +103,18 @@ namespace VTX::App::Events
 	};
 
 	/**
+	 * @brief Start a camera animation.
+	 */
+	struct CameraAnimationStart
+	{
+		Controller::AnimationData	   start;
+		Controller::AnimationData	   end;
+		float						   duration;
+		Controller::InterpPositionFunc interpPosition;
+		Controller::InterpRotationFunc interpRotation;
+	};
+
+	/**
 	 * @brief System.
 	 * Used instead of on_construct to avoid component creation order problems.
 	 */
@@ -108,16 +128,16 @@ namespace VTX::App::Events
 		Entity mesh;
 	};
 
-	struct TrajectoryLoad
+	struct TrajectoryCurrentFrameChange
 	{
-		Entity				   system;
-		std::span<const Vec3f> frame;
+		Entity					system = InvalidEntity;
+		Core::Struct::FrameView frame;
 	};
 
 	template<typename P>
 	struct PresetRename
 	{
-		Entity		preset;
+		Entity		preset = InvalidEntity;
 		std::string name;
 	};
 
@@ -131,7 +151,8 @@ namespace VTX::App::Events
 	struct ThreadTerminated
 	{
 		std::jthread::id id;
-		bool			 manuallyStopped;
+		bool			 manuallyStopped {};
+		bool			 failed {};
 	};
 
 	struct PythonInitialized

@@ -1,0 +1,303 @@
+#ifndef VTX_UTIL_THREAD_THREAD_MANAGER_HPP
+#define VTX_UTIL_THREAD_THREAD_MANAGER_HPP
+
+#include "util/atomic_callback.hpp"
+#include "util/thread/base_thread.hpp"
+#include <concepts>
+#include <functional>
+#include <future>
+#include <list>
+#include <memory>
+#include <mutex>
+#include <stdexcept>
+#include <thread>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
+
+namespace VTX::Util::Thread
+{
+	/**
+	 * @brief Thread manager.
+	 * To spawn a thread call the createThread method passing a function that will be called in the context of the
+	 * thread.
+	 */
+	class ThreadManager
+	{
+		friend class BaseThread;
+
+	  public:
+		/**
+		 * @brief Constructors.
+		 */
+		ThreadManager();
+		ThreadManager( const ThreadManager & )			   = delete;
+		ThreadManager & operator=( const ThreadManager & ) = delete;
+		ThreadManager( ThreadManager && )				   = delete;
+		ThreadManager & operator=( ThreadManager && )	   = delete;
+		~ThreadManager();
+
+		/**
+		 * @brief Callback mutators.
+		 */
+		void setDefaultProgressCallback( BaseThread::ProgressCallback p_callback );
+		void setDefaultTerminatedCallback( BaseThread::TerminatedCallback p_callback );
+
+		/*
+		 * @brief Spawn a thread and executes the content of p_asyncOp in the new thread context.
+		 * Once the p_asyncOp has returned, p_callback is executed.
+		 */
+		BaseThread & createThread(
+			const BaseThread::AsyncOp &		p_asyncOp,
+			const BaseThread::EndCallback & p_callback = {}
+		);
+
+		/**
+		 * @brief Creates a thread of type T.
+		 */
+		template<ManagedThread T, typename... Args>
+		std::shared_ptr<T> createThread( Args &&... p_args )
+		{
+			std::shared_ptr<T> thread( new T( *this, std::forward<Args>( p_args )... ) );
+			thread->start();
+			{
+				const std::scoped_lock lock( _threadsMutex );
+				_threads.emplace_back( thread );
+			}
+			_onPending();
+			return thread;
+		}
+
+		/**
+		 * @brief Synchronizes the execution of a function in the context of the thread that owns the ThreadManager.
+		 * Called from another thread, this function will block until the function has been executed.
+		 */
+		template<typename Func>
+		auto synchronize( Func && p_function ) -> std::invoke_result_t<std::decay_t<Func> &>
+		{
+			using Function = std::decay_t<Func>;
+			using Result   = std::invoke_result_t<Function &>;
+
+			Function function( std::forward<Func>( p_function ) );
+			const ID caller = std::this_thread::get_id();
+			if ( caller == _ownerThreadId )
+			{
+				return std::invoke( function );
+			}
+
+			std::future<Result> future;
+			{
+				std::packaged_task<Result()> resultTask( std::move( function ) );
+				future = resultTask.get_future();
+				SynchronizedCall call(
+					caller, std::packaged_task<void()>( [ task = std::move( resultTask ) ]() mutable { task(); } )
+				);
+				const std::scoped_lock lock( _synchronizedCallsMutex );
+				if ( not _shuttingDown && not _cancelledCallers.contains( caller ) )
+				{
+					_synchronizedCalls.emplace_back( std::move( call ) );
+				}
+			}
+			_onPending();
+
+			return future.get();
+		}
+
+		/**
+		 * @brief Blocks the calling thread until the predicate is true in the main thread context.
+		 */
+		template<std::predicate Predicate>
+		void waitUntil( Predicate p_predicate )
+		{
+			const ID caller = std::this_thread::get_id();
+			if ( caller == _ownerThreadId )
+			{
+				throw std::logic_error( "waitUntil cannot be called from the owner thread." );
+			}
+
+			std::future<void> future = synchronize(
+				[ this, caller, predicate = std::function<bool()>( std::move( p_predicate ) ) ]() mutable
+				{
+					std::promise<void> promise;
+					std::future<void>  result = promise.get_future();
+					if ( predicate() )
+					{
+						promise.set_value();
+					}
+					else
+					{
+						_addWaiter( caller, std::move( predicate ), std::move( promise ) );
+					}
+					return result;
+				}
+			);
+			future.get();
+		}
+
+		/**
+		 * @brief Checks pending waiters.
+		 */
+		void updateWaiters();
+
+		/**
+		 * @brief Dispatches a function to be executed in the context of the thread that owns the ThreadManager.
+		 * Called from another thread, this function will return immediately.
+		 */
+		template<typename Func>
+			requires std::invocable<std::decay_t<Func> &>
+		void dispatch( Func && p_function )
+		{
+			DispatchedCall call( std::forward<Func>( p_function ) );
+			{
+				const std::scoped_lock lock( _synchronizedCallsMutex );
+				if ( not _shuttingDown )
+				{
+					_dispatchedCalls.emplace_back( std::move( call ) );
+				}
+			}
+			_onPending();
+		}
+
+		/**
+		 * @brief Updates the thread manager.
+		 * Should be called in the main thread context.
+		 */
+		void update();
+
+		/**
+		 * @brief Returns the thread with the given id.
+		 */
+		BaseThread * get( const ID & );
+
+		/**
+		 * @brief Stops the thread with the given id.
+		 */
+		void stop( const ID & );
+
+		/**
+		 * @brief Set callback.
+		 */
+		void setOnPending( const AtomicCallback::Function p_function, void * const p_context ) noexcept
+		{ _onPending.set( p_function, p_context ); }
+
+		/**
+		 * @brief Cancels all synchronized calls.
+		 */
+		void cancelSynchronizedCalls();
+
+	  private:
+		/**
+		 * @brief Struct to store a synchronized call.
+		 */
+		struct SynchronizedCall
+		{
+			SynchronizedCall( const ID p_caller, std::packaged_task<void()> p_task ) :
+				caller( p_caller ), task( std::move( p_task ) )
+			{
+			}
+
+			ID						   caller;
+			std::packaged_task<void()> task;
+		};
+
+		/**
+		 * @brief Struct to store a dispatched call.
+		 */
+		struct DispatchedCall
+		{
+			template<typename Func>
+				requires( not std::same_as<std::remove_cvref_t<Func>, DispatchedCall> )
+			DispatchedCall( Func && p_function ) : task( std::forward<Func>( p_function ) ), result( task.get_future() )
+			{
+			}
+
+			void execute()
+			{
+				task();
+				result.get();
+			}
+
+			std::packaged_task<void()> task;
+			std::future<void>		   result;
+		};
+
+		/**
+		 * @brief Struct to store a thread waiting for a predicate.
+		 */
+		struct Waiter
+		{
+			ID					  caller;
+			std::function<bool()> predicate;
+			std::promise<void>	  promise;
+		};
+
+		/**
+		 * @brief List of threads.
+		 */
+		std::list<std::shared_ptr<BaseThread>> _threads;
+
+		/**
+		 * @brief Id of the thread that owns the ThreadManager.
+		 */
+		std::thread::id _ownerThreadId;
+
+		/**
+		 * @brief Mutex to synchronize access to the synchronized calls list.
+		 */
+		std::mutex _synchronizedCallsMutex;
+
+		/**
+		 * @brief Mutex to synchronize access to the threads list.
+		 */
+		std::mutex _threadsMutex;
+
+		/**
+		 * @brief List of synchronized calls to be executed.
+		 */
+		std::list<SynchronizedCall> _synchronizedCalls;
+
+		/**
+		 * @brief List of dispatched calls to be executed.
+		 */
+		std::list<DispatchedCall> _dispatchedCalls;
+
+		/**
+		 * @brief List of threads waiting for a predicate.
+		 */
+		std::list<Waiter> _waiters;
+
+		/**
+		 * @brief Set of thread ids that have been cancelled.
+		 */
+		std::unordered_set<ID> _cancelledCallers;
+
+		/**
+		 * @brief Is shutting down?
+		 */
+		bool _shuttingDown = false;
+
+		/**
+		 * @brief Default callbacks for threads created by this manager.
+		 */
+		BaseThread::ProgressCallback   _progressCallback;
+		BaseThread::TerminatedCallback _terminatedCallback;
+
+		/**
+		 * @brief Pending callback.
+		 */
+		AtomicCallback _onPending;
+
+		/**
+		 * @brief Registers a waiter, or drops it if its caller is cancelled or the manager is shutting down.
+		 */
+		void _addWaiter( ID, std::function<bool()>, std::promise<void> );
+
+		/**
+		 * @brief Cancels the synchronized calls for the given thread id.
+		 */
+		void _cancelSynchronizedCalls( ID );
+	};
+
+} // namespace VTX::Util::Thread
+
+#endif

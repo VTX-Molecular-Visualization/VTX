@@ -1,5 +1,5 @@
 from conan import ConanFile
-from conan.tools.cmake import CMake, cmake_layout
+from conan.tools.cmake import CMake, cmake_layout, CMakeToolchain
 from conan.tools.env import VirtualRunEnv
 
 class VTXIORecipe(ConanFile):
@@ -11,7 +11,7 @@ class VTXIORecipe(ConanFile):
     options = {"shared": [True, False], "fPIC": [True, False], "test": [True, False]}
     default_options = {"shared": False, "fPIC": True, "test": False}
     
-    generators = "CMakeDeps", "CMakeToolchain"
+    generators = "CMakeDeps"
     
     exports_sources = "CMakeLists.txt", "src/*", "include/*", "cmake/*", "test/*"
         
@@ -19,7 +19,7 @@ class VTXIORecipe(ConanFile):
         self.requires("vtx_util/1.0")
         self.requires("vtx_core/1.0")
         self.requires("chemfiles/2026.02.5")
-        self.requires("catch2/3.15.0")
+        self.requires("catch2/3.16.1")
         
     def config_options(self):
         if self.settings.os == "Windows":
@@ -29,6 +29,9 @@ class VTXIORecipe(ConanFile):
         cmake_layout(self)
 
     def generate(self):
+        tc = CMakeToolchain(self)
+        tc.cache_variables["VTX_BUILD_TESTS"] = "ON" if self.options.test else "OFF"
+        tc.generate()
         VirtualRunEnv(self).generate()
 
     def build(self):

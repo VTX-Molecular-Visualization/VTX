@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_GATEWAY_FORM_DATA__
-#define __VTX_TOOL_TOOLS_MDPREP_GATEWAY_FORM_DATA__
+#ifndef VTX_TOOL_MDPREP_GATEWAY_FORM_DATA_HPP
+#define VTX_TOOL_MDPREP_GATEWAY_FORM_DATA_HPP
 
 #include <any>
 #include <array>
@@ -30,7 +30,7 @@ namespace VTX::Tool::Mdprep::Gateway
 		std::any formData;
 	};
 
-	enum class E_MD_DURATION_UNIT
+	enum class E_MD_DURATION_UNIT : uint8_t
 	{
 		femtoSeconds,
 		picoSeconds,
@@ -41,7 +41,7 @@ namespace VTX::Tool::Mdprep::Gateway
 	const char * string( const E_MD_DURATION_UNIT & ) noexcept;
 
 	// Return the multiplier to convert the number of MD step to a picosecond time
-	const double multiplierPicoSeconds( const E_MD_DURATION_UNIT & ) noexcept;
+	double multiplierPicoSeconds( const E_MD_DURATION_UNIT & ) noexcept;
 
 	// Hold data for one MD step. In this context, a step can be equilibration nvt,npt or production run
 	struct MdParametersStepData

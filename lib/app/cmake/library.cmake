@@ -1,7 +1,13 @@
+include("${CMAKE_CURRENT_LIST_DIR}/vtx_app_copy_default_user_data.cmake")
+
 # Lib.
 add_library(vtx_app)
 add_library(vtx_app::vtx_app ALIAS vtx_app)
-vtx_configure_target(vtx_app)
+if (VTX_PYTHON_BINDING)
+	vtx_configure_target(vtx_app PCH "${CMAKE_CURRENT_LIST_DIR}/vtx_app_pch.hpp")
+else()
+	vtx_configure_target(vtx_app)
+endif()
 
 file(GLOB_RECURSE HEADERS "${CMAKE_CURRENT_LIST_DIR}/../include/*")
 file(GLOB_RECURSE SOURCES "${CMAKE_CURRENT_LIST_DIR}/../src/*")
@@ -12,11 +18,7 @@ target_sources(vtx_app
 	PRIVATE FILE_SET vendors_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../vendor" FILES ${HEADERS_VENDORS}
 )
 
-# Tests.
-file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*.cpp")
-add_executable(vtx_app_test ${SOURCES_TEST})
-set_property(TARGET vtx_app_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_app_test)
+target_include_directories(vtx_app SYSTEM PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor")
 
 target_link_libraries(vtx_app PUBLIC vtx_util::vtx_util)
 target_link_libraries(vtx_app PUBLIC vtx_core::vtx_core)
@@ -27,27 +29,8 @@ endif()
 if (VTX_PYTHON_BINDING)
 	target_link_libraries(vtx_app PUBLIC vtx_python_binding::vtx_python_binding)
 endif()
-target_link_libraries(vtx_app_test PRIVATE vtx_util::vtx_util)
-target_link_libraries(vtx_app_test PRIVATE vtx_core::vtx_core)
-target_link_libraries(vtx_app_test PRIVATE vtx_io::vtx_io)
-if (VTX_RENDERER)
-	target_link_libraries(vtx_app_test PRIVATE vtx_renderer::vtx_renderer)
-endif()
-if (VTX_PYTHON_BINDING)
-	target_link_libraries(vtx_app_test PRIVATE vtx_python_binding::vtx_python_binding)
-endif()
 
 target_link_libraries(vtx_app PRIVATE argparse::argparse)
-target_link_libraries(vtx_app_test PRIVATE vtx_app::vtx_app)
-target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
-
-if (VTX_RENDERER)
-	vtx_link_cuda(vtx_app_test)
-endif()
-
-if (VTX_PYTHON_BINDING)
-	vtx_python_binding_copy_runtime(vtx_app_test)
-endif()
 
 # Vendor libs.
 if(NOT VTX_VELOPACK_LIB)
@@ -69,8 +52,37 @@ target_compile_definitions(vtx_app PRIVATE VTX_VERSION_PATCH=${VTX_VERSION_PATCH
 target_compile_definitions(vtx_app PUBLIC VTX_RENDERER=${VTX_RENDERER})
 target_compile_definitions(vtx_app PUBLIC VTX_PYTHON_BINDING=${VTX_PYTHON_BINDING})
 
-vtx_copy_directory(vtx_app_test "${CMAKE_CURRENT_LIST_DIR}/../test/data" "$<TARGET_FILE_DIR:vtx_app_test>/data")
+# Tests.
+if(VTX_BUILD_TESTS)
+	file(GLOB_RECURSE SOURCES_TEST "${CMAKE_CURRENT_LIST_DIR}/../test/*.cpp")
+	add_executable(vtx_app_test ${SOURCES_TEST})
+	set_property(TARGET vtx_app_test PROPERTY FOLDER "test")
+	vtx_configure_target(vtx_app_test NO_LINTER)
 
-include(CTest)
-include(Catch)
-catch_discover_tests(vtx_app_test DISCOVERY_MODE PRE_TEST PROPERTIES RESOURCE_LOCK vtx_app_test)
+	target_link_libraries(vtx_app_test PRIVATE vtx_util::vtx_util)
+	target_link_libraries(vtx_app_test PRIVATE vtx_core::vtx_core)
+	target_link_libraries(vtx_app_test PRIVATE vtx_io::vtx_io)
+	if (VTX_RENDERER)
+		target_link_libraries(vtx_app_test PRIVATE vtx_renderer::vtx_renderer)
+	endif()
+	if (VTX_PYTHON_BINDING)
+		target_link_libraries(vtx_app_test PRIVATE vtx_python_binding::vtx_python_binding)
+	endif()
+	target_link_libraries(vtx_app_test PRIVATE vtx_app::vtx_app)
+	target_link_libraries(vtx_app_test PRIVATE Catch2::Catch2WithMain)
+
+	if (VTX_RENDERER)
+		vtx_link_cuda(vtx_app_test)
+	endif()
+
+	if (VTX_PYTHON_BINDING)
+		vtx_python_binding_copy_runtime(vtx_app_test)
+	endif()
+
+	vtx_copy_directory(vtx_app_test "${CMAKE_CURRENT_LIST_DIR}/../test/data" "$<TARGET_FILE_DIR:vtx_app_test>/data")
+	vtx_app_copy_default_user_data(vtx_app_test)
+
+	include(CTest)
+	include(Catch)
+	catch_discover_tests(vtx_app_test DISCOVERY_MODE PRE_TEST PROPERTIES RESOURCE_LOCK vtx_app_test)
+endif()

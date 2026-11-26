@@ -1,62 +1,64 @@
 #include "app/extractor/system.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/action/camera.hpp"
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/generic/name.hpp"
 #include "app/helper/preset.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
-#include "app/system/trajectory_preparation.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
+#include "app/trajectory/loader.hpp"
+#include "app/trajectory/player.hpp"
+#include "app/trajectory/types.hpp"
 #include "app/uid/uid_manager.hpp"
 #include <core/struct/topology.hpp>
+#include <core/struct/trajectory.hpp>
+#include <fmt/format.h>
 #include <io/metadata.hpp>
 #include <io/reader.hpp>
-#include <latch>
+#include <limits>
+#include <memory>
 #include <optional>
 #include <renderer/representation.hpp>
+#include <stdexcept>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
-#include <util/logger.hpp>
 #include <util/math/aabb.hpp>
-#include <util/math/range_list.hpp>
+#include <util/math/grid.hpp>
 #include <util/math/transform.hpp>
-#include <variant>
+#include <util/thread/thread_manager.hpp>
+#include <utility>
 
 namespace VTX::App::Extractor
 {
-	struct Pending
+	namespace
 	{
-		std::optional<Entity>																entity;
-		bool																				onlyTrajectory = false;
-		FilePath																			sourcePath;
-		IO::READER_OPTION																	readerOption;
-		std::optional<std::string>															buffer;
-		std::optional<IO::SystemReader>														reader;
-		Core::Struct::Topology																topology;
-		IO::Metadata																		metadata;
-		std::variant<App::System::TrajectorySingleFrame, App::System::TrajectoryFullBuffer> trajectoryData;
-	};
-
-	void deliver( Pending && p_data ) noexcept;
+		struct Pending
+		{
+			std::optional<Entity>								   entity;
+			bool												   onlyTrajectory = false;
+			FilePath											   sourcePath;
+			IO::READER_OPTION									   readerOption = IO::READER_OPTION::ALL;
+			TrajectoryBufferSettings							   trajectoryBufferSettings;
+			std::optional<std::string>							   buffer;
+			std::optional<IO::SystemReader>						   reader;
+			Core::Struct::Topology								   topology;
+			IO::Metadata										   metadata;
+			Util::Math::AABB									   aabb;
+			Util::Math::Grid<Index>								   atomGrid;
+			Core::Struct::Trajectory							   trajectory;
+			std::optional<App::Trajectory::Player>				   trajectoryPlayer;
+			std::optional<App::Trajectory::TRAJECTORY_BUFFER_MODE> trajectoryBufferMode;
+		};
+	} // namespace
 
 	namespace
 	{
-		size_t _getCurrentAtomPositionCount( const App::System::TrajectorySingleFrame & p_trajectory ) noexcept
-		{ return p_trajectory.atomPositions.size(); }
-
-		size_t _getCurrentAtomPositionCount( const App::System::TrajectoryFullBuffer & p_trajectory ) noexcept
-		{
-			if ( p_trajectory.frameCollection.empty() )
-			{
-				return 0;
-			}
-
-			return p_trajectory.frameCollection[ p_trajectory.genericData.currentFrameIndex ].size();
-		}
+		void deliver( Pending & p_data );
 
 		/**
 		 * @brief Event triggered with the end of the deliver free function.
@@ -68,48 +70,42 @@ namespace VTX::App::Extractor
 
 	} // namespace
 
-	struct System::_Data
+	struct System::Data
 	{
-		Pending	   data;
-		std::latch synchronizer { 1 };
-
-		_Data() = default;
-
-		void jobFinished() { synchronizer.count_down(); }
+		Pending data;
 	};
 
-	template<typename JobFinishSignaler>
-	struct DeliverSystem
+	System::System( FilePath p_path, IO::READER_OPTION p_options, const TrajectoryBufferSettings p_bufferSettings ) :
+		_attributesPtr( std::make_shared<Data>() )
 	{
-		void execute( JobFinishSignaler jobFinishedPtr )
-		{
-			deliver( std::move( jobFinishedPtr->data ) );
-			jobFinishedPtr->jobFinished();
-		}
-	};
-
-	void System::_clean() { _attributesPtr->synchronizer.count_down(); }
-
-	System::System( FilePath p_path, IO::READER_OPTION p_options ) : _attributesPtr( std::make_shared<_Data>() )
-	{
-		_attributesPtr->data.sourcePath	  = std::move( p_path );
-		_attributesPtr->data.readerOption = p_options;
+		_attributesPtr->data.sourcePath				  = std::move( p_path );
+		_attributesPtr->data.readerOption			  = p_options;
+		_attributesPtr->data.trajectoryBufferSettings = p_bufferSettings;
 	}
 
-	System::System( FilePath p_path, std::string && p_buffer, IO::READER_OPTION p_options ) :
-		System( std::move( p_path ), p_options )
+	System::System(
+		FilePath					   p_path,
+		std::string &&				   p_buffer,
+		IO::READER_OPTION			   p_options,
+		const TrajectoryBufferSettings p_bufferSettings
+	) : System( std::move( p_path ), p_options, p_bufferSettings )
 	{ _attributesPtr->data.buffer = std::move( p_buffer ); }
 
-	System::System( Entity p_entity, FilePath p_path, IO::READER_OPTION p_options ) :
-		System( std::move( p_path ), p_options )
+	System::System(
+		const Entity				   p_entity,
+		FilePath					   p_path,
+		IO::READER_OPTION			   p_options,
+		const TrajectoryBufferSettings p_bufferSettings
+	) : System( std::move( p_path ), p_options, p_bufferSettings )
 	{
 		_attributesPtr->data.entity			= p_entity;
 		_attributesPtr->data.onlyTrajectory = true;
 	}
 
-	void System::wait() noexcept { _attributesPtr->synchronizer.wait(); }
-
-	uint System::operator()( Util::StopToken p_stopToken, Threading::OptionalThreadReference p_thread )
+	uint System::operator()(
+		const Util::Thread::StopToken &				p_stopToken,
+		const Util::Thread::OptionalThreadReference p_thread
+	)
 	{
 		auto & pendingData = _attributesPtr->data;
 
@@ -122,7 +118,6 @@ namespace VTX::App::Extractor
 
 		if ( p_stopToken.stop_requested() )
 		{
-			_clean();
 			return 0;
 		}
 
@@ -139,137 +134,174 @@ namespace VTX::App::Extractor
 		if ( not pendingData.onlyTrajectory )
 		{
 			pendingData.reader->get(
-				ECS::getCtx<Core::ChemDB::Category::Dictionary>(), pendingData.topology, pendingData.metadata
+				ECS::getCtx<Core::ChemDB::Category::Dictionary>(),
+				pendingData.topology,
+				pendingData.metadata,
+				pendingData.aabb,
+				pendingData.atomGrid
 			);
 		}
 
 		if ( p_stopToken.stop_requested() )
 		{
-			_clean();
 			return 0;
 		}
 
-		if ( pendingData.reader->frameCount() > 1 )
+		pendingData.trajectory.frameCount = pendingData.reader->frameCount();
+		if ( pendingData.trajectory.frameCount == 0 )
 		{
-			pendingData.trajectoryData.emplace<App::System::TrajectoryFullBuffer>();
+			throw std::runtime_error( "Trajectory contains no frame." );
 		}
-		else
+		if ( pendingData.trajectory.frameCount > std::numeric_limits<uint>::max() )
 		{
-			pendingData.trajectoryData.emplace<App::System::TrajectorySingleFrame>();
+			throw std::length_error( "Trajectory frame count exceeds the supported range." );
 		}
-
-		auto visitor = [ reader = &pendingData.reader.value() ]( auto && traj )
-		{ App::System::prepare( traj, std::move( *reader ) ); };
-		std::visit( visitor, pendingData.trajectoryData );
+		Core::Struct::Frame firstFrame;
+		pendingData.reader->get( firstFrame, 0 );
+		pendingData.reader->releaseTopologyData();
+		if ( pendingData.trajectory.frameCount > 1 )
+		{
+			pendingData.trajectoryBufferMode.emplace(
+				pendingData.trajectoryBufferSettings.selectMode( firstFrame.size(), pendingData.trajectory.frameCount )
+			);
+		}
+		const size_t frameStorageCount = pendingData.trajectoryBufferMode
+											 ? pendingData.trajectoryBufferSettings.getStorageFrameCount(
+												   *pendingData.trajectoryBufferMode, pendingData.trajectory.frameCount
+											   )
+											 : pendingData.trajectory.frameCount;
+		pendingData.trajectory.frames.resize( frameStorageCount );
+		pendingData.trajectory.frames[ 0 ] = std::move( firstFrame );
+		if ( pendingData.trajectory.frameCount > 1 )
+		{
+			pendingData.trajectoryPlayer.emplace();
+			pendingData.trajectoryPlayer->player.setStepCount( static_cast<uint>( pendingData.trajectory.frameCount ) );
+		}
 
 		if ( p_stopToken.stop_requested() )
 		{
-			_clean();
 			return 0;
 		}
 
-		// ACTION().execute<Action::QueueAction<DeliverSystem<std::shared_ptr<_Data>>>>( _attributesPtr );
-		ACTION().subscribe(
-			Action::QueuedAction( DeliverSystem<std::shared_ptr<_Data>>(), std::move( _attributesPtr ) )
-		);
+		THREAD().synchronize( [ &pendingData ]() { deliver( pendingData ); } );
 		return 0;
 	}
 
-	void addTrajectory( const Entity & p_entity, Pending & p_data ) noexcept
+	namespace
 	{
-		std::visit(
-			[ &p_entity ]( auto && traj ) mutable
-			{
-				using TrajType = std::remove_cvref_t<decltype( traj )>;
-				REG().emplace<TrajType>( p_entity, std::move( traj ) );
-			},
-			std::move( p_data.trajectoryData )
-		);
-		App::System::startAsyncTrajectoryWork( p_entity, std::move( p_data.reader.value() ) );
-	}
-
-	void create( Pending & p_data ) noexcept
-	{
-		auto & reg = REG();
-
-		// Add components.
-		auto   p_entity	 = reg.create();
-		auto & data		 = reg.emplace<Core::Struct::Topology>( p_entity, std::move( p_data.topology ) );
-		auto & metadata	 = reg.emplace<IO::Metadata>( p_entity, std::move( p_data.metadata ) );
-		auto & transform = reg.emplace<Util::Math::Transform>( p_entity );
-		auto & aabb		 = reg.emplace<Util::Math::AABB>( p_entity );
-		auto & uid		 = reg.emplace<App::System::UID>( p_entity );
-
-		auto & visibility	  = reg.emplace<App::System::Visibility>( p_entity );
-		auto & selection	  = reg.emplace<App::System::Selection>( p_entity );
-		auto & representation = reg.emplace<App::System::Representation>( p_entity );
-		auto & color		  = reg.emplace<App::System::Color>( p_entity );
-
-		// UIDs: get from UID manager.
-		auto & uidManager = App::UID();
-		uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
-		uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
-
-		addTrajectory( p_entity, p_data );
-
-		// Visibillity: all visible.
-		visibility.atoms = Util::Math::BitSet( data.getAtomCount(), true );
-
-		// Selection: nothing selected.
-		selection.atoms = Util::Math::BitSet( data.getAtomCount() );
-
-		// Color: set default color scheme.
-		color.colorSchemeAtoms[ Renderer::E_COLOR_SCHEME::ATOM ] = Core::Struct::IndexRangeList( data.getAtomRange() );
-
-		// Representation: set default representation.
-		// TODO: configure default representation in settings?
-		representation.presetAtoms
-			[ Helper::Preset::getByName<Renderer::Representation>( "Sticks and Ribbons" )
-				  .value_or( ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Representation>() ) ]
-			= Core::Struct::IndexRangeList( data.getAtomRange() );
-
-		// Trigger system load.
-		HUB().trigger<Events::SystemLoad>( { p_entity } );
-
-		// Orient.
-		ACTION().execute<Action::Camera::Orient>( aabb );
-	}
-
-	void deliver( Pending && p_data ) noexcept
-	{
-		if ( p_data.onlyTrajectory && p_data.entity )
+		void addTrajectory( const Entity & p_entity, Pending & p_data )
 		{
-			auto &		 topology		  = REG().get<Core::Struct::Topology>( p_data.entity.value() );
-			const size_t pendingAtomCount = std::visit(
-				[]( const auto & p_trajectory ) { return _getCurrentAtomPositionCount( p_trajectory ); },
-				p_data.trajectoryData
-			);
+			auto & registry = REG();
+			registry.remove<App::Trajectory::Loader>( p_entity );
+			registry.remove<App::Trajectory::Player>( p_entity );
+			registry.emplace_or_replace<Core::Struct::Trajectory>( p_entity, std::move( p_data.trajectory ) );
 
-			if ( topology.getAtomCount() == pendingAtomCount )
+			if ( p_data.trajectoryBufferMode && p_data.trajectoryPlayer && p_data.reader )
 			{
-				addTrajectory( *p_data.entity, p_data );
+				registry.emplace<App::Trajectory::Player>( p_entity, std::move( *p_data.trajectoryPlayer ) );
+				registry.emplace<App::Trajectory::Loader>(
+					p_entity,
+					THREAD().createThread<App::Thread::TrajectoryLoader>(
+						std::move( *p_data.reader ), *p_data.trajectoryBufferMode
+					),
+					*p_data.trajectoryBufferMode
+				);
+			}
+		}
 
-				if ( auto uid = REG().try_get<App::System::UID>( *p_data.entity ) )
+		void create( Pending & p_data )
+		{
+			auto & reg = REG();
+
+			// Add components.
+			auto   p_entity = reg.create();
+			auto & data		= reg.emplace<Core::Struct::Topology>( p_entity, std::move( p_data.topology ) );
+			reg.emplace<IO::Metadata>( p_entity, std::move( p_data.metadata ) );
+			reg.emplace<Util::Math::Transform>( p_entity );
+			auto & aabb = reg.emplace<Util::Math::AABB>( p_entity, p_data.aabb );
+			reg.emplace<Util::Math::Grid<Index>>( p_entity, std::move( p_data.atomGrid ) );
+			auto & uid = reg.emplace<App::System::UID>( p_entity );
+
+			auto & visibility	  = reg.emplace<App::System::Visibility>( p_entity );
+			auto & selection	  = reg.emplace<App::System::Selection>( p_entity );
+			auto & representation = reg.emplace<App::System::Representation>( p_entity );
+			auto & color		  = reg.emplace<App::System::Color>( p_entity );
+
+			// UIDs: get from UID manager.
+			auto & uidManager = App::UID();
+			uid.residues	  = uidManager.getPickingPool().registerRange( data.getResidueCount() );
+			uid.atoms		  = uidManager.getPickingPool().registerRange( data.getAtomCount() );
+
+			addTrajectory( p_entity, p_data );
+
+			// Visibillity: all visible.
+			visibility.atoms = Util::Math::BitSet( data.getAtomCount(), true );
+
+			// Selection: nothing selected.
+			selection.atoms = Util::Math::BitSet( data.getAtomCount() );
+
+			// Color: set default color scheme.
+			color.colorSchemeAtoms[ Renderer::E_COLOR_SCHEME::ATOM ]
+				= Core::Struct::IndexRangeList( data.getAtomRange() );
+			color.colorSchemeSecondaryStructureResidues[ Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::STRUCTURE ]
+				= Core::Struct::IndexRangeList( Core::Struct::IndexRange::fromFirstCount( 0, data.getResidueCount() ) );
+
+			// Representation: set default representation.
+			// TODO: configure default representation in settings?
+			representation.presetAtoms
+				[ *Helper::Preset::getDefault<Renderer::Representation>() ]
+				= Core::Struct::IndexRangeList( data.getAtomRange() );
+
+			// Trigger system load.
+			HUB().trigger<Events::SystemLoad>( { p_entity } );
+
+			// Orient.
+			ACTION().execute<Action::Camera::Orient>( aabb );
+		}
+
+		void deliver( Pending & p_data )
+		{
+			if ( p_data.onlyTrajectory && p_data.entity )
+			{
+				if ( not REG().valid( *p_data.entity ) || not REG().all_of<Core::Struct::Topology>( *p_data.entity ) )
 				{
-					// Trigger trajectory event.
-					HUB().trigger<Events::TrajectoryLoad>( { *p_data.entity,
-															 App::System::getCurrentAtomPositions( *p_data.entity ) } );
+					throw std::runtime_error(
+						fmt::format( "Cannot associate {}: system is no longer available.", p_data.sourcePath.string() )
+					);
+				}
+
+				auto &		 topology		  = REG().get<Core::Struct::Topology>( p_data.entity.value() );
+				const size_t pendingAtomCount = p_data.trajectory.getAtomCount();
+
+				if ( topology.getAtomCount() == pendingAtomCount )
+				{
+					addTrajectory( *p_data.entity, p_data );
+
+					if ( REG().all_of<App::System::UID>( *p_data.entity ) )
+					{
+						App::Helper::Trajectory::visitCurrentFrame(
+							*p_data.entity,
+							[ entity = *p_data.entity ]( const Core::Struct::FrameView p_frame )
+							{ HUB().trigger<Events::TrajectoryCurrentFrameChange>( { entity, p_frame } ); }
+						);
+					}
+				}
+				else
+				{
+					throw std::runtime_error(
+						fmt::format(
+							"File {} has different atom count. ({}/{})",
+							p_data.sourcePath.string(),
+							topology.getAtomCount(),
+							pendingAtomCount
+						)
+					);
 				}
 			}
 			else
 			{
-				VTX::VTX_ERROR(
-					"File {} has different atom count. ({}/{})",
-					p_data.sourcePath.string(),
-					topology.getAtomCount(),
-					pendingAtomCount
-				);
+				create( p_data );
 			}
 		}
-		else
-		{
-			create( p_data );
-		}
-	}
-
+	} // namespace
 } // namespace VTX::App::Extractor

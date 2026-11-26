@@ -1,45 +1,53 @@
 
 #include "ui/qt/widget/tree/trajectory_player.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
+#include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory.hpp>
+#include <app/trajectory/loader.hpp>
+#include <app/trajectory/player.hpp>
+#include <core/struct/trajectory.hpp>
+#include <memory>
+#include <util/action_manager.hpp>
+#include <util/event_hub.hpp>
+#include <util/thread/thread_manager.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	TrajectoryPlayer::TrajectoryPlayer( Entity p_system, QWidget * p_parent ) : QWidget( p_parent ), _system( p_system )
+	TrajectoryPlayer::TrajectoryPlayer( Entity p_system, QWidget * const p_parent ) :
+		QWidget( p_parent ), _system( p_system )
 	{
 		// Main vertical layout
-		auto * mainLayout = new QVBoxLayout( this );
+		auto * mainLayout = Helper::makeQObject<QVBoxLayout>( this );
 		mainLayout->setContentsMargins( 0, 0, 0, 0 );
 		mainLayout->setSpacing( 0 );
 
 		// Control bar (horizontal)
-		auto * controlBar = new QHBoxLayout();
+		auto * controlBar = Helper::makeChildLayout<QHBoxLayout>( *mainLayout );
 		controlBar->setContentsMargins( 4, 2, 4, 2 );
 		controlBar->setSpacing( 4 );
 
 		// Play/Pause button
-		_btnPlayPause = new QPushButton( this );
+		_btnPlayPause = Helper::makeQObject<QPushButton>( this );
 		_btnPlayPause->setFixedSize( 24, 24 );
 		_btnPlayPause->setToolTip( tr( "Play/Pause" ) );
 		controlBar->addWidget( _btnPlayPause );
 
 		// Stop button
-		_btnStop = new QPushButton( this );
+		_btnStop = Helper::makeQObject<QPushButton>( this );
 		_btnStop->setFixedSize( 24, 24 );
 		_btnStop->setToolTip( tr( "Stop" ) );
 		_btnStop->setIcon( _icons[ 2 ] );
 		controlBar->addWidget( _btnStop );
 
 		// Slider
-		_slider = new TrajectorySlider( Qt::Horizontal, this );
+		_slider = Helper::makeQObject<TrajectorySlider>( Qt::Horizontal, this );
 		_slider->setMinimum( 0 );
 		_slider->setMaximum( 100 );
 		_slider->setValue( 0 );
@@ -47,23 +55,21 @@ namespace VTX::UI::QT::Widget::Tree
 		controlBar->addWidget( _slider, 1 ); // Stretch factor 1
 
 		// Frame label
-		_frameLabel = new QLabel( "0/0", this );
+		_frameLabel = Helper::makeQObject<QLabel>( "0/0", this );
 		_frameLabel->setMinimumWidth( 60 );
 		_frameLabel->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
 		controlBar->addWidget( _frameLabel );
 
 		// Settings Button
-		_btnSettings = new QPushButton( this );
+		_btnSettings = Helper::makeQObject<QPushButton>( this );
 		_btnSettings->setIcon( _icons[ 3 ] );
 		_btnSettings->setFixedSize( 24, 24 );
 		_btnSettings->setCheckable( true );
 		_btnSettings->setToolTip( tr( "Settings" ) );
 		controlBar->addWidget( _btnSettings );
 
-		mainLayout->addLayout( controlBar );
-
 		// Settings panel (initially hidden)
-		_settings = new TrajectorySettings( _system, this );
+		_settings = Helper::makeQObject<TrajectorySettings>( _system, this );
 		_settings->setVisible( false );
 		mainLayout->addWidget( _settings );
 
@@ -74,9 +80,12 @@ namespace VTX::UI::QT::Widget::Tree
 		connect( _btnSettings, &QPushButton::clicked, this, &TrajectoryPlayer::_onSettingsClicked );
 
 		// Connect to trajectory updates
-		App::REG().on_update<App::System::TrajectoryFullBuffer>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>(
-			this
-		);
+		_playerUpdatedConnection
+			= App::REG().on_update<App::Trajectory::Player>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
+		_loaderUpdatedConnection
+			= App::REG().on_update<App::Trajectory::Loader>().connect<&TrajectoryPlayer::_onTrajectoryUpdated>( this );
+		_loadingProgressConnection
+			= App::HUB().connect<App::Events::ThreadProgress, &TrajectoryPlayer::_onTrajectoryLoadingProgress>( this );
 
 		// Initial state
 		_refresh();
@@ -112,13 +121,7 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
-
-		if ( trajPtr && trajPtr->trajectorySize > 0 )
-		{
-			App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, uint( p_value ) );
-		}
+		App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, static_cast<uint>( p_value ) );
 	}
 
 	void TrajectoryPlayer::_onTrajectoryUpdated( Registry &, Entity p_entity )
@@ -130,44 +133,40 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 	}
 
-	void TrajectoryPlayer::_refresh()
+	void TrajectoryPlayer::_onTrajectoryLoadingProgress( const App::Events::ThreadProgress & p_event )
 	{
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
-
-		if ( trajPtr == nullptr )
+		const App::Trajectory::Loader * const  loader		  = App::REG().try_get<App::Trajectory::Loader>( _system );
+		const Util::Thread::BaseThread * const progressThread = App::THREAD().get( p_event.id );
+		if ( loader == nullptr || progressThread != loader->thread.get() )
 		{
-			_slider->setMaximum( 0 );
-			_frameLabel->setText( "0/0" );
 			return;
 		}
 
-		uint totalFrames  = trajPtr->trajectorySize;
-		uint currentFrame = trajPtr->currentFrameIndex;
+		const App::Trajectory::FrameRange availableFrames = loader->availableFrames;
+		_slider->setLoadedRange( static_cast<int>( availableFrames.getFirst() ),
+								 availableFrames.isEmpty() ? 0 : static_cast<int>( availableFrames.getLast() - 1 ) );
+	}
 
-		// Handle max values
-		if ( totalFrames == std::numeric_limits<uint>::max() )
-		{
-			totalFrames = 0;
-		}
-		if ( currentFrame == std::numeric_limits<uint>::max() )
-		{
-			currentFrame = 0;
-		}
+	void TrajectoryPlayer::_refresh()
+	{
+		const App::Trajectory::Player & player = App::REG().get<App::Trajectory::Player>( _system );
+
+		const uint totalFrames	= static_cast<uint>( App::REG().get<Core::Struct::Trajectory>( _system ).frameCount );
+		const uint currentFrame = player.currentFrameIndex;
 
 		// Guard to prevent valueChanged from triggering JumpTo during programmatic updates
 		_isRefreshing = true;
-		_slider->setMaximum( totalFrames > 0 ? int( totalFrames - 1 ) : 0 );
-		_slider->setValue( int( currentFrame ) );
+		_slider->setMaximum( static_cast<int>( totalFrames - 1 ) );
+		_slider->setValue( static_cast<int>( currentFrame ) );
 		_isRefreshing = false;
 
 		// Update loaded range overlay
-		App::System::AvailableFrames availableFrames;
-		App::System::get( _system, availableFrames );
-		_slider->setLoadedRange( int( availableFrames.lowerBoundIndex ), int( availableFrames.higherBoundIndex ) );
+		const App::Trajectory::FrameRange availableFrames = App::Helper::Trajectory::getAvailableFrames( _system );
+		_slider->setLoadedRange( static_cast<int>( availableFrames.getFirst() ),
+								 availableFrames.isEmpty() ? 0 : static_cast<int>( availableFrames.getLast() - 1 ) );
 
 		// Update frame label
-		_frameLabel->setText( QString( "%1/%2" ).arg( currentFrame ).arg( totalFrames > 0 ? totalFrames - 1 : 0 ) );
+		_frameLabel->setText( QString( "%1/%2" ).arg( currentFrame ).arg( totalFrames - 1 ) );
 
 		// Update play/pause icon
 		_updatePlayPauseIcon();
@@ -175,10 +174,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectoryPlayer::_updatePlayPauseIcon()
 	{
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
+		const App::Trajectory::Player & player = App::REG().get<App::Trajectory::Player>( _system );
 
-		bool isPlaying = trajPtr && !trajPtr->paused;
+		const bool isPlaying = not player.paused;
 
 		// Use unicode symbols for now (can be replaced with icons)
 		_btnPlayPause->setIcon( isPlaying ? _icons[ 1 ] : _icons[ 0 ] );

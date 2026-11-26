@@ -1,9 +1,11 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_OUTLINE__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_OUTLINE__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_OUTLINE_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_OUTLINE_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
+#include <string_view>
+#include <util/math.hpp>
 #include <util/constants.hpp>
 #include <utility>
 
@@ -20,46 +22,42 @@ namespace VTX::Renderer
 
 	struct OutlineConfig
 	{
-		Util::Color::Rgba color;
-		float			  sensitivity;
-		uint			  thickness;
-	};
+		Util::Color::Rgba color = COLOR_OUTLINE_DEFAULT;
+		float			  sensitivity = OUTLINE_SENSITIVITY_DEFAULT;
+		uint			  thickness = OUTLINE_THICKNESS_DEFAULT;
 
-	namespace GraphicsConfigs
-	{
-		inline const OutlineConfig OUTLINE_DEFAULT { COLOR_OUTLINE_DEFAULT,
-													 OUTLINE_SENSITIVITY_DEFAULT,
-													 OUTLINE_THICKNESS_DEFAULT };
-	} // namespace GraphicsConfigs
+		void clamp()
+		{
+			sensitivity = Util::Math::clamp( sensitivity, OUTLINE_SENSITIVITY_MIN, OUTLINE_SENSITIVITY_MAX );
+			thickness	= Util::Math::clamp( thickness, OUTLINE_THICKNESS_MIN, OUTLINE_THICKNESS_MAX );
+		}
+	};
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess
 {
 	struct Outline
 	{
-		inline static const Desc::Key PASS = "Outline";
+		static constexpr std::string_view PASS = "Outline";
 
 		static Desc::Key build( GraphBuilder & p_graph, const Desc::Key & p_input )
 		{
-			p_graph.pass( PASS )
+			p_graph.pass( Desc::Key { PASS } )
 				.in( p_input )
 				.in( "Depth" )
-				.out( PASS )
-				.program( PASS )
+				.out( Desc::Key { PASS } )
+				.program( Desc::Key { PASS } )
 				.shaders( { "default.vert", "outline.frag" } )
 				.uniform( "Color", COLOR_WHITE.toLinear() )
+				.uniform( "Sensitivity",
+						  OUTLINE_SENSITIVITY_DEFAULT,
+						  std::pair { OUTLINE_SENSITIVITY_MIN, OUTLINE_SENSITIVITY_MAX } )
 				.uniform(
-					"Sensitivity",
-					OUTLINE_SENSITIVITY_DEFAULT,
-					std::pair { OUTLINE_SENSITIVITY_MIN, OUTLINE_SENSITIVITY_MAX }
-				)
-				.uniform(
-					"Thickness", OUTLINE_THICKNESS_DEFAULT, std::pair { OUTLINE_THICKNESS_MIN, OUTLINE_THICKNESS_MAX }
-				)
+					"Thickness", OUTLINE_THICKNESS_DEFAULT, std::pair { OUTLINE_THICKNESS_MIN, OUTLINE_THICKNESS_MAX } )
 				.endProgram()
 				.endPass();
 
-			return PASS;
+			return Desc::Key { PASS };
 		}
 
 		static void upload( Context::ContextWrapper & p_context, const OutlineConfig & p_config )
@@ -70,7 +68,7 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( p_config.thickness );
 			buffer.close();
 
-			p_context.setBuffer( { PASS }, buffer );
+			p_context.setBuffer( { Desc::Key { PASS } }, buffer.bytes() );
 		}
 	};
 } // namespace VTX::Renderer::Builder::PostProcess

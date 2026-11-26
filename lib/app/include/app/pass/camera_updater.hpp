@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PASS_CAMERA_UPDATER__
-#define __VTX_APP_PASS_CAMERA_UPDATER__
+#ifndef VTX_APP_PASS_CAMERA_UPDATER_HPP
+#define VTX_APP_PASS_CAMERA_UPDATER_HPP
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
@@ -8,8 +8,10 @@
 #include "app/pass/pass_manager.hpp"
 #include "app/services.hpp"
 #include "app/setting/controller.hpp"
+#include <deque>
 #include <renderer/camera.hpp>
 #include <util/constants.hpp>
+#include <util/event_hub.hpp>
 #include <util/math/transform.hpp>
 
 namespace VTX::App::Pass
@@ -28,6 +30,11 @@ namespace VTX::App::Pass
 			bool( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & )>;
 
 		/**
+		 * @brief Flag that trigger update.
+		 */
+		static constexpr E_PENDING_UPDATE UPDATE_TRIGGERS = E_PENDING_UPDATE::INPUT | E_PENDING_UPDATE::ANIMATION;
+
+		/**
 		 * @brief Constructor.
 		 */
 		CameraUpdater( const Entity & );
@@ -35,11 +42,11 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Update each frame.
 		 */
-		inline void update( const float p_delta, const float )
+		void update( const float p_delta, const float )
 		{
 			if ( not _controllers.empty() )
 			{
-				const auto & settings = REG().get<Setting::Controller>( _entity );
+				const auto & settings  = REG().get<Setting::Controller>( _entity );
 				auto &		 transform = REG().get<Util::Math::Transform>( _entity );
 				auto &		 target	   = REG().get<Renderer::Camera>( _entity ).target;
 
@@ -56,7 +63,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Controller insertion mode.
 		 */
-		enum struct CTRL_INSERTION_MODE
+		enum struct CTRL_INSERTION_MODE : uint8_t
 		{
 			FRONT,
 			BACK
@@ -77,7 +84,7 @@ namespace VTX::App::Pass
 
 			// Remove previous instance of same type.
 			// TODO: make this facultative.
-			Hash hash = Util::hash<C>();
+			const Hash hash = Util::hash<C>();
 			std::erase_if( _controllers, [ hash ]( const Entry & e ) { return e.hash == hash; } );
 
 			// Push.
@@ -96,6 +103,7 @@ namespace VTX::App::Pass
 			{
 				_controllers.emplace_back( std::move( entry ) );
 			}
+			_syncAnimatingState();
 		}
 
 		/**
@@ -111,12 +119,13 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Go to next controller.
 		 */
-		inline void nextController()
+		void nextController()
 		{
 			if ( not _controllers.empty() )
 			{
 				_controllers.pop_front();
 			}
+			_syncAnimatingState();
 		}
 
 	  private:
@@ -146,10 +155,27 @@ namespace VTX::App::Pass
 		void _onControllerSetting();
 
 		/**
+		 * @brief On camera animation start.
+		 */
+		void _onCameraAnimationStart( const Events::CameraAnimationStart & );
+
+		/**
 		 * @brief On update camera.
 		 */
 		void _onUpdateCamera();
 
+		/**
+		 * @brief Add/remove tag that indicate if camera is animating.
+		 */
+		void _syncAnimatingState();
+
+		/**
+		 * @brief Connections.
+		 */
+		Util::EventHub::ScopedConnection _controllerUpdatedConnection;
+		Util::EventHub::ScopedConnection _cameraUpdatedConnection;
+		Util::EventHub::ScopedConnection _animationStartConnection;
+		Util::EventHub::ScopedConnection _transformChangedConnection;
 	}; // namespace VTX::App::Pass
 } // namespace VTX::App::Pass
 

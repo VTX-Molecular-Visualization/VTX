@@ -1,5 +1,5 @@
-message("vtx_renderer")
-cmake_minimum_required(VERSION 3.23)
+message(STATUS "VTX - vtx_renderer")
+cmake_minimum_required(VERSION 3.28)
 project(vtx_renderer)
 
 if(LINUX)
@@ -7,6 +7,7 @@ if(LINUX)
 endif()
 find_package(vtx_util CONFIG REQUIRED)
 find_package(vtx_core CONFIG REQUIRED)
+find_package(Ktx CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 
 include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")

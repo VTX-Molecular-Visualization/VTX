@@ -1,8 +1,5 @@
-#ifndef __VTX_UTIL_MATH__
-#define __VTX_UTIL_MATH__
-
-#define GLM_FORCE_INLINE
-#define GLM_ENABLE_EXPERIMENTAL
+#ifndef VTX_UTIL_MATH_HPP
+#define VTX_UTIL_MATH_HPP
 
 #include "constants.hpp"
 #include "types.hpp"
@@ -19,24 +16,31 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
 #include <random>
+#include <stdexcept>
 
 namespace VTX::Util::Math
 {
 	using ::glm::abs;
 	using ::glm::all;
 	using ::glm::any;
+	using ::glm::atan2;
+	using ::glm::ceil;
 	using ::glm::clamp;
 	using ::glm::conjugate;
+	using ::glm::cos;
 	using ::glm::cross;
 	using ::glm::degrees;
 	using ::glm::distance;
 	using ::glm::dot;
 	using ::glm::eulerAngles;
+	using ::glm::exp2;
+	using ::glm::floor;
 	using ::glm::inverse;
 	using ::glm::length;
 	using ::glm::length2;
 	using ::glm::lerp;
 	using ::glm::lessThan;
+	using ::glm::log2;
 	using ::glm::lookAt;
 	using ::glm::mat;
 	using ::glm::max;
@@ -52,6 +56,7 @@ namespace VTX::Util::Math
 	using ::glm::radians;
 	using ::glm::rotate;
 	using ::glm::scale;
+	using ::glm::sin;
 	using ::glm::to_string;
 	using ::glm::toMat3;
 	using ::glm::toMat4;
@@ -66,9 +71,12 @@ namespace VTX::Util::Math
 	constexpr bool RANDOM = true;
 #endif
 
-	inline std::random_device					 rd;
-	inline std::mt19937							 gen( RANDOM ? rd() : 7937 );
-	inline std::uniform_real_distribution<float> dis( 0.f, 1.f );
+	inline float randomFloat()
+	{
+		static thread_local std::mt19937	  generator( RANDOM ? std::random_device {}() : 7937u );
+		std::uniform_real_distribution<float> distribution( 0.f, 1.f );
+		return distribution( generator );
+	}
 
 	template<typename T>
 	inline void normalizeSelf( T & p_value )
@@ -86,26 +94,20 @@ namespace VTX::Util::Math
 
 	template<int L, typename T>
 	inline std::vector<T> toStdVector( const vec<L, T> & p_value )
-	{
-		return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L );
-	}
+	{ return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L ); }
 
 	template<int L, typename T>
 	inline std::vector<T> toStdVector( const mat<L, L, T> & p_value )
-	{
-		return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L * L );
-	}
-
-	inline float randomFloat() { return dis( gen ); }
+	{ return std::vector<T>( value_ptr( p_value ), value_ptr( p_value ) + L * L ); }
 
 	inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
-	inline Quatf slerp( const Quatf & p_lhs, const Quatf & p_rhs, const float p_value )
+	inline Quatf slerp( const Quatf & p_lhs, const Quatf & p_rhs, const float p_value ) noexcept
 	{
 		Quatf rhs = p_rhs;
 		if ( dot( p_lhs, p_rhs ) < 0.f )
 		{
-			rhs = Quatf( -p_rhs.w, { -p_rhs.x, -p_rhs.y, -p_rhs.z } );
+			rhs = -p_rhs;
 		}
 
 		return normalize( ::glm::slerp( p_lhs, rhs, p_value ) );
@@ -130,7 +132,7 @@ namespace VTX::Util::Math
 		return lerp( p_lhs, p_rhs, value );
 	}
 
-	inline Quatf easeInOutInterpolation( const Quatf & p_lhs, const Quatf & p_rhs, const float p_value )
+	inline Quatf easeInOutInterpolation( const Quatf & p_lhs, const Quatf & p_rhs, const float p_value ) noexcept
 	{
 		const float value = pow2( sin( PI_2f * p_value ) );
 		return slerp( p_lhs, p_rhs, value );
@@ -157,12 +159,12 @@ namespace VTX::Util::Math
 		assert( p_v.x >= 0 );
 		assert( p_v.y >= 0 );
 		assert( p_v.z >= 0 );
-		return ( leftShift3( uint( p_v.z ) ) << 2 ) | ( leftShift3( uint( p_v.y ) ) << 1 )
-			   | leftShift3( uint( p_v.x ) );
+		return ( leftShift3( static_cast<uint>( p_v.z ) ) << 2 ) | ( leftShift3( static_cast<uint>( p_v.y ) ) << 1 )
+			   | leftShift3( static_cast<uint>( p_v.x ) );
 	}
 
 	// p_n (normal) must be normalized.
-	inline Mat3f createOrthonormalBasis( const Vec3f & p_n )
+	inline Mat3f createOrthonormalBasis( const Vec3f & p_n ) noexcept
 	{
 		const Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y )
 							? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
@@ -203,7 +205,7 @@ namespace VTX::Util::Math
 		float u = dot( q, q );
 		float v = dot( r, r );
 
-		float angle;
+		float angle {};
 		if ( u <= 0.f || v <= 0.f )
 		{
 			angle = TWO_PIf;
@@ -216,9 +218,9 @@ namespace VTX::Util::Math
 			u = u1 / sqrtf( u );
 			v = v1 / sqrtf( v );
 
-			if ( std::abs( u ) > 0.01f || std::abs( v ) > 0.01f )
+			if ( abs( u ) > 0.01f || abs( v ) > 0.01f )
 			{
-				angle = std::atan2( v, u );
+				angle = atan2( v, u );
 			}
 			else
 			{
@@ -228,18 +230,18 @@ namespace VTX::Util::Math
 		return angle;
 	}
 
-	constexpr Vec3f linearComb(
-		const float	  p_scalar0,
-		const Vec3f & p_vector0,
-		const float	  p_scalar1,
-		const Vec3f & p_vector1
-	) noexcept
-	{
-		return p_scalar0 * p_vector0 + p_scalar1 * p_vector1;
-	}
+	constexpr Vec3f linearComb( const float	  p_scalar0,
+								const Vec3f & p_vector0,
+								const float	  p_scalar1,
+								const Vec3f & p_vector1 ) noexcept
+	{ return p_scalar0 * p_vector0 + p_scalar1 * p_vector1; }
 
-	constexpr uint nextPowerOfTwoValue( const uint p_baseNumber ) noexcept
+	constexpr uint nextPowerOfTwoValue( const uint p_baseNumber )
 	{
+		if ( p_baseNumber > ( uint { 1 } << ( std::numeric_limits<uint>::digits - 1 ) ) )
+		{
+			throw std::overflow_error( "Next power of two is not representable" );
+		}
 		uint i = 1;
 		while ( p_baseNumber > i )
 		{
@@ -260,7 +262,7 @@ namespace VTX::Util::Math
 	}
 
 	// Uniform hemisphere sampling: z is up.
-	inline Vec3f uniformHemisphere( const float p_u, const float p_v )
+	inline Vec3f uniformHemisphere( const float p_u, const float p_v ) noexcept
 	{
 		const float cosTheta = p_u;
 		const float phi		 = TWO_PIf * p_v;
@@ -268,10 +270,10 @@ namespace VTX::Util::Math
 		return Vec3f( cosf( phi ) * sinTheta, sinf( phi ) * sinTheta, cosTheta );
 	}
 
-	inline float uniformHemispherePdf() { return INV_2PIf; }
+	constexpr float uniformHemispherePdf() noexcept { return INV_2PIf; }
 
 	// Cosine weighted hemisphere samping: z is up.
-	inline Vec3f cosineWeightedHemisphere( const float p_u = randomFloat(), const float p_v = randomFloat() )
+	inline Vec3f cosineWeightedHemisphere( const float p_u = randomFloat(), const float p_v = randomFloat() ) noexcept
 	{
 		const float cosTheta = sqrtf( p_u );
 		const float sinTheta = sqrtf( 1.f - p_u );
@@ -279,7 +281,7 @@ namespace VTX::Util::Math
 		return Vec3f( cosf( phi ) * sinTheta, sinf( phi ) * sinTheta, cosTheta );
 	}
 
-	inline float cosineWeightedHemispherePdf( const float p_cosTheta ) { return p_cosTheta * INV_PIf; }
+	constexpr float cosineWeightedHemispherePdf( const float p_cosTheta ) noexcept { return p_cosTheta * INV_PIf; }
 
 	// Compute alignment of p_v to p_a (must be power of two).
 	template<typename T>
@@ -293,22 +295,20 @@ namespace VTX::Util::Math
 	std::vector<Vec3f> inline randomUniVectors( const size_t p_size )
 	{
 		std::vector<Vec3f> noiseData( p_size );
-		std::generate(
-			noiseData.begin(),
-			noiseData.end(),
+
+		std::ranges::generate(
+			noiseData,
 			[]
 			{
 				return Util::Math::normalize(
-					Vec3f( Util::Math::randomFloat() * 2.f - 1.f, Util::Math::randomFloat() * 2.f - 1.f, 0.f )
-				);
-			}
-		);
+					Vec3f( Util::Math::randomFloat() * 2.f - 1.f, Util::Math::randomFloat() * 2.f - 1.f, 0.f ) );
+			} );
 
 		return noiseData;
 	}
 
 	// TODO:  std::fabsf.
-	Vec3f orthogonalVector( const Vec3f & normal );
+	Vec3f orthogonalVector( const Vec3f & normal ) noexcept;
 
 } // namespace VTX::Util::Math
 

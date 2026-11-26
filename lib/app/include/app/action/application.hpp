@@ -1,7 +1,7 @@
-#ifndef __VTX_APP_ACTION_APPLICATION__
-#define __VTX_APP_ACTION_APPLICATION__
+#ifndef VTX_APP_ACTION_APPLICATION_HPP
+#define VTX_APP_ACTION_APPLICATION_HPP
 
-#include "app/threading/base_thread.hpp"
+#include <util/thread/base_thread.hpp>
 #include <util/types.hpp>
 #include <vector>
 
@@ -13,7 +13,7 @@ namespace VTX::App::Action::Application
 	 */
 	struct Resize
 	{
-		void execute( const size_t p_width, const size_t p_height, const bool p_resizeMainWindow = true );
+		void execute( size_t p_width, size_t p_height, bool p_resizeMainWindow = true );
 	};
 
 	/**
@@ -53,7 +53,7 @@ namespace VTX::App::Action::Application
 	 */
 	struct SetVSync
 	{
-		void execute( const bool p_enable );
+		void execute( bool p_enable );
 	};
 
 	/**
@@ -61,7 +61,7 @@ namespace VTX::App::Action::Application
 	 */
 	struct SetSavePower
 	{
-		void execute( const bool p_enable );
+		void execute( bool p_enable );
 	};
 
 	/**
@@ -69,7 +69,7 @@ namespace VTX::App::Action::Application
 	 */
 	struct StopThread
 	{
-		void execute( const Threading::BaseThread::ID & );
+		void execute( const Util::Thread::ID & );
 	};
 
 } // namespace VTX::App::Action::Application

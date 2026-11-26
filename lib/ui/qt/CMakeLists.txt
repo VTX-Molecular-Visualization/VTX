@@ -1,5 +1,5 @@
-message("vtx_ui_qt")
-cmake_minimum_required(VERSION 3.23)
+message(STATUS "VTX - vtx_ui_qt")
+cmake_minimum_required(VERSION 3.28)
 project(vtx_ui_qt)
 
 find_package(vtx_util CONFIG REQUIRED)
@@ -17,6 +17,7 @@ endif()
 find_package(Qt6 CONFIG COMPONENTS Core REQUIRED)
 find_package(Qt6 CONFIG COMPONENTS Gui REQUIRED)
 find_package(Qt6 CONFIG COMPONENTS Widgets REQUIRED)
+find_package(Qt6 CONFIG COMPONENTS OpenGLWidgets REQUIRED)
 
 include("./cmake/library.cmake")
 

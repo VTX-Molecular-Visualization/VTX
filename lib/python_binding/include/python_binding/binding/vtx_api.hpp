@@ -1,5 +1,8 @@
-#include "python_binding/interpretor.hpp"
+#ifndef VTX_PYTHON_BINDING_BINDING_VTX_API_HPP
+#define VTX_PYTHON_BINDING_BINDING_VTX_API_HPP
+
 #include <pybind11/pybind11.h>
+
 namespace VTX::PythonBinding::Binding
 {
 	/**
@@ -9,11 +12,6 @@ namespace VTX::PythonBinding::Binding
 	 */
 	void applyVtxApiBinding( pybind11::module_ & p_apiModule );
 
-	/**
-	 * @brief Declare VTX python command that are meant to be used only in the desktop client api, not in offline mode
-	 */
-	void applyVtxLocalCommandBinding( VTX::PythonBinding::Interpretor & );
-
-	void applyModuleCustomization( pybind11::module_ & p_module );
-
 } // namespace VTX::PythonBinding::Binding
+
+#endif

@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_EXAMPLE_ACTIONS_
-#define __VTX_TOOL_EXAMPLE_ACTIONS_
+#ifndef VTX_TOOL_EXAMPLE_ACTIONS_HPP
+#define VTX_TOOL_EXAMPLE_ACTIONS_HPP
 
 #include <app/ui/concepts.hpp>
 #include <string_view>

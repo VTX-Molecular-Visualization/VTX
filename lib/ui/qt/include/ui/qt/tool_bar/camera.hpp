@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_TOOL_BAR_CAMERA__
-#define __VTX_UI_QT_TOOL_BAR_CAMERA__
+#ifndef VTX_UI_QT_TOOL_BAR_CAMERA_HPP
+#define VTX_UI_QT_TOOL_BAR_CAMERA_HPP
 
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
@@ -13,7 +13,7 @@ namespace VTX::UI::QT::ToolBar
 	class Camera : public Widget::BaseWidget<Camera, QToolBar>
 	{
 	  public:
-		Camera( QWidget * p_parent ) : BaseWidget( p_parent )
+		Camera( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setWindowTitle( "Camera" );
 

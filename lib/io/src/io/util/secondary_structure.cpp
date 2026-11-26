@@ -2,13 +2,14 @@
 #include <util/chrono.hpp>
 #include <util/logger.hpp>
 #include <util/math.hpp>
+#include <utility>
 
 namespace VTX::IO::Util::SecondaryStructure
 {
 
 	void assignSecondaryStructure( Core::Struct::Topology & p_topology, const VTX::Core::Struct::Frame & p_positions )
 	{
-		VTX::Util::ScopedChrono chrono( "SecondaryStructure::assignSecondaryStructure" );
+		const VTX::Util::ScopedChrono chrono( "SecondaryStructure::assignSecondaryStructure" );
 		VTX_INFO( "Computing secondary structure with stride algorithm..." );
 
 		using namespace VTX::Util;
@@ -50,7 +51,7 @@ namespace VTX::IO::Util::SecondaryStructure
 				const Index atomCount	 = p_topology.residueAtomCounts[ p_residueIdx ];
 				const Index idxFirstAtom = p_topology.residueFirstAtomIndexes[ p_residueIdx ];
 
-				for ( int i = idxFirstAtom; i < int( idxFirstAtom + atomCount ); ++i )
+				for ( int i = idxFirstAtom; std::cmp_less( i, idxFirstAtom + atomCount ); ++i )
 				{
 					if ( p_topology.atomNames[ i ] == p_name )
 					{
@@ -147,10 +148,8 @@ namespace VTX::IO::Util::SecondaryStructure
 				}
 
 				// Strand
-				if ( ( Math::distance(
-						   Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
-						   Vec2f( -Math::radians( 110.f ), Math::radians( 130.f ) )
-					   )
+				if ( ( Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
+									   Vec2f( -Math::radians( 110.f ), Math::radians( 130.f ) ) )
 					   < ( PIf / 6.f ) )
 					 && ( residueIdx < residueCount - 1 ) )
 				{

@@ -56,7 +56,7 @@ void submit( in vec3 p, in vec3 n, in vec3 c )
 	packData( p, n, gsSegment.selection, outDataPacked );
 	gl_FragDepth = computeFragmentDepth( p );
 
-	outColor = vec4( c, 32.f ); // w = specular shininess.
+	outColor = vec4( c, 1.f );
 }
 
 void handleImpostor()

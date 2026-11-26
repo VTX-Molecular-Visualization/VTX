@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SYSTEM_ATOM_FILTER__
-#define __VTX_APP_SYSTEM_ATOM_FILTER__
+#ifndef VTX_APP_SYSTEM_ATOM_FILTER_HPP
+#define VTX_APP_SYSTEM_ATOM_FILTER_HPP
 
 #include <memory>
 

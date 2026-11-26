@@ -1,12 +1,10 @@
-
-#include "util/app.hpp"
-#include <catch2/benchmark/catch_benchmark.hpp>
+#include "util/fixture.hpp"
 #include <catch2/catch_test_macros.hpp>
 #include <fmt/format.h>
 #include <python_binding/interpretor.hpp>
 #include <util/filesystem.hpp>
 
-TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][binding][pip]" )
+TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[.][python][binding][pip][network]" )
 {
 #ifdef _DEBUG
 	/**
@@ -20,11 +18,11 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 	return;
 #endif // DEBUG
 	using namespace VTX;
-	App::Test::Util::PythonFixture f;
+	const PythonBinding::Test::Fixture f;
 
-	PythonBinding::Interpretor & interpretor = f.interpretor;
+	const PythonBinding::Interpretor & interpretor = f.interpretor;
 
-	VTX::FilePath pythonHome = Util::Filesystem::getExecutableDir() / "external" / "python";
+	const VTX::FilePath pythonHome = Util::Filesystem::getExecutableDir() / "external" / "python";
 
 	interpretor.runCommand( "import sys" );
 	interpretor.runCommand( "print( sys.path)" );
@@ -39,7 +37,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 		backslashPos = pythonPath.find( "\\", backslashPos + 2 );
 	}
 
-	std::string pip_install_dir = ( pythonHome / "Lib" / "site-packages" ).string();
+	const std::string pip_install_dir = ( pythonHome / "Lib" / "site-packages" ).string();
 #else
 	std::string pythonPath = ( pythonHome / "bin" / "python" ).string();
 	std::string pip_install_dir
@@ -54,7 +52,9 @@ TEST_CASE( "VTX_PYTHON_BINDING - Numpy module installation test", "[python][bind
 		[ has_numpy = &has_numpy ]( const std::filesystem::path & dir_entry )
 		{
 			if ( dir_entry.string().find( "numpy" ) != std::string::npos )
+			{
 				*has_numpy = true;
+			}
 		}
 	);
 

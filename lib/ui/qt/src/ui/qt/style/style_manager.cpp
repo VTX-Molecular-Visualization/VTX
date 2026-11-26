@@ -1,8 +1,9 @@
 #include "ui/qt/style/style_manager.hpp"
-#include "ui/qt/actions.hpp"
 #include "ui/qt/resources.hpp"
 #include "ui/qt/services.hpp"
 #include <QIcon>
+#include <app/ecs.hpp>
+#include <app/setting/accessibility.hpp>
 #include <util/enum.hpp>
 #include <util/logger.hpp>
 
@@ -49,7 +50,7 @@ namespace
 		p.setColor( QPalette::ButtonText, Qt::white );
 		p.setColor( QPalette::BrightText, Qt::red );
 
-		p.setColor( QPalette::Highlight, QColor( 90, 122, 190 ) );
+		p.setColor( QPalette::Highlight, QColor( 100, 100, 100 ) );
 		p.setColor( QPalette::HighlightedText, Qt::white );
 
 		p.setColor( QPalette::Disabled, QPalette::Text, QColor( 127, 127, 127 ) );
@@ -70,11 +71,19 @@ namespace VTX::UI::QT::Style
 		// ("windows11", "windowsvista", "Windows", "Fusion")
 		Q_APP()->setStyle( "Fusion" );
 
-		QFontDatabase::addApplicationFont( FONT_MATERIAL_SYMBOLS.data() );
-		QFontDatabase::addApplicationFont( FONT_INTER.data() );
-		QFontDatabase::addApplicationFont( FONT_LIBERATION_MONO.data() );
-		QFontDatabase::addApplicationFont( FONT_CASCADIA_CODE.data() );
-		QFontDatabase::addApplicationFont( FONT_OPEN_DYSLEXIC.data() );
+		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_MATERIAL_SYMBOLS ) );
+
+		for ( const QUtf8StringView font : { FONT_CASCADIA_CODE, FONT_LIBERATION_MONO, FONT_INTER, FONT_OPEN_DYSLEXIC } )
+		{
+			const int id = QFontDatabase::addApplicationFont( QString::fromUtf8( font ) );
+			for ( const QString & family : QFontDatabase::applicationFontFamilies( id ) )
+			{
+				if ( not _bundledFonts.contains( family ) )
+				{
+					_bundledFonts.append( family );
+				}
+			}
+		}
 
 		// Linux only?
 		// QIcon::setThemeName( "Material Symbols Outlined" );
@@ -85,18 +94,34 @@ namespace VTX::UI::QT::Style
 		_themePalettes[ toUnderlying( E_THEME::DARK ) ]	  = _makeDarkPalette();
 
 		// Load theme from settings.
+		bool restored = false;
 		try
 		{
-			QString		  themeName = SETTINGS().value( SETTING_KEY_THEME, "" ).toString();
+			const QString themeName = SETTINGS().value( SETTING_KEY_THEME, "" ).toString();
 			const E_THEME theme
 				= themeName.isEmpty() ? DEFAULT_THEME : Util::Enum::enumCast<E_THEME>( themeName.toStdString() );
-			QString fontName = SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY ).toString();
-			setFontFamily( fontName );
+			const bool forceDyslexicFont = App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont;
+			if ( forceDyslexicFont )
+			{
+				setFontFamily( DYSLEXIC_FONT_FAMILY );
+			}
+			else
+			{
+				setFontFamily( SETTINGS().value( SETTING_KEY_FONT, DEFAULT_FONT_FAMILY.toString() ).toString() );
+			}
 			setTheme( theme );
+			restored = true;
 		}
 		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( "Failed to restore style from settings: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Failed to restore style from settings: unknown exception" );
+		}
+		if ( not restored )
+		{
 			setFontFamily( DEFAULT_FONT_FAMILY );
 			setTheme( DEFAULT_THEME );
 		}
@@ -104,9 +129,23 @@ namespace VTX::UI::QT::Style
 
 	StyleManager::~StyleManager()
 	{
-		const QString themeName = Util::Enum::enumName( _currentTheme ).data();
-		SETTINGS().setValue( SETTING_KEY_THEME, themeName );
-		SETTINGS().setValue( SETTING_KEY_FONT, getCurrentFontFamily() );
+		try
+		{
+			const QString themeName = QString::fromUtf8( Util::Enum::enumName( _currentTheme ) );
+			SETTINGS().setValue( SETTING_KEY_THEME, themeName );
+			if ( not App::ECS::getFirstComponent<App::Setting::Accessibility>().forceDyslexicFont )
+			{
+				SETTINGS().setValue( SETTING_KEY_FONT, getCurrentFontFamily() );
+			}
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Failed to save style to settings: {}", p_e.what() );
+		}
+		catch ( ... )
+		{
+			VTX_ERROR( "Failed to save style to settings: unknown exception" );
+		}
 	}
 
 	void StyleManager::setTheme( const E_THEME p_theme )
@@ -120,14 +159,46 @@ namespace VTX::UI::QT::Style
 		_currentTheme = p_theme;
 	}
 
-	void StyleManager::setFontFamily( const QString & p_fontName )
+	void StyleManager::setFontFamily( const QAnyStringView p_fontName )
 	{
-		QFont appFont( p_fontName, DEFAULT_FONT_SIZE );
+		QFont appFont( p_fontName.toString(), DEFAULT_FONT_SIZE );
 		appFont.setStyleHint( QFont::Monospace );
 		Q_APP()->setFont( appFont );
 	}
 
 	QIcon StyleManager::iconFromCodepoint( const Codepoint p_codepoint )
 	{ return QIcon( new CodepointIconEngine( p_codepoint ) ); }
+
+	QStringList StyleManager::getSystemFonts() const
+	{
+		QStringList fonts;
+
+		const QString iconsFamily = DEFAULT_FONT_FAMILY_ICONS.toString();
+
+		// Filter not useful.
+		for ( const QString & family : QFontDatabase::families() )
+		{
+			if ( _bundledFonts.contains( family ) || family == iconsFamily )
+			{
+				continue;
+			}
+
+			if ( QFontDatabase::isPrivateFamily( family ) || not QFontDatabase::isScalable( family ) )
+			{
+				continue;
+			}
+
+			const QList<QFontDatabase::WritingSystem> writingSystems = QFontDatabase::writingSystems( family );
+			if ( not writingSystems.contains( QFontDatabase::Latin )
+				 || writingSystems.contains( QFontDatabase::Symbol ) )
+			{
+				continue;
+			}
+
+			fonts.append( family );
+		}
+
+		return fonts;
+	}
 
 } // namespace VTX::UI::QT::Style

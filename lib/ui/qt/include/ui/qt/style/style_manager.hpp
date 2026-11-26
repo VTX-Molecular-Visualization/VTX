@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_STYLE_STYLE_MANAGER__
-#define __VTX_UI_QT_STYLE_STYLE_MANAGER__
+#ifndef VTX_UI_QT_STYLE_STYLE_MANAGER_HPP
+#define VTX_UI_QT_STYLE_STYLE_MANAGER_HPP
 
 #include "ui/qt/application.hpp"
 #include "ui/qt/resources.hpp"
@@ -29,15 +29,25 @@ namespace VTX::UI::QT::Style
 	/**
 	 * @brief Default values.
 	 */
-	constexpr float	  DEFAULT_SIZE_SCALE		   = 0.85f;
-	constexpr int	  DEFAULT_FONT_SIZE			   = 10;
-	constexpr E_THEME DEFAULT_THEME				   = E_THEME::DARK;
-	const QString	  DEFAULT_FONT_FAMILY		   = Resources::FONT_CASCADIA_MONO_FAMILY.data();
-	const QString	  DEFAULT_FONT_FAMILY_SEQUENCE = Resources::FONT_LIBERATION_MONO_FAMILY.data();
-	constexpr int	  MINIMUM_DOCK_PANEL_WIDTH	   = 200;
-	constexpr int	  MINIMUM_DOCK_PANEL_HEIGHT	   = 50;
-	constexpr int	  DEFAULT_LATERAL_DOCK_WIDTH   = 250;
-	constexpr int	  DEFAULT_CONSOLE_HEIGHT	   = 120;
+	constexpr float			  DEFAULT_SIZE_SCALE = 0.85f;
+	constexpr int			  DEFAULT_FONT_SIZE	 = 10;
+	constexpr E_THEME		  DEFAULT_THEME		 = E_THEME::DARK;
+	constexpr QUtf8StringView DEFAULT_FONT_FAMILY { Resources::FONT_CASCADIA_CODE_FAMILY };
+	constexpr QUtf8StringView DEFAULT_FONT_FAMILY_SEQUENCE = { Resources::FONT_LIBERATION_MONO_FAMILY };
+	constexpr QUtf8StringView DYSLEXIC_FONT_FAMILY		   = { Resources::FONT_OPEN_DYSLEXIC_FAMILY };
+	constexpr int			  MINIMUM_DOCK_PANEL_WIDTH	   = 200;
+	constexpr int			  MINIMUM_DOCK_PANEL_HEIGHT	   = 50;
+	constexpr int			  DEFAULT_LATERAL_DOCK_WIDTH   = 250;
+	constexpr int			  DEFAULT_CONSOLE_HEIGHT	   = 120;
+
+	constexpr int HUE_GRAPHICS_CONFIG = 260;
+	constexpr int HUE_COLOR_LAYOUT	  = 30;
+	constexpr int HUE_REPRESENTATION  = 320;
+	constexpr int HUE_SCRIPTS		  = 100;
+	constexpr int HUE_CAMERA		  = 180;
+	constexpr int HUE_SYSTEM		  = 215;
+
+	constexpr std::array<int, 5> LIGHTNESS_SYSTEM = { 128, 80, 176, 56, 200 };
 
 	/**
 	 * @brief Class managing application style (themes, stylesheets, etc.).
@@ -46,37 +56,41 @@ namespace VTX::UI::QT::Style
 	{
 	  public:
 		StyleManager();
+		StyleManager( const StyleManager & )			 = delete;
+		StyleManager & operator=( const StyleManager & ) = delete;
 		~StyleManager();
 
 		/**
 		 * @brief Get current theme.
 		 */
-		inline E_THEME getCurrentTheme() const { return _currentTheme; }
+		E_THEME getCurrentTheme() const { return _currentTheme; }
 
 		/**
 		 * @brief Get current font family.
 		 */
-		inline QString getCurrentFontFamily() const { return Q_APP()->font().family(); }
+		QString getCurrentFontFamily() const { return Q_APP()->font().family(); }
 
 		/**
 		 * @brief Switch application theme.
 		 */
-		void setTheme( const E_THEME p_theme );
+		void setTheme( E_THEME p_theme );
 
 		/**
 		 * @brief Set font.
 		 */
-		void setFontFamily( const QString & );
+		void setFontFamily( QAnyStringView );
 
 		/**
 		 * @brief Get an icon from a font.
 		 */
-		QIcon iconFromCodepoint( const Codepoint );
+		QIcon iconFromCodepoint( Codepoint );
+
+		const QStringList & getBundledFonts() const { return _bundledFonts; }
 
 		/**
 		 * @brief Get the available fonts.
 		 */
-		inline static QStringList getAvailableFonts() { return QFontDatabase::families(); }
+		QStringList getSystemFonts() const;
 
 	  private:
 		/**
@@ -88,6 +102,8 @@ namespace VTX::UI::QT::Style
 		 * @brief Store palettes for each theme.
 		 */
 		std::array<QPalette, toUnderlying( E_THEME::COUNT )> _themePalettes;
+
+		QStringList _bundledFonts;
 	};
 } // namespace VTX::UI::QT::Style
 

@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CONTEXT_GL_SAMPLER__
-#define __VTX_RENDERER_CONTEXT_GL_SAMPLER__
+#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_SAMPLER_HPP
+#define VTX_RENDERER_CONTEXT_BACKEND_GL_SAMPLER_HPP
 
 #include "include_opengl.hpp"
 #include <cassert>
@@ -10,12 +10,10 @@ namespace VTX::Renderer::Context::Backend::GL
 	class Sampler
 	{
 	  public:
-		Sampler(
-			const GLint p_wrappingS,
-			const GLint p_wrappingT,
-			const GLint p_minFilter,
-			const GLint p_magFilter
-		) noexcept
+		Sampler( const GLint p_wrappingS,
+				 const GLint p_wrappingT,
+				 const GLint p_minFilter,
+				 const GLint p_magFilter ) noexcept
 		{
 			glCreateSamplers( 1, &_id );
 			glSamplerParameteri( _id, GL_TEXTURE_WRAP_S, p_wrappingS );
@@ -52,7 +50,7 @@ namespace VTX::Renderer::Context::Backend::GL
 			}
 		}
 
-		inline GLuint getId() const noexcept { return _id; }
+		GLuint getId() const noexcept { return _id; }
 
 		void bindToUnit( const GLuint p_unit ) const noexcept { glBindSampler( p_unit, _id ); }
 

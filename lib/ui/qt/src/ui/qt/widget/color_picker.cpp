@@ -5,7 +5,7 @@
 
 namespace VTX::UI::QT::Widget
 {
-	ColorPicker::ColorPicker( QWidget * p_parent )
+	ColorPicker::ColorPicker( QWidget * const p_parent ) : QPushButton( p_parent )
 	{
 		connect(
 			this,
@@ -13,7 +13,7 @@ namespace VTX::UI::QT::Widget
 			[ this ]()
 			{
 				// Open button dialog.
-				QColor		 colorOld = _color;
+				const QColor colorOld = _color;
 				QColorDialog dialog( _color, this );
 
 				// Connect color changed.
@@ -23,7 +23,7 @@ namespace VTX::UI::QT::Widget
 					[ this ]( const QColor & p_color )
 					{
 						setColor( p_color );
-						onColorChanged( p_color );
+						emit colorChanged( p_color );
 					}
 				);
 
@@ -33,22 +33,20 @@ namespace VTX::UI::QT::Widget
 				if ( dialog.result() == QDialog::Rejected )
 				{
 					setColor( colorOld );
-					onColorChanged( colorOld );
+					emit colorChanged( colorOld );
 				}
 			}
 		);
 	}
 
-	ColorPicker::ColorPicker( const QColor & p_color, QWidget * p_parent ) : ColorPicker( p_parent )
-	{
-		setColor( p_color );
-	}
+	ColorPicker::ColorPicker( const QColor & p_color, QWidget * const p_parent ) : ColorPicker( p_parent )
+	{ setColor( p_color ); }
 
 	void ColorPicker::setColor( const QColor & p_color )
 	{
-		_color					  = p_color;
-		Util::Color::Rgba color	  = Helper::fromQColor( p_color );
-		QPalette		  palette = this->palette();
+		_color							= p_color;
+		const Util::Color::Rgba color	= Helper::fromQColor( p_color );
+		QPalette				palette = this->palette();
 		palette.setColor( QPalette::Button, p_color );
 		palette.setColor(
 			QPalette::ButtonText, color.brightness() > 0.5f ? QColorConstants::Black : QColorConstants::White

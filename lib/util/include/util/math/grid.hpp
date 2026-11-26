@@ -1,9 +1,8 @@
-#ifndef __VTX_UTIL_MATH_GRID__
-#define __VTX_UTIL_MATH_GRID__
+#ifndef VTX_UTIL_MATH_GRID_HPP
+#define VTX_UTIL_MATH_GRID_HPP
 
+#include "util/math.hpp"
 #include "util/types.hpp"
-#include <algorithm>
-#include <cmath>
 #include <cstddef>
 #include <functional>
 #include <unordered_map>
@@ -23,18 +22,18 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Constructor.
 		 */
-		DenseGrid(
+		constexpr DenseGrid(
 			const Vec3f & p_worldOrigin = Vec3f( 0.f ),
 			const Vec3f & p_cellSize	= Vec3f( 10.f ),
 			const Vec3u & p_size		= Vec3u( 0u )
-		) : _worldOrigin( p_worldOrigin ), _cellSize( p_cellSize ), _size( p_size )
+		) noexcept : _worldOrigin( p_worldOrigin ), _cellSize( p_cellSize ), _size( p_size )
 		{
 		}
 
 		/**
 		 * @brief Get the center of a cell in world position.
 		 */
-		Vec3f worldPosition( const CellPosition & p_gridPosition ) const
+		constexpr Vec3f worldPosition( const CellPosition & p_gridPosition ) const noexcept
 		{
 			Vec3f position = _worldOrigin;
 			position += ( Vec3f( p_gridPosition ) + 0.5f ) * _cellSize;
@@ -45,13 +44,13 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the grid position of a world position.
 		 */
-		CellPosition gridPosition( const Vec3f & p_worldPosition ) const
+		CellPosition gridPosition( const Vec3f & p_worldPosition ) const noexcept
 		{
 			CellPosition gridPos;
 
-			gridPos.x = static_cast<uint>( std::floor( ( p_worldPosition.x - _worldOrigin.x ) / _cellSize.x ) );
-			gridPos.y = static_cast<uint>( std::floor( ( p_worldPosition.y - _worldOrigin.y ) / _cellSize.y ) );
-			gridPos.z = static_cast<uint>( std::floor( ( p_worldPosition.z - _worldOrigin.z ) / _cellSize.z ) );
+			gridPos.x = static_cast<uint>( floor( ( p_worldPosition.x - _worldOrigin.x ) / _cellSize.x ) );
+			gridPos.y = static_cast<uint>( floor( ( p_worldPosition.y - _worldOrigin.y ) / _cellSize.y ) );
+			gridPos.z = static_cast<uint>( floor( ( p_worldPosition.z - _worldOrigin.z ) / _cellSize.z ) );
 
 			return gridPos;
 		}
@@ -59,10 +58,10 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the grid position of a dense index in the grid.
 		 */
-		CellPosition gridPosition( const size_t p_denseIndex ) const
+		constexpr CellPosition gridPosition( const size_t p_denseIndex ) const noexcept
 		{
-			const size_t z = p_denseIndex / ( _size.x * _size.y );
-			const size_t r = p_denseIndex % ( _size.x * _size.y );
+			const size_t z = p_denseIndex / ( static_cast<size_t>( _size.x ) * _size.y );
+			const size_t r = p_denseIndex % ( static_cast<size_t>( _size.x ) * _size.y );
 			const size_t y = r / _size.x;
 			const size_t x = r % _size.x;
 
@@ -72,25 +71,24 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the dense index of a cell position in the grid.
 		 */
-		size_t denseIndex( const CellPosition & p_gridPosition ) const
+		constexpr size_t denseIndex( const CellPosition & p_gridPosition ) const noexcept
 		{
-			return p_gridPosition.z * _size.x * _size.y + p_gridPosition.y * _size.x + p_gridPosition.x;
+			return static_cast<size_t>( p_gridPosition.z ) * _size.x * _size.y
+				   + static_cast<size_t>( p_gridPosition.y ) * _size.x + p_gridPosition.x;
 		}
 
-		size_t denseIndex( const uint p_x, const uint p_y, const uint p_z ) const
-		{
-			return denseIndex( CellPosition( p_x, p_y, p_z ) );
-		}
+		constexpr size_t denseIndex( const uint p_x, const uint p_y, const uint p_z ) const noexcept
+		{ return denseIndex( CellPosition( p_x, p_y, p_z ) ); }
 
 		/**
 		 * @brief Get the number of cells in the grid (fixed).
 		 */
-		size_t getCellCount() const { return _size.x * _size.y * _size.z; }
+		constexpr size_t getCellCount() const noexcept { return static_cast<size_t>( _size.x ) * _size.y * _size.z; }
 
 		/**
 		 * @brief Grid size.
 		 */
-		const Vec3u & getSize() const { return _size; }
+		constexpr const Vec3u & getSize() const noexcept { return _size; }
 
 	  private:
 		/**
@@ -120,6 +118,8 @@ namespace VTX::Util::Math
 		using CellPosition = Vec3i;
 		using Cell		   = std::vector<T>;
 
+		static constexpr int64_t MAX_NEIGHBOUR_DIST = static_cast<int64_t>( TypeMax<int> ) - TypeMin<int>;
+
 		/**
 		 * @brief Constructors.
 		 */
@@ -128,12 +128,12 @@ namespace VTX::Util::Math
 		{
 		}
 
-		Grid( const Vec3f & p_worldOrigin ) : _worldOrigin( p_worldOrigin ) {}
+		Grid( const Vec3f & p_worldOrigin ) : Grid( p_worldOrigin, Vec3f( 8.f ) ) {}
 
 		/**
 		 * @brief Get the center of a cell in world position.
 		 */
-		Vec3f worldPosition( const CellPosition & p_gridPosition ) const
+		Vec3f worldPosition( const CellPosition & p_gridPosition ) const noexcept
 		{
 			Vec3f position = _worldOrigin;
 			position += ( Vec3f( p_gridPosition ) + 0.5f ) * _cellSize;
@@ -144,13 +144,13 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the grid position of a world position.
 		 */
-		CellPosition gridPosition( const Vec3f & p_worldPosition ) const
+		CellPosition gridPosition( const Vec3f & p_worldPosition ) const noexcept
 		{
 			CellPosition gridPos;
 
-			gridPos.x = static_cast<int>( std::floor( ( p_worldPosition.x - _worldOrigin.x ) / _cellSize.x ) );
-			gridPos.y = static_cast<int>( std::floor( ( p_worldPosition.y - _worldOrigin.y ) / _cellSize.y ) );
-			gridPos.z = static_cast<int>( std::floor( ( p_worldPosition.z - _worldOrigin.z ) / _cellSize.z ) );
+			gridPos.x = _toCellCoordinate( ( p_worldPosition.x - _worldOrigin.x ) / _cellSize.x );
+			gridPos.y = _toCellCoordinate( ( p_worldPosition.y - _worldOrigin.y ) / _cellSize.y );
+			gridPos.z = _toCellCoordinate( ( p_worldPosition.z - _worldOrigin.z ) / _cellSize.z );
 
 			return gridPos;
 		}
@@ -158,37 +158,78 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the number of occupied cells.
 		 */
-		inline size_t getCellCount() const { return _data.size(); }
+		size_t getCellCount() const noexcept { return _data.size(); }
 
 		/**
 		 * @brief Iterators.
 		 */
-		auto begin() { return _data.begin(); }
+		auto begin() noexcept { return _data.begin(); }
 
-		auto end() { return _data.end(); }
+		auto end() noexcept { return _data.end(); }
 
-		auto begin() const { return _data.begin(); }
+		auto begin() const noexcept { return _data.begin(); }
 
-		auto end() const { return _data.end(); }
+		auto end() const noexcept { return _data.end(); }
 
 		/**
 		 * @brief Visitor function to iterate over all neighbour cells.
 		 */
 		template<typename F>
-		void forEachNeighbourCell( const CellPosition & p_gridPosition, F && p_func ) const
+		void forEachNeighbourCell(
+			const CellPosition & p_gridPosition,
+			F &&				 p_func,
+			const int64_t		 p_neighbourDist = 1
+		) const
 		{
-			for ( int z = -1; z <= 1; ++z )
+			auto && func = std::forward<F>( p_func );
+
+			if ( _data.empty() || p_neighbourDist < 0 )
 			{
-				for ( int y = -1; y <= 1; ++y )
+				return;
+			}
+
+			using WidePosition = vec<3, int64_t>;
+
+			const WidePosition center( p_gridPosition );
+			const WidePosition dist( min( p_neighbourDist, MAX_NEIGHBOUR_DIST ) );
+			const WidePosition lower = max( center - dist, WidePosition( _minCell ) );
+			const WidePosition upper = min( center + dist, WidePosition( _maxCell ) );
+
+			if ( any( lessThan( upper, lower ) ) )
+			{
+				return;
+			}
+
+			const WidePosition extent	= upper - lower + WidePosition( 1 );
+			const int64_t	   dataSize = static_cast<int64_t>( _data.size() );
+
+			if ( extent.x > dataSize || extent.y > dataSize / extent.x
+				 || extent.z > dataSize / ( extent.x * extent.y ) )
+			{
+				for ( const auto & [ position, cell ] : _data )
 				{
-					for ( int x = -1; x <= 1; ++x )
+					if ( position.x >= lower.x && position.x <= upper.x && position.y >= lower.y
+						 && position.y <= upper.y && position.z >= lower.z && position.z <= upper.z )
 					{
-						const CellPosition neighbourPosition = p_gridPosition + CellPosition( x, y, z );
-						const auto		   it				 = _data.find( neighbourPosition );
+						func( position, cell );
+					}
+				}
+				return;
+			}
+
+			for ( int64_t z = lower.z; z <= upper.z; ++z )
+			{
+				for ( int64_t y = lower.y; y <= upper.y; ++y )
+				{
+					for ( int64_t x = lower.x; x <= upper.x; ++x )
+					{
+						const auto it = _data.find(
+							CellPosition( static_cast<int>( x ), static_cast<int>( y ), static_cast<int>( z ) )
+						);
 
 						if ( it != _data.end() )
 						{
-							p_func( it->first, it->second );
+							func( it->first, it->second );
 						}
 					}
 				}
@@ -197,14 +238,12 @@ namespace VTX::Util::Math
 
 		template<typename F>
 		void forEachNeighbourCellAt( const Vec3f & p_worldPosition, F && p_func ) const
-		{
-			forEachNeighbourCell( gridPosition( p_worldPosition ), std::forward<F>( p_func ) );
-		}
+		{ forEachNeighbourCell( gridPosition( p_worldPosition ), std::forward<F>( p_func ) ); }
 
 		/**
 		 * @brief Get the grid size derived from occupied cells bounds.
 		 */
-		Vec3u getSize() const
+		Vec3u getSize() const noexcept
 		{
 			if ( _data.empty() )
 			{
@@ -219,15 +258,20 @@ namespace VTX::Util::Math
 		/**
 		 * @brief Get the bounds of occupied cells.
 		 */
-		const CellPosition & getMinCell() const { return _minCell; }
+		const CellPosition & getMinCell() const noexcept { return _minCell; }
 
-		const CellPosition & getMaxCell() const { return _maxCell; }
+		const CellPosition & getMaxCell() const noexcept { return _maxCell; }
+
+		/**
+		 * @brief Get cell size.
+		 */
+		const Vec3f & getCellSize() const noexcept { return _cellSize; }
 
 		/**
 		 * @brief Get the dense index of a cell position in the grid.
 		 * Useful to store in 1D array.
 		 */
-		size_t denseIndex( const CellPosition & p_gridPosition ) const
+		size_t denseIndex( const CellPosition & p_gridPosition ) const noexcept
 		{
 			const CellPosition localPosition = p_gridPosition - _minCell;
 			const Vec3u		   size			 = getSize();
@@ -239,9 +283,7 @@ namespace VTX::Util::Math
 		 * @brief Add a value to the grid at the given world position.
 		 */
 		void add( const T & p_value, const Vec3f & p_worldPosition )
-		{
-			add( p_value, gridPosition( p_worldPosition ) );
-		}
+		{ add( p_value, gridPosition( p_worldPosition ) ); }
 
 		void add( const T & p_value, const CellPosition & p_gridPosition )
 		{
@@ -288,6 +330,9 @@ namespace VTX::Util::Math
 		 */
 		std::unordered_map<CellPosition, Cell, CellPositionHasher> _data;
 
+		/**
+		 * @brief Extends grid to given position.
+		 */
 		void _extend( const CellPosition & p_gridPosition )
 		{
 			if ( _data.size() == 1 )
@@ -297,13 +342,25 @@ namespace VTX::Util::Math
 				return;
 			}
 
-			_minCell.x = std::min( _minCell.x, p_gridPosition.x );
-			_minCell.y = std::min( _minCell.y, p_gridPosition.y );
-			_minCell.z = std::min( _minCell.z, p_gridPosition.z );
+			_minCell.x = min( _minCell.x, p_gridPosition.x );
+			_minCell.y = min( _minCell.y, p_gridPosition.y );
+			_minCell.z = min( _minCell.z, p_gridPosition.z );
 
-			_maxCell.x = std::max( _maxCell.x, p_gridPosition.x );
-			_maxCell.y = std::max( _maxCell.y, p_gridPosition.y );
-			_maxCell.z = std::max( _maxCell.z, p_gridPosition.z );
+			_maxCell.x = max( _maxCell.x, p_gridPosition.x );
+			_maxCell.y = max( _maxCell.y, p_gridPosition.y );
+			_maxCell.z = max( _maxCell.z, p_gridPosition.z );
+		}
+
+		/**
+		 * @brief Clamp.
+		 */
+		static int _toCellCoordinate( const float p_value ) noexcept
+		{
+			return static_cast<int>( clamp(
+				floor( static_cast<double>( p_value ) ),
+				static_cast<double>( TypeMin<int> ),
+				static_cast<double>( TypeMax<int> )
+			) );
 		}
 	};
 } // namespace VTX::Util::Math

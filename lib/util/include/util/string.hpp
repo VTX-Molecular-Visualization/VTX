@@ -1,34 +1,188 @@
-#ifndef __VTX_UTIL_STRING__
-#define __VTX_UTIL_STRING__
+#ifndef VTX_UTIL_STRING_HPP
+#define VTX_UTIL_STRING_HPP
 
 #include "types.hpp"
 #include <algorithm>
+#include <charconv>
+#include <stdexcept>
 #include <string>
+#include <string_view>
+#include <system_error>
+#include <type_traits>
 #include <vector>
 
 namespace VTX::Util::String
 {
-	// Trim empty chars at start and end
-	void trim( std::string & p_str );
-	// Trim empty chars at start
-	void trimStart( std::string & p_str );
-	// Trim empty chars at end
-	void trimEnd( std::string & p_str );
-	// Split p_str in a vector of string using char separator
-	std::vector<std::string> split( const std::string & p_str, const char p_separator );
-	// Replace string p_toReplace in p_str with p_replacement
-	std::string & replaceAll( std::string & p_str, const std::string & p_toReplace, const std::string & p_replacement );
-	// cast float to string with p_nbDecimals decimals
-	std::string floatToStr( const float p_value, const int p_nbDecimals );
-	// cast string to uint
-	uint strToUint( const std::string & p_str );
-	// uppercase all characters of p_str
-	void		toUpper( std::string & p_str );
-	std::string toUpper( const std::string & p_str );
-	// Memory size to string.
-	std::string memSizeToStr( const size_t p_size, const bool p_isBase10 = true );
-	// Duration to string.
-	std::string durationToStr( const float p_durationInMS );
+	/**
+	 * @brief Whitespace chars.
+	 */
+	constexpr std::string_view WHITESPACES = " \n\t\r\f\v";
+
+	/**
+	 * Trim empty characters at the start and end.
+	 */
+	[[nodiscard]] inline std::string trim( const std::string & p_str )
+	{
+		std::string result = p_str;
+		result.erase( 0, result.find_first_not_of( WHITESPACES ) );
+		result.erase( result.find_last_not_of( WHITESPACES ) + 1 );
+		return result;
+	}
+
+	/**
+	 * @brief Replace first occurrence.
+	 */
+	[[nodiscard]] inline std::string replaceFirst(
+		const std::string & p_str,
+		const std::string & p_toReplace,
+		const std::string & p_replacement
+	)
+	{
+		std::string	 result	  = p_str;
+		const size_t position = result.find( p_toReplace );
+		if ( position != std::string::npos )
+		{
+			result.replace( position, p_toReplace.size(), p_replacement );
+		}
+		return result;
+	}
+
+	/**
+	 * Trim empty characters at the start and return the result.
+	 */
+	[[nodiscard]] inline std::string trimStart( const std::string & p_str )
+	{
+		std::string result = p_str;
+		result.erase( 0, result.find_first_not_of( WHITESPACES ) );
+		return result;
+	}
+
+	/**
+	 * Trim empty characters at the end and return the result.
+	 */
+	[[nodiscard]] inline std::string trimEnd( const std::string & p_str )
+	{
+		std::string result = p_str;
+		result.erase( result.find_last_not_of( WHITESPACES ) + 1 );
+		return result;
+	}
+
+	/**
+	 * Split a string using a character separator.
+	 */
+	[[nodiscard]] inline std::vector<std::string> split( const std::string & p_str, const char p_separator )
+	{
+		std::vector<std::string> splittedStr = std::vector<std::string>();
+
+		size_t startIndex = 0;
+		size_t endIndex	  = p_str.find( p_separator );
+
+		while ( endIndex != std::string::npos )
+		{
+			splittedStr.emplace_back( p_str.substr( startIndex, endIndex - startIndex ) );
+			startIndex = endIndex + 1;
+			endIndex   = p_str.find( p_separator, startIndex );
+		}
+
+		splittedStr.emplace_back( p_str.substr( startIndex ) );
+		splittedStr.shrink_to_fit();
+
+		return splittedStr;
+	}
+
+	/**
+	 * Replace all occurrences of a string and return the result.
+	 */
+	[[nodiscard]] inline std::string replaceAll(
+		const std::string & p_str,
+		const std::string & p_toReplace,
+		const std::string & p_replacement
+	)
+	{
+		std::string result = p_str;
+		if ( p_toReplace.empty() )
+		{
+			return result;
+		}
+		size_t currentIndex = result.find( p_toReplace );
+
+		while ( currentIndex != std::string::npos )
+		{
+			result.replace( currentIndex, p_toReplace.size(), p_replacement );
+			currentIndex += p_replacement.size();
+
+			currentIndex = result.find( p_toReplace, currentIndex );
+		}
+
+		return result;
+	}
+
+	/**
+	 * Convert a float to a string with a fixed number of decimals.
+	 */
+	[[nodiscard]] std::string floatToStr( float p_value, int p_nbDecimals );
+
+	/**
+	 * Convert a string to an unsigned integer.
+	 */
+	template<typename T>
+	[[nodiscard]] T strToNumber( const std::string & p_str )
+	{
+		static_assert( std::is_integral_v<T> );
+
+		T value {};
+
+		const auto [ ptr, ec ] = std::from_chars( p_str.data(), p_str.data() + p_str.size(), value );
+
+		if ( ec != std::errc {} || ptr != p_str.data() + p_str.size() )
+		{
+			throw std::invalid_argument( "Invalid numeric value: " + p_str );
+		}
+
+		return value;
+	}
+
+	/**
+	 * Convert all characters to uppercase and return the result.
+	 */
+	[[nodiscard]] std::string toUpper( const std::string & p_str );
+
+	/**
+	 * Convert all characters to lowercase and return the result.
+	 */
+	[[nodiscard]] std::string toLower( const std::string & p_str );
+
+	/**
+	 * @brief Compare two strings ignoring case.
+	 */
+	[[nodiscard]] bool equalsIgnoreCase( std::string_view p_lhs, std::string_view p_rhs ) noexcept;
+
+	/**
+	 * @brief Data needed to fmt::format.
+	 */
+	struct FormattedMemSize
+	{
+		size_t size {};
+		bool   isBase10 = true;
+	};
+
+	/**
+	 * Convert a memory size to a string.
+	 */
+	[[nodiscard]] std::string memSizeToStr( size_t p_size, bool p_isBase10 = true );
+
+	/**
+	 * @brief Data needed to fmt::format.
+	 */
+	struct FormattedDuration
+	{
+		float durationInMs {};
+	};
+
+	/**
+	 * Convert a duration to a string.
+	 */
+	[[nodiscard]] std::string durationToStr( float p_durationInMS );
 
 } // namespace VTX::Util::String
 

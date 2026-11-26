@@ -1,60 +1,87 @@
 #include "app/pass/system_updater.hpp"
 #include "app/events.hpp"
+#include "app/helper/aabb.hpp"
+#include "app/helper/system.hpp"
+#include "app/helper/trajectory.hpp"
+#include "app/pending_updates.hpp"
 #include "app/services.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
-#include "app/system/trajectory.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
-#include <core/chemdb/atom.hpp>
 #include <renderer/renderer.hpp>
-#include <span>
-#include <util/chrono.hpp>
-#include <util/math/aabb.hpp>
+#include <util/exceptions.hpp>
 #include <util/math/transform.hpp>
-#include <util/types.hpp>
+#include <utility>
 
 namespace VTX::App::Pass
 {
-	namespace
-	{
-		void _patchAABB( const Entity & p_entity, const std::span<const Vec3f> p_positions ) noexcept
-		{
-			REG().patch<Util::Math::AABB>(
-				p_entity,
-				[ p_positions ]( Util::Math::AABB & p_aabb )
-				{
-					p_aabb.invalidate();
-					for ( const Vec3f & atomPosition : p_positions )
-					{
-						p_aabb.extend( atomPosition, Core::ChemDB::Atom::VDW_RADIUS_MIN );
-					}
-				}
-			);
-		}
-	} // namespace
-
 	SystemUpdater::SystemUpdater()
 	{
 		auto & reg = REG();
 		auto & hub = HUB();
 
 		// System.
-		hub.connect<Events::SystemLoad, &SystemUpdater::_onSystemLoad>( this );
-		hub.connect<Events::TrajectoryLoad, &SystemUpdater::_onTrajectoryLoad>( this );
-		reg.on_update<Core::Struct::Topology>().connect<&SystemUpdater::_onUpdateTopology>( this );
-		reg.on_update<Util::Math::Transform>().connect<&SystemUpdater::_onUpdateTransform>( this );
-		reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateVisibility>( this );
-		reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateSelection>( this );
-		reg.on_update<System::Representation>().connect<&SystemUpdater::_onUpdateRepresentation>( this );
-		reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
-		reg.on_destroy<Core::Struct::Topology>().connect<&SystemUpdater::_onDestroySystem>( this );
+		_systemLoadConnection = hub.connect<Events::SystemLoad, &SystemUpdater::_onSystemLoad>( this );
+		_trajectoryFrameChangedConnection
+			= hub.connect<Events::TrajectoryCurrentFrameChange, &SystemUpdater::_onTrajectoryCurrentFrameChange>(
+				this
+			);
+		_topologyUpdatedConnection
+			= reg.on_update<Core::Struct::Topology>().connect<&SystemUpdater::_onUpdateTopology>( this );
+		_transformUpdatedConnection
+			= reg.on_update<Util::Math::Transform>().connect<&SystemUpdater::_onUpdateTransform>( this );
+		_visibilityUpdatedConnection
+			= reg.on_update<System::Visibility>().connect<&SystemUpdater::_onUpdateVisibility>( this );
+		_selectionUpdatedConnection
+			= reg.on_update<System::Selection>().connect<&SystemUpdater::_onUpdateSelection>( this );
+		_representationUpdatedConnection
+			= reg.on_update<System::Representation>().connect<&SystemUpdater::_onUpdateRepresentation>( this );
+		_colorUpdatedConnection = reg.on_update<System::Color>().connect<&SystemUpdater::_onUpdateColor>( this );
+		_systemDestroyedConnection
+			= reg.on_destroy<Core::Struct::Topology>().connect<&SystemUpdater::_onDestroySystem>( this );
 
 		// Representation preset.
-		reg.on_construct<Renderer::Representation>().connect<&SystemUpdater::_onConstructRepresentationPreset>( this );
-		reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
-		reg.on_destroy<Renderer::Representation>().connect<&SystemUpdater::_onDestroyRepresentationPreset>( this );
+		_representationPresetConstructedConnection
+			= reg.on_construct<Renderer::Representation>().connect<&SystemUpdater::_onConstructRepresentationPreset>(
+				this
+			);
+		_representationPresetUpdatedConnection
+			= reg.on_update<Renderer::Representation>().connect<&SystemUpdater::_onUpdateRepresentationPreset>( this );
+		_representationPresetDestroyedConnection
+			= reg.on_destroy<Renderer::Representation>().connect<&SystemUpdater::_onDestroyRepresentationPreset>(
+				this
+			);
+	}
+
+	Renderer::Cache::System::Data SystemUpdater::_getSystemData(
+		const Entity				  p_entity,
+		const Core::Struct::FrameView p_positions
+	) const
+	{
+		const auto & topology		= REG().get<Core::Struct::Topology>( p_entity );
+		const auto & uid			= REG().get<System::UID>( p_entity );
+		const auto & color			= REG().get<System::Color>( p_entity );
+		const auto & representation = REG().get<System::Representation>( p_entity );
+		const auto & visibility		= REG().get<System::Visibility>( p_entity );
+		const auto & selection		= REG().get<System::Selection>( p_entity );
+
+		assert( topology.getAtomCount() > 0 );
+
+		return { &topology,
+				 p_positions,
+				 &uid.atoms,
+				 &uid.residues,
+				 &color.colorSchemeAtoms,
+				 &color.customColorAtoms,
+				 &color.carbonCustomColorAtoms,
+				 &color.colorSchemeSecondaryStructureResidues,
+				 &color.customSecondaryStructureColorResidues,
+				 &_representations,
+				 &representation.presetAtoms,
+				 &visibility.atoms,
+				 &selection.atoms };
 	}
 
 	void SystemUpdater::update( const float, const float )
@@ -64,85 +91,105 @@ namespace VTX::App::Pass
 		const bool systemChanged		 = not _systemAdded.empty() || not _systemRemoved.empty();
 		const bool representationChanged = not _representationAdded.empty() || not _representationRemoved.empty();
 
-		const auto getSystemData = [ & ]( const Entity p_ent ) -> Renderer::Cache::System::Data
-		{
-			const auto & topology		= reg.get<Core::Struct::Topology>( p_ent );
-			const auto & uid			= reg.get<System::UID>( p_ent );
-			const auto & color			= reg.get<System::Color>( p_ent );
-			const auto & representation = reg.get<System::Representation>( p_ent );
-			const auto & visibility		= reg.get<System::Visibility>( p_ent );
-			const auto & selection		= reg.get<System::Selection>( p_ent );
-
-			std::span<const Vec3f> positions = System::getCurrentAtomPositions( p_ent );
-			assert( topology.getAtomCount() > 0 );
-
-			return { &topology,
-					 positions,
-					 &uid.atoms,
-					 &uid.residues,
-					 &color.colorSchemeAtoms,
-					 &color.customColorAtoms,
-					 &color.carbonCustomColorAtoms,
-					 &_representations,
-					 &representation.presetAtoms,
-					 &visibility.atoms,
-					 &selection.atoms };
-		};
+		Util::ExceptionCollector errors;
 
 		// Add pending.
-		for ( const auto system : _systemAdded )
+		while ( not _systemAdded.empty() )
 		{
-			assert( not _systems.contains( system ) );
+			const Entity system = _systemAdded.front();
+			errors.run(
+				"System add failed",
+				[ & ]()
+				{
+					assert( not _systems.contains( system ) );
 
-			const auto & transform = reg.get<Util::Math::Transform>( system );
+					const auto & transform = reg.get<Util::Math::Transform>( system );
 
-			const Renderer::Desc::Handle systemHandle
-				= RENDERER().addSystem( { transform.computeMatrix(), getSystemData( system ) } );
-
-			_systems.emplace( system, systemHandle );
+					[[maybe_unused]] const bool currentFrameVisited = Helper::Trajectory::visitCurrentFrame(
+						system,
+						[ this, system, &transform ]( const Core::Struct::FrameView p_positions )
+						{
+							_systems.emplace(
+								system,
+								RENDERER().addSystem(
+									{ transform.computeMatrix(), _getSystemData( system, p_positions ) }
+								)
+							);
+						}
+					);
+					assert( currentFrameVisited );
+				}
+			);
+			_systemAdded.erase( _systemAdded.begin() );
 		}
-		for ( const auto representation : _representationAdded )
+		while ( not _representationAdded.empty() )
 		{
-			assert( not _representations.contains( representation ) );
+			const Entity representation = _representationAdded.front();
+			errors.run(
+				"Representation add failed",
+				[ & ]()
+				{
+					assert( not _representations.contains( representation ) );
 
-			const auto & rep = REG().get<Renderer::Representation>( representation );
-			_representations.emplace( representation, RENDERER().addRepresentation( rep ) );
+					const auto & rep = REG().get<Renderer::Representation>( representation );
+					_representations.emplace( representation, RENDERER().addRepresentation( rep ) );
+				}
+			);
+			_representationAdded.erase( _representationAdded.begin() );
 		}
 
 		// Remove pending.
-		for ( const auto system : _systemRemoved )
+		while ( not _systemRemoved.empty() )
 		{
-			RENDERER().removeSystem( system );
+			errors.run( "System removal failed", [ & ]() { RENDERER().removeSystem( _systemRemoved.front() ); } );
+			_systemRemoved.erase( _systemRemoved.begin() );
 		}
-		for ( const auto representation : _representationRemoved )
+		while ( not _representationRemoved.empty() )
 		{
-			RENDERER().removeRepresentation( representation );
+			errors.run(
+				"Representation removal failed",
+				[ & ]() { RENDERER().removeRepresentation( _representationRemoved.front() ); }
+			);
+			_representationRemoved.erase( _representationRemoved.begin() );
 		}
 
-		// Patch because renderer use views to raw data.
-		// entt components are not guaranteed to be contiguous in memory.
-		// So ptr can dangle after add/remove.
-		if ( systemChanged )
-		{
-			for ( const auto & pair : _systems )
+		errors.run(
+			"System patch failed",
+			[ & ]()
 			{
-				RENDERER().patchSystem( pair.second, getSystemData( pair.first ) );
+				// Patch because renderer use views to raw data.
+				// entt components are not guaranteed to be contiguous in memory.
+				// So ptr can dangle after add/remove.
+				if ( systemChanged )
+				{
+					for ( const auto & pair : _systems )
+					{
+						Helper::Trajectory::visitCurrentFrame(
+							pair.first,
+							[ this, entity = pair.first, handle = pair.second ](
+								const Core::Struct::FrameView p_positions
+							) { RENDERER().patchSystem( handle, _getSystemData( entity, p_positions ) ); }
+						);
+					}
+				}
+				if ( representationChanged )
+				{
+					for ( const auto & pair : _representations )
+					{
+						const auto & rep = reg.get<Renderer::Representation>( pair.first );
+						RENDERER().patchRepresentation( pair.second, { &rep } );
+					}
+				}
 			}
-		}
-		if ( representationChanged )
-		{
-			for ( const auto & pair : _representations )
-			{
-				const auto & rep = reg.get<Renderer::Representation>( pair.first );
-				RENDERER().patchRepresentation( pair.second, { &rep } );
-			}
-		}
+		);
 
 		// Clear pending.
 		_systemAdded.clear();
 		_systemRemoved.clear();
 		_representationAdded.clear();
 		_representationRemoved.clear();
+
+		errors.rethrow();
 	}
 
 	void SystemUpdater::_onUpdateTransform( Registry & p_r, Entity p_e )
@@ -167,52 +214,88 @@ namespace VTX::App::Pass
 	{
 		assert( not _systems.contains( p_event.system ) );
 
-		_patchAABB( p_event.system, System::getCurrentAtomPositions( p_event.system ) );
+		Helper::AABB::invalidateScene();
 		_systemAdded.emplace_back( p_event.system );
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::PASSES );
 	}
 
-	void SystemUpdater::_onTrajectoryLoad( const Events::TrajectoryLoad & p_event )
+	void SystemUpdater::_onTrajectoryCurrentFrameChange( const Events::TrajectoryCurrentFrameChange & p_event )
 	{
-		assert( _systems.contains( p_event.system ) );
+		const auto systemIt = _systems.find( p_event.system );
+		assert( systemIt != _systems.end() || std::ranges::find( _systemAdded, p_event.system ) != _systemAdded.end() );
 
-		_patchAABB( p_event.system, p_event.frame );
-		RENDERER().setSystemPositions( _systems[ p_event.system ], p_event.frame );
+		Helper::AABB::invalidate( p_event.system );
+		Helper::System::invalidateAtomGrid( p_event.system );
+		if ( systemIt != _systems.end() )
+		{
+			RENDERER().setSystemPositions( systemIt->second, p_event.frame );
+		}
 	}
 
-	void SystemUpdater::_onDestroySystem( Registry &, Entity p_e )
+	void SystemUpdater::_onDestroySystem( Registry &, const Entity p_e )
 	{
-		assert( _systems.contains( p_e ) );
+		if ( std::erase( _systemAdded, p_e ) > 0 )
+		{
+			return;
+		}
 
-		_systemRemoved.emplace_back( _systems[ p_e ] );
-		_systems.erase( p_e );
+		const auto it = _systems.find( p_e );
+		if ( it == _systems.end() )
+		{
+			return;
+		}
+
+		_systemRemoved.emplace_back( it->second );
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::PASSES );
+		_systems.erase( it );
 	}
 
 	void SystemUpdater::_onUpdateVisibility( Registry & p_r, Entity p_e )
 	{
-		assert( _systems.contains( p_e ) );
-
-		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::VISIBILITY );
+		if ( _systems.contains( p_e ) )
+		{
+			RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::VISIBILITY );
+		}
+		else
+		{
+			assert( std::ranges::find( _systemAdded, p_e ) != _systemAdded.end() );
+		}
 	}
 
 	void SystemUpdater::_onUpdateSelection( Registry & p_r, Entity p_e )
 	{
-		assert( _systems.contains( p_e ) );
-
-		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::SELECTION );
+		if ( _systems.contains( p_e ) )
+		{
+			RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::SELECTION );
+		}
+		else
+		{
+			assert( std::ranges::find( _systemAdded, p_e ) != _systemAdded.end() );
+		}
 	}
 
 	void SystemUpdater::_onUpdateRepresentation( Registry & p_r, Entity p_e )
 	{
-		assert( _systems.contains( p_e ) );
-
-		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::REPRESENTATION );
+		if ( _systems.contains( p_e ) )
+		{
+			RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::REPRESENTATION );
+		}
+		else
+		{
+			assert( std::ranges::find( _systemAdded, p_e ) != _systemAdded.end() );
+		}
 	}
 
 	void SystemUpdater::_onUpdateColor( Registry & p_r, Entity p_e )
 	{
-		assert( _systems.contains( p_e ) );
-
-		RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::COLOR );
+		if ( _systems.contains( p_e ) )
+		{
+			RENDERER().setSystemDirty( _systems[ p_e ], Renderer::Cache::E_SYSTEM_DIRTY::COLOR );
+		}
+		else
+		{
+			assert( std::ranges::find( _systemAdded, p_e ) != _systemAdded.end() );
+		}
 	}
 
 	void SystemUpdater::_onConstructRepresentationPreset( Registry &, Entity p_e )
@@ -220,21 +303,37 @@ namespace VTX::App::Pass
 		assert( not _representations.contains( p_e ) );
 
 		_representationAdded.emplace_back( p_e );
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::PASSES );
 	}
 
-	void SystemUpdater::_onUpdateRepresentationPreset( Registry & p_r, Entity p_e )
+	void SystemUpdater::_onUpdateRepresentationPreset( Registry &, const Entity p_e )
 	{
-		assert( _representations.contains( p_e ) );
-
-		RENDERER().setRepresentationDirty( _representations[ p_e ], Renderer::Cache::E_REPRESENTATION_DIRTY::ALL );
+		if ( const auto it = _representations.find( p_e ); it != _representations.end() )
+		{
+			RENDERER().setRepresentationDirty( it->second, Renderer::Cache::E_REPRESENTATION_DIRTY::ALL );
+		}
+		else
+		{
+			assert( std::ranges::find( _representationAdded, p_e ) != _representationAdded.end() );
+		}
 	}
 
-	void SystemUpdater::_onDestroyRepresentationPreset( Registry &, Entity p_e )
+	void SystemUpdater::_onDestroyRepresentationPreset( Registry &, const Entity p_e )
 	{
-		assert( _representations.contains( p_e ) );
+		if ( std::erase( _representationAdded, p_e ) > 0 )
+		{
+			return;
+		}
 
-		_representationRemoved.emplace_back( _representations[ p_e ] );
-		_representations.erase( p_e );
+		const auto it = _representations.find( p_e );
+		if ( it == _representations.end() )
+		{
+			return;
+		}
+
+		_representationRemoved.emplace_back( it->second );
+		PENDING_UPDATES().mark( E_PENDING_UPDATE::PASSES );
+		_representations.erase( it );
 	}
 
 } // namespace VTX::App::Pass

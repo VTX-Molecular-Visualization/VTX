@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_VTX_UPDATER__
-#define __VTX_APP_VTX_UPDATER__
+#ifndef VTX_APP_SESSION_HPP
+#define VTX_APP_SESSION_HPP
 
 #include "app/constants.hpp"
 #include "app/events.hpp"
@@ -20,12 +20,16 @@ namespace VTX::App
 		 * @brief Constructor.
 		 */
 		Session();
+		Session( const Session & )			   = delete;
+		Session & operator=( const Session & ) = delete;
+		Session( Session && )				   = delete;
+		Session & operator=( Session && )	   = delete;
 		~Session();
 
 		/**
 		 * @brief Current version.
 		 */
-		inline static std::string version()
+		static std::string version()
 		{
 			return std::to_string( VERSION_MAJOR ) + "." + std::to_string( VERSION_MINOR ) + "."
 				   + std::to_string( VERSION_PATCH );
@@ -54,7 +58,7 @@ namespace VTX::App
 		/**
 		 * @brief Does the application have an update manager available (not in dev mode).
 		 */
-		bool hasManager() const;
+		bool hasManager() const noexcept;
 
 		/**
 		 * @brief Is this version portable.
@@ -70,59 +74,29 @@ namespace VTX::App
 		FilePath getApplicationDir() const;
 		FilePath getAppTmpFolder() const;
 		FilePath getLicenseFile() const;
-		FilePath getReadmeFile() const;
-		FilePath getChangelogFile() const;
 		FilePath getDataDir() const;
+		FilePath getDefaultUserData() const;
+		FilePath getDefaultRepresentationsDir() const;
+		FilePath getDefaultColorLayoutsDir() const;
+		FilePath getDefaultGraphicsConfigsDir() const;
+		FilePath getDefaultHdrisDir() const;
+		FilePath getDefaultMaterialsDir() const;
+		FilePath getDefaultScriptsDir() const;
 		FilePath getLogsDir() const;
 		FilePath getCacheDir() const;
 		FilePath getSnapshotsDir() const;
 		FilePath getRepresentationsDir() const;
 		FilePath getColorLayoutsDir() const;
-		FilePath getEffectsDir() const;
+		FilePath getGraphicsConfigsDir() const;
+		FilePath getHdrisDir() const;
+		FilePath getMaterialsDir() const;
+		FilePath getScriptsDir() const;
 		FilePath getConfigIniFile() const;
-		// const FilePath getSettingJsonFile() const;
 
 		/**
 		 * @brief Print session information (for debug).
 		 */
 		void print() const;
-
-		// TODO: clean old:
-		/*
-		inline bool isSessionFile( const FilePath & p_filePath ) { return p_filePath.extension().string() == "vtx"; }
-
-		inline FilePath getSceneSaveDirectory( const FilePath & p_savePath )
-		{
-			const FilePath projectDirectoryName = FilePath( p_savePath.stem().append( "_data" ) );
-
-			return p_savePath.parent_path() / projectDirectoryName;
-		}
-
-		inline FilePath getSceneObjectsSaveDirectory( const FilePath & p_savePath )
-		{
-			return getSceneSaveDirectory( p_savePath ) / "obj";
-		}
-
-		inline FilePath getResidueDataFilePath( const std::string & p_residueName )
-		{
-			return getResidueDataDir() / p_residueName.substr( 0, 1 );
-		}
-
-		inline void checkSaveDirectoryHierarchy( const FilePath & p_savePath )
-		{
-			const FilePath projectDirectory = getSceneSaveDirectory( p_savePath );
-			if ( std::filesystem::exists( projectDirectory ) == false )
-			{
-				std::filesystem::create_directory( projectDirectory );
-			}
-
-			const FilePath objectsPath = getSceneObjectsSaveDirectory( p_savePath );
-			if ( std::filesystem::exists( objectsPath ) == false )
-			{
-				std::filesystem::create_directory( objectsPath );
-			}
-		}
-		*/
 
 	  private:
 		/**

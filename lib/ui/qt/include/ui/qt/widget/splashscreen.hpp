@@ -1,6 +1,7 @@
-#ifndef __VTX_UI_QT_WIDGET_SPLASH_SCREEN__
-#define __VTX_UI_QT_WIDGET_SPLASH_SCREEN__
+#ifndef VTX_UI_QT_WIDGET_SPLASHSCREEN_HPP
+#define VTX_UI_QT_WIDGET_SPLASHSCREEN_HPP
 
+#include "ui/qt/helper.hpp"
 #include "ui/qt/resources.hpp"
 #include <QGuiApplication>
 #include <QHBoxLayout>
@@ -18,21 +19,23 @@ namespace VTX::UI::QT::Widget
 	class SplashScreen : public QWidget
 	{
 	  public:
-		SplashScreen( QWidget * p_parent = nullptr ) : QWidget( nullptr, Qt::SplashScreen | Qt::FramelessWindowHint )
+		SplashScreen( QWidget * const p_parent = nullptr ) :
+			QWidget( nullptr, Qt::SplashScreen | Qt::FramelessWindowHint )
 		{
 			using namespace Resources;
 
 			setAttribute( Qt::WA_DeleteOnClose, false );
 			setObjectName( "StartupSplashScreen" );
 
-			auto * layout = new QHBoxLayout( this );
+			auto * layout = Helper::makeQObject<QHBoxLayout>( this );
 			layout->setContentsMargins( 0, 0, 0, 0 );
 
-			_splashLabel = new QLabel( this );
+			_splashLabel = Helper::makeQObject<QLabel>( this );
 			_splashLabel->setAlignment( Qt::AlignCenter );
 			layout->addWidget( _splashLabel );
 
-			_splashMovie = new QMovie( QString::fromStdString( std::string( SPRITE_SPLASH_GIF ) ), QByteArray(), this );
+			_splashMovie = Helper::makeQObject<QMovie>(
+				QString::fromStdString( std::string( SPRITE_SPLASH_GIF ) ), QByteArray(), this );
 			if ( _splashMovie->isValid() )
 			{
 				_splashLabel->setMovie( _splashMovie );
@@ -61,8 +64,8 @@ namespace VTX::UI::QT::Widget
 		}
 
 	  private:
-		QPointer<QLabel>  _splashLabel;
-		QPointer<QMovie>  _splashMovie;
+		QPointer<QLabel> _splashLabel;
+		QPointer<QMovie> _splashMovie;
 	};
 } // namespace VTX::UI::QT::Widget
 #endif

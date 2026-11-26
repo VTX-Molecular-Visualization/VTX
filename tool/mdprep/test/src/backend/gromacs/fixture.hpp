@@ -1,3 +1,6 @@
+#ifndef VTX_TOOL_MDPREP_TEST_BACKEND_GROMACS_FIXTURE_HPP
+#define VTX_TOOL_MDPREP_TEST_BACKEND_GROMACS_FIXTURE_HPP
+
 #include <memory>
 #include <qapplication.h>
 //
@@ -29,13 +32,13 @@ namespace VTX::test
 
 	struct Pdb2gmx
 	{
-		inline static const FilePath & outputDir()
+		static const FilePath & outputDir()
 		{
 			static const FilePath outputDir = VTX::App::SESSION().getDataDir() / "1ubq_out_pdb2gmx";
 			return outputDir;
 		}
 
-		inline static const std::vector<std::string> & fileList()
+		static const std::vector<std::string> & fileList()
 		{
 			static const std::vector<std::string> fileList { ( outputDir() / "1ubq.gro" ).string(),
 															 ( outputDir() / "1ubq.itp" ).string(),
@@ -46,20 +49,18 @@ namespace VTX::test
 	};
 
 	// Put a pointer to each of the input string into the pointer vector
-	void fill(
-		const std::vector<std::string> &,
-		VTX::Tool::Mdprep::backends::Gromacs::CumulativeOuputFiles &
-	) noexcept;
+	void fill( const std::vector<std::string> &,
+			   VTX::Tool::Mdprep::backends::Gromacs::CumulativeOuputFiles & ) noexcept;
 
 	struct Editconf
 	{
-		inline static const FilePath & outputDir()
+		static const FilePath & outputDir()
 		{
 			static const FilePath outputDir = VTX::App::SESSION().getDataDir() / "1ubq_out_editconf";
 			return outputDir;
 		}
 
-		inline static const std::vector<std::string> & fileList()
+		static const std::vector<std::string> & fileList()
 		{
 			static const std::vector<std::string> fileList { ( outputDir() / "1ubq.gro" ).string() };
 			return fileList;
@@ -68,13 +69,13 @@ namespace VTX::test
 
 	struct Solvate
 	{
-		inline static const FilePath & outputDir()
+		static const FilePath & outputDir()
 		{
 			static const FilePath outputDir = VTX::App::SESSION().getDataDir() / "1ubq_out_solvate";
 			return outputDir;
 		}
 
-		inline static const std::vector<std::string> & fileList()
+		static const std::vector<std::string> & fileList()
 		{
 			static const std::vector<std::string> fileList { ( outputDir() / "1ubq.gro" ).string(),
 															 ( outputDir() / "1ubq.top" ).string() };
@@ -84,13 +85,13 @@ namespace VTX::test
 
 	struct TrjConv
 	{
-		inline static const FilePath & outputDir()
+		static const FilePath & outputDir()
 		{
 			static const FilePath outputDir = VTX::App::SESSION().getDataDir() / "1ubq_out_trjconv";
 			return outputDir;
 		}
 
-		inline static const std::vector<std::string> & fileList()
+		static const std::vector<std::string> & fileList()
 		{
 			static const std::vector<std::string> fileList { ( outputDir() / "1ubq.gro" ).string() };
 			return fileList;
@@ -99,13 +100,13 @@ namespace VTX::test
 
 	struct Grompp
 	{
-		inline static const FilePath & outputDir()
+		static const FilePath & outputDir()
 		{
 			static const FilePath outputDir = VTX::App::SESSION().getDataDir() / "1ubq_out_grompp";
 			return outputDir;
 		}
 
-		inline static const std::vector<std::string> & fileList()
+		static const std::vector<std::string> & fileList()
 		{
 			static const std::vector<std::string> fileList { ( outputDir() / "1ubq.top" ).string(),
 															 ( outputDir() / "1ubq.mdp" ).string(),
@@ -116,13 +117,13 @@ namespace VTX::test
 
 	struct Genion
 	{
-		inline static const FilePath & outputDir()
+		static const FilePath & outputDir()
 		{
 			static const FilePath outputDir = VTX::App::SESSION().getDataDir() / "1ubq_out_genion";
 			return outputDir;
 		}
 
-		inline static const std::vector<std::string> & fileList()
+		static const std::vector<std::string> & fileList()
 		{
 			static const std::vector<std::string> fileList { ( outputDir() / "1ubq.top" ).string(),
 															 ( outputDir() / "1ubq.gro" ).string() };
@@ -132,13 +133,13 @@ namespace VTX::test
 
 	struct Grompp2
 	{
-		inline static const FilePath & outputDir()
+		static const FilePath & outputDir()
 		{
 			static const FilePath outputDir = VTX::App::SESSION().getDataDir() / "1ubq_out_grompp2";
 			return outputDir;
 		}
 
-		inline static const std::vector<std::string> & fileList()
+		static const std::vector<std::string> & fileList()
 		{
 			static const std::vector<std::string> fileList { ( outputDir() / "1ubq.top" ).string(),
 															 ( outputDir() / "1ubq.mdp" ).string(),
@@ -160,3 +161,5 @@ namespace VTX::test
 	std::string getFileContent( const FilePath & p_file ) noexcept;
 
 } // namespace VTX::test
+
+#endif

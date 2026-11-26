@@ -22,6 +22,6 @@ void main()
 
 	// Output data.
 	packData( inData.viewPosition, normal, inData.selection, outDataPacked );
-	outColor			  = inData.color; // w = specular shininess.
+	outColor			  = inData.color;
 	outId				  = uvec2( inData.id, 0 );
 }

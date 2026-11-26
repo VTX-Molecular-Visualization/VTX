@@ -1,12 +1,13 @@
-#ifndef __VTX_RENDERER_REPRESENTATION__
-#define __VTX_RENDERER_REPRESENTATION__
+#ifndef VTX_RENDERER_REPRESENTATION_HPP
+#define VTX_RENDERER_REPRESENTATION_HPP
 
 #include <util/enum.hpp>
+#include <util/math.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer
 {
-	enum struct E_REPRESENTATION_VALUES
+	enum struct E_REPRESENTATION_VALUES : uint8_t
 	{
 		HAS_SPHERE,
 		RADIUS_SPHERE_FIXED,
@@ -70,136 +71,33 @@ namespace VTX::Renderer
 	struct Representation
 	{
 		// Sphere.
-		bool  hasSphere;
-		float radiusSphereFixed;
-		float radiusSphereAdd;
-		bool  isRadiusSphereFixed;
+		bool  hasSphere			  = HAS_SPHERE_DEFAULT;
+		float radiusSphereFixed	  = RADIUS_SPHERE_FIXED_DEFAULT;
+		float radiusSphereAdd	  = RADIUS_SPHERE_ADD_DEFAULT;
+		bool  isRadiusSphereFixed = IS_SPHERE_RADIUS_FIXED_DEFAULT;
 
 		// Cylinder.
-		bool  hasCylinder;
-		float radiusCylinder;
-		bool  cylinderColorBlending;
+		bool  hasCylinder			= HAS_CYLINDER_DEFAULT;
+		float radiusCylinder		= RADIUS_CYLINDER_DEFAULT;
+		bool  cylinderColorBlending = CYLINDER_COLOR_BLENDING_DEFAULT;
 
 		// Ribbon.
-		bool hasRibbon;
-		uint ribbonColorBlending;
+		bool hasRibbon			 = HAS_RIBBON_DEFAULT;
+		bool ribbonColorBlending = RIBBON_COLOR_BLENDING_DEFAULT;
 
 		// SES.
-		bool			   hasSes;
-		E_SES_COMPUTE_MODE sesComputeMode;
-		float			   sesProbeRadius;
+		bool			   hasSes		  = HAS_SES_DEFAULT;
+		E_SES_COMPUTE_MODE sesComputeMode = SES_COMPUTE_MODE_DEFAULT;
+		float			   sesProbeRadius = SES_PROBE_RADIUS_DEFAULT;
+
+		void clamp()
+		{
+			radiusSphereFixed = Util::Math::clamp( radiusSphereFixed, RADIUS_SPHERE_FIXED_MIN, RADIUS_SPHERE_FIXED_MAX );
+			radiusSphereAdd	  = Util::Math::clamp( radiusSphereAdd, RADIUS_SPHERE_ADD_MIN, RADIUS_SPHERE_ADD_MAX );
+			radiusCylinder	  = Util::Math::clamp( radiusCylinder, RADIUS_CYLINDER_MIN, RADIUS_CYLINDER_MAX );
+			sesProbeRadius	  = Util::Math::clamp( sesProbeRadius, SES_PROBE_RADIUS_MIN, SES_PROBE_RADIUS_MAX );
+		}
 	};
-
-	namespace Representations
-	{
-		inline const Representation STICKS { // Sphere.
-											 false,
-											 RADIUS_SPHERE_FIXED_DEFAULT,
-											 RADIUS_SPHERE_ADD_DEFAULT,
-											 true,
-											 // Cylinder.
-											 true,
-											 0.15f,
-											 false,
-											 // Ribbon.
-											 false,
-											 false,
-											 // SES.
-											 false,
-											 SES_COMPUTE_MODE_DEFAULT,
-											 SES_PROBE_RADIUS_DEFAULT
-		};
-
-		inline const Representation STICKS_AND_RIBBONS { // Sphere.
-														 false,
-														 RADIUS_SPHERE_FIXED_DEFAULT,
-														 RADIUS_SPHERE_ADD_DEFAULT,
-														 true,
-														 // Cylinder.
-														 true,
-														 0.15f,
-														 false,
-														 // Ribbon.
-														 true,
-														 true,
-														 // SES.
-														 false,
-														 SES_COMPUTE_MODE_DEFAULT,
-														 SES_PROBE_RADIUS_DEFAULT
-		};
-
-		inline const Representation BALLS_AND_STICKS { // Sphere.
-													   true,
-													   0.4f,
-													   RADIUS_SPHERE_ADD_DEFAULT,
-													   true,
-													   // Cylinder.
-													   true,
-													   0.15f,
-													   false,
-													   // Ribbon.
-													   false,
-													   false,
-													   // SES.
-													   false,
-													   SES_COMPUTE_MODE_DEFAULT,
-													   SES_PROBE_RADIUS_DEFAULT
-		};
-
-		inline const Representation VAN_DER_WAALS { // Sphere.
-													true,
-													RADIUS_SPHERE_FIXED_DEFAULT,
-													RADIUS_SPHERE_ADD_DEFAULT,
-													false,
-													// Cylinder.
-													false,
-													RADIUS_CYLINDER_DEFAULT,
-													false,
-													// Ribbon.
-													false,
-													false,
-													// SES.
-													false,
-													SES_COMPUTE_MODE_DEFAULT,
-													SES_PROBE_RADIUS_DEFAULT
-		};
-
-		inline const Representation RIBBONS { // Sphere.
-											  false,
-											  RADIUS_SPHERE_FIXED_DEFAULT,
-											  RADIUS_SPHERE_ADD_DEFAULT,
-											  true,
-											  // Cylinder.
-											  false,
-											  RADIUS_CYLINDER_DEFAULT,
-											  false,
-											  // Ribbon.
-											  true,
-											  true,
-											  // SES.
-											  false,
-											  SES_COMPUTE_MODE_DEFAULT,
-											  SES_PROBE_RADIUS_DEFAULT
-		};
-
-		inline const Representation SES { // Sphere.
-										  false,
-										  RADIUS_SPHERE_FIXED_DEFAULT,
-										  RADIUS_SPHERE_ADD_DEFAULT,
-										  false,
-										  // Cylinder.
-										  false,
-										  RADIUS_CYLINDER_DEFAULT,
-										  false,
-										  // Ribbon.
-										  false,
-										  false,
-										  // SES.
-										  true,
-										  SES_COMPUTE_MODE_DEFAULT,
-										  SES_PROBE_RADIUS_DEFAULT
-		};
-	} // namespace Representations
 } // namespace VTX::Renderer
 
 #endif

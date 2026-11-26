@@ -1,0 +1,30 @@
+#ifndef VTX_APP_EXTRACTOR_TRAJECTORY_BUFFER_HPP
+#define VTX_APP_EXTRACTOR_TRAJECTORY_BUFFER_HPP
+
+#include "app/trajectory/types.hpp"
+#include <cstddef>
+
+namespace VTX::App::Extractor
+{
+	/**
+	 * @brief Trajectory buffer allocation settings.
+	 */
+	struct TrajectoryBufferSettings
+	{
+		// Default threshold to switch between strategies.
+		// TODO:
+		static constexpr size_t DEFAULT_MAX_FULL_BUFFER_BYTE_SIZE = static_cast<size_t>( 1024 ) * 1024 * 1024;
+		// Window default size.
+		static constexpr size_t DEFAULT_CIRCULAR_BUFFER_FRAME_COUNT = 20;
+
+		// Threshold.
+		size_t maxFullBufferByteSize = DEFAULT_MAX_FULL_BUFFER_BYTE_SIZE;
+		// Window size.
+		size_t circularBufferFrameCount = DEFAULT_CIRCULAR_BUFFER_FRAME_COUNT;
+
+		Trajectory::TRAJECTORY_BUFFER_MODE selectMode( size_t, size_t ) const noexcept;
+		size_t getStorageFrameCount( Trajectory::TRAJECTORY_BUFFER_MODE, size_t ) const noexcept;
+	};
+} // namespace VTX::App::Extractor
+
+#endif

@@ -1,8 +1,13 @@
 #include "app/helper/system.hpp"
+#include "app/generic/stale.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/system/color.hpp"
 #include "app/system/representation.hpp"
+#include <algorithm>
 #include <core/struct/topology.hpp>
-#include <io/metadata.hpp>
+#include <stdexcept>
+#include <util/exceptions.hpp>
+#include <utility>
 
 namespace
 {
@@ -30,52 +35,68 @@ namespace
 											: E_SELECTION_STATE::NONE;
 	}
 
+	VTX::Index _getIndex( const VTX::App::Helper::System::SystemItemView & p_system )
+	{
+		if ( not p_system.index )
+		{
+			throw VTX::VTXException( "System item {} requires an index", VTX::toUnderlying( p_system.item ) );
+		}
+		return *p_system.index;
+	}
+
 } // namespace
 
 namespace VTX::App::Helper::System
 {
-	Entity getSystemByName( const std::string_view p_name )
+	Vec3f getAtomPosition( const Entity p_entity, const Index p_atom )
 	{
-		for ( auto e : REG().view<IO::Metadata>() )
-		{
-			auto & metadata = REG().get<IO::Metadata>( e );
-
-			if ( metadata.name == p_name )
+		Vec3f	   position;
+		const bool available = App::Helper::Trajectory::visitCurrentFrame(
+			p_entity,
+			[ & ]( const Core::Struct::FrameView p_positions )
 			{
-				return e;
+				if ( p_atom >= p_positions.size() )
+				{
+					throw std::out_of_range( "Atom position is unavailable." );
+				}
+				position = p_positions[ p_atom ];
 			}
+		);
+		if ( not available )
+		{
+			throw std::out_of_range( "Atom position is unavailable." );
 		}
 
-		return InvalidEntity;
+		return position;
 	}
 
-	Entity getSystemByPdb( const std::string_view p_pdb )
+	const Util::Math::Grid<Index> & getAtomGrid( const Entity p_entity )
 	{
-		for ( auto e : REG().view<IO::Metadata>() )
+		Registry & registry = REG();
+		if ( registry.all_of<Generic::StaleAtomGrid>( p_entity ) )
 		{
-			auto & metadata = REG().get<IO::Metadata>( e );
-
-			if ( metadata.pdbIDCode == p_pdb )
+			Util::Math::Grid<Index> atomGrid;
+			if ( not App::Helper::Trajectory::visitCurrentFrame(
+					 p_entity,
+					 [ &atomGrid ]( const Core::Struct::FrameView p_positions )
+					 {
+						 for ( Index atom = 0; atom < static_cast<Index>( p_positions.size() ); ++atom )
+						 {
+							 atomGrid.add( atom, p_positions[ atom ] );
+						 }
+					 }
+				 ) )
 			{
-				return e;
+				throw std::out_of_range( "Trajectory frame is unavailable." );
 			}
+			registry.replace<Util::Math::Grid<Index>>( p_entity, std::move( atomGrid ) );
+			registry.remove<Generic::StaleAtomGrid>( p_entity );
 		}
 
-		return InvalidEntity;
+		return registry.get<Util::Math::Grid<Index>>( p_entity );
 	}
 
-	Entity getSystemByFileName( const std::string_view p_fileName )
-	{
-		for ( auto e : REG().view<IO::Metadata>() )
-		{
-			auto & metadata = REG().get<IO::Metadata>( e );
-			if ( metadata.path.filename() == p_fileName )
-			{
-				return e;
-			}
-		}
-		return InvalidEntity;
-	}
+	void invalidateAtomGrid( const Entity p_entity ) { REG().emplace_or_replace<Generic::StaleAtomGrid>( p_entity ); }
 
 	App::System::E_VISIBLE_STATE getVisibleState( const SystemItemView & p_system )
 	{
@@ -92,9 +113,7 @@ namespace VTX::App::Helper::System
 		case E_SYSTEM_ITEM::SYSTEM: return _getVisibleState( visibility.atoms, topology.getAtomRange() );
 		case E_SYSTEM_ITEM::CATEGORY:
 		{
-			assert( p_system.index );
-
-			const IndexRangeList atoms = topology.getCategoryAtomRangeList( *p_system.index );
+			const IndexRangeList atoms = topology.getCategoryAtomRangeList( _getIndex( p_system ) );
 			if ( atoms.isEmpty() )
 			{
 				return E_VISIBLE_STATE::HIDDEN;
@@ -104,14 +123,11 @@ namespace VTX::App::Helper::System
 												   : E_VISIBLE_STATE::HIDDEN;
 		}
 		case E_SYSTEM_ITEM::CHAIN:
-			assert( p_system.index );
-			return _getVisibleState( visibility.atoms, topology.getChainAtomRange( *p_system.index ) );
+			return _getVisibleState( visibility.atoms, topology.getChainAtomRange( _getIndex( p_system ) ) );
 		case E_SYSTEM_ITEM::RESIDUE:
-			assert( p_system.index );
-			return _getVisibleState( visibility.atoms, topology.getResidueAtomRange( *p_system.index ) );
+			return _getVisibleState( visibility.atoms, topology.getResidueAtomRange( _getIndex( p_system ) ) );
 		case E_SYSTEM_ITEM::ATOM:
-			assert( p_system.index );
-			return visibility.atoms.test( *p_system.index ) ? E_VISIBLE_STATE::VISIBLE : E_VISIBLE_STATE::HIDDEN;
+			return visibility.atoms.test( _getIndex( p_system ) ) ? E_VISIBLE_STATE::VISIBLE : E_VISIBLE_STATE::HIDDEN;
 		default: break;
 		}
 
@@ -133,8 +149,7 @@ namespace VTX::App::Helper::System
 		case E_SYSTEM_ITEM::SYSTEM: return _getSelectionState( selection.atoms, topology.getAtomRange() );
 		case E_SYSTEM_ITEM::CATEGORY:
 		{
-			assert( p_system.index );
-			const IndexRangeList atoms = topology.getCategoryAtomRangeList( *p_system.index );
+			const IndexRangeList atoms = topology.getCategoryAtomRangeList( _getIndex( p_system ) );
 			if ( atoms.isEmpty() )
 			{
 				return E_SELECTION_STATE::NONE;
@@ -144,14 +159,11 @@ namespace VTX::App::Helper::System
 												  : E_SELECTION_STATE::NONE;
 		}
 		case E_SYSTEM_ITEM::CHAIN:
-			assert( p_system.index );
-			return _getSelectionState( selection.atoms, topology.getChainAtomRange( *p_system.index ) );
+			return _getSelectionState( selection.atoms, topology.getChainAtomRange( _getIndex( p_system ) ) );
 		case E_SYSTEM_ITEM::RESIDUE:
-			assert( p_system.index );
-			return _getSelectionState( selection.atoms, topology.getResidueAtomRange( *p_system.index ) );
+			return _getSelectionState( selection.atoms, topology.getResidueAtomRange( _getIndex( p_system ) ) );
 		case E_SYSTEM_ITEM::ATOM:
-			assert( p_system.index );
-			return selection.atoms.test( *p_system.index ) ? E_SELECTION_STATE::FULL : E_SELECTION_STATE::NONE;
+			return selection.atoms.test( _getIndex( p_system ) ) ? E_SELECTION_STATE::FULL : E_SELECTION_STATE::NONE;
 		default: break;
 		}
 
@@ -170,22 +182,10 @@ namespace VTX::App::Helper::System
 		switch ( p_system.item )
 		{
 		case E_SYSTEM_ITEM::SYSTEM: atoms.addRange( topology.getAtomRange() ); break;
-		case E_SYSTEM_ITEM::CATEGORY:
-			assert( p_system.index );
-			atoms = topology.getCategoryAtomRangeList( *p_system.index );
-			break;
-		case E_SYSTEM_ITEM::CHAIN:
-			assert( p_system.index );
-			atoms.addRange( topology.getChainAtomRange( *p_system.index ) );
-			break;
-		case E_SYSTEM_ITEM::RESIDUE:
-			assert( p_system.index );
-			atoms.addRange( topology.getResidueAtomRange( *p_system.index ) );
-			break;
-		case E_SYSTEM_ITEM::ATOM:
-			assert( p_system.index );
-			atoms.addRange( IndexRange( *p_system.index ) );
-			break;
+		case E_SYSTEM_ITEM::CATEGORY: atoms = topology.getCategoryAtomRangeList( _getIndex( p_system ) ); break;
+		case E_SYSTEM_ITEM::CHAIN: atoms.addRange( topology.getChainAtomRange( _getIndex( p_system ) ) ); break;
+		case E_SYSTEM_ITEM::RESIDUE: atoms.addRange( topology.getResidueAtomRange( _getIndex( p_system ) ) ); break;
+		case E_SYSTEM_ITEM::ATOM: atoms.addRange( IndexRange( _getIndex( p_system ) ) ); break;
 		default: break;
 		}
 
@@ -214,6 +214,55 @@ namespace VTX::App::Helper::System
 		return std::nullopt;
 	}
 
+	std::optional<Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE> getSecondaryStructureColorScheme(
+		const SystemItemView & p_system
+	)
+	{
+		using namespace Core::Struct;
+
+		const auto &   reg		= REG();
+		const auto &   topology = reg.get<Core::Struct::Topology>( p_system.entity );
+		const auto &   color	= reg.get<App::System::Color>( p_system.entity );
+		IndexRangeList residues;
+
+		switch ( p_system.item )
+		{
+		case E_SYSTEM_ITEM::SYSTEM:
+			residues.addRange( IndexRange::fromFirstCount( 0, topology.getResidueCount() ) );
+			break;
+		case E_SYSTEM_ITEM::CATEGORY:
+			for ( const Index residue :
+				  topology.getCategoryResidues( static_cast<Core::ChemDB::Category::TYPE>( _getIndex( p_system ) ) ) )
+			{
+				residues.addRange( IndexRange( residue ) );
+			}
+			break;
+		case E_SYSTEM_ITEM::CHAIN: residues.addRange( topology.getChainResidueRange( _getIndex( p_system ) ) ); break;
+		case E_SYSTEM_ITEM::RESIDUE: residues.addRange( IndexRange( _getIndex( p_system ) ) ); break;
+		case E_SYSTEM_ITEM::ATOM:
+			residues.addRange( IndexRange( topology.getAtomResidueIndex( _getIndex( p_system ) ) ) );
+			break;
+		default: break;
+		}
+
+		for ( const auto & [ scheme, rangeList ] : color.colorSchemeSecondaryStructureResidues )
+		{
+			if ( rangeList.contains( residues ) )
+			{
+				return scheme;
+			}
+		}
+		for ( const auto & [ _, rangeList ] : color.customSecondaryStructureColorResidues )
+		{
+			if ( rangeList.contains( residues ) )
+			{
+				return Renderer::E_COLOR_SCHEME_SECONDARY_STRUCTURE::CUSTOM;
+			}
+		}
+
+		return std::nullopt;
+	}
+
 	size_t countAssignedColorAtoms( const App::System::Color & p_color )
 	{
 		size_t count = 0;
@@ -227,6 +276,22 @@ namespace VTX::App::Helper::System
 			count += rangeList.count();
 		}
 		for ( const auto & [ _, rangeList ] : p_color.carbonCustomColorAtoms )
+		{
+			count += rangeList.count();
+		}
+
+		return count;
+	}
+
+	size_t countAssignedSecondaryStructureResidues( const App::System::Color & p_color )
+	{
+		size_t count = 0;
+
+		for ( const auto & [ _, rangeList ] : p_color.colorSchemeSecondaryStructureResidues )
+		{
+			count += rangeList.count();
+		}
+		for ( const auto & [ _, rangeList ] : p_color.customSecondaryStructureColorResidues )
 		{
 			count += rangeList.count();
 		}
@@ -257,9 +322,8 @@ namespace VTX::App::Helper::System
 				break;
 			case E_SYSTEM_ITEM::CATEGORY:
 			{
-				assert( p_system.index );
 				const IndexRange systemRange = topology.getAtomRange();
-				if ( ranges.contains( topology.getCategoryAtomRangeList( *p_system.index ) )
+				if ( ranges.contains( topology.getCategoryAtomRangeList( _getIndex( p_system ) ) )
 					 && not ranges.contains( systemRange ) )
 				{
 					return true;
@@ -268,9 +332,8 @@ namespace VTX::App::Helper::System
 			break;
 			case E_SYSTEM_ITEM::CHAIN:
 			{
-				assert( p_system.index );
 				const IndexRange systemRange = topology.getAtomRange();
-				if ( ranges.contains( topology.getChainAtomRange( *p_system.index ) )
+				if ( ranges.contains( topology.getChainAtomRange( _getIndex( p_system ) ) )
 					 && not ranges.contains( systemRange ) )
 				{
 					return true;
@@ -279,10 +342,9 @@ namespace VTX::App::Helper::System
 			break;
 			case E_SYSTEM_ITEM::RESIDUE:
 			{
-				assert( p_system.index );
 				const IndexRange chainRange
-					= topology.getChainAtomRange( topology.getResidueChainIndex( *p_system.index ) );
-				if ( ranges.contains( topology.getResidueAtomRange( *p_system.index ) )
+					= topology.getChainAtomRange( topology.getResidueChainIndex( _getIndex( p_system ) ) );
+				if ( ranges.contains( topology.getResidueAtomRange( _getIndex( p_system ) ) )
 					 && not ranges.contains( chainRange ) )
 				{
 					return true;
@@ -291,10 +353,9 @@ namespace VTX::App::Helper::System
 			break;
 			case E_SYSTEM_ITEM::ATOM:
 			{
-				assert( p_system.index );
 				const IndexRange residueRange
-					= topology.getResidueAtomRange( topology.getAtomResidueIndex( *p_system.index ) );
-				if ( ranges.contains( *p_system.index ) && not ranges.contains( residueRange ) )
+					= topology.getResidueAtomRange( topology.getAtomResidueIndex( _getIndex( p_system ) ) );
+				if ( ranges.contains( _getIndex( p_system ) ) && not ranges.contains( residueRange ) )
 				{
 					return true;
 				}
@@ -328,7 +389,82 @@ namespace VTX::App::Helper::System
 			}
 		}
 
-		return false;
+		auto isRootForResidueRanges = [ & ]( const Core::Struct::IndexRangeList & ranges )
+		{
+			switch ( p_system.item )
+			{
+			case E_SYSTEM_ITEM::SYSTEM:
+				if ( ranges.count() == topology.getResidueCount() )
+				{
+					return true;
+				}
+				break;
+			case E_SYSTEM_ITEM::CATEGORY:
+			{
+				Core::Struct::IndexRangeList categoryResidues;
+				for ( const Index residue : topology.getCategoryResidues(
+						  static_cast<Core::ChemDB::Category::TYPE>( _getIndex( p_system ) )
+					  ) )
+				{
+					categoryResidues.addRange( Core::Struct::IndexRange( residue ) );
+				}
+				const Core::Struct::IndexRange systemRange
+					= Core::Struct::IndexRange::fromFirstCount( 0, topology.getResidueCount() );
+				if ( ranges.contains( categoryResidues ) && not ranges.contains( systemRange ) )
+				{
+					return true;
+				}
+			}
+			break;
+			case E_SYSTEM_ITEM::CHAIN:
+			{
+				const Core::Struct::IndexRange systemRange
+					= Core::Struct::IndexRange::fromFirstCount( 0, topology.getResidueCount() );
+				if ( ranges.contains( topology.getChainResidueRange( _getIndex( p_system ) ) )
+					 && not ranges.contains( systemRange ) )
+				{
+					return true;
+				}
+			}
+			break;
+			case E_SYSTEM_ITEM::RESIDUE:
+			{
+				const Core::Struct::IndexRange chainRange
+					= topology.getChainResidueRange( topology.getResidueChainIndex( _getIndex( p_system ) ) );
+				if ( ranges.contains( _getIndex( p_system ) ) && not ranges.contains( chainRange ) )
+				{
+					return true;
+				}
+			}
+			break;
+			case E_SYSTEM_ITEM::ATOM:
+			{
+				const Index					   residueIndex = topology.getAtomResidueIndex( _getIndex( p_system ) );
+				const Core::Struct::IndexRange chainRange
+					= topology.getChainResidueRange( topology.getResidueChainIndex( residueIndex ) );
+				if ( ranges.contains( residueIndex ) && not ranges.contains( chainRange ) )
+				{
+					return true;
+				}
+				break;
+			}
+			default: break;
+			}
+
+			return false;
+		};
+
+		for ( const auto & [ _, ranges ] : color.colorSchemeSecondaryStructureResidues )
+		{
+			if ( isRootForResidueRanges( ranges ) )
+			{
+				return true;
+			}
+		}
+		return std::ranges::any_of(
+			color.customSecondaryStructureColorResidues,
+			[ &isRootForResidueRanges ]( const auto & entry ) { return isRootForResidueRanges( entry.second ); }
+		);
 	}
 
 	std::optional<Entity> getRepresentation( const SystemItemView & p_system )
@@ -343,22 +479,10 @@ namespace VTX::App::Helper::System
 		switch ( p_system.item )
 		{
 		case E_SYSTEM_ITEM::SYSTEM: atoms.addRange( topology.getAtomRange() ); break;
-		case E_SYSTEM_ITEM::CATEGORY:
-			assert( p_system.index );
-			atoms = topology.getCategoryAtomRangeList( *p_system.index );
-			break;
-		case E_SYSTEM_ITEM::CHAIN:
-			assert( p_system.index );
-			atoms.addRange( topology.getChainAtomRange( *p_system.index ) );
-			break;
-		case E_SYSTEM_ITEM::RESIDUE:
-			assert( p_system.index );
-			atoms.addRange( topology.getResidueAtomRange( *p_system.index ) );
-			break;
-		case E_SYSTEM_ITEM::ATOM:
-			assert( p_system.index );
-			atoms.addRange( IndexRange( *p_system.index ) );
-			break;
+		case E_SYSTEM_ITEM::CATEGORY: atoms = topology.getCategoryAtomRangeList( _getIndex( p_system ) ); break;
+		case E_SYSTEM_ITEM::CHAIN: atoms.addRange( topology.getChainAtomRange( _getIndex( p_system ) ) ); break;
+		case E_SYSTEM_ITEM::RESIDUE: atoms.addRange( topology.getResidueAtomRange( _getIndex( p_system ) ) ); break;
+		case E_SYSTEM_ITEM::ATOM: atoms.addRange( IndexRange( _getIndex( p_system ) ) ); break;
 		default: break;
 		}
 
@@ -396,9 +520,8 @@ namespace VTX::App::Helper::System
 				break;
 			case E_SYSTEM_ITEM::CATEGORY:
 			{
-				assert( p_system.index );
 				const IndexRange systemRange = topology.getAtomRange();
-				if ( ranges.contains( topology.getCategoryAtomRangeList( *p_system.index ) )
+				if ( ranges.contains( topology.getCategoryAtomRangeList( _getIndex( p_system ) ) )
 					 && not ranges.contains( systemRange ) )
 				{
 					return true;
@@ -407,9 +530,8 @@ namespace VTX::App::Helper::System
 			break;
 			case E_SYSTEM_ITEM::CHAIN:
 			{
-				assert( p_system.index );
 				const IndexRange systemRange = topology.getAtomRange();
-				if ( ranges.contains( topology.getChainAtomRange( *p_system.index ) )
+				if ( ranges.contains( topology.getChainAtomRange( _getIndex( p_system ) ) )
 					 && not ranges.contains( systemRange ) )
 				{
 					return true;
@@ -418,10 +540,9 @@ namespace VTX::App::Helper::System
 			break;
 			case E_SYSTEM_ITEM::RESIDUE:
 			{
-				assert( p_system.index );
 				const IndexRange chainRange
-					= topology.getChainAtomRange( topology.getResidueChainIndex( *p_system.index ) );
-				if ( ranges.contains( topology.getResidueAtomRange( *p_system.index ) )
+					= topology.getChainAtomRange( topology.getResidueChainIndex( _getIndex( p_system ) ) );
+				if ( ranges.contains( topology.getResidueAtomRange( _getIndex( p_system ) ) )
 					 && not ranges.contains( chainRange ) )
 				{
 					return true;
@@ -430,10 +551,9 @@ namespace VTX::App::Helper::System
 			break;
 			case E_SYSTEM_ITEM::ATOM:
 			{
-				assert( p_system.index );
 				const IndexRange residueRange
-					= topology.getResidueAtomRange( topology.getAtomResidueIndex( *p_system.index ) );
-				if ( ranges.contains( *p_system.index ) && not ranges.contains( residueRange ) )
+					= topology.getResidueAtomRange( topology.getAtomResidueIndex( _getIndex( p_system ) ) );
+				if ( ranges.contains( _getIndex( p_system ) ) && not ranges.contains( residueRange ) )
 				{
 					return true;
 				}

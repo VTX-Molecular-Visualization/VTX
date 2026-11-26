@@ -1,5 +1,5 @@
-#ifndef __VTX_CORE_CHEMDB_ATOM__
-#define __VTX_CORE_CHEMDB_ATOM__
+#ifndef VTX_CORE_CHEMDB_ATOM_HPP
+#define VTX_CORE_CHEMDB_ATOM_HPP
 
 #include <algorithm>
 #include <array>
@@ -136,9 +136,9 @@ namespace VTX::Core::ChemDB::Atom
 		A_NO	= 102,
 		A_LR	= 103,
 		A_RF	= 104,
-		A_DD	= 105,
+		A_DB	= 105,
 		A_SG	= 106,
-		A_BHJ	= 107,
+		A_BH	= 107,
 		A_HS	= 108,
 		A_MT	= 109,
 		A_DS	= 110,
@@ -153,7 +153,7 @@ namespace VTX::Core::ChemDB::Atom
 		COUNT
 	};
 
-	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_STR = {
+	constexpr auto SYMBOL_STR = std::to_array<std::string_view>( {
 		"-",   // UNKNOWN = 0,
 		"H",   // H			= 1,
 		"HE",  // HE		= 2,
@@ -259,9 +259,9 @@ namespace VTX::Core::ChemDB::Atom
 		"NO",  // NO		= 102,
 		"LR",  // LR		= 103,
 		"RF",  // RF		= 104,
-		"DD",  // DD		= 105,
+		"DB",  // DB		= 105,
 		"SG",  // SG		= 106,
-		"BHJ", // BHJ		= 107,
+		"BH",  // BH		= 107,
 		"HS",  // HS		= 108,
 		"MT",  // MT		= 109,
 		"DS",  // DS		= 110,
@@ -273,9 +273,10 @@ namespace VTX::Core::ChemDB::Atom
 		"UUH", // UUH		= 116,
 		"UUS", // UUS		= 117,
 		"UUO"  // UUO		= 118,
-	};
+	} );
+	static_assert( SYMBOL_STR.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
-	constexpr std::array<std::string_view, size_t( SYMBOL::COUNT )> SYMBOL_NAME = {
+	constexpr auto SYMBOL_NAME = std::to_array<std::string_view>( {
 		"Unknown",		 // UNKNOWN = 0,
 		"Hydrogen",		 // H		= 1,
 		"Helium",		 // HE		= 2,
@@ -381,9 +382,9 @@ namespace VTX::Core::ChemDB::Atom
 		"Nobelium",		 // NO		= 102,
 		"Lawrencium",	 // LR		= 103,
 		"Rutherfordium", // RF		= 104,
-		"Dubnium",		 // DD		= 105,
+		"Dubnium",		 // DB		= 105,
 		"Seaborgium",	 // SG		= 106,
-		"Bohrium",		 // BHJ		= 107,
+		"Bohrium",		 // BH		= 107,
 		"Hassium",		 // HS		= 108,
 		"Meitnerium",	 // MT		= 109,
 		"Darmstadtium",	 // DS		= 110,
@@ -395,9 +396,10 @@ namespace VTX::Core::ChemDB::Atom
 		"Ununhexium",	 // UUH		= 116,
 		"Ununseptium",	 // UUS		= 117,
 		"Ununoctium"	 // UUO		= 118,
-	};
+	} );
+	static_assert( SYMBOL_NAME.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
-	constexpr std::array<float, size_t( SYMBOL::COUNT )> SYMBOL_VDW_RADIUS = {
+	constexpr auto SYMBOL_VDW_RADIUS = std::to_array<float>( {
 		1.20f, // UNKNOWN	= 0,
 		1.20f, // H			= 1,
 		1.43f, // HE		= 2,
@@ -503,9 +505,9 @@ namespace VTX::Core::ChemDB::Atom
 		0.00f, // NO		= 102,
 		0.00f, // LR		= 103,
 		0.00f, // RF		= 104,
-		0.00f, // DD		= 105,
+		0.00f, // DB		= 105,
 		0.00f, // SG		= 106,
-		0.00f, // BHJ		= 107,
+		0.00f, // BH		= 107,
 		0.00f, // HS		= 108,
 		0.00f, // MT		= 109,
 		0.00f, // DS		= 110,
@@ -517,12 +519,13 @@ namespace VTX::Core::ChemDB::Atom
 		0.00f, // UUH		= 116,
 		0.00f, // UUS		= 117,
 		0.00f  // UUO		= 118,
-	};
+	} );
+	static_assert( SYMBOL_VDW_RADIUS.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
 	constexpr float minNonZero( std::span<const float> p_r ) noexcept
 	{
 		float m = 0.f;
-		for ( float r : p_r )
+		for ( const float r : p_r )
 		{
 			if ( r == 0.f )
 			{
@@ -538,7 +541,7 @@ namespace VTX::Core::ChemDB::Atom
 
 	constexpr float VDW_RADIUS_MIN = minNonZero( SYMBOL_VDW_RADIUS );
 
-	constexpr std::array<bool, size_t( SYMBOL::COUNT )> SYMBOL_IS_COMMON = {
+	constexpr auto SYMBOL_IS_COMMON = std::to_array<bool>( {
 		true,  // UNKNOWN	= 0,
 		true,  // H			= 1,
 		false, // HE		= 2,
@@ -644,9 +647,9 @@ namespace VTX::Core::ChemDB::Atom
 		false, // NO		= 102,
 		false, // LR		= 103,
 		false, // RF		= 104,
-		false, // DD		= 105,
+		false, // DB		= 105,
 		false, // SG		= 106,
-		false, // BHJ		= 107,
+		false, // BH		= 107,
 		false, // HS		= 108,
 		false, // MT		= 109,
 		false, // DS		= 110,
@@ -658,7 +661,8 @@ namespace VTX::Core::ChemDB::Atom
 		false, // UUH		= 116,
 		false, // UUS		= 117,
 		false  // UUO		= 118,
-	};
+	} );
+	static_assert( SYMBOL_IS_COMMON.size() == static_cast<size_t>( SYMBOL::COUNT ) );
 
 	SYMBOL getSymbolFromString( const std::string & p_symbolStr );
 } // namespace VTX::Core::ChemDB::Atom

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SYSTEM_SELECTION__
-#define __VTX_APP_SYSTEM_SELECTION__
+#ifndef VTX_APP_SYSTEM_SELECTION_HPP
+#define VTX_APP_SYSTEM_SELECTION_HPP
 
 #include <core/struct/topology.hpp>
 #include <util/math/bitset.hpp>

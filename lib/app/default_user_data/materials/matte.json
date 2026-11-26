@@ -1,0 +1,24 @@
+{
+    "version": 1,
+    "type": "material",
+    "name": "Matte",
+    "data": {
+        "emissiveColor": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "emissiveIntensity": 0.0,
+        "metallic": 0.0,
+        "roughness": 0.9,
+        "opacity": 1.0,
+        "textureScale": 1.0,
+        "albedoTexture": null,
+        "normalTexture": null,
+        "metallicTexture": null,
+        "roughnessTexture": null,
+        "ambientOcclusionTexture": null,
+        "emissiveTexture": null,
+        "doubleSided": false
+    }
+}

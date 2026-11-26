@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_FORM__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_FORM__
+#ifndef VTX_TOOL_MDPREP_UI_FORM_HPP
+#define VTX_TOOL_MDPREP_UI_FORM_HPP
 
 #include <memory>
 #include <util/concepts.hpp>
@@ -9,6 +9,7 @@ namespace VTX::Tool::Mdprep::Gateway
 	struct MdParameters;
 	struct EngineSpecificCommonInformation;
 } // namespace VTX::Tool::Mdprep::Gateway
+
 namespace VTX::Tool::Mdprep::ui
 {
 	struct FormLayouts;
@@ -26,55 +27,63 @@ namespace VTX::Tool::Mdprep::ui
 					{ t.update( e ) };
 				},
 				"You need to implement 'void update( const Gateway::EngineSpecificCommonInformation & p_data ) "
-				"noexcept' class method"
-			);
+				"' class method" );
 			static_assert(
 				requires( T t, Gateway::MdParameters & e ) {
 					{ t.get( e ) };
-				}, "You need to implement 'void get( Gateway::MdParameters & p_ ) const noexcept' class method"
-			);
+				}, "You need to implement 'void get( Gateway::MdParameters & p_ ) const' class method" );
 			static_assert(
 				requires( T t, FormLayouts & e ) {
 					{ t.get( e ) };
-				}, "You need to implement 'void get( FormLayouts & p_ ) const noexcept' class method"
-			);
+				}, "You need to implement 'void get( FormLayouts & p_ ) const' class method" );
 		}
+
 		Form() = default;
 
 		// Inform the form on new engine-dependant data.
-		inline void update( const Gateway::EngineSpecificCommonInformation & p_data ) noexcept
+		void update( const Gateway::EngineSpecificCommonInformation & p_data )
 		{
 			if ( _ptr )
+			{
 				_ptr->update( p_data );
+			}
 		}
 
 		// Get MD parameters entered by the user
-		inline void get( Gateway::MdParameters & p_ ) const noexcept
+		void get( Gateway::MdParameters & p_ ) const
 		{
 			if ( _ptr )
+			{
 				_ptr->get( p_ );
+			}
 		}
+
 		// Retrieve layouts for field placing
-		inline void get( FormLayouts & p_ ) const noexcept
+		void get( FormLayouts & p_ ) const
 		{
 			if ( _ptr )
+			{
 				_ptr->get( p_ );
+			}
 		}
+
 		// Restore default empty form.
-		inline void close() noexcept
+		void close() noexcept
 		{
 			if ( _ptr )
+			{
 				_ptr.reset();
+			}
 		}
 
 	  private:
 		class _interface
 		{
 		  public:
-			virtual ~_interface()																	= default;
-			virtual void update( const Gateway::EngineSpecificCommonInformation & p_data ) noexcept = 0;
-			virtual void get( Gateway::MdParameters & p_ ) const noexcept							= 0;
-			virtual void get( FormLayouts & p_ ) const noexcept										= 0;
+			virtual ~_interface()														   = default;
+			virtual void update( const Gateway::EngineSpecificCommonInformation & p_data ) = 0;
+			virtual void get( Gateway::MdParameters & p_ ) const						   = 0;
+			virtual void get( FormLayouts & p_ ) const									   = 0;
 		};
 
 		template<typename T>
@@ -84,12 +93,12 @@ namespace VTX::Tool::Mdprep::ui
 
 		  public:
 			_wrapper( T && t ) : _obj( std::forward<T>( t ) ) {}
-			virtual void update( const Gateway::EngineSpecificCommonInformation & p_data ) noexcept override
-			{
-				_obj.update( p_data );
-			}
-			virtual void get( Gateway::MdParameters & p_ ) const noexcept override { _obj.get( p_ ); }
-			virtual void get( FormLayouts & p_ ) const noexcept override { _obj.get( p_ ); }
+
+			void update( const Gateway::EngineSpecificCommonInformation & p_data ) override { _obj.update( p_data ); }
+
+			void get( Gateway::MdParameters & p_ ) const override { _obj.get( p_ ); }
+
+			void get( FormLayouts & p_ ) const override { _obj.get( p_ ); }
 		};
 
 		std::unique_ptr<_interface> _ptr = nullptr;

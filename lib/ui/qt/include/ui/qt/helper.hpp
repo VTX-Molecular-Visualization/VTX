@@ -1,13 +1,23 @@
-#ifndef __VTX_UI_QT_HELPER__
-#define __VTX_UI_QT_HELPER__
+#ifndef VTX_UI_QT_HELPER_HPP
+#define VTX_UI_QT_HELPER_HPP
 
+#include <QBoxLayout>
 #include <QColor>
 #include <QLocale>
+#include <QObject>
 #include <QString>
 #include <QtGlobal>
+#include <concepts>
+#include <memory>
+#include <stdexcept>
 #include <string_view>
 #include <type_traits>
 #include <util/color/rgba.hpp>
+#include <util/filesystem.hpp>
+#include <utility>
+
+class QAction;
+class QPushButton;
 
 namespace VTX::UI::QT::Helper
 {
@@ -21,7 +31,16 @@ namespace VTX::UI::QT::Helper
 	 */
 	VTX::Util::Color::Rgba fromQColor( const QColor & );
 	QColor				   toQColor( const VTX::Util::Color::Rgba & );
-	QString				   toQString( const std::string_view );
+
+	/**
+	 * @brief Duplicate a script and select the copy.
+	 */
+	void duplicateScript( const FilePath & );
+
+	/**
+	 * @brief Create a push button from custom action.
+	 */
+	QPushButton * makeActionButton( QAction &, QWidget * );
 
 	/**
 	 * @brief Format number with current locale.
@@ -47,6 +66,36 @@ namespace VTX::UI::QT::Helper
 		{
 			return QLocale().toString( static_cast<qulonglong>( p_value ) );
 		}
+	}
+
+	/**
+	 * @brief QObject factory, returning a non-owning pointer.
+	 */
+	template<typename T, typename... Args>
+		requires std::derived_from<T, QObject>
+	T * makeQObject( Args &&... p_args )
+	{
+		auto object = std::make_unique<T>( std::forward<Args>( p_args )... );
+
+		if ( object->QObject::parent() == nullptr )
+		{
+			throw std::logic_error( "makeQObject: object has no parent" );
+		}
+
+		// Qt parent now owns the object.
+		return object.release();
+	}
+
+	template<typename T, typename... Args>
+		requires std::derived_from<T, QLayout>
+	T * makeChildLayout( QBoxLayout & p_parent, Args &&... p_args )
+	{
+		auto layout = std::make_unique<T>( std::forward<Args>( p_args )... );
+
+		p_parent.addLayout( layout.get() );
+
+		// Qt parent now owns the object.
+		return layout.release();
 	}
 
 } // namespace VTX::UI::QT::Helper

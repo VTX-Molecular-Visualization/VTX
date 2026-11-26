@@ -1,20 +1,22 @@
-#ifndef __VTX_RENDERER_CONTEXT_GL_DEBUG__
-#define __VTX_RENDERER_CONTEXT_GL_DEBUG__
+#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_DEBUG_HPP
+#define VTX_RENDERER_CONTEXT_BACKEND_GL_DEBUG_HPP
 
 #include "renderer/context/backend/gl/include_opengl.hpp"
+#include <iostream>
 #include <util/logger.hpp>
 
 namespace VTX::Renderer::Context::Backend::GL::Debug
 {
 	inline void _debugMessageCallback(
-		const GLenum   p_source,
-		const GLenum   p_type,
-		const GLuint   p_id,
-		const GLenum   p_severity,
-		const GLsizei  p_length,
+		const GLenum p_source,
+		const GLenum p_type,
+		const GLuint,
+		const GLenum p_severity,
+		const GLsizei,
 		const GLchar * p_msg,
-		const void *   p_data
+		const void *
 	) noexcept
+	try
 	{
 		std::string source;
 		std::string type;
@@ -66,40 +68,54 @@ namespace VTX::Renderer::Context::Backend::GL::Debug
 		}
 	}
 
+	// GL callback: nothing must escape.
+	// NOLINTNEXTLINE(bugprone-empty-catch)
+	catch ( ... )
+	{
+	}
+
 	inline void dumpGLError() noexcept
 	{
-		GLenum err;
+		GLenum err {};
 		while ( ( err = glGetError() ) != GL_NO_ERROR )
 		{
-			fprintf( stderr, "[GL ERROR] 0x%X\n", err );
+			try
+			{
+				std::cerr << "[GL ERROR] 0x" << std::hex << err << std::dec << '\n';
+			}
+			// Error reporting must not throw.
+			// NOLINTNEXTLINE(bugprone-empty-catch)
+			catch ( ... )
+			{
+			}
 			assert( false );
 		}
 	};
 
 	inline std::string getProgramErrors( const GLuint p_id )
 	{
-		GLint length;
+		GLint length {};
 		glGetProgramiv( p_id, GL_INFO_LOG_LENGTH, &length );
 		if ( length == 0 )
 		{
 			return "";
 		}
 		std::vector<char> log( length );
-		glGetProgramInfoLog( p_id, length, &length, &log[ 0 ] );
+		glGetProgramInfoLog( p_id, length, &length, log.data() );
 
 		return std::string( log.begin(), log.end() );
 	}
 
 	inline std::string getShaderErrors( const GLuint p_id )
 	{
-		GLint length;
+		GLint length {};
 		glGetShaderiv( p_id, GL_INFO_LOG_LENGTH, &length );
 		if ( length == 0 )
 		{
 			return "";
 		}
 		std::vector<char> log( length );
-		glGetShaderInfoLog( p_id, length, &length, &log[ 0 ] );
+		glGetShaderInfoLog( p_id, length, &length, log.data() );
 
 		return std::string( log.begin(), log.end() );
 	}

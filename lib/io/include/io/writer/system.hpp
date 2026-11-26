@@ -1,11 +1,14 @@
-#ifndef __VTX_IO_WRITER_SYSTEM__
-#define __VTX_IO_WRITER_SYSTEM__
+#ifndef VTX_IO_WRITER_SYSTEM_HPP
+#define VTX_IO_WRITER_SYSTEM_HPP
 
+#include <concepts>
 #include <core/struct/topology.hpp>
+#include <core/struct/trajectory.hpp>
 #include <functional>
 #include <io/writer/shared.hpp>
+#include <type_traits>
 #include <util/filesystem.hpp>
-#include <util/thread.hpp>
+#include <util/thread/base_thread.hpp>
 
 namespace VTX::IO::Writer
 {
@@ -21,7 +24,7 @@ namespace VTX::IO::Writer
 	 */
 	inline bool returnTrue( const size_t & ) noexcept { return true; }
 
-	const AtomFilter g_takeAllAtoms = AtomFilter( &returnTrue ); // default argument for the write atom filter
+	constexpr auto g_takeAllAtoms = &returnTrue; // default argument for the write atom filter
 
 	/**
 	 * @brief Class responsible for providing atom positions of each frame of a trajectory
@@ -29,29 +32,25 @@ namespace VTX::IO::Writer
 	class TrajectoryFrameGetter
 	{
 	  public:
+		using FrameVisitor = std::function<void( Core::Struct::FrameView )>;
+
 		TrajectoryFrameGetter() = default;
 
 		/**
 		 * @brief Return number of available frames
 		 * @return
 		 */
-		inline uint frameCount() const { return _ptr->frameCount(); }
+		uint frameCount() const { return _ptr->frameCount(); }
 
-		/**
-		 * @brief Returns the n-th frame
-		 * @return
-		 */
-		inline std::span<const Vec3f> getAtomPositions( const uint & p_ ) const { return _ptr->getAtomPositions( p_ ); }
-
-		inline std::span<const Vec3f> getCurrentAtomPositions() const { return _ptr->getCurrentAtomPositions(); }
+		bool visitAtomPositions( const uint p_index, const FrameVisitor & p_visitor ) const
+		{ return _ptr->visitAtomPositions( p_index, p_visitor ); }
 
 	  private:
 		struct _interface
 		{
-			virtual ~_interface()												  = default;
-			virtual uint				   frameCount() const					  = 0;
-			virtual std::span<const Vec3f> getAtomPositions( const uint & ) const = 0;
-			virtual std::span<const Vec3f> getCurrentAtomPositions() const		  = 0;
+			virtual ~_interface()												= default;
+			virtual uint frameCount() const										= 0;
+			virtual bool visitAtomPositions( uint, const FrameVisitor & ) const = 0;
 		};
 
 		struct _dummy
@@ -63,7 +62,7 @@ namespace VTX::IO::Writer
 		{
 			_wrapper( T && p_obj ) : _obj( std::forward<T>( p_obj ) ) {}
 
-			virtual uint frameCount() const override
+			uint frameCount() const override
 			{
 				if constexpr ( std::same_as<T, _dummy> )
 				{
@@ -75,27 +74,15 @@ namespace VTX::IO::Writer
 				}
 			}
 
-			virtual std::span<const Vec3f> getAtomPositions( const uint & p_index ) const override
+			bool visitAtomPositions( const uint p_index, const FrameVisitor & p_visitor ) const override
 			{
 				if constexpr ( std::same_as<T, _dummy> )
 				{
-					return {};
+					return false;
 				}
 				else
 				{
-					return _obj.getAtomPositions( p_index );
-				}
-			}
-
-			virtual std::span<const Vec3f> getCurrentAtomPositions() const override
-			{
-				if constexpr ( std::same_as<T, _dummy> )
-				{
-					return {};
-				}
-				else
-				{
-					return _obj.getCurrentAtomPositions();
+					return _obj.visitAtomPositions( p_index, p_visitor );
 				}
 			}
 
@@ -107,6 +94,7 @@ namespace VTX::IO::Writer
 
 	  public:
 		template<typename T>
+			requires( not std::same_as<std::remove_cvref_t<T>, TrajectoryFrameGetter> )
 		TrajectoryFrameGetter( T && p_ ) : _ptr( new _wrapper<T>( std::forward<T>( p_ ) ) )
 		{
 		}
@@ -125,11 +113,10 @@ namespace VTX::IO::Writer
 		};
 
 		FilePath			destination;
-		E_FILE_FORMATS		format = E_FILE_FORMATS::none;
 		std::vector<System> topologies;
 		E_WRITE_TYPE writeType = E_WRITE_TYPE::trajectory; // Placeholder because at some point we will probably need to
 														   // write docking results and stuff
-		Util::StopToken stopToken;
+		Util::Thread::StopToken stopToken;
 	};
 
 	void writeFile( WriteArgs );

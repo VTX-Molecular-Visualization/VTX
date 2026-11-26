@@ -1,7 +1,7 @@
 #include <algorithm>
-#include <catch2/benchmark/catch_benchmark.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <python_binding/api/collection.hpp>
+#include <utility>
 #include <vector>
 
 namespace
@@ -11,24 +11,28 @@ namespace
 	  public:
 		int i = 0;
 	};
+
 	class ElementWrapper
 	{
 		Element * _ptr = nullptr;
 
 	  public:
 		ElementWrapper() = default;
+
 		ElementWrapper( Element & p_ ) : _ptr( &p_ ) {}
 
-		inline int geti() const
+		int geti() const
 		{
 			if ( _ptr )
+			{
 				return _ptr->i;
+			}
 			return 0;
 		}
 	};
 } // namespace
 
-TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[collection]" )
+TEST_CASE( "VTX_PYTHON_BINDING - Collection wrapper test", "[python][binding][collection]" )
 {
 	using namespace VTX::PythonBinding::API;
 
@@ -40,7 +44,6 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[collection]" )
 	CHECK( collec[ 1 ].geti() == 2 );
 	CHECK( collec[ 2 ].geti() == 3 );
 
-	auto a = collec.end();
 	{
 		int expected_i = 1;
 		for ( auto & it : collec )
@@ -51,7 +54,7 @@ TEST_CASE( "VTX_PYTHON_BINDING - Command binding test", "[collection]" )
 		size_t it_idx = 0;
 		for ( auto it = collec.begin(); it != collec.end(); it++ )
 		{
-			CHECK( ( std::distance( collec.begin(), it ) == it_idx ) );
+			CHECK( std::cmp_equal( std::distance( collec.begin(), it ), it_idx ) );
 			it_idx++;
 		}
 		CHECK( it_idx == collec.size() );

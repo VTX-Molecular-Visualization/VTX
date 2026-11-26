@@ -62,3 +62,5 @@ if (VTX_TOOL_MDPREP)
 	vtx_tool_mdprep_copy_data(vtx)
 	vtx_tool_mdprep_copy_runtime(vtx)
 endif()
+
+vtx_app_copy_default_user_data(vtx)

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DIALOG_DOWNLOAD__
-#define __VTX_UI_QT_DIALOG_DOWNLOAD__
+#ifndef VTX_UI_QT_DIALOG_DOWNLOAD_HPP
+#define VTX_UI_QT_DIALOG_DOWNLOAD_HPP
 
 #include "ui/qt/dialog/base_dialog.hpp"
 #include "ui/qt/settings.hpp"
@@ -7,7 +7,6 @@
 #include <QPointer>
 #include <QRadioButton>
 #include <util/string.hpp>
-#include <util/url.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
@@ -24,8 +23,8 @@ namespace VTX::UI::QT::Dialog
 		QString				   _url;
 		QString				   _pdb;
 
-		void _saveHistory( const QString & p_key, const QString & p_value );
-		void _loadHistory( const QString & p_key, QComboBox * const p_comboBox );
+		void _saveHistory( QUtf8StringView p_key, const QString & p_value );
+		void _loadHistory( QUtf8StringView p_key, QComboBox * p_comboBox );
 	};
 
 } // namespace VTX::UI::QT::Dialog

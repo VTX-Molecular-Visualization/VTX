@@ -1,42 +1,46 @@
 #include "ui/qt/widget/tree/trajectory_settings.hpp"
+#include "ui/qt/helper.hpp"
 #include <QEvent>
 #include <QFormLayout>
 #include <QHBoxLayout>
-#include <app/action/action_manager.hpp>
 #include <app/action/trajectory.hpp>
 #include <app/services.hpp>
-#include <app/system/trajectory.hpp>
+#include <app/trajectory/player.hpp>
+#include <core/struct/trajectory.hpp>
+#include <memory>
+#include <util/action_manager.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
 
-	TrajectorySettings::TrajectorySettings( Entity p_system, QWidget * p_parent ) :
+	TrajectorySettings::TrajectorySettings( Entity p_system, QWidget * const p_parent ) :
 		QWidget( p_parent ), _system( p_system )
 	{
-		auto * formLayout = new QFormLayout( this );
+		auto * formLayout = Helper::makeQObject<QFormLayout>( this );
 		formLayout->setContentsMargins( 8, 4, 8, 4 );
 		formLayout->setSpacing( 4 );
 
 		// Player mode combobox
-		_playerModeCombo = new QComboBox( this );
-		_playerModeCombo->addItem( tr( "Forward" ), int( App::System::TrajectoryPlayMode::forward ) );
-		_playerModeCombo->addItem( tr( "Forward Loop" ), int( App::System::TrajectoryPlayMode::forwardLoop ) );
-		_playerModeCombo->addItem( tr( "Backward" ), int( App::System::TrajectoryPlayMode::backward ) );
-		_playerModeCombo->addItem( tr( "Backward Loop" ), int( App::System::TrajectoryPlayMode::backwardLoop ) );
-		_playerModeCombo->addItem( tr( "Ping Pong" ), int( App::System::TrajectoryPlayMode::pingpong ) );
+		_playerModeCombo = Helper::makeQObject<QComboBox>( this );
+		_playerModeCombo->addItem( tr( "Forward" ), static_cast<int>( App::Trajectory::PLAY_MODE::FORWARD ) );
+		_playerModeCombo->addItem( tr( "Forward Loop" ), static_cast<int>( App::Trajectory::PLAY_MODE::FORWARD_LOOP ) );
+		_playerModeCombo->addItem( tr( "Backward" ), static_cast<int>( App::Trajectory::PLAY_MODE::BACKWARD ) );
+		_playerModeCombo->addItem( tr( "Backward Loop" ),
+								   static_cast<int>( App::Trajectory::PLAY_MODE::BACKWARD_LOOP ) );
+		_playerModeCombo->addItem( tr( "Ping Pong" ), static_cast<int>( App::Trajectory::PLAY_MODE::PING_PONG ) );
 		formLayout->addRow( tr( "Mode" ), _playerModeCombo );
 
 		// Speed control: slider + spinbox in a horizontal layout
-		auto * speedLayout = new QHBoxLayout();
+		auto speedLayout = std::make_unique<QHBoxLayout>();
 		speedLayout->setSpacing( 4 );
 
-		_speedSlider = new QSlider( Qt::Horizontal, this );
+		_speedSlider = Helper::makeQObject<QSlider>( Qt::Horizontal, this );
 		_speedSlider->setMinimum( 1 );
 		_speedSlider->setMaximum( 200 );
 		_speedSlider->setToolTip( tr( "Playback speed (ms between frames)" ) );
 		speedLayout->addWidget( _speedSlider, 1 );
 
-		_speedSpinBox = new QDoubleSpinBox( this );
+		_speedSpinBox = Helper::makeQObject<QDoubleSpinBox>( this );
 		_speedSpinBox->setMinimum( 1.0 );
 		_speedSpinBox->setMaximum( 200.0 );
 		_speedSpinBox->setSingleStep( 1.0 );
@@ -44,10 +48,10 @@ namespace VTX::UI::QT::Widget::Tree
 		_speedSpinBox->setFixedWidth( 80 );
 		speedLayout->addWidget( _speedSpinBox );
 
-		formLayout->addRow( tr( "Speed" ), speedLayout );
+		formLayout->addRow( tr( "Speed" ), speedLayout.release() );
 
 		// Frame spinbox
-		_frameSpinBox = new QSpinBox( this );
+		_frameSpinBox = Helper::makeQObject<QSpinBox>( this );
 		_frameSpinBox->setMinimum( 0 );
 		_frameSpinBox->setMaximum( 0 );
 		_frameSpinBox->setValue( 0 );
@@ -63,9 +67,9 @@ namespace VTX::UI::QT::Widget::Tree
 		_frameSpinBox->installEventFilter( this );
 
 		// Connect to trajectory updates
-		App::REG().on_update<App::System::TrajectoryFullBuffer>().connect<&TrajectorySettings::_onTrajectoryUpdated>(
-			this
-		);
+		_trajectoryUpdatedConnection
+			= App::REG().on_update<App::Trajectory::Player>().connect<&TrajectorySettings::_onTrajectoryUpdated>(
+				this );
 
 		_refresh();
 	}
@@ -77,7 +81,7 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		auto mode = static_cast<App::System::TrajectoryPlayMode>( _playerModeCombo->itemData( p_index ).toInt() );
+		auto mode = static_cast<App::Trajectory::PLAY_MODE>( _playerModeCombo->itemData( p_index ).toInt() );
 		App::ACTION().execute<App::Action::Trajectory::ChangePlayer>( _system, mode );
 	}
 
@@ -89,10 +93,10 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 
 		_isRefreshing = true;
-		_speedSpinBox->setValue( double( p_value ) );
+		_speedSpinBox->setValue( static_cast<double>( p_value ) );
 		_isRefreshing = false;
 
-		App::ACTION().execute<App::Action::Trajectory::ChangeSpeed>( _system, float( p_value ) );
+		App::ACTION().execute<App::Action::Trajectory::ChangeSpeed>( _system, static_cast<float>( p_value ) );
 	}
 
 	void TrajectorySettings::_onSpeedSpinBoxChanged( double p_value )
@@ -103,10 +107,10 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 
 		_isRefreshing = true;
-		_speedSlider->setValue( int( p_value ) );
+		_speedSlider->setValue( static_cast<int>( p_value ) );
 		_isRefreshing = false;
 
-		App::ACTION().execute<App::Action::Trajectory::ChangeSpeed>( _system, float( p_value ) );
+		App::ACTION().execute<App::Action::Trajectory::ChangeSpeed>( _system, static_cast<float>( p_value ) );
 	}
 
 	void TrajectorySettings::_onFrameSpinBoxChanged( int p_value )
@@ -116,7 +120,7 @@ namespace VTX::UI::QT::Widget::Tree
 			return;
 		}
 
-		App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, uint( p_value ) );
+		App::ACTION().execute<App::Action::Trajectory::JumpTo>( _system, static_cast<uint>( p_value ) );
 	}
 
 	void TrajectorySettings::_onTrajectoryUpdated( Registry &, Entity p_entity )
@@ -138,10 +142,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_onFrameSpinBoxFocused()
 	{
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
+		const App::Trajectory::Player & player = App::REG().get<App::Trajectory::Player>( _system );
 
-		if ( trajPtr && !trajPtr->paused )
+		if ( not player.paused )
 		{
 			App::ACTION().execute<App::Action::Trajectory::ToggleStartPause>( _system );
 		}
@@ -149,41 +152,26 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void TrajectorySettings::_refresh()
 	{
-		App::System::GenericTrajectory * trajPtr = nullptr;
-		App::System::get( _system, trajPtr );
-
-		if ( trajPtr == nullptr )
-		{
-			return;
-		}
+		const App::Trajectory::Player & player = App::REG().get<App::Trajectory::Player>( _system );
 
 		_isRefreshing = true;
 
-		uint totalFrames  = trajPtr->trajectorySize;
-		uint currentFrame = trajPtr->currentFrameIndex;
+		const uint totalFrames	= static_cast<uint>( App::REG().get<Core::Struct::Trajectory>( _system ).frameCount );
+		const uint currentFrame = player.currentFrameIndex;
 
-		if ( totalFrames == std::numeric_limits<uint>::max() )
-		{
-			totalFrames = 0;
-		}
-		if ( currentFrame == std::numeric_limits<uint>::max() )
-		{
-			currentFrame = 0;
-		}
-
-		_playerModeCombo->setCurrentIndex( _playerModeCombo->findData( int( trajPtr->playMode ) ) );
+		_playerModeCombo->setCurrentIndex( _playerModeCombo->findData( static_cast<int>( player.playMode ) ) );
 
 		// Speed
-		_speedSlider->setValue( int( trajPtr->playingSpeed ) );
-		_speedSpinBox->setValue( double( trajPtr->playingSpeed ) );
+		_speedSlider->setValue( static_cast<int>( player.playingSpeed ) );
+		_speedSpinBox->setValue( static_cast<double>( player.playingSpeed ) );
 
 		// Frame
-		_frameSpinBox->setMaximum( totalFrames > 0 ? int( totalFrames - 1 ) : 0 );
+		_frameSpinBox->setMaximum( static_cast<int>( totalFrames - 1 ) );
 
 		// Only update frame value if the spinbox doesn't have focus (user might be typing)
-		if ( !_frameSpinBox->hasFocus() )
+		if ( not _frameSpinBox->hasFocus() )
 		{
-			_frameSpinBox->setValue( int( currentFrame ) );
+			_frameSpinBox->setValue( static_cast<int>( currentFrame ) );
 		}
 
 		_isRefreshing = false;

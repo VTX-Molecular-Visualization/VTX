@@ -2,6 +2,7 @@
 #include "app/helper/system.hpp"
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
+#include "app/scene/material.hpp"
 #include "app/scene/tag_root.hpp"
 #include "app/system/selection.hpp"
 #include <io/metadata.hpp>
@@ -33,9 +34,9 @@ namespace VTX::App::Action::Scene
 	{
 		using CL = App::Scene::ColorLayout;
 
-		auto & reg	 = REG();
-		auto   scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
-		auto   view	 = reg.view<CL>();
+		auto &				  reg	= REG();
+		auto				  scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
+		[[maybe_unused]] auto view	= reg.view<CL>();
 
 		assert( view.size() <= 1 );
 
@@ -47,14 +48,28 @@ namespace VTX::App::Action::Scene
 	{
 		using GC = App::Scene::GraphicsConfig;
 
-		auto & reg	 = REG();
-		auto   scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
-		auto   view	 = reg.view<GC>();
+		auto &				  reg	= REG();
+		auto				  scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
+		[[maybe_unused]] auto view	= reg.view<GC>();
 
 		assert( view.size() <= 1 );
 
 		reg.remove<GC>( scene );
 		reg.emplace<GC>( scene, p_e );
+	}
+
+	void SetMaterial::execute( const Entity p_e )
+	{
+		using MA = App::Scene::Material;
+
+		auto &				  reg	= REG();
+		auto				  scene = ECS::getFirstEntityOnlyWithComponents<App::Scene::TagRoot>();
+		[[maybe_unused]] auto view	= reg.view<MA>();
+
+		assert( view.size() <= 1 );
+
+		reg.remove<MA>( scene );
+		reg.emplace<MA>( scene, p_e );
 	}
 
 } // namespace VTX::App::Action::Scene

@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "type": "representation",
+    "name": "Van der Waals",
+    "data": {
+        "hasSphere": true,
+        "radiusSphereFixed": 0.5,
+        "radiusSphereAdd": 0.0,
+        "isRadiusSphereFixed": false,
+        "hasCylinder": false,
+        "radiusCylinder": 0.1,
+        "cylinderColorBlending": false,
+        "hasRibbon": false,
+        "ribbonColorBlending": false,
+        "hasSes": false,
+        "sesComputeMode": [
+            "POLYMER",
+            "CARBOHYDRATE"
+        ],
+        "sesProbeRadius": 1.4
+    }
+}

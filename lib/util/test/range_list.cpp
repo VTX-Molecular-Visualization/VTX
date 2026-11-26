@@ -3,6 +3,34 @@
 #include <util/math/range_list.hpp>
 #include <vector>
 
+TEST_CASE( "Util::Math::RangeList operations", "[unit]" )
+{
+	CHECK( (
+		[]
+		{
+			using R = VTX::Util::Math::Range<int>;
+			using L = VTX::Util::Math::RangeList<int>;
+			L a { R( 1, 5 ), R( 8, 10 ) };
+			a.addRange( R( 4, 9 ) );
+			a.removeRange( R( 3, 7 ) );
+			const L b { R( 2, 8 ) };
+			if ( L::intersect( a, b ) != L { R( 2, 3 ), R( 7, 8 ) } || L::merge( a, b ) != L( R( 1, 10 ) )
+				 || L::substract( a, b ) != L { R( 1, 2 ), R( 8, 10 ) }
+				 || L::exclusive( a, b ) != L { R( 1, 2 ), R( 3, 7 ), R( 8, 10 ) } || a.invert() != L( R( 3, 7 ) ) )
+			{
+				return false;
+			}
+			int sum = 0;
+			for ( const int value : a )
+			{
+				sum += value;
+			}
+			return sum == 27 && a.toVector<int>() == std::vector<int> { 1, 2, 7, 8, 9 }
+				   && R( 1, 4 ).toStdVector() == std::vector<int> { 1, 2, 3 };
+		}()
+	) );
+}
+
 TEST_CASE( "Util::Math::RangeList", "[unit]" )
 {
 	using namespace VTX;
@@ -10,7 +38,7 @@ TEST_CASE( "Util::Math::RangeList", "[unit]" )
 
 	RangeList<size_t> rangeList = { Range<size_t>( 5, 8 ), Range<size_t>( 12, 20 ), Range<size_t>( 50, 51 ) };
 
-	RangeList<size_t> test = { { 1, 2 }, { 1, 2 } };
+	const RangeList<size_t> test = { { 1, 2 }, { 1, 2 } };
 
 	rangeList.addRange( Range<size_t>( 9, 10 ) );
 	rangeList.addRange( Range<size_t>( 8, 14 ) );
@@ -18,8 +46,10 @@ TEST_CASE( "Util::Math::RangeList", "[unit]" )
 	rangeList.addRange( Range<size_t>( 6, 7 ) );
 
 	int itemCount = 0;
-	for ( size_t index : rangeList )
+	for ( auto it = rangeList.begin(); it != rangeList.end(); ++it )
+	{
 		itemCount++;
+	}
 
 	CHECK( itemCount == 20 );
 
@@ -30,8 +60,10 @@ TEST_CASE( "Util::Math::RangeList", "[unit]" )
 	rangeList.removeRange( Range<size_t>( 1, 18 ) );
 
 	itemCount = 0;
-	for ( size_t index : rangeList )
+	for ( auto it = rangeList.begin(); it != rangeList.end(); ++it )
+	{
 		itemCount++;
+	}
 
 	CHECK( itemCount == 2 );
 
@@ -56,13 +88,13 @@ TEST_CASE( "Util::Math::RangeList - Operators", "[unit]" )
 	using namespace VTX;
 	using namespace Util::Math;
 
-	RangeList<size_t> rangeListA = { { 5, 8 }, Range<size_t>( 12, 20 ), Range<size_t>( 50, 50 ) };
+	const RangeList<size_t> rangeListA = { { 5, 8 }, Range<size_t>( 12, 20 ), Range<size_t>( 50, 50 ) };
 
-	RangeList<size_t> rangeListB = { Range<size_t>( 0, 2 ),
-									 Range<size_t>( 4, 6 ),
-									 Range<size_t>( 7, 14 ),
-									 Range<size_t>( 18, 22 ),
-									 Range<size_t>( 50, 51 ) };
+	const RangeList<size_t> rangeListB = { Range<size_t>( 0, 2 ),
+										   Range<size_t>( 4, 6 ),
+										   Range<size_t>( 7, 14 ),
+										   Range<size_t>( 18, 22 ),
+										   Range<size_t>( 50, 51 ) };
 
 	// Check Merges
 	RangeList<size_t> rangeListRes1 = RangeList<size_t>::merge( rangeListA, rangeListB );

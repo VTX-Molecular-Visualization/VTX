@@ -1,5 +1,7 @@
-#ifndef __VTX_UI_QT_EVENTS__
-#define __VTX_UI_QT_EVENTS__
+#ifndef VTX_UI_QT_EVENTS_HPP
+#define VTX_UI_QT_EVENTS_HPP
+
+#include <util/filesystem.hpp>
 
 namespace VTX::UI::QT::Events
 {
@@ -24,9 +26,27 @@ namespace VTX::UI::QT::Events
 		int viewMode;
 	};
 
+	struct SequenceResIdChanged
+	{
+		int residUsed;
+	};
+
 	struct ThemeChanged
 	{
 		int theme;
+	};
+
+	struct ScriptRun
+	{
+	};
+
+	struct ScriptSave
+	{
+	};
+
+	struct ScriptCopied
+	{
+		FilePath path;
 	};
 
 } // namespace VTX::UI::QT::Events

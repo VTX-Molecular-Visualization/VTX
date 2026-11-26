@@ -1,20 +1,24 @@
 #include "ui/qt/dock_widget/scene.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/tree/color_layout_presets.hpp"
 #include "ui/qt/widget/tree/graphics_config_presets.hpp"
 #include "ui/qt/widget/tree/representation_presets.hpp"
 #include <app/action/application.hpp>
 #include <app/ecs.hpp>
 #include <app/events.hpp>
+#include <app/helper/trajectory.hpp>
 #include <app/services.hpp>
 #include <app/system/selection.hpp>
-#include <app/system/trajectory.hpp>
 #include <app/system/visibility.hpp>
+#include <app/trajectory/player.hpp>
 #include <renderer/camera.hpp>
+#include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::DockWidget
@@ -30,50 +34,68 @@ namespace VTX::UI::QT::DockWidget
 
 			p_view->setSelectionMode( p_enabled ? QAbstractItemView::SingleSelection : QAbstractItemView::NoSelection );
 		}
-	}
+	} // namespace
 
-	Scene::Scene( QWidget * p_parent ) : BaseDockWidget( p_parent, "Scene" )
+	Scene::Scene( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Scene" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SCENE ) );
 
-		_treeGraphicsConfigPresets = new Widget::Tree::GraphicsConfigPresets( this );
-		_treeColorLayoutPresets	   = new Widget::Tree::ColorLayoutPresets( this );
-		_treeRepresentationPresets = new Widget::Tree::RepresentationPresets( this );
+		_treeGraphicsConfigPresets = Helper::makeQObject<Widget::Tree::GraphicsConfigPresets>( this );
+		_treeColorLayoutPresets	   = Helper::makeQObject<Widget::Tree::ColorLayoutPresets>( this );
+		_treeRepresentationPresets = Helper::makeQObject<Widget::Tree::RepresentationPresets>( this );
+		_treeScripts			   = Helper::makeQObject<Widget::Tree::Scripts>( this );
+
+		_treeGraphicsConfigPresets->setTint( Style::HUE_GRAPHICS_CONFIG );
+		_treeColorLayoutPresets->setTint( Style::HUE_COLOR_LAYOUT );
+		_treeRepresentationPresets->setTint( Style::HUE_REPRESENTATION );
+		_treeScripts->setTint( Style::HUE_SCRIPTS );
 
 		_layout->addWidget( _treeGraphicsConfigPresets );
 		_layout->addWidget( _treeColorLayoutPresets );
 		_layout->addWidget( _treeRepresentationPresets );
+		_layout->addWidget( _treeScripts );
 
 		auto & selection = SELECTION();
 		selection.add( _treeGraphicsConfigPresets->selectionModel(), E_SELECTION_GROUP::GRAPHICS_CONFIG );
 		selection.add( _treeColorLayoutPresets->selectionModel(), E_SELECTION_GROUP::COLOR_LAYOUT );
 		selection.add( _treeRepresentationPresets->selectionModel(), E_SELECTION_GROUP::REPRESENTATION );
+		selection.add( _treeScripts->selectionModel(), E_SELECTION_GROUP::SCRIPT );
 
-		_filler = new QWidget( this );
+		_filler = Helper::makeQObject<QWidget>( this );
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
 		_layout->addWidget( _filler );
 
-		App::REG().on_construct<Renderer::Camera>().connect<&Scene::_onCameraConstruct>( this );
+		_cameraConstructedConnection
+			= App::REG().on_construct<Renderer::Camera>().connect<&Scene::_onCameraConstruct>( this );
 
-		App::HUB().connect<App::Events::SystemLoad, &Scene::_onSystemLoad>( this );
-		App::REG().on_destroy<Core::Struct::Topology>().connect<&Scene::_onSystemDestroy>( this );
-		App::REG().on_update<App::System::Visibility>().connect<&Scene::_onUpdateVisibility>( this );
-		App::REG().on_update<App::System::Selection>().connect<&Scene::_onUpdateSelection>( this );
-		App::REG().on_construct<App::System::TrajectoryFullBuffer>().connect<&Scene::_onTrajectoryCreated>( this );
+		_systemLoadConnection = App::HUB().connect<App::Events::SystemLoad, &Scene::_onSystemLoad>( this );
+		_systemDestroyedConnection
+			= App::REG().on_destroy<Core::Struct::Topology>().connect<&Scene::_onSystemDestroy>( this );
+		_visibilityUpdatedConnection
+			= App::REG().on_update<App::System::Visibility>().connect<&Scene::_onUpdateVisibility>( this );
+		_selectionUpdatedConnection
+			= App::REG().on_update<App::System::Selection>().connect<&Scene::_onUpdateSelection>( this );
+		_trajectoryCreatedConnection
+			= App::REG().on_construct<App::Trajectory::Player>().connect<&Scene::_onTrajectoryCreated>( this );
+		_trajectoryDestroyedConnection
+			= App::REG().on_destroy<App::Trajectory::Player>().connect<&Scene::_onTrajectoryDestroyed>( this );
 
-		App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
-		App::HUB().connect<Events::TreeViewModeChanged, &Scene::_onTreeViewModeChanged>( this );
+		_selectionLockedConnection = App::HUB().connect<Events::SelectionLocked, &Scene::_onSelectionLocked>( this );
+		_treeViewModeChangedConnection
+			= App::HUB().connect<Events::TreeViewModeChanged, &Scene::_onTreeViewModeChanged>( this );
 
-		App::HUB().connect<App::Events::ThreadProgress, &Scene::_onThreadProgress>( this );
-		App::HUB().connect<App::Events::ThreadTerminated, &Scene::_onThreadTerminated>( this );
+		_threadProgressConnection = App::HUB().connect<App::Events::ThreadProgress, &Scene::_onThreadProgress>( this );
+		_threadTerminatedConnection
+			= App::HUB().connect<App::Events::ThreadTerminated, &Scene::_onThreadTerminated>( this );
 
 		_onSelectionLocked( Events::SelectionLocked { UI_ACTIONS().isChecked( Action::Selection::LOCK ) } );
 	}
 
 	void Scene::_onCameraConstruct( Registry &, Entity p_e )
 	{
-		_treeCamera = new Widget::Tree::Camera( p_e, this );
+		_treeCamera = Helper::makeQObject<Widget::Tree::Camera>( p_e, this );
+		_treeCamera->setTint( Style::HUE_CAMERA );
 		SELECTION().add( _treeCamera->selectionModel(), E_SELECTION_GROUP::CAMERA );
 		_layout->insertWidget( _layout->indexOf( _filler ), _treeCamera );
 		_setSelectionEnabled( _treeCamera, not UI_ACTIONS().isChecked( Action::Selection::LOCK ) );
@@ -82,16 +104,20 @@ namespace VTX::UI::QT::DockWidget
 	void Scene::_onSystemLoad( const App::Events::SystemLoad & p_e )
 	{
 		const auto entity = p_e.system;
-		auto *	   tree	  = new Widget::Tree::System( entity, this );
+		auto *	   tree	  = Helper::makeQObject<Widget::Tree::System>( entity, this );
 
 		tree->setSelectionMode( QAbstractItemView::NoSelection );
+		const uint lightnessIndex = _systemTreeCount++ % Style::LIGHTNESS_SYSTEM.size();
+		tree->setTint( Style::HUE_SYSTEM, Style::LIGHTNESS_SYSTEM[ lightnessIndex ] );
 
 		assert( not _mapSystemTreeWidgets.contains( entity ) );
 		_mapSystemTreeWidgets.emplace( entity, tree );
 		_layout->insertWidget( _layout->indexOf( _filler ), tree );
 
-		if ( App::System::hasMultiFrameTrajectory( p_e.system ) )
+		if ( App::Helper::Trajectory::hasMultiFrameTrajectory( p_e.system ) )
+		{
 			_onTrajectoryCreated( App::REG(), p_e.system );
+		}
 	}
 
 	void Scene::_onSystemDestroy( Registry &, Entity p_e )
@@ -131,6 +157,7 @@ namespace VTX::UI::QT::DockWidget
 		_setSelectionEnabled( _treeGraphicsConfigPresets, selectionEnabled );
 		_setSelectionEnabled( _treeColorLayoutPresets, selectionEnabled );
 		_setSelectionEnabled( _treeRepresentationPresets, selectionEnabled );
+		_setSelectionEnabled( _treeScripts, selectionEnabled );
 		_setSelectionEnabled( _treeCamera, selectionEnabled );
 	}
 
@@ -147,20 +174,36 @@ namespace VTX::UI::QT::DockWidget
 	void Scene::_onTrajectoryCreated( Registry &, Entity p_entity )
 	{
 		if ( not _mapSystemTreeWidgets.contains( p_entity ) )
+		{
 			return;
+		}
 
 		if ( _mapTrajTreeWidgets.contains( p_entity ) )
+		{
+			_mapTrajTreeWidgets[ p_entity ]->deleteLater();
 			_mapTrajTreeWidgets.erase( p_entity );
-		auto * player = new Widget::Tree::TrajectoryPlayer( p_entity, this );
+		}
+		auto * player = Helper::makeQObject<Widget::Tree::TrajectoryPlayer>( p_entity, this );
 		_mapTrajTreeWidgets.emplace( p_entity, player );
 		_layout->insertWidget( _layout->indexOf( _mapSystemTreeWidgets[ p_entity ] ), player );
+	}
+
+	void Scene::_onTrajectoryDestroyed( Registry &, const Entity p_entity )
+	{
+		if ( not _mapTrajTreeWidgets.contains( p_entity ) )
+		{
+			return;
+		}
+
+		_mapTrajTreeWidgets[ p_entity ]->deleteLater();
+		_mapTrajTreeWidgets.erase( p_entity );
 	}
 
 	void Scene::_onThreadProgress( const App::Events::ThreadProgress & p_event )
 	{
 		if ( not _mapThreadWidgets.contains( p_event.id ) )
 		{
-			_mapThreadWidgets.emplace( p_event.id, new Widget::Thread( this ) );
+			_mapThreadWidgets.emplace( p_event.id, Helper::makeQObject<Widget::Thread>( this ) );
 			_layout->insertWidget( _layout->indexOf( _filler ), _mapThreadWidgets[ p_event.id ] );
 
 			connect(

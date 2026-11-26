@@ -1,19 +1,14 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_ACTIONS_JOBS__
-#define __VTX_TOOL_TOOLS_MDPREP_ACTIONS_JOBS__
+#ifndef VTX_TOOL_MDPREP_ACTIONS_JOBS_HPP
+#define VTX_TOOL_MDPREP_ACTIONS_JOBS_HPP
 
-#include <app/threading/base_thread.hpp>
 #include <memory>
+#include <string>
 #include <tool/mdprep/backends/gromacs/gromacs.hpp>
+#include <util/thread/base_thread.hpp>
+#include <vector>
 
 namespace VTX::Tool::Mdprep::Actions
 {
-	/**
-	 * @brief Used as an event for when a preparation ends.
-	 */
-	struct PreparationFinished
-	{
-		bool success = false;
-	};
 
 	/**
 	 * @brief Use current settings and currently visible system to create an out-of-the-box system for MD
@@ -22,20 +17,20 @@ namespace VTX::Tool::Mdprep::Actions
 	{
 	  public:
 		StartPreparation();
-		StartPreparation( VTX::App::Threading::ThreadData );
+		StartPreparation( VTX::Util::Thread::ThreadData );
 
 		void execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions );
-		void wait() noexcept;
+		void wait();
 
 	  private:
-		struct _Impl;
+		struct Impl;
 
-		struct _Del
+		struct Del
 		{
-			void operator()( _Impl * ) const noexcept;
+			void operator()( Impl * ) const noexcept;
 		};
 
-		std::unique_ptr<_Impl, _Del> _impl = nullptr;
+		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
 
 	/**
@@ -45,20 +40,20 @@ namespace VTX::Tool::Mdprep::Actions
 	{
 	  public:
 		CheckSystem();
-		CheckSystem( VTX::App::Threading::ThreadData );
+		CheckSystem( VTX::Util::Thread::ThreadData );
 
 		void execute( VTX::Tool::Mdprep::backends::Gromacs::GromacsInstructions );
-		void wait() noexcept;
+		void wait();
 
 	  private:
-		struct _Impl;
+		struct Impl;
 
-		struct _Del
+		struct Del
 		{
-			void operator()( _Impl * ) const noexcept;
+			void operator()( Impl * ) const noexcept;
 		};
 
-		std::unique_ptr<_Impl, _Del> _impl = nullptr;
+		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
 } // namespace VTX::Tool::Mdprep::Actions
 #endif

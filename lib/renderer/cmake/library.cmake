@@ -15,7 +15,7 @@ if(CMAKE_CUDA_COMPILER)
 	find_package(CUDAToolkit)
 	if(CUDAToolkit_FOUND)
 		set(VTX_CUDA_ENABLED ON)
-		target_include_directories(vtx_renderer PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor/cuda_helper")
+		target_include_directories(vtx_renderer SYSTEM PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../vendor/cuda_helper")
 
 		set_target_properties(vtx_renderer PROPERTIES
 			LINKER_LANGUAGE CUDA
@@ -34,6 +34,7 @@ if(CMAKE_CUDA_COMPILER)
 			$<$<COMPILE_LANGUAGE:CUDA>:
 				--use_fast_math
 				--extended-lambda
+				--expt-relaxed-constexpr
 				-Xcudafe
 				--diag_suppress=esa_on_defaulted_function_ignored
 				-Wno-deprecated-gpu-targets
@@ -83,28 +84,36 @@ target_include_directories(vtx_renderer	SYSTEM PRIVATE "${CMAKE_CURRENT_LIST_DIR
 if(WIN32)
 	target_link_libraries(vtx_renderer PRIVATE opengl32)
 elseif(LINUX)
-	find_package(X11 REQUIRED)
-	find_package(wayland REQUIRED)
-	target_link_libraries(vtx_renderer PRIVATE OpenGL::OpenGL OpenGL::EGL X11::X11 wayland::wayland-client wayland::wayland-egl)
+	target_link_libraries(vtx_renderer PRIVATE OpenGL::OpenGL OpenGL::EGL)
 endif()
-
-# Tests.
-file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
-add_executable(vtx_renderer_test ${TESTS})
-set_property(TARGET vtx_renderer_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_renderer_test)
 
 target_link_libraries(vtx_renderer PUBLIC vtx_util::vtx_util)
 target_link_libraries(vtx_renderer PUBLIC vtx_core::vtx_core)
-target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
-target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
 
-target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer)
-target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(vtx_renderer PRIVATE KTX::ktx)
+
+# Baker CLI.
+add_executable(baker-cli "${CMAKE_CURRENT_LIST_DIR}/../baker/main.cpp")
+vtx_configure_target(baker-cli)
+target_link_libraries(baker-cli PRIVATE vtx_renderer::vtx_renderer)
 
 vtx_link_cuda(vtx_renderer)
-vtx_link_cuda(vtx_renderer_test)
 
-include(CTest)
-include(Catch)
-catch_discover_tests(vtx_renderer_test DISCOVERY_MODE PRE_TEST)
+# Tests.
+if(VTX_BUILD_TESTS)
+	file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
+	add_executable(vtx_renderer_test ${TESTS})
+	set_property(TARGET vtx_renderer_test PROPERTY FOLDER "test")
+	vtx_configure_target(vtx_renderer_test NO_LINTER)
+
+	target_link_libraries(vtx_renderer_test PRIVATE vtx_util::vtx_util)
+	target_link_libraries(vtx_renderer_test PRIVATE vtx_core::vtx_core)
+	target_link_libraries(vtx_renderer_test PRIVATE vtx_renderer::vtx_renderer)
+	target_link_libraries(vtx_renderer_test PRIVATE Catch2::Catch2WithMain)
+
+	vtx_link_cuda(vtx_renderer_test)
+
+	include(CTest)
+	include(Catch)
+	catch_discover_tests(vtx_renderer_test DISCOVERY_MODE PRE_TEST)
+endif()

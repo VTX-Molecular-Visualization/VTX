@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_SCENE_TAG_ROOT__
-#define __VTX_APP_SCENE_TAG_ROOT__
+#ifndef VTX_APP_SCENE_TAG_ROOT_HPP
+#define VTX_APP_SCENE_TAG_ROOT_HPP
 
 #include <util/types.hpp>
 

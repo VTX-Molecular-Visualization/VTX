@@ -12,27 +12,35 @@ target_sources(vtx_util
 	PRIVATE ${SOURCES}
 	PUBLIC FILE_SET public_headers TYPE HEADERS BASE_DIRS "${CMAKE_CURRENT_LIST_DIR}/../include" FILES ${HEADERS})
 
-# Tests.
-file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
-add_executable(vtx_util_test ${TESTS})
-set_property(TARGET vtx_util_test PROPERTY FOLDER "test")
-vtx_configure_target(vtx_util_test)
-
 target_link_libraries(vtx_util PUBLIC glm::glm)
+target_compile_definitions(vtx_util PUBLIC GLM_FORCE_INLINE)
+target_compile_definitions(vtx_util PUBLIC GLM_FORCE_XYZW_ONLY)
+target_compile_definitions(vtx_util PUBLIC GLM_ENABLE_EXPERIMENTAL)
 target_link_libraries(vtx_util PUBLIC spdlog::spdlog)
 target_link_libraries(vtx_util PUBLIC magic_enum::magic_enum)
 target_link_libraries(vtx_util PUBLIC EnTT::EnTT)
 target_link_libraries(vtx_util PUBLIC assimp::assimp)
-target_link_libraries(vtx_util PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(vtx_util PUBLIC nlohmann_json::nlohmann_json)
 target_link_libraries(vtx_util PRIVATE cpr::cpr)
 target_link_libraries(vtx_util PRIVATE stb::stb)
 target_link_libraries(vtx_util PRIVATE tinyexr::tinyexr)
+target_link_libraries(vtx_util PRIVATE exiv2::exiv2)
 target_link_libraries(vtx_util PRIVATE sago::platform_folders)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	target_link_libraries(vtx_util PUBLIC atomic)
+endif()
 
-target_link_libraries(vtx_util_test PRIVATE vtx_util::vtx_util)
-target_link_libraries(vtx_util_test PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(vtx_util_test PRIVATE Catch2::Catch2WithMain)
+# Tests.
+if(VTX_BUILD_TESTS)
+	file(GLOB_RECURSE TESTS "${CMAKE_CURRENT_LIST_DIR}/../test/*")
+	add_executable(vtx_util_test ${TESTS})
+	set_property(TARGET vtx_util_test PROPERTY FOLDER "test")
+	vtx_configure_target(vtx_util_test NO_LINTER)
 
-include(CTest)
-include(Catch)
-catch_discover_tests(vtx_util_test DISCOVERY_MODE PRE_TEST)
+	target_link_libraries(vtx_util_test PRIVATE vtx_util::vtx_util)
+	target_link_libraries(vtx_util_test PRIVATE Catch2::Catch2WithMain)
+
+	include(CTest)
+	include(Catch)
+	catch_discover_tests(vtx_util_test DISCOVERY_MODE PRE_TEST)
+endif()

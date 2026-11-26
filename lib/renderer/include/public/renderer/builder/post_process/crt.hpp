@@ -1,9 +1,11 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_CRT__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_CRT__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_CRT_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_CRT_HPP
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
+#include <string_view>
+#include <util/math.hpp>
 #include <utility>
 
 namespace VTX::Renderer
@@ -32,58 +34,57 @@ namespace VTX::Renderer
 
 	struct CRTConfig
 	{
-		float curvatureX;
-		float curvatureY;
-		float ratio;
-		float graninessX;
-		float graninessY;
-		float vignetteRoundness;
-		float vignetteIntensity;
-		float brightness;
-	};
+		float curvatureX = CRT_CURVATURE_X_DEFAULT;
+		float curvatureY = CRT_CURVATURE_Y_DEFAULT;
+		float ratio = CRT_RATIO_DEFAULT;
+		float graninessX = CRT_GRANINESS_X_DEFAULT;
+		float graninessY = CRT_GRANINESS_Y_DEFAULT;
+		float vignetteRoundness = CRT_VIGNETTE_ROUNDNESS_DEFAULT;
+		float vignetteIntensity = CRT_VIGNETTE_INTENSITY_DEFAULT;
+		float brightness = CRT_BRIGHTNESS_DEFAULT;
 
-	namespace GraphicsConfigs
-	{
-		inline const CRTConfig CRT_DEFAULT {
-			CRT_CURVATURE_X_DEFAULT,		CRT_CURVATURE_Y_DEFAULT, CRT_RATIO_DEFAULT,
-			CRT_GRANINESS_X_DEFAULT,		CRT_GRANINESS_Y_DEFAULT, CRT_VIGNETTE_ROUNDNESS_DEFAULT,
-			CRT_VIGNETTE_INTENSITY_DEFAULT, CRT_BRIGHTNESS_DEFAULT
-		};
-	} // namespace GraphicsConfigs
+		void clamp()
+		{
+			curvatureX		  = Util::Math::clamp( curvatureX, CRT_CURVATURE_MIN, CRT_CURVATURE_MAX );
+			curvatureY		  = Util::Math::clamp( curvatureY, CRT_CURVATURE_MIN, CRT_CURVATURE_MAX );
+			ratio			  = Util::Math::clamp( ratio, CRT_RATIO_MIN, CRT_RATIO_MAX );
+			graninessX		  = Util::Math::clamp( graninessX, CRT_GRANINESS_MIN, CRT_GRANINESS_MAX );
+			graninessY		  = Util::Math::clamp( graninessY, CRT_GRANINESS_MIN, CRT_GRANINESS_MAX );
+			vignetteRoundness = Util::Math::clamp( vignetteRoundness, CRT_VIGNETTE_ROUNDNESS_MIN, CRT_VIGNETTE_ROUNDNESS_MAX );
+			vignetteIntensity = Util::Math::clamp( vignetteIntensity, CRT_VIGNETTE_INTENSITY_MIN, CRT_VIGNETTE_INTENSITY_MAX );
+			brightness		  = Util::Math::clamp( brightness, CRT_BRIGHTNESS_MIN, CRT_BRIGHTNESS_MAX );
+		}
+	};
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess
 {
 	struct CRT
 	{
-		inline static const Desc::Key PASS = "CRT";
+		static constexpr std::string_view PASS = "CRT";
 
 		static Desc::Key build( GraphBuilder & p_graph, const Desc::Key & p_input )
 		{
-			p_graph.pass( PASS )
+			p_graph.pass( Desc::Key { PASS } )
 				.in( p_input )
-				.out( PASS )
-				.program( PASS )
+				.out( Desc::Key { PASS } )
+				.program( Desc::Key { PASS } )
 				.shaders( { "default.vert", "crt.frag" } )
 				.uniform( "Curvature", Vec2f( CRT_CURVATURE_X_DEFAULT, CRT_CURVATURE_Y_DEFAULT ) )
 				.uniform( "Ratio", CRT_RATIO_DEFAULT, std::pair { CRT_RATIO_MIN, CRT_RATIO_MAX } )
 				.uniform( "GraninessX", CRT_GRANINESS_X_DEFAULT, std::pair { CRT_GRANINESS_MIN, CRT_GRANINESS_MAX } )
 				.uniform( "GraninessY", CRT_GRANINESS_Y_DEFAULT, std::pair { CRT_GRANINESS_MIN, CRT_GRANINESS_MAX } )
-				.uniform(
-					"VignetteRoundness",
-					CRT_VIGNETTE_ROUNDNESS_DEFAULT,
-					std::pair { CRT_VIGNETTE_ROUNDNESS_MIN, CRT_VIGNETTE_ROUNDNESS_MAX }
-				)
-				.uniform(
-					"VignetteIntensity",
-					CRT_VIGNETTE_INTENSITY_DEFAULT,
-					std::pair { CRT_VIGNETTE_INTENSITY_MIN, CRT_VIGNETTE_INTENSITY_MAX }
-				)
+				.uniform( "VignetteRoundness",
+						  CRT_VIGNETTE_ROUNDNESS_DEFAULT,
+						  std::pair { CRT_VIGNETTE_ROUNDNESS_MIN, CRT_VIGNETTE_ROUNDNESS_MAX } )
+				.uniform( "VignetteIntensity",
+						  CRT_VIGNETTE_INTENSITY_DEFAULT,
+						  std::pair { CRT_VIGNETTE_INTENSITY_MIN, CRT_VIGNETTE_INTENSITY_MAX } )
 				.uniform( "Brightness", CRT_BRIGHTNESS_DEFAULT, std::pair { CRT_BRIGHTNESS_MIN, CRT_BRIGHTNESS_MAX } )
 				.endProgram()
 				.endPass();
 
-			return PASS;
+			return Desc::Key { PASS };
 		}
 
 		static void upload( Context::ContextWrapper & p_context, const CRTConfig & p_config )
@@ -98,7 +99,7 @@ namespace VTX::Renderer::Builder::PostProcess
 			buffer.write( p_config.brightness );
 			buffer.close();
 
-			p_context.setBuffer( { PASS }, buffer );
+			p_context.setBuffer( { Desc::Key { PASS } }, buffer.bytes() );
 		}
 	};
 } // namespace VTX::Renderer::Builder::PostProcess

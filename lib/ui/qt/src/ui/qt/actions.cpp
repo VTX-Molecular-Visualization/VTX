@@ -15,17 +15,18 @@
 #include "ui/qt/style/style_manager.hpp"
 #include <QCoreApplication>
 #include <QDesktopServices>
+#include <QInputDialog>
 #include <QUrl>
-#include <app/action/action_manager.hpp>
 #include <app/action/camera.hpp>
 #include <app/action/color.hpp>
 #include <app/action/io.hpp>
 #include <app/action/representation.hpp>
 #include <app/action/visibility.hpp>
 #include <app/constants.hpp>
-#include <app/system/selection.hpp>
-#include <string>
-#include <util/logger.hpp>
+#include <app/services.hpp>
+#include <optional>
+#include <util/action_manager.hpp>
+#include <util/event_hub.hpp>
 #include <util/types.hpp>
 #include <utility>
 
@@ -149,11 +150,25 @@ namespace VTX::UI::QT::Action
 			)
 		);
 
+		p_registry.registerAction( Script::runAction(), handler( []() { App::HUB().trigger<Events::ScriptRun>(); } ) );
+		p_registry.registerAction( Script::saveAction(), handler( []() { App::HUB().trigger<Events::ScriptSave>(); } ) );
+
 		p_registry.registerAction(
 			Selection::lockAction(),
 			[]( const ActionRegistry::ActionContext & p_context )
 			{
 				const bool locked = UI_ACTIONS().isChecked( p_context.actionId );
+				for ( const std::string_view key : { Selection::CLEAR,
+													 Selection::SELECT_ALL,
+													 Selection::INVERT,
+													 Selection::EXTEND,
+													 Selection::EXTEND_TO_RESIDUE } )
+				{
+					if ( QAction * const action = UI_ACTIONS().getAction( key ) )
+					{
+						action->setEnabled( not locked );
+					}
+				}
 				App::HUB().trigger<Events::SelectionLocked>( locked );
 			}
 		);
@@ -172,7 +187,80 @@ namespace VTX::UI::QT::Action
 		);
 		p_registry.registerAction(
 			Selection::selectAllAction(),
-			handler( []() { App::ACTION().execute<App::Action::Selection::SelectAll>(); } )
+			handler(
+				[]()
+				{
+					if ( UI_ACTIONS().isChecked( Selection::LOCK ) )
+					{
+						return;
+					}
+
+					App::ACTION().execute<App::Action::Selection::SelectAll>();
+				}
+			)
+		);
+		p_registry.registerAction(
+			Selection::extendAction(),
+			[]( const ActionRegistry::ActionContext & p_context )
+			{
+				if ( UI_ACTIONS().isChecked( Selection::LOCK ) )
+				{
+					return;
+				}
+
+				std::optional<double> distance = p_context.param<double>( Selection::PARAM_DISTANCE );
+				if ( not distance )
+				{
+					bool		 accepted = false;
+					const double value	  = QInputDialog::getDouble(
+						&MAIN_WINDOW(),
+						"Extend selection",
+						"Distance (Å):",
+						SETTINGS().value( SETTING_KEY_EXTEND_DISTANCE, 5.0 ).toDouble(),
+						0.01,
+						1000.0,
+						2,
+						&accepted
+					);
+					if ( not accepted )
+					{
+						return;
+					}
+
+					SETTINGS().setValue( SETTING_KEY_EXTEND_DISTANCE, value );
+					distance = value;
+				}
+
+				App::ACTION().execute<App::Action::Selection::ExtendSelection>( static_cast<float>( *distance ) );
+			}
+		);
+		p_registry.registerAction(
+			Selection::extendToResidueAction(),
+			handler(
+				[]()
+				{
+					if ( UI_ACTIONS().isChecked( Selection::LOCK ) )
+					{
+						return;
+					}
+
+					App::ACTION().execute<App::Action::Selection::ExtendSelectionToResidue>();
+				}
+			)
+		);
+		p_registry.registerAction(
+			Selection::invertAction(),
+			handler(
+				[]()
+				{
+					if ( UI_ACTIONS().isChecked( Selection::LOCK ) )
+					{
+						return;
+					}
+
+					App::ACTION().execute<App::Action::Selection::InvertSelection>();
+				}
+			)
 		);
 		p_registry.registerAction(
 			Selection::setGranularitySystemAction(),
@@ -280,10 +368,11 @@ namespace VTX::UI::QT::Action
 
 		p_registry.registerAction(
 			Help::documentationAction(),
-			handler( []() { QDesktopServices::openUrl( QUrl( App::URL_DOCUMENTATION.data() ) ); } )
+			handler( []() { QDesktopServices::openUrl( QUrl( QString::fromUtf8( App::URL_DOCUMENTATION ) ) ); } )
 		);
 		p_registry.registerAction(
-			Help::reportAction(), handler( []() { QDesktopServices::openUrl( QUrl( App::URL_REPORT.data() ) ); } )
+			Help::reportAction(),
+			handler( []() { QDesktopServices::openUrl( QUrl( QString::fromUtf8( App::URL_REPORT ) ) ); } )
 		);
 		p_registry.registerAction(
 			Help::checkUpdatesAction(),

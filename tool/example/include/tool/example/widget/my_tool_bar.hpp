@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR__
-#define __VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR__
+#ifndef VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR_HPP
+#define VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR_HPP
 
 #include "tool/example/actions.hpp"
 #include <QGridLayout>
@@ -14,7 +14,7 @@ namespace VTX::Tool::Example::Widget
 	class MyToolBar : public UI::QT::Widget::BaseWidget<MyToolBar, QToolBar>
 	{
 	  public:
-		MyToolBar( QWidget * p_parent ) : BaseWidget( p_parent )
+		MyToolBar( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setWindowTitle( "My ToolBar" );
 
@@ -24,7 +24,7 @@ namespace VTX::Tool::Example::Widget
 			UI::QT::UI_ACTIONS().addTo( *this, Action::MY_ACTION_4 );
 		}
 
-		virtual ~MyToolBar() {}
+		~MyToolBar() override = default;
 
 	  private:
 	};

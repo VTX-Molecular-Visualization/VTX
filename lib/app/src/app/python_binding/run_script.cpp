@@ -3,7 +3,6 @@
 #include "app/services.hpp"
 #include <pybind11/pybind11.h>
 #include <python_binding/interpretor.hpp>
-#include <util/logger.hpp>
 
 namespace VTX::App::PythonBinding
 {
@@ -12,16 +11,19 @@ namespace VTX::App::PythonBinding
 		class RunScriptAction
 		{
 		  public:
-			RunScriptAction() {}
+			RunScriptAction() = default;
 
-			void execute( std::string p_path )
+			void execute( const std::string & p_path )
 			{
-				std::shared_ptr<std::promise<Interpretor::AsyncJobResult>> promise
+				const std::shared_ptr<std::promise<Interpretor::AsyncJobResult>> promise
 					= std::make_shared<std::promise<Interpretor::AsyncJobResult>>();
-				std::future<Interpretor::AsyncJobResult> _future = promise->get_future();
+				std::future<Interpretor::AsyncJobResult> future = promise->get_future();
 				INTERPRETOR().runScript( p_path, promise );
-				if ( _future.get().success == false )
-					throw pybind11::value_error( _future.get().resultStr );
+				const Interpretor::AsyncJobResult result = future.get();
+				if ( not result.success )
+				{
+					throw pybind11::value_error( result.resultStr );
+				}
 			}
 		};
 	} // namespace
@@ -29,7 +31,9 @@ namespace VTX::App::PythonBinding
 	void RunScript::bind( VTX::PythonBinding::Wrapper::Module & p_vtxModule )
 	{
 		p_vtxModule.bindAction<RunScriptAction, std::string>(
-			"runScript", "Execute the script located at the path provided in argument."
+			"runScript",
+			"Run a Python script file. Raises ValueError if the script fails.",
+			VTX::PythonBinding::Wrapper::Arg( "path" )
 		);
 	}
 

@@ -29,12 +29,10 @@ namespace bcs
 	{
 		if constexpr ( std::is_same_v<Type1, Type2> )
 		{
-			thrust::exclusive_scan(
-				thrust::device,
-				thrust::device_ptr<Type1>( src ),
-				thrust::device_ptr<Type1>( src + size ),
-				thrust::device_ptr<Type1>( dst )
-			);
+			thrust::exclusive_scan( thrust::device,
+									thrust::device_ptr<Type1>( src ),
+									thrust::device_ptr<Type1>( src + size ),
+									thrust::device_ptr<Type1>( dst ) );
 		}
 		else
 		{
@@ -45,8 +43,7 @@ namespace bcs
 				thrust::device_ptr<Type2>( dst ),
 				[] __device__( Type1 c ) { return static_cast<Type2>( c ); },
 				0,
-				cuda::std::plus<Type2>()
-			);
+				cuda::std::plus<Type2>() );
 		}
 
 		mmemcpy<MemcpyType::DeviceToHost>( countValue, dst + size - 1, 1 );
@@ -55,21 +52,15 @@ namespace bcs
 
 	template<class Type>
 	GraphicsDeviceBuffer GraphicsDeviceBuffer::Typed( const std::size_t count, AccessType access, bool zeroInit )
-	{
-		return GraphicsDeviceBuffer( count * sizeof( Type ), access, zeroInit );
-	}
+	{ return GraphicsDeviceBuffer( count * sizeof( Type ), access, zeroInit ); }
 
 	template<class Type>
 	Type * GraphicsDeviceBuffer::get( std::size_t byteOffset )
-	{
-		return reinterpret_cast<Type *>( get( byteOffset ) );
-	}
+	{ return reinterpret_cast<Type *>( get( byteOffset ) ); }
 
 	template<class Type>
 	const Type * GraphicsDeviceBuffer::get( std::size_t byteOffset ) const
-	{
-		return reinterpret_cast<const Type *>( get( byteOffset ) );
-	}
+	{ return reinterpret_cast<const Type *>( get( byteOffset ) ); }
 
 	template<class Type>
 	GraphicsDeviceBuffer::ScopedMapping<Type> GraphicsDeviceBuffer::scopedMap( std::size_t byteOffset )
@@ -80,9 +71,7 @@ namespace bcs
 
 	template<class Type>
 	std::size_t GraphicsDeviceBuffer::size() const
-	{
-		return m_size / sizeof( Type );
-	}
+	{ return m_size / sizeof( Type ); }
 
 	template<class Type>
 	std::vector<Type> GraphicsDeviceBuffer::toHost()
@@ -102,21 +91,15 @@ namespace bcs
 
 	template<class Type>
 	Type * DeviceBuffer::get( std::size_t offset )
-	{
-		return reinterpret_cast<Type *>( m_ptr + offset );
-	}
+	{ return reinterpret_cast<Type *>( m_ptr + offset ); }
 
 	template<class Type>
 	const Type * DeviceBuffer::get( std::size_t offset ) const
-	{
-		return reinterpret_cast<const Type *>( m_ptr + offset );
-	}
+	{ return reinterpret_cast<const Type *>( m_ptr + offset ); }
 
 	template<class Type>
 	std::size_t DeviceBuffer::size() const
-	{
-		return m_size / sizeof( Type );
-	}
+	{ return m_size / sizeof( Type ); }
 
 	template<class Type>
 	std::vector<Type> DeviceBuffer::toHost()

@@ -1,4 +1,6 @@
+#include <app/action/selection.hpp>
 #include <app/ecs.hpp>
+#include <app/system/selection.hpp>
 #include <app/system/visibility.hpp>
 //
 #include <app/action/visibility.hpp>
@@ -16,15 +18,25 @@ namespace VTX::App::Action::Visibility
 		}
 
 		reg.patch<System::Visibility>(
-			p_ent, [ &p_atoms ]( System::Visibility & p_visibility ) { p_visibility.atoms = std::move( p_atoms ); }
-		);
+			p_ent, [ &p_atoms ]( System::Visibility & p_visibility ) { p_visibility.atoms = std::move( p_atoms ); } );
+
+		const auto * const selection = reg.try_get<System::Selection>( p_ent );
+		if ( selection == nullptr || selection->atoms.none() )
+		{
+			return;
+		}
+
+		Util::Math::BitSet visibleSelection = selection->atoms;
+		visibleSelection &= visibility.atoms;
+		Action::Selection::patchSelection( p_ent, std::move( visibleSelection ) );
 	}
 
-	void HideEverything::execute()
+	void SetVisibleAll::execute( const bool p_visible )
 	{
 		for ( auto entity : App::REG().view<System::Visibility>() )
 		{
-			App::REG().patch<System::Visibility>( entity, []( System::Visibility & p_vis ) { p_vis.atoms.clear(); } );
+			const auto & visibility = REG().get<System::Visibility>( entity );
+			patchVisibility( entity, Util::Math::BitSet( visibility.atoms.size(), p_visible ) );
 		}
 	}
 
@@ -32,8 +44,7 @@ namespace VTX::App::Action::Visibility
 	{
 		REG().view<System::Selection, System::Visibility>().each(
 			[ p_visible ](
-				const Entity p_ent, const System::Selection & p_selection, const System::Visibility & p_visibility
-			)
+				const Entity p_ent, const System::Selection & p_selection, const System::Visibility & p_visibility )
 			{
 				if ( p_selection.atoms.any() )
 				{
@@ -49,16 +60,13 @@ namespace VTX::App::Action::Visibility
 
 					patchVisibility( p_ent, std::move( current ) );
 				}
-			}
-		);
+			} );
 	}
 
-	void SetVisibleItem::execute(
-		const Entity						 p_ent,
-		const Core::Struct::E_SYSTEM_ITEM	 p_item,
-		const Core::Struct::IndexRangeList & p_ranges,
-		const bool							 p_visible
-	)
+	void SetVisibleItem::execute( const Entity						   p_ent,
+								  const Core::Struct::E_SYSTEM_ITEM	   p_item,
+								  const Core::Struct::IndexRangeList & p_ranges,
+								  const bool						   p_visible )
 	{
 		switch ( p_item )
 		{

@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_UI_MD_ENGINE_FIELD_PLACER__
-#define __VTX_TOOL_TOOLS_MDPREP_UI_MD_ENGINE_FIELD_PLACER__
+#ifndef VTX_TOOL_MDPREP_UI_MD_ENGINE_FIELD_PLACER_HPP
+#define VTX_TOOL_MDPREP_UI_MD_ENGINE_FIELD_PLACER_HPP
 
 #include <string>
 //
@@ -17,25 +17,34 @@ namespace VTX::Tool::Mdprep::ui
 	{
 	  public:
 		// Inform or update the field placer where to put its fields
-		inline void assign( FormLayouts p_layouts ) noexcept
+		void assign( FormLayouts p_layouts ) noexcept
 		{
 			if ( _ptr )
-				_ptr->assign( std::move( p_layouts ) );
+			{
+				_ptr->assign( p_layouts );
+			}
 		}
+
 		// Add the engine-specific field in the right place.
-		inline void activate() noexcept
+		void activate()
 		{
 			if ( _ptr )
+			{
 				_ptr->activate();
+			}
 		}
+
 		// Remove the engine-specific field.
-		inline void deactivate() noexcept
+		void deactivate()
 		{
 			if ( _ptr )
+			{
 				_ptr->deactivate();
+			}
 		}
 
 		MdEngineFieldPlacer() = default;
+
 		template<typename T>
 			requires( not SameUnalteredType<T, MdEngineFieldPlacer> )
 		MdEngineFieldPlacer( T && p_in ) : _ptr( new wrapper<T>( std::forward<T>( p_in ) ) )
@@ -43,23 +52,21 @@ namespace VTX::Tool::Mdprep::ui
 			static_assert(
 				requires( T t, FormLayouts f ) {
 					{ t.assign( f ) };
-				}, "You must implement 'void assign( FormLayouts p_layouts ) noexcept' class method."
-			);
+				}, "You must implement 'void assign( FormLayouts p_layouts ) noexcept' class method." );
 			static_assert(
 				requires( T t ) {
 					{ t.activate() };
-				}, "You must implement 'void activate() noexcept' class method."
+				}, "You must implement 'void activate()' class method."
 			);
 			static_assert(
 				requires( T t ) {
 					{ t.deactivate() };
-				}, "You must implement 'void deactivate() noexcept' class method."
+				}, "You must implement 'void deactivate()' class method."
 			);
 			static_assert(
-				not std::is_trivially_destructible<T>::value,
+				not std::is_trivially_destructible_v<T>,
 				"You must implement a destructor class method, as the responsability of the MdEngineFieldPlacer is "
-				"also to cleanup his widget(s) on destruction."
-			);
+				"also to cleanup his widget(s) on destruction." );
 		}
 
 	  private:
@@ -67,18 +74,22 @@ namespace VTX::Tool::Mdprep::ui
 		{
 			virtual ~_interface()						= default;
 			virtual void assign( FormLayouts ) noexcept = 0;
-			virtual void activate() noexcept			= 0;
-			virtual void deactivate() noexcept			= 0;
+			virtual void activate()						= 0;
+			virtual void deactivate()					= 0;
 		};
 
 		template<typename T>
 		struct wrapper final : public _interface
 		{
 			T _t;
+
 			wrapper( T && p_in ) : _t( std::forward<T>( p_in ) ) {}
-			virtual void assign( FormLayouts p_layouts ) noexcept { _t.assign( std::move( p_layouts ) ); }
-			virtual void activate() noexcept override { _t.activate(); }
-			virtual void deactivate() noexcept override { _t.deactivate(); }
+
+			void assign( FormLayouts p_layouts ) noexcept override { _t.assign( std::move( p_layouts ) ); }
+
+			void activate() override { _t.activate(); }
+
+			void deactivate() override { _t.deactivate(); }
 		};
 
 		std::unique_ptr<_interface> _ptr = nullptr;

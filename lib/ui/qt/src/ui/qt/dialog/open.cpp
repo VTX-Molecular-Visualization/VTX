@@ -1,8 +1,8 @@
 #include "ui/qt/dialog/open.hpp"
 #include "ui/qt/settings.hpp"
-#include <app/action/action_manager.hpp>
 #include <app/action/io.hpp>
-#include <app/action/scene.hpp>
+#include <app/services.hpp>
+#include <util/action_manager.hpp>
 
 namespace VTX::UI::QT::Dialog
 {
@@ -15,21 +15,19 @@ namespace VTX::UI::QT::Dialog
 		setAcceptMode( QFileDialog::AcceptOpen );
 
 		// Connect open.
-		connect(
-			this,
-			&QFileDialog::filesSelected,
-			this,
-			[ this ]( const QStringList & p_paths )
-			{
-				// Save last opened folder.
-				SETTINGS().setValue( SETTING_KEY_OPEN_FOLDER, directory().absolutePath() );
+		connect( this,
+				 &QFileDialog::filesSelected,
+				 this,
+				 [ this ]( const QStringList & p_paths )
+				 {
+					 // Save last opened folder.
+					 SETTINGS().setValue( SETTING_KEY_OPEN_FOLDER, directory().absolutePath() );
 
-				// Open files.
-				for ( const auto & path : p_paths )
-				{
-					App::ACTION().execute<App::Action::IO::Open>( path.toStdString() );
-				}
-			}
-		);
+					 // Open files.
+					 for ( const auto & path : p_paths )
+					 {
+						 App::ACTION().execute<App::Action::IO::Open>( path.toStdString() );
+					 }
+				 } );
 	}
 } // namespace VTX::UI::QT::Dialog

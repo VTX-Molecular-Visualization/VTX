@@ -1,5 +1,5 @@
-#ifndef __VTX_PYTHON_BINDING_BINDING_BINDERS_RUN_SCRIPT__
-#define __VTX_PYTHON_BINDING_BINDING_BINDERS_RUN_SCRIPT__
+#ifndef VTX_APP_PYTHON_BINDING_RUN_SCRIPT_HPP
+#define VTX_APP_PYTHON_BINDING_RUN_SCRIPT_HPP
 
 #include <python_binding/wrapper/module.hpp>
 #include <util/filesystem.hpp>

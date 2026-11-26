@@ -1,21 +1,23 @@
-﻿#include "ui/qt/dock_widget/inspector.hpp"
+#include "ui/qt/dock_widget/inspector.hpp"
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
-#include "ui/qt/events.hpp"
+#include "ui/qt/helper.hpp"
 #include "ui/qt/selection_manager.hpp"
 #include "ui/qt/services.hpp"
-#include "ui/qt/settings.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/camera.hpp"
 #include "ui/qt/widget/controller.hpp"
-#include "ui/qt/widget/main_window.hpp"
+#include "ui/qt/widget/library/read_only_notice.hpp"
 #include "ui/qt/widget/selection.hpp"
+#include "ui/qt/widget/tree/scripts.hpp"
+#include <QDesktopServices>
 #include <QFontDatabase>
 #include <QLabel>
-#include <QToolButton>
-#include <app/action/selection.hpp>
-#include <app/services.hpp>
+#include <QPushButton>
+#include <QUrl>
+#include <algorithm>
+#include <app/helper/script.hpp>
 #include <app/system/selection.hpp>
 #include <core/struct/topology.hpp>
 #include <renderer/camera.hpp>
@@ -23,18 +25,15 @@
 
 namespace VTX::UI::QT::DockWidget
 {
-	Inspector::Inspector( QWidget * p_parent ) : BaseDockWidget( p_parent, "Selection" )
+	Inspector::Inspector( QWidget * const p_parent ) : BaseDockWidget( p_parent, "Selection" )
 	{
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SELECTION ) );
 
-		_lockButton = new QToolButton( this );
-		_lockButton->setDefaultAction( UI_ACTIONS().getAction( Action::Selection::LOCK ) );
-		_lockButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-		_lockButton->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
+		_lockButton = Helper::makeActionButton( *UI_ACTIONS().getAction( Action::Selection::LOCK ), this );
 		_layout->addWidget( _lockButton );
 
-		_filler = new QWidget( this );
+		_filler = Helper::makeQObject<QWidget>( this );
 		_filler->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding );
 		_layout->addWidget( _filler );
 
@@ -46,7 +45,10 @@ namespace VTX::UI::QT::DockWidget
 			{
 				if ( p_selection.isEmpty() )
 				{
-					_clear();
+					if ( _selectionListWidget == nullptr )
+					{
+						_clear();
+					}
 					return;
 				}
 
@@ -56,6 +58,11 @@ namespace VTX::UI::QT::DockWidget
 				const Entity   preset	 = data.value<Entity>();
 				const bool	   hasPreset = data.isValid();
 
+				const QVariant scopeData = ( hasPreset ? index.parent() : index ).data( Widget::Library::PRESET_SCOPE_ROLE );
+				const Widget::Library::E_PRESET_SCOPE scope
+					= scopeData.isValid() ? Widget::Library::E_PRESET_SCOPE( scopeData.toInt() )
+										  : Widget::Library::E_PRESET_SCOPE::ALL;
+
 				// Insert widget.
 				switch ( p_group )
 				{
@@ -64,14 +71,14 @@ namespace VTX::UI::QT::DockWidget
 					_clear();
 					if ( hasPreset )
 					{
-						_viewPointWidget = new Widget::ViewPoint( preset, this );
+						_viewPointWidget = Helper::makeQObject<Widget::ViewPoint>( preset, this );
 						_layout->insertWidget( _layout->indexOf( _filler ), _viewPointWidget );
 					}
 					else
 					{
 						const auto [ ent, _ ]	= App::ECS::getFirstEntityWithComponents<Renderer::Camera>();
-						auto * cameraWidget		= new Widget::Camera( ent, this );
-						auto * controllerWidget = new Widget::Controller( ent, this );
+						auto * cameraWidget		= Helper::makeQObject<Widget::Camera>( ent, this );
+						auto * controllerWidget = Helper::makeQObject<Widget::Controller>( ent, this );
 						_layout->insertWidget( _layout->indexOf( _filler ), cameraWidget );
 						_layout->insertWidget( _layout->indexOf( _filler ), controllerWidget );
 					}
@@ -81,6 +88,7 @@ namespace VTX::UI::QT::DockWidget
 				{
 					if ( _graphicsConfigWidget )
 					{
+						_graphicsConfigWidget->setScope( scope );
 						if ( hasPreset )
 						{
 							_graphicsConfigWidget->setCurrentPreset( preset );
@@ -93,7 +101,8 @@ namespace VTX::UI::QT::DockWidget
 					}
 
 					_clear();
-					_graphicsConfigWidget = new Widget::Library::GraphicsConfig( this );
+					_graphicsConfigWidget = Helper::makeQObject<Widget::Library::GraphicsConfigWidget>( this );
+					_graphicsConfigWidget->setScope( scope );
 					if ( hasPreset )
 					{
 						_graphicsConfigWidget->setCurrentPreset( preset );
@@ -109,6 +118,7 @@ namespace VTX::UI::QT::DockWidget
 				{
 					if ( _colorLayoutWidget )
 					{
+						_colorLayoutWidget->setScope( scope );
 						if ( hasPreset )
 						{
 							_colorLayoutWidget->setCurrentPreset( preset );
@@ -121,7 +131,8 @@ namespace VTX::UI::QT::DockWidget
 					}
 
 					_clear();
-					_colorLayoutWidget = new Widget::Library::ColorLayout( this );
+					_colorLayoutWidget = Helper::makeQObject<Widget::Library::ColorLayout>( this );
+					_colorLayoutWidget->setScope( scope );
 					if ( hasPreset )
 					{
 						_colorLayoutWidget->setCurrentPreset( preset );
@@ -137,6 +148,7 @@ namespace VTX::UI::QT::DockWidget
 				{
 					if ( _representationWidget )
 					{
+						_representationWidget->setScope( scope );
 						if ( hasPreset )
 						{
 							_representationWidget->setCurrentPreset( preset );
@@ -149,7 +161,8 @@ namespace VTX::UI::QT::DockWidget
 					}
 
 					_clear();
-					_representationWidget = new Widget::Library::Representation( this );
+					_representationWidget = Helper::makeQObject<Widget::Library::Representation>( this );
+					_representationWidget->setScope( scope );
 					if ( hasPreset )
 					{
 						_representationWidget->setCurrentPreset( preset );
@@ -161,13 +174,70 @@ namespace VTX::UI::QT::DockWidget
 					_layout->insertWidget( _layout->indexOf( _filler ), _representationWidget );
 					break;
 				}
+				case E_SELECTION_GROUP::SCRIPT:
+				{
+					_clear();
+					QPushButton * const runButton
+						= Helper::makeActionButton( *UI_ACTIONS().getAction( Action::Script::RUN ), this );
+
+					const FilePath path = index.data( Widget::Tree::Scripts::PATH_ROLE ).toString().toStdString();
+					if ( App::Helper::Script::isReadOnly( path ) )
+					{
+						auto * const notice = Helper::makeQObject<Widget::Library::ReadOnlyNotice>(
+							this, "Built-in scripts are read-only\nDuplicate to edit", "Copy this script into your scripts"
+						);
+						notice->setVisible( true );
+						_layout->insertWidget( _layout->indexOf( _filler ), notice );
+						connect(
+							notice->button(),
+							&QPushButton::clicked,
+							this,
+							[ path ]() { Helper::duplicateScript( path ); }
+						);
+					}
+					else
+					{
+						QPushButton * const saveButton
+							= Helper::makeActionButton( *UI_ACTIONS().getAction( Action::Script::SAVE ), this );
+						_layout->insertWidget( _layout->indexOf( _filler ), saveButton );
+
+						auto * const openFolderButton = Helper::makeQObject<QPushButton>( this );
+						openFolderButton->setText( "Open folder" );
+						openFolderButton->setIcon( STYLE().iconFromCodepoint( Style::Icons::OPEN ) );
+						openFolderButton->setToolTip( "Open the folder containing this script" );
+						_layout->insertWidget( _layout->indexOf( _filler ), openFolderButton );
+						connect(
+							openFolderButton,
+							&QPushButton::clicked,
+							this,
+							[ path ]()
+							{
+								QDesktopServices::openUrl(
+									QUrl::fromLocalFile( QString::fromStdString( path.parent_path().string() ) )
+								);
+							}
+						);
+
+						auto * const copyButton = Helper::makeQObject<QPushButton>( this );
+						copyButton->setText( "Copy" );
+						copyButton->setIcon( STYLE().iconFromCodepoint( Style::Icons::COPY ) );
+						copyButton->setToolTip( "Duplicate this script next to it" );
+						_layout->insertWidget( _layout->indexOf( _filler ), copyButton );
+						connect( copyButton, &QPushButton::clicked, this, [ path ]() { Helper::duplicateScript( path ); } );
+					}
+
+					_layout->insertWidget( _layout->indexOf( _filler ), runButton );
+					break;
+				}
 				default: break;
 				}
 			}
 		);
 
-		App::REG().on_update<App::System::Selection>().connect<&Inspector::_onSystemSelectionUpdated>( this );
-		App::REG().on_destroy<Core::Struct::Topology>().connect<&Inspector::_onSystemSelectionUpdated>( this );
+		_selectionUpdatedConnection
+			= App::REG().on_update<App::System::Selection>().connect<&Inspector::_onSystemSelectionUpdated>( this );
+		_systemDestroyedConnection
+			= App::REG().on_destroy<Core::Struct::Topology>().connect<&Inspector::_onSystemSelectionUpdated>( this );
 	}
 
 	void Inspector::_clear()
@@ -205,20 +275,15 @@ namespace VTX::UI::QT::DockWidget
 
 	bool Inspector::_hasSystemSelection() const
 	{
-		for ( const Entity entity : App::REG().view<App::System::Selection>() )
-		{
-			if ( App::REG().get<App::System::Selection>( entity ).atoms.any() )
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return std::ranges::any_of(
+			App::REG().view<App::System::Selection>(),
+			[]( const Entity entity ) { return App::REG().get<App::System::Selection>( entity ).atoms.any(); }
+		);
 	}
 
 	void Inspector::_onSystemSelectionUpdated( Registry &, Entity )
 	{
-		Util::ScopedChrono timer( "Inspector::_onSystemSelectionUpdated" );
+		const Util::ScopedChrono timer( "Inspector::_onSystemSelectionUpdated" );
 
 		if ( not _hasSystemSelection() )
 		{
@@ -237,7 +302,7 @@ namespace VTX::UI::QT::DockWidget
 		//}
 
 		_clear();
-		_selectionListWidget = new Widget::Selection( this );
+		_selectionListWidget = Helper::makeQObject<Widget::Selection>( this );
 		_layout->insertWidget( _layout->indexOf( _filler ), _selectionListWidget );
 	}
 

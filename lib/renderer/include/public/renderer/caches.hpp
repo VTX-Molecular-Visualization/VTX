@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_CACHES__
-#define __VTX_RENDERER_CACHES__
+#ifndef VTX_RENDERER_CACHES_HPP
+#define VTX_RENDERER_CACHES_HPP
 
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
@@ -41,9 +41,9 @@ namespace VTX::Renderer::Cache
 	struct Camera
 	{
 		VTX::Renderer::Camera camera;
-		Vec3f				  position;
-		Mat4f				  matView;
-		Mat4f				  matProj;
+		Vec3f				  position { 0.f };
+		Mat4f				  matView { 1.f };
+		Mat4f				  matProj { 1.f };
 	};
 
 	struct ColorLayout
@@ -62,7 +62,7 @@ namespace VTX::Renderer::Cache
 		std::vector<Vec3f> maxs;
 	};
 
-	enum struct E_SYSTEM_DIRTY : uint16_t
+	enum struct E_SYSTEM_DIRTY : uint8_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
 		NONE		   = 0,
@@ -89,45 +89,49 @@ namespace VTX::Renderer::Cache
 	enum struct E_RENDERER_DIRTY : uint16_t
 	{
 		VTX_ENUM_ENABLE_BITMASK,
-		NONE			= 0,
-		DRAW_RANGES		= 1 << 0,
-		GEOMETRY_CHUNKS = 1 << 1,
-		EXTERNAL_PASSES = 1 << 2,
-		COMMAND_BUFFER	= 1 << 3,
-		NEED_UPDATE		= 1 << 4,
-		GRAPH			= 1 << 5,
-		REPRESENTATIONS = 1 << 6,
-		CAMERA			= 1 << 7,
-		MODELS			= 1 << 8,
-		COLOR_LAYOUT	= 1 << 9,
-		GRAPHICS_CONFIG = 1 << 10,
-		VOXELS			= 1 << 11,
-		ENVIRONMENT		= 1 << 12,
+		NONE			  = 0,
+		DRAW_RANGES		  = 1 << 0,
+		GEOMETRY_CHUNKS	  = 1 << 1,
+		EXTERNAL_PASSES	  = 1 << 2,
+		COMMAND_BUFFER	  = 1 << 3,
+		NEED_UPDATE		  = 1 << 4,
+		GRAPH			  = 1 << 5,
+		REPRESENTATIONS	  = 1 << 6,
+		CAMERA			  = 1 << 7,
+		MODELS			  = 1 << 8,
+		COLOR_LAYOUT	  = 1 << 9,
+		GRAPHICS_CONFIG	  = 1 << 10,
+		VOXELS			  = 1 << 11,
+		ENVIRONMENT		  = 1 << 12,
+		MATERIAL_TEXTURES = 1 << 13,
 		ALL = DRAW_RANGES | GEOMETRY_CHUNKS | EXTERNAL_PASSES | COMMAND_BUFFER | NEED_UPDATE | GRAPH | REPRESENTATIONS
-			  | CAMERA | MODELS | COLOR_LAYOUT | GRAPHICS_CONFIG | VOXELS | ENVIRONMENT
+			  | CAMERA | MODELS | COLOR_LAYOUT | GRAPHICS_CONFIG | VOXELS | ENVIRONMENT | MATERIAL_TEXTURES
 	};
 
 	struct System
 	{
 		// Owned.
-		Mat4f transform;
+		Mat4f transform { 1.f };
 
 		// Views.
 		struct Data
 		{
-			const Core::Struct::Topology * topology;
+			const Core::Struct::Topology * topology {};
 			std::span<const Vec3f>		   trajectory;
 			// TODO: delete and use gpu buffer?
-			const Util::Math::Range<UID32> *						   atomUids;
-			const Util::Math::Range<UID32> *						   residueUids;
-			const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> * colorSchemeAtoms;
-			const std::unordered_map<ColorIndex, IndexRangeList> *	   customColorAtoms;
-			const std::unordered_map<ColorIndex, IndexRangeList> *	   carbonCustomColorAtoms;
+			const Util::Math::Range<UID32> *						   atomUids {};
+			const Util::Math::Range<UID32> *						   residueUids {};
+			const std::unordered_map<E_COLOR_SCHEME, IndexRangeList> * colorSchemeAtoms {};
+			const std::unordered_map<ColorIndex, IndexRangeList> *	   customColorAtoms {};
+			const std::unordered_map<ColorIndex, IndexRangeList> *	   carbonCustomColorAtoms {};
+			const std::unordered_map<E_COLOR_SCHEME_SECONDARY_STRUCTURE, IndexRangeList> *
+																   colorSchemeSecondaryStructureResidues {};
+			const std::unordered_map<ColorIndex, IndexRangeList> * customSecondaryStructureColorResidues {};
 			// Ugly.
-			const std::unordered_map<Entity, Desc::Handle> *				 representationHandles;
-			const std::unordered_map<Entity, Core::Struct::IndexRangeList> * presetAtoms;
-			const Util::Math::BitSet *										 visibility;
-			const Util::Math::BitSet *										 selection;
+			const std::unordered_map<Entity, Desc::Handle> *				 representationHandles {};
+			const std::unordered_map<Entity, Core::Struct::IndexRangeList> * presetAtoms {};
+			const Util::Math::BitSet *										 visibility {};
+			const Util::Math::BitSet *										 selection {};
 		};
 
 		Data data;
@@ -138,7 +142,7 @@ namespace VTX::Renderer::Cache
 
 	struct Mesh
 	{
-		Mat4f transform;
+		Mat4f transform { 1.f };
 
 		const Core::Struct::Mesh * data = nullptr;
 

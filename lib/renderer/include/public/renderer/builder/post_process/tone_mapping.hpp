@@ -1,25 +1,76 @@
-#ifndef __VTX_RENDERER_BUILDER_POST_PROCESS_TONE_MAPPING__
-#define __VTX_RENDERER_BUILDER_POST_PROCESS_TONE_MAPPING__
+#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_TONE_MAPPING_HPP
+#define VTX_RENDERER_BUILDER_POST_PROCESS_TONE_MAPPING_HPP
 
+#include "renderer/binary_buffer.hpp"
+#include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
+#include <cstdint>
+#include <string_view>
+#include <util/math.hpp>
+#include <utility>
+
+namespace VTX::Renderer
+{
+	enum struct E_TONE_MAPPING : uint8_t
+	{
+		NONE,
+		LDR,
+		REINHARD,
+		ACES,
+		UNCHARTED,
+
+		COUNT
+	};
+
+	constexpr E_TONE_MAPPING TONE_MAPPING_MODE_DEFAULT	   = E_TONE_MAPPING::REINHARD;
+	constexpr float			 TONE_MAPPING_EXPOSURE_DEFAULT = 1.f;
+	constexpr float			 TONE_MAPPING_EXPOSURE_MIN	   = 1.f / 1024.f;
+	constexpr float			 TONE_MAPPING_EXPOSURE_MAX	   = 1024.f;
+	constexpr float			 TONE_MAPPING_EXPOSURE_EV_MIN  = -10.f;
+	constexpr float			 TONE_MAPPING_EXPOSURE_EV_MAX  = 10.f;
+
+	struct ToneMappingConfig
+	{
+		E_TONE_MAPPING mode = TONE_MAPPING_MODE_DEFAULT;
+		float		   exposure = TONE_MAPPING_EXPOSURE_DEFAULT;
+
+		void clamp() { exposure = Util::Math::clamp( exposure, TONE_MAPPING_EXPOSURE_MIN, TONE_MAPPING_EXPOSURE_MAX ); }
+	};
+} // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess
 {
 	struct ToneMapping
 	{
-		inline static const Desc::Key PASS = "ToneMapping";
+		static constexpr std::string_view PASS = "ToneMapping";
 
 		static Desc::Key build( GraphBuilder & p_graph, const Desc::Key & p_input )
 		{
-			p_graph.pass( PASS )
+			p_graph.pass( Desc::Key { PASS } )
 				.in( p_input )
-				.out( PASS )
-				.program( PASS )
+				.out( Desc::Key { PASS } )
+				.program( Desc::Key { PASS } )
 				.shaders( { "default.vert", "tone_mapping.frag" } )
+				.uniform( "Mode",
+						  static_cast<uint32_t>( TONE_MAPPING_MODE_DEFAULT ),
+						  std::pair { 0u, static_cast<uint32_t>( E_TONE_MAPPING::COUNT ) - 1u } )
+				.uniform( "Exposure",
+						  TONE_MAPPING_EXPOSURE_DEFAULT,
+						  std::pair { TONE_MAPPING_EXPOSURE_MIN, TONE_MAPPING_EXPOSURE_MAX } )
 				.endProgram()
 				.endPass();
 
-			return PASS;
+			return Desc::Key { PASS };
+		}
+
+		static void upload( Context::ContextWrapper & p_context, const ToneMappingConfig & p_config )
+		{
+			BinaryBuffer140 buffer;
+			buffer.write( static_cast<uint32_t>( p_config.mode ) );
+			buffer.write( p_config.exposure );
+			buffer.close();
+
+			p_context.setBuffer( { Desc::Key { PASS } }, buffer.bytes() );
 		}
 	};
 } // namespace VTX::Renderer::Builder::PostProcess

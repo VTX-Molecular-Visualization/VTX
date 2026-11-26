@@ -1,7 +1,8 @@
-#ifndef __VTX_STRUCT_INFOS__
-#define __VTX_STRUCT_INFOS__
+#ifndef VTX_RENDERER_STRUCT_INFOS_HPP
+#define VTX_RENDERER_STRUCT_INFOS_HPP
 
 #include <array>
+#include <cstddef>
 #include <string>
 
 namespace VTX::Renderer
@@ -12,12 +13,13 @@ namespace VTX::Renderer
 	struct StructInfos
 	{
 		std::string renderer;
-		bool		cudaAvailable = false;
+		bool		cudaAvailable  = false;
+		size_t		maxTextureSize = 0;
 
 		// Can be undefined.
-		long long gpuMemoryInfoDedicated;
-		long long gpuMemoryInfoTotalAvailable;
-		long long gpuMemoryInfoCurrentAvailable;
+		int64_t gpuMemoryInfoDedicated {};
+		int64_t gpuMemoryInfoTotalAvailable {};
+		int64_t gpuMemoryInfoCurrentAvailable {};
 		//
 
 		// size_t currentCountBuffers;
@@ -25,7 +27,7 @@ namespace VTX::Renderer
 
 		// size_t currentSizeBuffers;
 		// size_t currentSizeTextures;
-		size_t currentSizeCPUCache;
+		size_t currentSizeCPUCache {};
 	};
 } // namespace VTX::Renderer
 

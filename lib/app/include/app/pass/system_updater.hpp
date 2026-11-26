@@ -1,10 +1,13 @@
-#ifndef __VTX_APP_PASS_SYSTEM_UPDATER__
-#define __VTX_APP_PASS_SYSTEM_UPDATER__
+#ifndef VTX_APP_PASS_SYSTEM_UPDATER_HPP
+#define VTX_APP_PASS_SYSTEM_UPDATER_HPP
 
 #include "app/ecs.hpp"
 #include "app/events.hpp"
 #include "app/pass/pass_manager.hpp"
+#include <core/struct/trajectory.hpp>
+#include <renderer/caches.hpp>
 #include <renderer/descriptors.hpp>
+#include <util/event_hub.hpp>
 #include <vector>
 
 namespace VTX::App::System
@@ -22,12 +25,20 @@ namespace VTX::App::Pass
 	class SystemUpdater : public IPass
 	{
 	  public:
+		/**
+		 * @brief Flag that trigger update.
+		 */
+		static constexpr E_PENDING_UPDATE UPDATE_TRIGGERS = E_PENDING_UPDATE::PASSES;
+
+		/**
+		 * @brief Constructor.
+		 */
 		SystemUpdater();
 
 		/**
 		 * @brief Update the renderer with pending changes.
 		 */
-		void update( const float, const float );
+		void update( float, float );
 
 	  private:
 		/**
@@ -43,6 +54,11 @@ namespace VTX::App::Pass
 		std::vector<Renderer::Desc::Handle> _systemRemoved;
 		std::vector<Entity>					_representationAdded;
 		std::vector<Renderer::Desc::Handle> _representationRemoved;
+
+		/**
+		 * @brief Compute renderer-ready data.
+		 */
+		Renderer::Cache::System::Data _getSystemData( Entity, Core::Struct::FrameView ) const;
 
 		/**
 		 * @brief Push system data to renderer.
@@ -63,7 +79,7 @@ namespace VTX::App::Pass
 		/**
 		 * @brief Push trajectory frame to renderer.
 		 */
-		void _onTrajectoryLoad( const Events::TrajectoryLoad & );
+		void _onTrajectoryCurrentFrameChange( const Events::TrajectoryCurrentFrameChange & );
 
 		/**
 		 * @brief Push representation preset data to renderer.
@@ -72,6 +88,22 @@ namespace VTX::App::Pass
 		void _onUpdateRepresentationPreset( Registry &, Entity );
 		void _onDestroyRepresentationPreset( Registry &, Entity );
 		void _setRepresentations();
+
+		/**
+		 * @brief Connections.
+		 */
+		Util::EventHub::ScopedConnection _systemLoadConnection;
+		Util::EventHub::ScopedConnection _trajectoryFrameChangedConnection;
+		Util::EventHub::ScopedConnection _topologyUpdatedConnection;
+		Util::EventHub::ScopedConnection _transformUpdatedConnection;
+		Util::EventHub::ScopedConnection _visibilityUpdatedConnection;
+		Util::EventHub::ScopedConnection _selectionUpdatedConnection;
+		Util::EventHub::ScopedConnection _representationUpdatedConnection;
+		Util::EventHub::ScopedConnection _colorUpdatedConnection;
+		Util::EventHub::ScopedConnection _systemDestroyedConnection;
+		Util::EventHub::ScopedConnection _representationPresetConstructedConnection;
+		Util::EventHub::ScopedConnection _representationPresetUpdatedConnection;
+		Util::EventHub::ScopedConnection _representationPresetDestroyedConnection;
 	};
 } // namespace VTX::App::Pass
 

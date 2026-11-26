@@ -1,6 +1,7 @@
-#ifndef __VTX_APP_ACTION_CONTROLLER__
-#define __VTX_APP_ACTION_CONTROLLER__
+#ifndef VTX_APP_ACTION_CONTROLLER_HPP
+#define VTX_APP_ACTION_CONTROLLER_HPP
 
+#include "app/ecs.hpp"
 #include "app/services.hpp"
 #include "app/setting/controller.hpp"
 
@@ -25,7 +26,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetInvertY
 	{
-		void execute( const bool );
+		void execute( bool );
 	};
 
 	/**
@@ -33,7 +34,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetTranslationSpeed
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -41,7 +42,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetRotationSpeed
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -49,7 +50,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetAccelerationFactor
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -57,7 +58,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetDecelerationFactor
 	{
-		void execute( const float );
+		void execute( float );
 	};
 
 	/**
@@ -65,7 +66,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetElasticityActive
 	{
-		void execute( const bool );
+		void execute( bool );
 	};
 
 	/**
@@ -73,7 +74,7 @@ namespace VTX::App::Action::Controller
 	 */
 	struct SetElasticityFactor
 	{
-		void execute( const float );
+		void execute( float );
 	};
 } // namespace VTX::App::Action::Controller
 

@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_TOOL_BAR_FILE__
-#define __VTX_UI_QT_TOOL_BAR_FILE__
+#ifndef VTX_UI_QT_TOOL_BAR_FILE_HPP
+#define VTX_UI_QT_TOOL_BAR_FILE_HPP
 
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
@@ -13,7 +13,7 @@ namespace VTX::UI::QT::ToolBar
 	class File : public Widget::BaseWidget<File, QToolBar>
 	{
 	  public:
-		File( QWidget * p_parent ) : BaseWidget( p_parent )
+		File( QWidget * const p_parent ) : BaseWidget( p_parent )
 		{
 			setWindowTitle( "File" );
 

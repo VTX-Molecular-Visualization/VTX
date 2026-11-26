@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_DOCK_WIDGET_RENDER_SETTINGS__
-#define __VTX_UI_QT_DOCK_WIDGET_RENDER_SETTINGS__
+#ifndef VTX_UI_QT_DOCK_WIDGET_GRAPHICS_CONFIGS_HPP
+#define VTX_UI_QT_DOCK_WIDGET_GRAPHICS_CONFIGS_HPP
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 

@@ -1,5 +1,5 @@
-#ifndef __VTX_APP_PASS_CONTROLLER_TRACKBALL__
-#define __VTX_APP_PASS_CONTROLLER_TRACKBALL__
+#ifndef VTX_APP_CONTROLLER_TRACKBALL_HPP
+#define VTX_APP_CONTROLLER_TRACKBALL_HPP
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
@@ -18,7 +18,7 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Called each frame.
 		 */
-		bool update( const float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
+		bool update( float, const Setting::Controller &, Util::Math::Transform &, Vec3f & );
 
 		/**
 		 * @brief Stop movement.
@@ -39,7 +39,7 @@ namespace VTX::App::Controller
 		/**
 		 * @brief Update velocity from elasticity.
 		 */
-		void _updateVelocity( const float, const float );
+		void _updateVelocity( float, float );
 	};
 
 } // namespace VTX::App::Controller

@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS_PDB2GMX__
-#define __VTX_TOOL_TOOLS_MDPREP_GROMACS_PDB2GMX__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_PDB2GMX_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_PDB2GMX_HPP
 
 #include <filesystem>
 #include <optional>
@@ -30,7 +30,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	//    misleading forcefield object
 	std::vector<forcefield> listForcefields( const FilePath & );
 
-	enum class E_WATER_MODEL
+	enum class E_WATER_MODEL : uint8_t
 	{
 		tip3p,
 		spc,
@@ -44,7 +44,7 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	const char * string( const E_WATER_MODEL & ) noexcept;
 
 	// Meant to refer to one of the interactive gromacs option
-	enum class E_INTERACTIVE_KEYWORD
+	enum class E_INTERACTIVE_KEYWORD : uint8_t
 	{
 		none,
 		ss,
@@ -77,7 +77,7 @@ namespace std
 	template<>
 	struct hash<VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId>
 	{
-		inline uint64_t operator()( const VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId & p_arg ) const noexcept
+		uint64_t operator()( const VTX::Tool::Mdprep::backends::Gromacs::Pdb2gmxInputId & p_arg ) const noexcept
 		{
 			uint64_t out = 0;
 			out			 = static_cast<uint64_t>( p_arg.kw ) << 32;
@@ -127,23 +127,21 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	//    B ARG1 0
 	//  one line = one argument (arguments separated with a newline)
 	//  space between num and value can be any number of white space or tab
-	parseReport parsePdb2gmxUserScript( const std::string_view &, Pdb2gmxInputs & ) noexcept;
+	parseReport parsePdb2gmxUserScript( const std::string_view &, Pdb2gmxInputs & );
 
 	// Setup job folder and place input files as the job need them
 	// The root is assumed not to be an existing file path.
-	void prepareJob(
-		const CumulativeOuputFiles &,
-		const FilePath &		 p_root,
-		const std::string_view & p_folderName,
-		Pdb2gmxInstructions &
-	) noexcept;
+	void prepareJob( const CumulativeOuputFiles &,
+					 const FilePath &		  p_root,
+					 const std::string_view & p_folderName,
+					 Pdb2gmxInstructions & );
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.
 	//    Does nothing if the forcefieldIndex refer to a non-existing forcefield
 	//    Does not perform filesystem check on input pdb
 	//    If the outputDir is empty, will create a output directory in the current working directory and use it.
-	void convert( const Pdb2gmxInstructions &, GromacsJobData & ) noexcept;
+	void convert( const Pdb2gmxInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 

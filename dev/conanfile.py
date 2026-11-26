@@ -1,8 +1,6 @@
-import os
 from conan import ConanFile
 from conan.errors import ConanInvalidConfiguration
 from conan.tools.cmake import cmake_layout, CMake, CMakeToolchain
-from conan.tools.files import copy
 from conan.tools.system.package_manager import Apt
 from pathlib import Path
 import importlib.util
@@ -41,6 +39,7 @@ class VTXRecipe(ConanFile):
         "python_binding": [True, False],
         "python_version": ["ANY"],
         "cuda_arch": ["ANY"],
+        "clang_tidy": ["OFF", "WARN", "ERR"],
     }
     default_options = {
         "version": "0.0.0",
@@ -53,6 +52,7 @@ class VTXRecipe(ConanFile):
         "python_binding": True,
         "python_version": DEFAULT_PYTHON_VERSION,
         "cuda_arch": renderer_module.DEFAULT_CUDA_ARCH,
+        "clang_tidy": "OFF",
     }
     
     settings = "os", "compiler", "build_type", "arch"
@@ -71,42 +71,39 @@ class VTXRecipe(ConanFile):
             raise ConanInvalidConfiguration("tool_topology_editor currently requires Qt UI. Disable tool_topology_editor or enable ui_qt.")
 
     def requirements(self):
-        self.requires("glm/1.0.1")
+        self.requires("glm/1.0.3")
         self.requires("spdlog/1.17.0")
-        self.requires("magic_enum/0.9.7")
-        self.requires("nlohmann_json/3.12.0")
-        self.requires("cpr/1.14.2")
-        self.requires("catch2/3.15.0")
+        self.requires("fmt/12.1.0")
+        self.requires("magic_enum/0.9.8")
+        self.requires("cpr/1.15.1")
+        self.requires("catch2/3.16.1")
         self.requires("chemfiles/2026.02.5")
         self.requires("argparse/3.2")
         if self.options.renderer:
-            self.requires("sdl/3.4.0")
-            self.requires("imgui/1.92.7")
-        self.requires("stb/cci.20240531", force=True)
+            self.requires("ktx/4.4.2")
+        self.requires("stb/cci.20261021", force=True)
         self.requires("tinyexr/1.0.7")
-        self.requires("entt/3.16.0")
-        self.requires("assimp/6.0.2")
+        self.requires("exiv2/0.28.3")
+        self.requires("entt/4.0.0")
+        self.requires("assimp/6.0.5")
         self.requires("minizip/1.3.2", force=True)
         if self.options.python_binding:
-            self.requires("pybind11/3.0.1")
+            self.requires("pybind11/3.1.0")
         if self.options.ui_qt:
-            self.requires("qt/6.11.1")
+            self.requires("qt/6.12.0")
+            if self.settings.os == "Linux":
+                self.requires("wayland/system", override=True) # See lib/ui/qt/conan/wayland.
         if self.options.tool_mdprep:
             self.requires("gromacs/2026.0.1")
-        self.requires("re2/20240702")
+        self.requires("re2/20251105")
         if self.options.local_pdb100:
-            self.requires("libarchive/3.7.9")
+            self.requires("libarchive/3.8.7")
             self.requires("boost/1.87.0") # 1.88 version break process package on windows
         self.requires("platformfolders/4.3.0")
+        self.requires("nlohmann_json/3.12.0")
         if self.options.python_binding:
             self.requires("cpython/{}".format(str(self._python_version())))
             self.requires("mpdecimal/4.0.0", force=True)
-        if self.settings.os == "Linux":
-            self.requires("xkbcommon/1.13.1", force=True)
-            self.requires("fontconfig/2.17.1", override=True)
-            self.requires("freetype/2.14.1", force=True)
-            self.requires("libffi/3.4.8", force=True)
-            self.requires("wayland/1.24.0", force=True)
 
     def system_requirements(self):
         if self.options.renderer:
@@ -115,6 +112,8 @@ class VTXRecipe(ConanFile):
             qt_module.install_system_dependencies(self)
 
     def config_options(self):
+        if self.options.renderer:
+            renderer_module.config_options_ktx(self)
         if self.options.ui_qt:
             qt_module.config_options_qt(self)
         if self.options.python_binding:
@@ -127,33 +126,28 @@ class VTXRecipe(ConanFile):
             configure_runtime_toolchain(tc, python_binding_module.runtime_root(self))
         
         versionMajor, versionMinor, versionPatch = map(int, str(self.options.version).split('.'))
-        tc.cache_variables["VTX_VERSION_MAJOR"] = versionMajor
-        tc.cache_variables["VTX_VERSION_MINOR"] = versionMinor
-        tc.cache_variables["VTX_VERSION_PATCH"] = versionPatch 
-        tc.cache_variables["VTX_TOOL_EXAMPLE"] = 1 if self.options.tool_example else 0
-        tc.cache_variables["VTX_TOOL_MDPREP"] = 1 if self.options.tool_mdprep else 0
-        tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = 1 if self.options.tool_topology_editor else 0
-        tc.cache_variables["VTX_UI_QT"] = 1 if self.options.ui_qt else 0
-        tc.cache_variables["VTX_RENDERER"] = 1 if self.options.renderer else 0
-        tc.cache_variables["VTX_PYTHON_BINDING"] = 1 if self.options.python_binding else 0
+        tc.cache_variables["VTX_VERSION_MAJOR"] = str(versionMajor)
+        tc.cache_variables["VTX_VERSION_MINOR"] = str(versionMinor)
+        tc.cache_variables["VTX_VERSION_PATCH"] = str(versionPatch) 
+        tc.cache_variables["VTX_TOOL_EXAMPLE"] = "1" if self.options.tool_example else "0"
+        tc.cache_variables["VTX_TOOL_MDPREP"] = "1" if self.options.tool_mdprep else "0"
+        tc.cache_variables["VTX_TOOL_TOPOLOGY_EDITOR"] = "1" if self.options.tool_topology_editor else "0"
+        tc.cache_variables["VTX_UI_QT"] = "1" if self.options.ui_qt else "0"
+        tc.cache_variables["VTX_RENDERER"] = "1" if self.options.renderer else "0"
+        tc.cache_variables["VTX_PYTHON_BINDING"] = "1" if self.options.python_binding else "0"
         tc.cache_variables["VTX_VELOPACK_LIB"] = app_module.velopack_lib_name(
             str(self.settings.os), str(self.settings.arch)
         )
         if self.options.renderer:
             tc.cache_variables["VTX_CUDA_ARCH"] = self.options.cuda_arch
-        tc.cache_variables["LOCAL_PDB100"] = 1 if self.options.local_pdb100 else 0
+        tc.cache_variables["LOCAL_PDB100"] = "1" if self.options.local_pdb100 else "0"
+        tc.cache_variables["VTX_CLANG_TIDY"] = str(self.options.clang_tidy)
         if self.options.ui_qt:
             tc.cache_variables["VTX_QT_RUNTIME_ROOT"] = qt_module.qt_runtime_root(self)
         if self.options.tool_mdprep:
             tc.cache_variables["VTX_TOOL_MDPREP_RUNTIME_ROOT"] = mdprep_module.runtime_root(self)
         
         tc.generate()
-
-        if self.options.renderer:
-            copy(self, "*sdl3*", os.path.join(self.dependencies["imgui"].package_folder,
-                "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
-            copy(self, "*opengl3*", os.path.join(self.dependencies["imgui"].package_folder,
-                "res", "bindings"), os.path.join(self.source_folder, "vendor/imgui"))
 
         if self.options.python_binding:
             python_binding_module.do_python_copies(self, self._python_version())

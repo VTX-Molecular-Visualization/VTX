@@ -1,27 +1,58 @@
 #include "app/action/selection.hpp"
-#include "app/action/action_manager.hpp"
 #include "app/helper/scene.hpp"
-#include "app/input/input_manager.hpp"
+#include "app/helper/system.hpp"
+#include "app/helper/trajectory.hpp"
 #include "app/services.hpp"
 #include "app/system/uid.hpp"
+#include "app/system/visibility.hpp"
+#include "util/math.hpp"
+#include "util/math/grid.hpp"
+#include "util/math/range_list.hpp"
+#include "util/math/transform.hpp"
+#include <cassert>
+#include <cmath>
 #include <optional>
 #include <renderer/renderer.hpp>
+#include <util/action_manager.hpp>
+#include <util/exceptions.hpp>
+#include <vector>
 
 namespace VTX::App::Action::Selection
 {
+	void SetSelectedItem::execute(
+		const Entity						 p_ent,
+		const Core::Struct::E_SYSTEM_ITEM	 p_item,
+		const Core::Struct::IndexRangeList & p_ranges,
+		const bool							 p_selected,
+		const bool							 p_append
+	)
+	{
+		switch ( p_item )
+		{
+		case Core::Struct::E_SYSTEM_ITEM::SYSTEM:
+			SetSelected<Core::Struct::E_SYSTEM_ITEM::SYSTEM>().execute( p_ent, p_ranges, p_selected, p_append );
+			break;
+		case Core::Struct::E_SYSTEM_ITEM::CATEGORY:
+			SetSelected<Core::Struct::E_SYSTEM_ITEM::CATEGORY>().execute( p_ent, p_ranges, p_selected, p_append );
+			break;
+		case Core::Struct::E_SYSTEM_ITEM::CHAIN:
+			SetSelected<Core::Struct::E_SYSTEM_ITEM::CHAIN>().execute( p_ent, p_ranges, p_selected, p_append );
+			break;
+		case Core::Struct::E_SYSTEM_ITEM::RESIDUE:
+			SetSelected<Core::Struct::E_SYSTEM_ITEM::RESIDUE>().execute( p_ent, p_ranges, p_selected, p_append );
+			break;
+		case Core::Struct::E_SYSTEM_ITEM::ATOM:
+			SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>().execute( p_ent, p_ranges, p_selected, p_append );
+			break;
+		default: assert( false && "Unhandled E_SYSTEM_ITEM type in SetSelectedItem action." ); break;
+		}
+	}
 
 	void SelectAll::execute()
 	{
-		REG().view<System::Selection>().each(
-			[]( const Entity p_ent, System::Selection & p_selection )
-			{
-				if ( p_selection.atoms.all() )
-				{
-					return;
-				}
-
-				patchSelection( p_ent, Util::Math::BitSet( p_selection.atoms.size(), true ) );
-			}
+		REG().view<System::Selection, System::Visibility>().each(
+			[]( const Entity p_ent, const System::Selection &, const System::Visibility & p_visibility )
+			{ patchSelection( p_ent, p_visibility.atoms ); }
 		);
 	}
 
@@ -74,7 +105,7 @@ namespace VTX::App::Action::Selection
 	void Pick::execute( const Vec2i & p_mousePos, const E_GRANULARITY p_granularity, const bool p_append )
 	{
 		// Get renderer picking info at mouse position.
-		Vec2i picked = RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y );
+		const Vec2i picked = RENDERER().getPickedIds( p_mousePos.x, p_mousePos.y );
 
 		const UID32 first  = picked.x;
 		const UID32 second = picked.y;
@@ -180,7 +211,10 @@ namespace VTX::App::Action::Selection
 		{
 			// Look for residue.
 			firstEntOpt = Helper::Scene::findSystemByResidueUID( first );
-			assert( firstEntOpt );
+			if ( not firstEntOpt )
+			{
+				throw VTXException( "No system found for residue UID {}", first );
+			}
 			assert( second == INVALID_UID );
 			if ( granularity == E_GRANULARITY::ATOM )
 			{
@@ -193,11 +227,10 @@ namespace VTX::App::Action::Selection
 			const auto & uid		  = REG().get<System::UID>( firstEnt );
 			const Index	 residueIndex = uid.getResidueIndex( first );
 
-			bool select = not(
-				Helper::System::getSelectionState( { firstEnt, Core::Struct::E_SYSTEM_ITEM::RESIDUE, residueIndex } )
-					== App::System::E_SELECTION_STATE::FULL
-				&& p_append
-			);
+			bool select
+				= Helper::System::getSelectionState( { firstEnt, Core::Struct::E_SYSTEM_ITEM::RESIDUE, residueIndex } )
+					  != App::System::E_SELECTION_STATE::FULL
+				  || not p_append;
 
 			switch ( granularity )
 			{
@@ -228,4 +261,377 @@ namespace VTX::App::Action::Selection
 			}
 		}
 	}
+
+	namespace
+	{
+		struct SystemData
+		{
+			// Holds all data associated with a loaded system
+			Entity							entity;
+			std::span<const Vec3f>			positions;
+			Mat4f							localToWorld;
+			Mat4f							worldToLocal;
+			Vec3f							scale;
+			int64_t							neighbourDist;
+			const App::System::Selection &	selection;
+			const Util::Math::Grid<Index> & grid;
+			const App::System::Visibility & visibility;
+			Core::Struct::IndexRangeList	toSelect;
+		};
+
+		void unselectMaskedItems()
+		{
+			// Remove masked items from selection
+			// System loop
+			for ( const Entity system : REG().view<Core::Struct::Topology>() )
+			{
+				const auto & visibility = REG().get<App::System::Visibility>( system );
+				// update selection
+				REG().patch<System::Selection>(
+					system, [ & ]( System::Selection & p_selection ) { p_selection.atoms &= visibility.atoms; }
+				);
+			}
+		}
+
+		bool isWithinDist(
+			const Vec3f & p1,
+			const Vec3f & p2,
+			const Vec3f & p_scale,
+			const double  p_distance,
+			const double  p_distance2
+		)
+		{
+			// checking distance on axes before calculating distance i - j
+			const double dx
+				= ( static_cast<double>( p1.x ) - static_cast<double>( p2.x ) ) * static_cast<double>( p_scale.x );
+			if ( dx > p_distance || dx < -p_distance )
+			{
+				return false;
+			}
+
+			const double dy
+				= ( static_cast<double>( p1.y ) - static_cast<double>( p2.y ) ) * static_cast<double>( p_scale.y );
+			if ( dy > p_distance || dy < -p_distance )
+			{
+				return false;
+			}
+
+			const double dz
+				= ( static_cast<double>( p1.z ) - static_cast<double>( p2.z ) ) * static_cast<double>( p_scale.z );
+			if ( dz > p_distance || dz < -p_distance )
+			{
+				return false;
+			}
+
+			const double dist2 = dx * dx + dy * dy + dz * dz;
+			return dist2 <= p_distance2;
+		}
+
+		int64_t neighbourCellDist(
+			const Util::Math::Grid<Index> & p_grid,
+			const Vec3f &					p_scale,
+			const float						p_distance
+		)
+		{
+			using namespace Util::Math;
+
+			const float minScale = min( p_scale.x, min( p_scale.y, p_scale.z ) );
+			assert( minScale > 0.f );
+
+			const Vec3f & cellSize = p_grid.getCellSize();
+			const float	  minSide  = min( cellSize.x, min( cellSize.y, cellSize.z ) );
+
+			const double radius = ceil( static_cast<double>( p_distance ) / minScale / minSide );
+			if ( not( radius < static_cast<double>( Grid<Index>::MAX_NEIGHBOUR_DIST ) ) )
+			{
+				return Grid<Index>::MAX_NEIGHBOUR_DIST;
+			}
+
+			return static_cast<int64_t>( radius );
+		}
+
+		Vec3f transformPoint( const Mat4f & p_matrix, const Vec3f & p_point )
+		{ return Vec3f( p_matrix * Vec4f( p_point, 1.f ) ); }
+
+		std::vector<Mat4f> computeRelativeTransforms(
+			const std::vector<SystemData> & p_systems,
+			const Mat4f &					p_sourceLocalToWorld
+		)
+		{
+			std::vector<Mat4f> transforms;
+			transforms.reserve( p_systems.size() );
+			for ( const SystemData & system : p_systems )
+			{
+				transforms.emplace_back( system.worldToLocal * p_sourceLocalToWorld );
+			}
+			return transforms;
+		}
+
+		std::vector<SystemData> collectSystems( const float p_distance )
+		{
+			std::vector<SystemData> systems;
+			for ( const Entity system : REG().view<Core::Struct::Topology>() )
+			{
+				const auto & transform	  = REG().get<Util::Math::Transform>( system );
+				const Mat4f	 localToWorld = transform.computeMatrix();
+
+				std::span<const Vec3f> positions;
+				if ( not Helper::Trajectory::visitCurrentFrame(
+						 system, [ &positions ]( const Core::Struct::FrameView p_frame ) { positions = p_frame; }
+					 ) )
+				{
+					throw VTXException( "Trajectory frame is unavailable" );
+				}
+
+				const Util::Math::Grid<Index> & grid = Helper::System::getAtomGrid( system );
+
+				systems.emplace_back(
+					system,
+					positions,
+					localToWorld,
+					Util::Math::inverse( localToWorld ),
+					transform.getScale(),
+					neighbourCellDist( grid, transform.getScale(), p_distance ),
+					REG().get<App::System::Selection>( system ),
+					grid,
+					REG().get<App::System::Visibility>( system ),
+					Core::Struct::IndexRangeList {}
+				);
+			}
+			return systems;
+		}
+
+		void extendFromUnselected( const float p_distance )
+		{
+			// Adds to the selection all atoms within distance Å of a selected atom
+			// strategy : for each unselected atom, look through neighbor voxels for a selected atom
+
+			// storing systems info
+			std::vector<SystemData> systems = collectSystems( p_distance );
+
+			// square to avoid using square root during distance calculation
+			const double distance2 = static_cast<double>( p_distance ) * static_cast<double>( p_distance );
+
+			// system loop
+			for ( SystemData & testedSystem : systems )
+			{
+				const std::vector<Mat4f> toTestingLocal
+					= computeRelativeTransforms( systems, testedSystem.localToWorld );
+
+				// system's atoms loop
+				for ( Index i = 0; i < testedSystem.selection.atoms.size(); ++i )
+				{
+					if ( not testedSystem.visibility.atoms.test( i ) || testedSystem.selection.atoms.test( i ) )
+					{
+						continue;
+					}
+
+					bool found = false;
+					// system loop
+					for ( size_t k = 0; k < systems.size(); ++k )
+					{
+						SystemData & testingSystem = systems[ k ];
+						const Vec3f	 q1			   = &testingSystem == &testedSystem
+														 ? testedSystem.positions[ i ]
+														 : transformPoint( toTestingLocal[ k ], testedSystem.positions[ i ] );
+						// atom i voxel
+						const Util::Math::Grid<Index>::CellPosition cell = testingSystem.grid.gridPosition( q1 );
+						// neighbor voxels loop
+						testingSystem.grid.forEachNeighbourCell(
+							cell,
+							[ & ](
+								const Util::Math::Grid<Index>::CellPosition &,
+								const Util::Math::Grid<Index>::Cell & p_neighborCell
+							)
+							{
+								// stop looking for a selected atom since we already found one
+								if ( found )
+								{
+									return;
+								}
+
+								for ( const Index j : p_neighborCell )
+								{
+									if ( not testingSystem.selection.atoms.test( j ) )
+									{
+										continue;
+									}
+									const Vec3f & p2 = testingSystem.positions[ j ];
+
+									// checking distance on axes before calculating distance i - j
+									if ( not isWithinDist( q1, p2, testingSystem.scale, p_distance, distance2 ) )
+									{
+										continue;
+									}
+									testedSystem.toSelect.addRange( i );
+									found = true;
+									break;
+								}
+							},
+							testingSystem.neighbourDist
+						);
+						// stop looking for a selected atom since we already found one
+						if ( found )
+						{
+							break;
+						}
+					}
+				}
+			}
+			for ( const SystemData & v : systems )
+			{
+				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( v.entity, v.toSelect, true, true );
+			}
+		}
+
+		void extendFromSelected( const float p_distance )
+		{
+			// Adds to the selection all atoms within distance Å of a selected atom
+			// strategy : for each selected atom, look through neighbor voxels for an unselected atom
+
+			// storing systems info
+			std::vector<SystemData> systems = collectSystems( p_distance );
+
+			// square to avoid using square root during distance calculation
+			const double distance2 = static_cast<double>( p_distance ) * static_cast<double>( p_distance );
+
+			// systems loop
+			for ( const SystemData & testingSystem : systems )
+			{
+				const std::vector<Mat4f> toTestedLocal
+					= computeRelativeTransforms( systems, testingSystem.localToWorld );
+
+				// selected atoms loop
+				for ( const size_t i : testingSystem.selection.atoms )
+				{
+					// systems loop
+					for ( size_t k = 0; k < systems.size(); ++k )
+					{
+						SystemData & testedSystem = systems[ k ];
+						const Vec3f	 q1			  = &testedSystem == &testingSystem
+														? testingSystem.positions[ i ]
+														: transformPoint( toTestedLocal[ k ], testingSystem.positions[ i ] );
+						// atom i voxel
+						const Util::Math::Grid<Index>::CellPosition cell = testedSystem.grid.gridPosition( q1 );
+						// neighbor voxels loop
+						testedSystem.grid.forEachNeighbourCell(
+							cell,
+							[ & ](
+								const Util::Math::Grid<Index>::CellPosition &,
+								const Util::Math::Grid<Index>::Cell & p_neighborCell
+							)
+							{
+								for ( const Index j : p_neighborCell )
+								{
+									if ( not testedSystem.visibility.atoms.test( j )
+										 || testedSystem.selection.atoms.test( j ) )
+									{
+										continue;
+									}
+
+									// coord atom j
+									const Vec3f & p2 = testedSystem.positions[ j ];
+
+									// checking distance on axes before calculating distance i - j
+									if ( not isWithinDist( q1, p2, testedSystem.scale, p_distance, distance2 ) )
+									{
+										continue;
+									}
+									testedSystem.toSelect.addRange( j );
+								}
+							},
+							testedSystem.neighbourDist
+						);
+					}
+				}
+			}
+			for ( const SystemData & v : systems )
+			{
+				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( v.entity, v.toSelect, true, true );
+			}
+		}
+	} // namespace
+
+	void ExtendSelection::execute( const float p_distance )
+	{
+		// Selects the most efficient extension strategy depending on selection density.
+		if ( not std::isfinite( p_distance ) )
+		{
+			throw VTXException( "Distance must be finite" );
+		}
+		if ( p_distance <= 0.f )
+		{
+			return;
+		}
+
+		unselectMaskedItems();
+		size_t selec { 0 };
+		size_t tot { 0 };
+		// System loop
+		for ( const Entity system : REG().view<App::System::Selection, App::System::Visibility>() )
+		{
+			const auto & selection	= REG().get<App::System::Selection>( system );
+			const auto & visibility = REG().get<App::System::Visibility>( system );
+
+			tot += visibility.atoms.count();
+			selec += selection.atoms.count();
+		}
+
+		if ( selec == 0 )
+		{
+			return;
+		}
+
+		if ( selec > tot / 2 )
+		{
+			extendFromUnselected( p_distance );
+		}
+		else
+		{
+			extendFromSelected( p_distance );
+		}
+	}
+
+	void ExtendSelectionToResidue::execute()
+	{
+		unselectMaskedItems();
+		// systems loop
+		for ( const Entity system : REG().view<Core::Struct::Topology>() )
+		{
+			auto &						 topology		  = REG().get<Core::Struct::Topology>( system );
+			auto &						 currentSelection = REG().get<App::System::Selection>( system );
+			auto &						 visibility		  = REG().get<App::System::Visibility>( system );
+			Core::Struct::IndexRangeList toSelect;
+
+			// selected atoms loop
+			for ( const size_t selectedAtom : currentSelection.atoms )
+			{
+				const Index resIndex = topology.getAtomResidueIndex( static_cast<Index>( selectedAtom ) );
+				const Core::Struct::IndexRange range = topology.getResidueAtomRange( resIndex );
+				for ( const Index residueAtom : range )
+				{
+					if ( visibility.atoms.test( residueAtom ) )
+					{
+						toSelect.addRange( residueAtom );
+					}
+				}
+			}
+			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( system, toSelect, true, true );
+		}
+	}
+
+	void InvertSelection::execute()
+	{
+		// system loop
+		for ( const Entity system : REG().view<Core::Struct::Topology>() )
+		{
+			auto & visibility = REG().get<App::System::Visibility>( system );
+			REG().patch<System::Selection>(
+				system,
+				[ & ]( System::Selection & p_selection )
+				{ p_selection.atoms = ( ~p_selection.atoms ) & visibility.atoms; }
+			);
+		}
+	}
+
 } // namespace VTX::App::Action::Selection

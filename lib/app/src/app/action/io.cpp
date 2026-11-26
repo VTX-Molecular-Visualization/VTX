@@ -1,250 +1,232 @@
 #include "app/action/io.hpp"
-#include "app/action/action_manager.hpp"
-#include "app/action/application.hpp"
-#include "app/action/scene.hpp"
+#include "app/action/preset.hpp"
 #include "app/constants.hpp"
 #include "app/extractor/mesh.hpp"
 #include "app/extractor/system.hpp"
-#include "app/network/network_manager.hpp"
+#include "app/helper/io.hpp"
+#include "app/helper/script.hpp"
+#include <util/action_manager.hpp>
+#if VTX_PYTHON_BINDING
 #include "app/python_binding/interpretor.hpp"
+#endif
+#include "app/arguments.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
-#include "app/system/trajectory_preparation.hpp"
-#include "app/system/uid.hpp"
 #include "app/system/writer.hpp"
-#include "app/threading/thread_manager.hpp"
+#include <filesystem>
 #include <fmt/format.h>
+#include <io/file_format.hpp>
 #include <io/mesh_reader.hpp>
-#include <renderer/camera.hpp>
 #include <renderer/renderer.hpp>
+#include <string>
 #include <util/chrono.hpp>
+#include <util/exceptions.hpp>
 #include <util/logger.hpp>
+#include <util/resolution.hpp>
 
 namespace VTX::App::Action::IO
 {
-	void Open::execute( const std::string & p_path ) { execute( FilePath( p_path ) ); }
-
-	void Open::execute( const FilePath & p_path )
+	namespace
 	{
-		const std::string extension = p_path.extension().string();
-		if ( extension == ".py" || extension == ".vtx" )
+		void _writeSnapshotMetadata( const FilePath & p_path )
 		{
+			try
 			{
-				ACTION().execute<RunPythonScript>( p_path );
+				Util::Image::writeSoftwareMetadata( p_path, APPLICATION_NAME );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_WARNING( "Unable to write image metadata: {}", p_e.what() );
 			}
 		}
-		else if ( VTX::IO::isMeshFileFormat( p_path ) )
+	} // namespace
+
+	void Open::execute( const std::string & p_path ) { execute( FilePath( p_path ) ); }
+
+	void Open::execute( FilePath p_path )
+	{
+		if ( VTX::IO::isScriptFileFormat( p_path ) )
 		{
-			ACTION().execute<LoadMesh>( p_path );
+			ACTION().execute<ImportScript>( p_path );
+		}
+		else if ( VTX::IO::isPresetFileFormat( p_path ) )
+		{
+			ACTION().execute<Preset::Import>( p_path );
+		}
+		else if ( VTX::IO::MeshReader::isMeshFileFormat( p_path ) )
+		{
+			ACTION().execute<LoadMesh>( std::move( p_path ) );
 		}
 		else
 		{
 			{
-				ACTION().execute<LoadSystem>( p_path );
+				ACTION().execute<LoadSystem>( std::move( p_path ) );
 			}
 		}
 	}
 
-	struct _SystemIo
+	LoadSystem::LoadSystem( Util::Thread::ThreadData p_threadData ) : _threadData( std::move( p_threadData ) ) {}
+
+	void LoadSystem::execute( FilePath p_path ) const
 	{
-		Threading::ThreadData			 thrData;
-		std::latch						 extractorCreation { 1 };
-		std::optional<Extractor::System> extractor;
-
-		inline void wait() noexcept
-		{
-			this->extractorCreation.wait();
-			if ( this->extractor )
-			{
-				{
-					this->extractor->wait();
-				}
-			}
-		}
-
-		inline void start_extraction()
-		{
-			assert( extractor );
-			extractor.value()( thrData.stopToken, thrData.thrRef );
-		}
-	};
-
-	void _SystemIoDel::operator()( _SystemIo * p_ ) noexcept { delete p_; }
-
-	LoadSystem::LoadSystem() : _data( new _SystemIo() ) {}
-
-	LoadSystem::LoadSystem( Threading::ThreadData p_ ) : _data( new _SystemIo { std::move( p_ ) } ) {}
-
-	void LoadSystem::execute( FilePath p_path )
-	{
-		_data->extractor = Extractor::System( std::move( p_path ) );
-		_data->extractorCreation.count_down();
-
-		_data->start_extraction();
+		Extractor::System extractor( std::move( p_path ) );
+		extractor( _threadData.stopToken, _threadData.thrRef );
 	}
 
-	void LoadSystem::execute( FilePath p_path, std::string && p_buffer )
+	void LoadSystem::execute( FilePath p_path, std::string && p_buffer ) const
 	{
-		_data->extractor = Extractor::System( std::move( p_path ), std::move( p_buffer ) );
-		_data->extractorCreation.count_down();
-
-		_data->start_extraction();
+		Extractor::System extractor( std::move( p_path ), std::move( p_buffer ) );
+		extractor( _threadData.stopToken, _threadData.thrRef );
 	}
 
-	void LoadSystem::wait() noexcept { _data->wait(); }
+	LoadMesh::LoadMesh( Util::Thread::ThreadData p_threadData ) : _threadData( std::move( p_threadData ) ) {}
 
-	LoadMesh::LoadMesh( Util::StopToken p_stopToken, Threading::OptionalThreadReference p_threadRef ) :
-		_stopToken( std::move( p_stopToken ) ), _threadRef( std::move( p_threadRef ) )
-	{
-	}
-
-	void LoadMesh::execute( FilePath p_path )
-	{ Extractor::Mesh( std::move( p_path ) )( std::move( _stopToken ), _threadRef ); }
-
-	struct WriteSelection::_WriterIo
-	{
-		Threading::ThreadData				   thrData;
-		std::optional<System::SelectionWriter> writer;
-		std::latch							   writerSync { 1 };
-
-		void wait() noexcept
-		{
-			writerSync.wait();
-			if ( writer )
-			{
-				{
-					writer->wait();
-				}
-			}
-		}
-	};
-
-	void WriteSelection::_del::operator()( _WriterIo * p_ ) const noexcept { delete p_; }
-
-	WriteSelection::WriteSelection() : _data( new _WriterIo() ) {}
-
-	WriteSelection::WriteSelection( Threading::ThreadData p_ ) : _data( new _WriterIo { std::move( p_ ) } ) {}
+	void LoadMesh::execute( FilePath p_path ) const
+	{ Extractor::Mesh( std::move( p_path ) )( _threadData.stopToken, _threadData.thrRef ); }
 
 	void WriteSelection::execute( FilePath p_path )
 	{
-		_data->writer.emplace( p_path );
-		_data->writerSync.count_down();
-
-		_data->writer.value()( std::move( _data->thrData.stopToken ), _data->thrData.thrRef );
+		System::SelectionWriter writer( std::move( p_path ) );
+		writer();
 	}
-
-	void WriteSelection::wait() noexcept { _data->wait(); }
-
-	struct WriteVisible::_WriterIo
-	{
-		Threading::ThreadData				 thrData;
-		std::optional<System::VisibleWriter> writer;
-		std::latch							 writerSync { 1 };
-
-		void wait() noexcept
-		{
-			writerSync.wait();
-			if ( writer )
-			{
-				writer->wait();
-			}
-		}
-	};
-
-	void WriteVisible::_del::operator()( _WriterIo * p_ ) const noexcept { delete p_; }
-
-	WriteVisible::WriteVisible() : _data( new _WriterIo() ) {}
-
-	WriteVisible::WriteVisible( Threading::ThreadData p_ ) : _data( new _WriterIo( std::move( p_ ) ) ) {}
 
 	void WriteVisible::execute( FilePath p_path )
 	{
-		_data->writer.emplace( p_path );
-		_data->writerSync.count_down();
-
-		_data->writer.value()( std::move( _data->thrData.stopToken ), _data->thrData.thrRef );
+		System::VisibleWriter writer( std::move( p_path ) );
+		writer();
 	}
 
-	void WriteVisible::wait() noexcept { _data->wait(); }
-
-	AssociateTrajectory::AssociateTrajectory() : _data( new _SystemIo() ) {}
-
-	AssociateTrajectory::AssociateTrajectory( Threading::ThreadData p_ ) : _data( new _SystemIo { std::move( p_ ) } ) {}
-
-	void AssociateTrajectory::execute( const FilePath & p_path, const Entity & p_entity )
+	AssociateTrajectory::AssociateTrajectory( Util::Thread::ThreadData p_threadData ) :
+		_threadData( std::move( p_threadData ) )
 	{
-		if ( p_entity == entt::null )
+	}
+
+	void AssociateTrajectory::execute( FilePath p_path, const Entity & p_entity ) const
+	{
+		if ( p_entity == InvalidEntity )
 		{
 			VTX_ERROR( "System entity null." );
 			return;
 		}
 
-		_data->extractor = Extractor::System( p_entity, p_path );
-		_data->extractorCreation.count_down();
-		_data->start_extraction();
+		Extractor::System extractor( p_entity, std::move( p_path ) );
+		extractor( _threadData.stopToken, _threadData.thrRef );
 	}
 
-	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e )
-	{ execute( FilePath( p_path ), p_e ); }
-
-	void AssociateTrajectory::wait() noexcept { _data->wait(); }
-
-	void RunPythonScript::execute( const FilePath & p_path ) { INTERPRETOR().runScript( p_path ); }
-
-	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id )
-	{ execute( p_id, p_id.str + VTX::Util::Url::rcsbPdbDownloadFileExtension() ); }
-
-	void DownloadSystem::execute( const std::string & p_systemId )
-	{ execute( Util::Url::SystemId( p_systemId.data() ) ); }
-
-	void DownloadSystem::execute( VTX::Util::Url::SystemId p_id, FilePath p_path )
-	{ execute( VTX::Util::Url::UrlFull( p_id ), p_path ); }
-
-	void DownloadSystem::execute( VTX::Util::Url::UrlFull p_url, FilePath p_path )
+	void AssociateTrajectory::execute( const std::string & p_path, const Entity & p_e ) const
 	{
-		FilePath filepath = p_path;
-		NETWORK().downloadFile(
-			p_url.str.data(),
-			filepath.string(),
-			[ filepath ]( std::string && p_text )
-			{ ACTION().execute<Action::IO::LoadSystem>( filepath, std::move( p_text ) ); }
+		if ( p_e == InvalidEntity )
+		{
+			VTX_ERROR( "System entity null." );
+			return;
+		}
+		Extractor::System extractor( p_e, p_path );
+		extractor( _threadData.stopToken, _threadData.thrRef );
+	}
+
+	void RunPythonScript::execute( const FilePath & p_path )
+	{
+#if VTX_PYTHON_BINDING
+		if ( not ARGS().noPython )
+		{
+			INTERPRETOR().runScript( p_path );
+			return;
+		}
+#endif
+		VTX_WARNING( "Python is disabled. VTX will skip script <{}>.", p_path.string() );
+	}
+
+	void ImportScript::execute( const FilePath & p_path )
+	{ ACTION().execute<RunPythonScript>( Helper::Script::copyToUserDirectory( p_path ) ); }
+
+	void DownloadSystem::execute( const std::string & p_systemId, const bool p_force )
+	{
+		execute(
+			Helper::IO::getSystemDownloadUrl( p_systemId ), Helper::IO::getSystemDownloadFilename( p_systemId ), p_force
 		);
 	}
 
-	void Snapshot::execute()
+	DownloadSystem::DownloadSystem( Util::Thread::ThreadData p_threadData ) : _threadData( std::move( p_threadData ) )
 	{
+	}
+
+	void DownloadSystem::execute( const std::string & p_url, FilePath p_path, const bool p_force )
+	{
+		const FilePath cachePath = SESSION().getCacheDir() / p_path;
+		if ( not p_force && std::filesystem::exists( cachePath ) )
+		{
+			VTX_INFO( "Loading {} from cache", p_path.string() );
+			LoadSystem( _threadData ).execute( cachePath );
+			return;
+		}
+
+		if ( _threadData.thrRef )
+		{
+			_threadData.thrRef->get().setProgressText( "Downloading " + p_path.string() );
+		}
+		const Util::Network::ProgressCallback progress = [ this ]( const size_t p_downloaded, const size_t p_total )
+		{
+			if ( p_total > 0 && _threadData.thrRef )
+			{
+				_threadData.thrRef->get().setProgress(
+					static_cast<float>( p_downloaded ) / static_cast<float>( p_total )
+				);
+			}
+			return not _threadData.stopToken.stop_requested();
+		};
+
+		std::optional<std::string> data = Helper::IO::fetch( p_url, progress );
+		if ( not data )
+		{
+			return;
+		}
+		Helper::IO::writeCache( p_path.string(), *data );
+
+		LoadSystem( _threadData ).execute( std::move( p_path ), std::move( *data ) );
+	}
+
+	void Snapshot::execute()
+	{ execute( std::nullopt, std::nullopt, Util::Image::E_FORMAT::PNG, std::nullopt, std::nullopt, std::nullopt ); }
+
+	void Snapshot::execute(
+		const std::optional<FilePath> & p_path,
+		const std::optional<FilePath> & p_filename,
+		const Util::Image::E_FORMAT		p_format,
+		const std::optional<size_t>		p_width,
+		const std::optional<size_t>		p_height,
+		const std::optional<float>		p_backgroundOpacity
+	)
+	{
+		const FilePath directory = p_path.value_or( SESSION().getSnapshotsDir() );
+		const FilePath filename	 = p_filename.value_or( FilePath( std::to_string( Util::Chrono::getTimestamp() ) ) );
+
 		execute(
-			SESSION().getSnapshotsDir() / std::to_string( Util::Chrono::getTimestamp() ),
-			Util::Image::E_FORMAT::PNG,
-			RENDERER().width(),
-			RENDERER().height()
+			directory / filename,
+			p_format,
+			p_width.value_or( RENDERER().width() ),
+			p_height.value_or( RENDERER().height() ),
+			p_backgroundOpacity
 		);
 	}
 
 	void Snapshot::execute(
-		const FilePath				p_path,
+		const FilePath &			p_path,
 		const Util::Image::E_FORMAT p_format,
 		const size_t				p_width,
-		const size_t				p_height
+		const size_t				p_height,
+		const std::optional<float>	p_backgroundOpacity
 	)
 	{
-		try
+		const Util::Resolution resolution = { "Export", p_width, p_height };
+		std::vector<std::byte> image	  = RENDERER().snapshot( resolution, p_backgroundOpacity );
+		if ( image.size() != p_width * p_height * 4 )
 		{
-			const size_t currentWidth  = RENDERER().width();
-			const size_t currentHeight = RENDERER().height();
-
-			ACTION().execute<Application::Resize>( p_width, p_height, false );
-			std::vector<std::byte> image = RENDERER().snapshot();
-			ACTION().execute<Application::Resize>( currentWidth, currentHeight, false );
-
-			FilePath path = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
-
-			VTX_INFO( "Image saved: {}", fmt::format( fmt::runtime( std::string( LOG_LINK_FORMAT ) ), path.string() ) );
+			throw GraphicException( "Snapshot unavailable: no image data returned by the graphics backend." );
 		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( "Snapshot failed: {}", p_e.what() );
-		}
+		const FilePath path = Util::Image::write( p_path, p_format, p_width, p_height, image.data() );
+		_writeSnapshotMetadata( path );
+
+		VTX_INFO( "Image saved: {}", fmt::format( fmt::runtime( std::string( LOG_LINK_FORMAT ) ), path.string() ) );
 	}
 
 } // namespace VTX::App::Action::IO

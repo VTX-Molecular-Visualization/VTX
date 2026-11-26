@@ -165,25 +165,42 @@ TEST_CASE( "RenderGraph: default pipeline builds with all features enabled", "[r
 	cfg.enableChromaticAberration = true;
 	cfg.enablePixelize			  = true;
 	cfg.enableCRT				  = true;
+	cfg.shadingMode				  = E_SHADING::PBR;
 
 	RenderGraph graph;
 	graph.set( Builder::DefaultRenderGraph::build( cfg, Layouts {}, Geometries {} ) );
 
 	const Resources & resources = graph.getResources();
+	CHECK( resources.textures.at( "Color" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "Depth" ).format == E_FORMAT::R32F );
+	CHECK( resources.textures.at( "Shaded" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "ToneMapping" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "ChromaticAberration" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "Pixelize" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "Outline" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "Selection" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "CRT" ).format == E_FORMAT::RGBA16F );
+	CHECK( resources.textures.at( "BlurX" ).format == E_FORMAT::R16F );
+	CHECK( resources.textures.at( "BlurY" ).format == E_FORMAT::R16F );
+	CHECK( resources.textures.at( "FXAA" ).format == E_FORMAT::SRGB8_ALPHA8 );
 	CHECK(
-		resources.buffers.at( VTX::Renderer::Geometry::SES::BUFFER_CONVEX_PATCH_ELEMENTS ).allocation
+		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::BUFFER_CONVEX_PATCH_ELEMENTS } )
+			.allocation
 		== E_BUFFER_ALLOCATION::CHUNKED
 	);
 	CHECK(
-		resources.buffers.at( VTX::Renderer::Geometry::SES::INDEX_CONVEX_PATCHES ).allocation
+		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::INDEX_CONVEX_PATCHES } )
+			.allocation
 		== E_BUFFER_ALLOCATION::CHUNKED
 	);
 	CHECK(
-		resources.buffers.at( VTX::Renderer::Geometry::SES::INDIRECT_CONVEX_PATCHES ).allocation
+		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::SES::INDIRECT_CONVEX_PATCHES } )
+			.allocation
 		== E_BUFFER_ALLOCATION::CHUNKED
 	);
 	CHECK(
-		resources.buffers.at( VTX::Renderer::Geometry::Sphere::INDIRECT_SPHERES ).allocation
+		resources.buffers.at( VTX::Renderer::Desc::Key { VTX::Renderer::Geometry::Sphere::INDIRECT_SPHERES } )
+			.allocation
 		== E_BUFFER_ALLOCATION::SINGLE
 	);
 
@@ -461,9 +478,7 @@ TEST_CASE( "CommandBuffer: ON_DIRTY pass is scheduled explicitly" )
 }
 
 struct alignas( 16 ) A16
-{
-	std::uint32_t a, b, c, d;
-};
+{ std::uint32_t a, b, c, d; };
 
 TEST_CASE( "CommandBuffer: pushPayload aligns and pads correctly" )
 {
@@ -508,6 +523,47 @@ TEST_CASE( "CommandBuffer: clear empties commands and payload" )
 
 	REQUIRE( cb.commands.empty() );
 	REQUIRE( cb.payload.empty() );
+}
+
+TEST_CASE( "CommandBuffer: heterogeneous payloads survive growth and storage reuse" )
+{
+	CommandBuffer cb;
+	const auto	  first	  = cb.pushPayload( uint8_t { 7 } );
+	const auto	  aligned = cb.pushPayload( A16 { 1, 2, 3, 4 } );
+	PayloadDraw	  draw {};
+	draw.program	   = 9;
+	draw.count		   = 42;
+	const auto derived = cb.pushPayload( draw );
+	for ( uint32_t i = 0; i < 128; ++i )
+	{
+		cb.pushPayload( PayloadExternal { i, i + 1 } );
+	}
+
+	const CommandBuffer & view = cb;
+	CHECK( view.getPayload<uint8_t>( first ) == 7 );
+	CHECK( view.getPayload<A16>( aligned ).a == 1 );
+	CHECK( view.getPayload<A16>( aligned ).d == 4 );
+	CHECK( view.getPayload<PayloadDraw>( derived ).program == 9 );
+	CHECK( view.getPayload<PayloadDraw>( derived ).count == 42 );
+	CHECK( reinterpret_cast<uintptr_t>( &view.getPayload<A16>( aligned ) ) % alignof( A16 ) == 0 );
+	for ( std::size_t i = sizeof( uint8_t ); i < aligned; ++i )
+	{
+		CHECK( view.payload[ i ] == std::byte { 0 } );
+	}
+	cb.getPayload<A16>( aligned ).a = 99;
+	CHECK( view.getPayload<A16>( aligned ).a == 99 );
+	cb.clear();
+	cb.pushPayload( PayloadExternal { 12, 34 } );
+	CHECK( cb.getPayload<PayloadExternal>( 0 ).context == 34 );
+}
+
+TEST_CASE( "CommandBuffer: pushPayload accepts a source in its own storage" )
+{
+	CommandBuffer cb;
+	const auto	  first	 = cb.pushPayload( PayloadExternal { 42, 1337 } );
+	const auto	  second = cb.pushPayload( cb.getPayload<PayloadExternal>( first ) );
+	CHECK( cb.getPayload<PayloadExternal>( first ).function == 42 );
+	CHECK( cb.getPayload<PayloadExternal>( second ).context == 1337 );
 }
 
 struct TestRes
@@ -615,7 +671,7 @@ TEST_CASE( "ResourceHandler: erase(handle) is safe for out-of-range and null slo
 	REQUIRE_FALSE( h.contains( handle ) );
 }
 
-TEST_CASE( "ResourceHandler: validate(key, desc) matches by hash and clears invalid state", "[ResourceHandler]" )
+TEST_CASE( "ResourceHandler: validate(key / desc) matches by hash and clears invalid state", "[ResourceHandler]" )
 {
 	ResourceHandler<TestRes, Key, FakeDesc> h;
 
@@ -623,11 +679,9 @@ TEST_CASE( "ResourceHandler: validate(key, desc) matches by hash and clears inva
 	const FakeDesc d_ok { 1, 2 };
 	const FakeDesc d_bad { 1, 999 };
 
-	const Handle h1 = h.emplace( k1, d_ok, 10 );
-	const Handle h2 = h.emplace( k2, d_ok, 20 );
-	(void)h1;
-	(void)h2;
-
+	h.emplace( k1, d_ok, 10 );
+	h.emplace( k2, d_ok, 20 );
+	
 	// Invalidate all existing resources
 	h.invalidate();
 
@@ -652,7 +706,7 @@ TEST_CASE( "ResourceHandler: invalidate ignores available handles (already erase
 	const Key k1 = "1", k2 = "2";
 
 	const Handle h1 = h.emplace( k1, 10 );
-	const Handle h2 = h.emplace( k2, 20 );
+	h.emplace( k2, 20 );
 
 	h.erase( h1 ); // make h1 available (null slot)
 
@@ -671,10 +725,8 @@ TEST_CASE( "ResourceHandler: clear removes everything and resets handle numberin
 
 	const Key k1 = "1", k2 = "2";
 
-	const Handle h1 = h.emplace( k1, 10 );
-	const Handle h2 = h.emplace( k2, 20 );
-	(void)h1;
-	(void)h2;
+	h.emplace( k1, 10 );
+	h.emplace( k2, 20 );
 
 	h.clear();
 

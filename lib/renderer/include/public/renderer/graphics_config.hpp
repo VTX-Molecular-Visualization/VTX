@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_GRAPHICS_CONFIG__
-#define __VTX_RENDERER_GRAPHICS_CONFIG__
+#ifndef VTX_RENDERER_GRAPHICS_CONFIG_HPP
+#define VTX_RENDERER_GRAPHICS_CONFIG_HPP
 
 #include "renderer/builder/post_process/chromatic_aberration.hpp"
 #include "renderer/builder/post_process/crt.hpp"
@@ -8,11 +8,12 @@
 #include "renderer/builder/post_process/selection.hpp"
 #include "renderer/builder/post_process/shading.hpp"
 #include "renderer/builder/post_process/ssao.hpp"
+#include "renderer/builder/post_process/tone_mapping.hpp"
 #include <optional>
 
 namespace VTX::Renderer
 {
-	enum struct E_GRAPHICS_CONFIG_VALUES
+	enum struct E_GRAPHICS_CONFIG_VALUES : uint8_t
 	{
 		ACTIVE_SSAO,
 		SSAO_METHOD,
@@ -22,11 +23,19 @@ namespace VTX::Renderer
 
 		SHADING_MODE,
 		COLOR_LIGHT,
+		LIGHT_INTENSITY,
+		AMBIENT_INTENSITY,
+		BACKGROUND_MODE,
 		COLOR_BACKGROUND,
 		SPECULAR_FACTOR,
 		SHININESS,
 		TOON_STEPS,
 		ENVIRONMENT_PATH,
+		SKYBOX_INTENSITY,
+		IBL_INTENSITY,
+		ENVIRONMENT_ROTATION,
+		TONE_MAPPING_MODE,
+		TONE_MAPPING_EXPOSURE,
 
 		ACTIVE_FOG,
 		COLOR_FOG,
@@ -64,65 +73,51 @@ namespace VTX::Renderer
 
 	struct GraphicsConfig
 	{
-		ShadingConfig							 shading;
-		std::optional<SSAOConfig>				 ssao;
-		std::optional<OutlineConfig>			 outline;
-		std::optional<FogConfig>				 fog;
-		std::optional<ChromaticAberrationConfig> chromaticAberration;
-		std::optional<PixelizeConfig>			 pixelize;
-		std::optional<CRTConfig>				 crt;
-		std::optional<SelectionConfig>			 selection;
+		ShadingConfig			  shading;
+		std::optional<SSAOConfig> ssao = ACTIVE_SSAO_DEFAULT ? std::optional<SSAOConfig> { SSAOConfig {} } : std::nullopt;
+		std::optional<OutlineConfig> outline
+			= ACTIVE_OUTLINE_DEFAULT ? std::optional<OutlineConfig> { OutlineConfig {} } : std::nullopt;
+		std::optional<FogConfig> fog = ACTIVE_FOG_DEFAULT ? std::optional<FogConfig> { FogConfig {} } : std::nullopt;
+		std::optional<ChromaticAberrationConfig> chromaticAberration
+			= ACTIVE_CHROMAB_DEFAULT ? std::optional<ChromaticAberrationConfig> { ChromaticAberrationConfig {} }
+									 : std::nullopt;
+		std::optional<PixelizeConfig> pixelize
+			= ACTIVE_PIXELIZE_DEFAULT ? std::optional<PixelizeConfig> { PixelizeConfig {} } : std::nullopt;
+		std::optional<CRTConfig> crt = ACTIVE_CRT_DEFAULT ? std::optional<CRTConfig> { CRTConfig {} } : std::nullopt;
+		std::optional<SelectionConfig> selection
+			= ACTIVE_SELECTION_DEFAULT ? std::optional<SelectionConfig> { SelectionConfig {} } : std::nullopt;
+		ToneMappingConfig toneMapping;
+
+		void clamp()
+		{
+			shading.clamp();
+			if ( ssao )
+			{
+				ssao->clamp();
+			}
+			if ( outline )
+			{
+				outline->clamp();
+			}
+			if ( fog )
+			{
+				fog->clamp();
+			}
+			if ( chromaticAberration )
+			{
+				chromaticAberration->clamp();
+			}
+			if ( pixelize )
+			{
+				pixelize->clamp();
+			}
+			if ( crt )
+			{
+				crt->clamp();
+			}
+			toneMapping.clamp();
+		}
 	};
-
-	namespace GraphicsConfigs
-	{
-		inline const GraphicsConfig DEFAULT {
-			SHADING_DEFAULT,
-			ACTIVE_SSAO_DEFAULT ? std::optional<SSAOConfig> { SSAO_DEFAULT } : std::nullopt,
-			ACTIVE_OUTLINE_DEFAULT ? std::optional<OutlineConfig> { OUTLINE_DEFAULT } : std::nullopt,
-			ACTIVE_FOG_DEFAULT ? std::optional<FogConfig> { FOG_DEFAULT } : std::nullopt,
-			ACTIVE_CHROMAB_DEFAULT ? std::optional<ChromaticAberrationConfig> { CHROMATIC_ABERRATION_DEFAULT }
-								   : std::nullopt,
-			ACTIVE_PIXELIZE_DEFAULT ? std::optional<PixelizeConfig> { PIXELIZE_DEFAULT } : std::nullopt,
-			ACTIVE_CRT_DEFAULT ? std::optional<CRTConfig> { CRT_DEFAULT } : std::nullopt,
-			ACTIVE_SELECTION_DEFAULT ? std::optional<SelectionConfig> { SELECTION_DEFAULT } : std::nullopt
-		};
-
-		inline const GraphicsConfig PRESENTATION {
-			ShadingConfig { E_SHADING::GLOSSY,
-							Util::Color::Rgba( 255, 255, 255 ),
-							Util::Color::Rgba( 18, 20, 24 ),
-							0.55f,
-							56.f,
-							TOON_STEPS_DEFAULT },
-			SSAOConfig { SSAO_METHOD_DEFAULT, 4.f, SSAO_RADIUS_DEFAULT, SSAO_SCALE_DEFAULT, 21.f },
-			std::nullopt,
-			std::nullopt,
-			ACTIVE_CHROMAB_DEFAULT ? std::optional<ChromaticAberrationConfig> { CHROMATIC_ABERRATION_DEFAULT }
-								   : std::nullopt,
-			ACTIVE_PIXELIZE_DEFAULT ? std::optional<PixelizeConfig> { PIXELIZE_DEFAULT } : std::nullopt,
-			ACTIVE_CRT_DEFAULT ? std::optional<CRTConfig> { CRT_DEFAULT } : std::nullopt,
-			SelectionConfig { Util::Color::Rgba( 80, 255, 120 ) }
-		};
-
-		inline const GraphicsConfig ILLUSTRATION {
-			ShadingConfig { E_SHADING::TOON,
-							Util::Color::Rgba( 255, 255, 255 ),
-							Util::Color::Rgba( 245, 245, 242 ),
-							0.f,
-							0.f,
-							4 },
-			SSAOConfig { SSAO_METHOD_DEFAULT, 2.5f, SSAO_RADIUS_DEFAULT, SSAO_SCALE_DEFAULT, 11.f },
-			OutlineConfig { Util::Color::Rgba( 28, 28, 28 ), 0.35f, 2 },
-			std::nullopt,
-			ACTIVE_CHROMAB_DEFAULT ? std::optional<ChromaticAberrationConfig> { CHROMATIC_ABERRATION_DEFAULT }
-								   : std::nullopt,
-			ACTIVE_PIXELIZE_DEFAULT ? std::optional<PixelizeConfig> { PIXELIZE_DEFAULT } : std::nullopt,
-			ACTIVE_CRT_DEFAULT ? std::optional<CRTConfig> { CRT_DEFAULT } : std::nullopt,
-			SelectionConfig { Util::Color::Rgba( 255, 64, 64 ) }
-		};
-
-	}; // namespace GraphicsConfigs
 } // namespace VTX::Renderer
 
 #endif

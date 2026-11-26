@@ -1,5 +1,5 @@
-#ifndef __VTX_UTIL_HISTORY_BROWSER__
-#define __VTX_UTIL_HISTORY_BROWSER__
+#ifndef VTX_UTIL_HISTORY_BROWSER_HPP
+#define VTX_UTIL_HISTORY_BROWSER_HPP
 
 #include <string>
 #include <vector>
@@ -18,14 +18,15 @@ namespace VTX::Util
 		 * @brief Adds a new string to the history
 		 * @param p_newHistory
 		 */
-		void add( std::string p_newHistory ) noexcept;
+		void add( std::string p_newHistory );
 
 		/**
 		 * @brief Assumes there is at least one element in the history
 		 * @return
 		 */
-		inline std::string &	   last() noexcept { return _history.back(); }
-		inline const std::string & last() const noexcept { return _history.back(); }
+		std::string & last() noexcept { return _history.back(); }
+
+		const std::string & last() const noexcept { return _history.back(); }
 
 		/**
 		 * @brief Move forward in the history if possible. Does not activate browsing by itself and does nothing if
@@ -48,13 +49,13 @@ namespace VTX::Util
 		 * @brief Returns the string currently being browsed.
 		 * @return
 		 */
-		std::string currentString() const noexcept;
+		std::string currentString() const;
 
 		/**
 		 * @brief Returns whether the history is empty or not.
 		 * @return
 		 */
-		inline bool empty() const noexcept { return _history.empty(); }
+		bool empty() const noexcept { return _history.empty(); }
 
 	  private:
 		std::vector<std::string> _history;

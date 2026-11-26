@@ -1,0 +1,177 @@
+name: Setup VTX build environment
+description: Install Ninja, Conan (VTX remote and VTX host profile), optional CUDA toolkit, xvfb and MSVC environment.
+
+inputs:
+  conan_host:
+    description: 'VTX Conan remote URL (public: reading is anonymous, so pull requests from forks can build)'
+    required: false
+    default: 'https://conan.drugdesign.fr'
+  conan_user:
+    description: 'Conan remote user'
+    required: false
+    default: ''
+  conan_password:
+    description: 'Conan remote password'
+    required: false
+    default: ''
+  build_type:
+    description: 'Conan build_type setting'
+    required: false
+    default: 'Release'
+  cppstd:
+    description: 'Conan compiler.cppstd setting (empty = gnu20 on Linux, 20 elsewhere)'
+    required: false
+    default: ''
+  cuda_version:
+    description: 'CUDA toolkit version to install (empty = no CUDA)'
+    required: false
+    default: ''
+  cuda_arch:
+    description: 'vtx_renderer cuda_arch option (empty = recipe default)'
+    required: false
+    default: ''
+  python_version:
+    description: 'vtx_python_binding python_version option (empty = recipe default)'
+    required: false
+    default: ''
+  tests:
+    description: 'Build and run the tests of every VTX package (vtx_*/*:test=True)'
+    required: false
+    default: 'false'
+  xvfb:
+    description: 'Install xvfb on Linux (needed to run Qt tests headless)'
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+  - name: Install Ninja
+    uses: seanmiddleditch/gha-setup-ninja@v5
+
+  - name: Setup Conan
+    uses: conan-io/setup-conan@v1.3.0
+    with:
+      use_venv: true
+      profile_detect: true
+
+  - name: Add custom remote
+    shell: bash
+    env:
+      CONAN_HOST: ${{ inputs.conan_host }}
+      CONAN_USER: ${{ inputs.conan_user }}
+      CONAN_PASSWORD: ${{ inputs.conan_password }}
+    run: |
+      # The VTX remote hosts in-house packages required by the build: it cannot work without it.
+      if [ -z "$CONAN_HOST" ]; then
+        echo "::error::VTX Conan remote URL is unavailable: the build requires the VTX remote."
+        exit 1
+      fi
+      conan remote add vtx "$CONAN_HOST" --index 0
+      # Reading is anonymous; credentials are only needed to upload (VTX_CONAN_AUTHENTICATED gates the upload steps).
+      if [ -n "$CONAN_USER" ] && [ -n "$CONAN_PASSWORD" ]; then
+        conan remote login -p "$CONAN_PASSWORD" vtx "$CONAN_USER"
+        echo "VTX_CONAN_AUTHENTICATED=true" >> "$GITHUB_ENV"
+      else
+        echo "::notice::No Conan credentials: VTX remote used anonymously, uploads disabled."
+      fi
+
+  - name: Install xvfb (Linux)
+    if: runner.os == 'Linux' && inputs.xvfb == 'true'
+    shell: bash
+    run: sudo apt-get install -y xvfb
+
+  - name: Install CUDA Toolkit
+    if: inputs.cuda_version != ''
+    uses: Jimver/cuda-toolkit@v0.2.32
+    with:
+      cuda: ${{ inputs.cuda_version }}
+      method: network
+      linux-local-args: '["--toolkit"]'
+
+  - name: Setup CUDA environment
+    if: inputs.cuda_version != ''
+    shell: bash
+    run: |
+      if [[ "$RUNNER_OS" == "Windows" ]]; then
+        CUDA_PATH_WIN="$(cygpath -m "$CUDA_PATH")"
+        CUDA_PATH_UNIX="$(cygpath -u "$CUDA_PATH")"
+        NVCC="$CUDA_PATH_WIN/bin/nvcc.exe"
+        CUDA_BIN="$CUDA_PATH_UNIX/bin"
+      else
+        CUDA_PATH_WIN="$CUDA_PATH"
+        NVCC="$CUDA_PATH/bin/nvcc"
+        CUDA_BIN="$CUDA_PATH/bin"
+      fi
+
+      echo "CUDA_PATH=$CUDA_PATH_WIN"
+      echo "CUDA_BIN=$CUDA_BIN"
+      echo "NVCC=$NVCC"
+      "$NVCC" --version
+
+      echo "$CUDA_BIN" >> "$GITHUB_PATH"
+      {
+        echo "CUDA_PATH=$CUDA_PATH_WIN"
+        echo "CUDAToolkit_ROOT=$CUDA_PATH_WIN"
+        echo "CUDACXX=$NVCC"
+      } >> "$GITHUB_ENV"
+
+  - name: Check CUDA
+    if: inputs.cuda_version != ''
+    shell: bash
+    run: nvcc --version
+
+  # Single place where Conan is configured for VTX: a "vtx" profile (on top of the detected "default" one) becomes the
+  # default host profile, so every Conan command uses it without -pr. The build profile stays the detected one.
+  - name: Configure Conan profile
+    shell: bash
+    env:
+      VTX_BUILD_TYPE: ${{ inputs.build_type }}
+      VTX_CPPSTD: ${{ inputs.cppstd }}
+      VTX_CUDA_ARCH: ${{ inputs.cuda_arch }}
+      VTX_PYTHON_VERSION: ${{ inputs.python_version }}
+      VTX_TESTS: ${{ inputs.tests }}
+    run: |
+      # C++20, with GNU extensions on Linux (GCC); MSVC and Apple Clang use the standard flavor.
+      if [ -z "${VTX_CPPSTD}" ]; then
+        if [ "${RUNNER_OS}" = "Linux" ]; then
+          VTX_CPPSTD="gnu20"
+        else
+          VTX_CPPSTD="20"
+        fi
+      fi
+      CONAN_HOME_DIR="$(conan config home)"
+      PROFILE="${CONAN_HOME_DIR}/profiles/vtx"
+      {
+        echo "include(default)"
+        echo "[settings]"
+        echo "build_type=${VTX_BUILD_TYPE}"
+        echo "compiler.cppstd=${VTX_CPPSTD}"
+        echo "[options]"
+        if [ "${VTX_TESTS}" = "true" ]; then
+          echo "vtx_*/*:test=True"
+        fi
+        if [ -n "${VTX_CUDA_ARCH}" ]; then
+          echo "vtx_renderer/*:cuda_arch=${VTX_CUDA_ARCH}"
+        fi
+        if [ -n "${VTX_PYTHON_VERSION}" ]; then
+          echo "vtx_python_binding/*:python_version=${VTX_PYTHON_VERSION}"
+        fi
+        echo "[conf]"
+        echo "tools.cmake.cmaketoolchain:generator=Ninja"
+        echo "tools.system.package_manager:mode=install"
+        echo "tools.system.package_manager:sudo=True"
+        if [ -n "${CUDACXX}" ]; then
+          echo "tools.cmake.cmaketoolchain:extra_variables={'CMAKE_CUDA_COMPILER': '${CUDACXX}', 'CUDAToolkit_ROOT': '${CUDAToolkit_ROOT}'}"
+        fi
+        # Quick fix: gromacs 2026.0.1 misses #include <cstdint> (mdtypes/energyhistory.h), which GCC 15 rejects.
+        if [ "${RUNNER_OS}" = "Linux" ]; then
+          echo "gromacs/*:tools.build:cxxflags=['-include', 'cstdint']"
+        fi
+      } > "${PROFILE}"
+      echo "core:default_profile=vtx" >> "${CONAN_HOME_DIR}/global.conf"
+      conan profile show
+
+  - name: Setup MSVC environment
+    if: runner.os == 'Windows'
+    uses: ilammy/msvc-dev-cmd@v1

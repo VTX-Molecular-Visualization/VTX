@@ -1,5 +1,5 @@
-#ifndef __VTX_TOOL_TOOLS_MDPREP_GROMACS_GENION__
-#define __VTX_TOOL_TOOLS_MDPREP_GROMACS_GENION__
+#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_GENION_HPP
+#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_GENION_HPP
 
 #include <filesystem>
 #include <optional>
@@ -26,17 +26,15 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	};
 
 	// Setup job folder and place input files as the job need them
-	void prepareJob(
-		const CumulativeOuputFiles &,
-		const FilePath &		 p_root,
-		const std::string_view & p_folderName,
-		GenionInstructions &
-	) noexcept;
+	void prepareJob( const CumulativeOuputFiles &,
+					 const FilePath &		  p_root,
+					 const std::string_view & p_folderName,
+					 GenionInstructions & );
 
 	// Write gromacs command arguments using input instructions
 	//    Does nothing if the instructions have default values.
 	//    Does not perform filesystem check on input gro
-	void convert( const GenionInstructions &, GromacsJobData & ) noexcept;
+	void convert( const GenionInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
 #endif

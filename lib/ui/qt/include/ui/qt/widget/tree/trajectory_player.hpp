@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
-#define __VTX_UI_QT_WIDGET_TRAJECTORY_PLAYER__
+#ifndef VTX_UI_QT_WIDGET_TREE_TRAJECTORY_PLAYER_HPP
+#define VTX_UI_QT_WIDGET_TREE_TRAJECTORY_PLAYER_HPP
 
 #include "ui/qt/widget/tree/trajectory_settings.hpp"
 #include "ui/qt/widget/tree/trajectory_slider.hpp"
@@ -9,7 +9,9 @@
 #include <QPushButton>
 #include <QWidget>
 #include <app/ecs.hpp>
+#include <app/events.hpp>
 #include <array>
+#include <util/event_hub.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -46,9 +48,14 @@ namespace VTX::UI::QT::Widget::Tree
 		void _onSettingsClicked();
 		void _onSliderValueChanged( int p_value );
 		void _onTrajectoryUpdated( Registry &, Entity p_entity );
+		void _onTrajectoryLoadingProgress( const App::Events::ThreadProgress & p_event );
 
 		void _refresh();
 		void _updatePlayPauseIcon();
+
+		VTX::Util::EventHub::ScopedConnection _playerUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _loaderUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _loadingProgressConnection;
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree
