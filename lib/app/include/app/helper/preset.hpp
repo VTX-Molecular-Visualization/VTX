@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <optional>
 #include <renderer/color.hpp>
+#include <renderer/graphics_config.hpp>
+#include <renderer/material.hpp>
 #include <renderer/representation.hpp>
 #include <string_view>
 #include <util/string.hpp>
@@ -58,6 +60,21 @@ namespace VTX::App::Helper::Preset
 	 */
 	template<typename T>
 	inline constexpr uint32_t VERSION = 1;
+
+	template<typename T>
+	inline constexpr std::string_view TYPE_NAME = "";
+
+	template<>
+	inline constexpr std::string_view TYPE_NAME<Renderer::Representation> = "representation";
+
+	template<>
+	inline constexpr std::string_view TYPE_NAME<Renderer::Color::Layout> = "color_layout";
+
+	template<>
+	inline constexpr std::string_view TYPE_NAME<Renderer::GraphicsConfig> = "graphics_config";
+
+	template<>
+	inline constexpr std::string_view TYPE_NAME<Renderer::Material> = "material";
 
 	template<typename T>
 	inline constexpr std::string_view DEFAULT_NAME = "Default";

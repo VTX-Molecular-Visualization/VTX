@@ -55,10 +55,16 @@ namespace
 		}
 	}
 
-	void writePreset( const FilePath & p_path, const uint32_t p_version, const std::string_view p_name )
+	void writePreset(
+		const FilePath &	   p_path,
+		const uint32_t		   p_version,
+		const std::string_view p_name,
+		const std::string_view p_type = Helper::Preset::TYPE_NAME<Renderer::Representation>
+	)
 	{
 		Util::Json::Document document;
 		document[ "version" ] = p_version;
+		document[ "type" ]	  = p_type;
 		document[ "name" ]	  = p_name;
 		document[ "data" ]	  = Renderer::Representation {};
 		Util::Json::write( p_path, document );
@@ -113,6 +119,9 @@ TEST_CASE( "VTX_APP - Preset - Load directory", "[preset]" )
 	writePreset( directory / "valid.json", 1, "Test preset" );
 	writePreset( directory / "newer.json", Helper::Preset::VERSION<Renderer::Representation> + 1, "Newer preset" );
 	writePreset( directory / "duplicate.json", 1, "Sticks" );
+	writePreset(
+		directory / "wrong_type.json", 1, "Wrong type preset", Helper::Preset::TYPE_NAME<Renderer::Material>
+	);
 	Util::Filesystem::writeFile( directory / "invalid.json", "{ \"version\": " );
 	writePreset( directory / "ignored.txt", 1, "Ignored preset" );
 
@@ -125,6 +134,7 @@ TEST_CASE( "VTX_APP - Preset - Load directory", "[preset]" )
 
 	CHECK( not Helper::Preset::exists<Renderer::Representation>( "Newer preset" ) );
 	CHECK( not Helper::Preset::exists<Renderer::Representation>( "Ignored preset" ) );
+	CHECK( not Helper::Preset::exists<Renderer::Representation>( "Wrong type preset" ) );
 	CHECK( REG().all_of<Generic::ReadOnly>( *Helper::Preset::getByName<Renderer::Representation>( "Sticks" ) ) );
 
 	ACTION().execute<Action::Preset::LoadDirectory<Renderer::Representation>>( directory / "missing", false );

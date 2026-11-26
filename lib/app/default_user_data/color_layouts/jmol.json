@@ -1,5 +1,6 @@
 {
     "version": 1,
+    "type": "color_layout",
     "name": "JMol",
     "data": {
         "atoms": {

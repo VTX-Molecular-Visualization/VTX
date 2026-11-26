@@ -1,5 +1,6 @@
 {
     "version": 1,
+    "type": "material",
     "name": "Matte",
     "data": {
         "emissiveColor": [

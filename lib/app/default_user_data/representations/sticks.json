@@ -1,5 +1,6 @@
 {
     "version": 1,
+    "type": "representation",
     "name": "Sticks",
     "data": {
         "hasSphere": false,

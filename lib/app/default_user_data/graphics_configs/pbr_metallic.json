@@ -1,5 +1,6 @@
 {
     "version": 1,
+    "type": "graphics_config",
     "name": "PBR Metallic",
     "data": {
         "shading": {

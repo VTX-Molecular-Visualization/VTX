@@ -1,5 +1,6 @@
 {
     "version": 1,
+    "type": "representation",
     "name": "SES",
     "data": {
         "hasSphere": false,

@@ -253,6 +253,18 @@ namespace VTX::App::Action::Preset
 					return;
 				}
 
+				const std::string type = document.at( "type" ).get<std::string>();
+				if ( type != Helper::Preset::TYPE_NAME<T> )
+				{
+					VTX_WARNING(
+						"Preset {} skipped: type \"{}\" does not match expected type \"{}\"",
+						p_path.string(),
+						type,
+						Helper::Preset::TYPE_NAME<T>
+					);
+					return;
+				}
+
 				const std::string name = document.at( "name" ).get<std::string>();
 				if ( Helper::Preset::exists<T>( name ) )
 				{
