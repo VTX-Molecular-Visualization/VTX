@@ -16,27 +16,7 @@
             "environmentFaceSize": 1024,
             "skyboxIntensity": 1.0,
             "iblIntensity": 1.0,
-            "environmentRotation": 0.0,
-            "material": {
-                "name": "Brushed metal",
-                "emissiveColor": [
-                    0.0,
-                    0.0,
-                    0.0
-                ],
-                "emissiveIntensity": 0.0,
-                "metallic": 1.0,
-                "roughness": 0.55,
-                "opacity": 1.0,
-                "textureScale": 1.0,
-                "albedoTexture": null,
-                "normalTexture": null,
-                "metallicTexture": null,
-                "roughnessTexture": null,
-                "ambientOcclusionTexture": null,
-                "emissiveTexture": null,
-                "doubleSided": false
-            }
+            "environmentRotation": 0.0
         },
         "ssao": {
             "method": "SSAO",

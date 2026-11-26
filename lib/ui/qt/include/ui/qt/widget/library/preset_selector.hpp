@@ -19,6 +19,7 @@
 #include <app/action/preset.hpp>
 #include <app/ecs.hpp>
 #include <app/generic/name.hpp>
+#include <app/generic/readonly.hpp>
 #include <app/services.hpp>
 #include <optional>
 #include <util/action_manager.hpp>
@@ -96,7 +97,7 @@ namespace VTX::UI::QT::Widget::Library
 					 this,
 					 [ this ]( const int )
 					 {
-						 _lineRename->setText( _comboBox->currentText() );
+						 _updateRenameLine();
 						 emit presetChanged( getCurrentPreset() );
 					 } );
 
@@ -245,8 +246,15 @@ namespace VTX::UI::QT::Widget::Library
 				_comboBox->setCurrentIndex( indexToSelect );
 			}
 
-			_lineRename->setText( _comboBox->currentText() );
+			_updateRenameLine();
 			emit presetChanged( getCurrentPreset() );
+		}
+
+		void _updateRenameLine()
+		{
+			const Entity preset = getCurrentPreset();
+			_lineRename->setText( _comboBox->currentText() );
+			_lineRename->setReadOnly( App::REG().valid( preset ) && App::REG().all_of<App::Generic::ReadOnly>( preset ) );
 		}
 
 		/**

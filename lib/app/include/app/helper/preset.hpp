@@ -4,7 +4,11 @@
 #include "app/ecs.hpp"
 #include "app/generic/name.hpp"
 #include <algorithm>
+#include <cstdint>
 #include <optional>
+#include <renderer/color.hpp>
+#include <renderer/representation.hpp>
+#include <string_view>
 #include <util/string.hpp>
 #include <util/types.hpp>
 
@@ -18,12 +22,14 @@ namespace VTX::App::Helper::Preset
 	{
 		const std::string name = Util::String::toLower( std::string( p_name ) );
 		auto			  view = REG().view<App::Generic::Name, T>();
-		return std::ranges::any_of( view,
-									[ &view, &name ]( const Entity entity )
-									{
-										const auto & presetName = view.template get<App::Generic::Name>( entity ).name;
-										return Util::String::toLower( presetName ) == name;
-									} );
+		return std::ranges::any_of(
+			view,
+			[ &view, &name ]( const Entity entity )
+			{
+				const auto & presetName = view.template get<App::Generic::Name>( entity ).name;
+				return Util::String::toLower( presetName ) == name;
+			}
+		);
 
 	} // namespace VTX::App::Helper::Scene
 
@@ -44,6 +50,38 @@ namespace VTX::App::Helper::Preset
 			}
 		}
 		return std::nullopt;
+	}
+
+	/**
+	 * @brief Default preset values.
+	 * // TODO: move to settings.
+	 */
+	template<typename T>
+	inline constexpr uint32_t VERSION = 1;
+
+	template<typename T>
+	inline constexpr std::string_view DEFAULT_NAME = "Default";
+
+	template<>
+	inline constexpr std::string_view DEFAULT_NAME<Renderer::Representation> = "Sticks and Ribbons";
+
+	template<>
+	inline constexpr std::string_view DEFAULT_NAME<Renderer::Color::Layout> = "JMol";
+
+	template<typename T>
+	std::optional<Entity> getDefault()
+	{
+		if ( const std::optional<Entity> entity = getByName<T>( DEFAULT_NAME<T> ) )
+		{
+			return entity;
+		}
+
+		auto view = REG().view<App::Generic::Name, T>();
+		if ( view.begin() == view.end() )
+		{
+			return std::nullopt;
+		}
+		return *view.begin();
 	}
 
 } // namespace VTX::App::Helper::Preset

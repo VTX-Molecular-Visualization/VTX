@@ -167,7 +167,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	void LightingSection::setConfig( const Entity p_preset, const VTX::Renderer::GraphicsConfig & p_config )
 	{
 		_setCurrentPreset( p_preset );
-		_materialSection->setConfig( p_preset, p_config );
+		_materialSection->setConfig( p_config );
 		const QSignalBlocker blockerMode( _comboBoxShadingMode );
 		const QSignalBlocker blockerLight( _colorPickerLight );
 		const QSignalBlocker blockerLightIntensity( _sliderLightIntensity );

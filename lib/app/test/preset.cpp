@@ -1,9 +1,11 @@
+#include <app/action/material.hpp>
 #include <app/action/preset.hpp>
 #include <app/fixture.hpp>
 #include <app/generic/file.hpp>
 #include <app/generic/name.hpp>
 #include <app/generic/readonly.hpp>
 #include <app/helper/preset.hpp>
+#include <app/scene/material.hpp>
 #include <app/serialization/renderer.hpp>
 #include <app/services.hpp>
 #include <app/session.hpp>
@@ -82,7 +84,6 @@ TEST_CASE( "VTX_APP - Preset - Builtin presets", "[preset]" )
 	CHECK( REG().get<Generic::Name>( *Helper::Preset::getDefault<Renderer::GraphicsConfig>() ).name == "Default" );
 
 	const Entity brushedMetal = *Helper::Preset::getByName<Renderer::Material>( "Brushed metal" );
-	CHECK( REG().get<Renderer::Material>( brushedMetal ).name == "Brushed metal" );
 	CHECK( REG().get<Renderer::Material>( brushedMetal ).metallic == 1.f );
 
 	const Entity jmol = *Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" );
@@ -210,4 +211,31 @@ TEST_CASE( "VTX_APP - Preset - Default values", "[preset]" )
 	CHECK( Util::Json::Document( empty.get<Renderer::GraphicsConfig>() ) == Util::Json::Document( config ) );
 	CHECK( Util::Json::Document( empty.get<Renderer::Representation>() ) == Util::Json::Document( representation ) );
 	CHECK( Util::Json::Document( empty.get<Renderer::Color::Layout>() ) == Util::Json::Document( layout ) );
+}
+
+TEST_CASE( "VTX_APP - Preset - Scene material", "[preset]" )
+{
+	App::Fixture app;
+
+	const Entity defaultMaterial = *Helper::Preset::getDefault<Renderer::Material>();
+	CHECK( ECS::getFirstComponent<App::Scene::Material>().preset == defaultMaterial );
+
+	const Entity brushedMetal = *Helper::Preset::getByName<Renderer::Material>( "Brushed metal" );
+	ACTION().execute<Action::Preset::Apply<Renderer::Material>>( brushedMetal );
+	CHECK( ECS::getFirstComponent<App::Scene::Material>().preset == brushedMetal );
+
+	ACTION().execute<Action::Material::Change<Renderer::E_MATERIAL_VALUES::ROUGHNESS, float>>( brushedMetal, 0.25f );
+	CHECK( REG().get<Renderer::Material>( brushedMetal ).roughness == 0.25f );
+
+	const Entity matte = *Helper::Preset::getByName<Renderer::Material>( "Matte" );
+	ACTION().execute<Action::Material::Change<Renderer::E_MATERIAL_VALUES::ALBEDO_TEXTURE, FilePath>>(
+		matte, FilePath( "albedo.png" )
+	);
+	REQUIRE( REG().get<Renderer::Material>( matte ).albedoTexture.has_value() );
+	CHECK( REG().get<Renderer::Material>( matte ).albedoTexture->path == "albedo.png" );
+
+	ACTION().execute<Action::Material::Change<Renderer::E_MATERIAL_VALUES::ALBEDO_TEXTURE, FilePath>>(
+		matte, FilePath {}
+	);
+	CHECK( not REG().get<Renderer::Material>( matte ).albedoTexture.has_value() );
 }

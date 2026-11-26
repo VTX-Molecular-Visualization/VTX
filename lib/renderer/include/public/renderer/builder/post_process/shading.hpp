@@ -82,7 +82,7 @@ namespace VTX::Renderer
 		float					skyboxIntensity		= 1.f;
 		float					iblIntensity		= 1.f;
 		float					environmentRotation = ENVIRONMENT_ROTATION_DEFAULT;
-		Material				material			= Material { .name = "Default" };
+		Material				material;
 	};
 
 	struct FogConfig
