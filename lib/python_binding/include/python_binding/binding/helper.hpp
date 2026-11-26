@@ -26,6 +26,14 @@ namespace VTX::PythonBinding
 
 			for ( const EnumType enumValue : magic_enum::enum_values<EnumType>() )
 			{
+				if constexpr ( requires { EnumType::COUNT; } )
+				{
+					if ( enumValue == EnumType::COUNT )
+					{
+						continue;
+					}
+				}
+
 				std::string_view enumName = Util::Enum::enumName<EnumType>( enumValue );
 				if ( not p_valuePrefix.empty() && enumName.starts_with( p_valuePrefix ) )
 				{

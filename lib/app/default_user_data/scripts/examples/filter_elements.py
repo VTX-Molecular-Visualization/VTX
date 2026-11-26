@@ -27,9 +27,11 @@ atoms.setVisible(True)
 
 hidden = []
 counts = collections.Counter()
-for atom in atoms:
-    if atom.symbol in VISIBLE_SYMBOLS:
-        counts[atom.symbolName] += 1
+examples = {}
+for atom, symbol in zip(atoms, atoms.symbols):
+    if symbol in VISIBLE_SYMBOLS:
+        counts[symbol] += 1
+        examples.setdefault(symbol, atom)
     else:
         hidden.append(atom.index)
 
@@ -37,5 +39,5 @@ if hidden:
     system.getAtoms(hidden).setVisible(False)
 
 print(f"{len(atoms) - len(hidden)} visible atoms, {len(hidden)} hidden")
-for name, count in sorted(counts.items()):
-    print(f"  {name}: {count}")
+for symbol, count in sorted(counts.items()):
+    print(f"  {examples[symbol].symbolName}: {count}")
