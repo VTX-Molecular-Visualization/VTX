@@ -9,6 +9,7 @@ import vtx
 PDB_ID = "4HHB"
 FRAME_COUNT = 72
 FILENAME_PREFIX = "turntable"
+DISTANCE = 100.0
 
 try:
     system = vtx.getSystem(PDB_ID)
@@ -17,17 +18,13 @@ except ValueError:
     system = vtx.getSystem(PDB_ID)
 
 center = system.aabb.center
-start = vtx.camera.position
-radius = math.hypot(start.x - center.x, start.z - center.z)
-start_angle = math.atan2(start.x - center.x, start.z - center.z)
-pitch = vtx.camera.rotation.euler.x
 
 for frame in range(FRAME_COUNT):
-    angle = start_angle + 2.0 * math.pi * frame / FRAME_COUNT
+    angle = 2.0 * math.pi * frame / FRAME_COUNT
     vtx.camera.setPosition(
-        vtx.Vec3f(center.x + radius * math.sin(angle), start.y, center.z + radius * math.cos(angle))
+        vtx.Vec3f(center.x + DISTANCE * math.sin(angle), center.y, center.z + DISTANCE * math.cos(angle))
     )
-    vtx.camera.setRotation(vtx.Quatf.fromEuler(pitch, math.degrees(angle), 0.0))
+    vtx.camera.lookAt(center)
     vtx.makeSnapshot(filename=f"{FILENAME_PREFIX}_{frame:03d}")
 
 print(f"{FRAME_COUNT} frames saved in the snapshots folder ({FILENAME_PREFIX}_000 to {FILENAME_PREFIX}_{FRAME_COUNT - 1:03d})")

@@ -30,7 +30,7 @@ pocket = vtx.selection.getResidues(system)
 system.setRepresentation("ribbons")
 vtx.selection.setRepresentation("sticks")
 ligand.setRepresentation("balls and sticks")
-vtx.camera.orient(pocket)
+vtx.camera.orient(pocket, 500)
 
 print(f"Residues within {DISTANCE} A of {LIGAND_NAME}:")
 for residue in pocket:

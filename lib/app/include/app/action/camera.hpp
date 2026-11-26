@@ -34,6 +34,14 @@ namespace VTX::App::Action::Camera
 	};
 
 	/**
+	 * @brief Rotate the camera to look at a world-space point.
+	 */
+	struct LookAt
+	{
+		void execute( const Vec3f & );
+	};
+
+	/**
 	 * @brief Set camera field of view.
 	 */
 	struct SetFov

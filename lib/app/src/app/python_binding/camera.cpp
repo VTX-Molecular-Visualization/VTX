@@ -335,6 +335,13 @@ namespace VTX::App::PythonBinding
 				pybind11::arg( "rotation" )
 			)
 			.def(
+				"lookAt",
+				[]( const CameraView &, const Vec3f & p_target )
+				{ executeAction<App::Action::Camera::LookAt>( p_target ); },
+				"Rotate the camera to look at a point in world space.",
+				pybind11::arg( "target" )
+			)
+			.def(
 				"setFov",
 				[]( const CameraView &, const float p_fov ) { executeAction<App::Action::Camera::SetFov>( p_fov ); },
 				"Set the vertical field of view in degrees, clamped to [10, 90].",

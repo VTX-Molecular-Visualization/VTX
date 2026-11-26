@@ -402,6 +402,12 @@ position = vtx.Vec3f(1.0, 2.0, 3.0)
 rotation = vtx.Quatf.fromEuler(0.0, 90.0, 0.0)
 
 vtx.camera.setPosition(position)
+vtx.camera.lookAt(vtx.Vec3f(position.x, position.y, position.z - 10.0))
+look_euler = vtx.camera.rotation.euler
+require(
+    almost_equal(look_euler.x, 0.0, 1e-3) and almost_equal(look_euler.y, 0.0, 1e-3),
+    "Camera should look at the target",
+)
 vtx.camera.setRotation(rotation)
 vtx.camera.setFov(45.0)
 vtx.camera.setNearClip(0.1)
