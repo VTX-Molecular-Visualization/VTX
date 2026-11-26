@@ -252,13 +252,8 @@ namespace VTX::UI::QT::Widget
 		statusLayout->setSpacing( 0 );
 		_pathLabel = Helper::makeQObject<QLabel>( status );
 		_pathLabel->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
-		_modifiedLabel = Helper::makeQObject<QLabel>( "(modified)", status );
-		QSizePolicy modifiedPolicy = _modifiedLabel->sizePolicy();
-		modifiedPolicy.setRetainSizeWhenHidden( true );
-		_modifiedLabel->setSizePolicy( modifiedPolicy );
-		_modifiedLabel->setVisible( false );
+		_pathLabel->setWordWrap( true );
 		statusLayout->addWidget( _pathLabel );
-		statusLayout->addWidget( _modifiedLabel );
 
 		_opacitySlider = Helper::makeQObject<QSlider>( Qt::Horizontal, toolbar );
 		_opacitySlider->setRange( 0, 100 );
@@ -550,16 +545,20 @@ namespace VTX::UI::QT::Widget
 		{
 			_pathLabel->clear();
 			_pathLabel->setToolTip( {} );
-			_modifiedLabel->setVisible( false );
 			return;
 		}
 
 		const QString path = QDir::toNativeSeparators(
 			QFileInfo( QString::fromStdString( _currentPath.string() ) ).absoluteFilePath()
 		);
-		_pathLabel->setText( path );
+		QString text = path;
+		text.replace( QDir::separator(), QString( QDir::separator() ) + QChar( 0x200B ) );
+		if ( _textEdit->document()->isModified() )
+		{
+			text += " (modified)";
+		}
+		_pathLabel->setText( text );
 		_pathLabel->setToolTip( path );
-		_modifiedLabel->setVisible( _textEdit->document()->isModified() );
 	}
 
 	void PythonEditor::_reload()

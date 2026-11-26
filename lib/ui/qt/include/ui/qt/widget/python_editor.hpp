@@ -96,7 +96,6 @@ namespace VTX::UI::QT::Widget
 		 * @brief Status displaying the script path and its modified state.
 		 */
 		QPointer<QLabel> _pathLabel;
-		QPointer<QLabel> _modifiedLabel;
 
 		/**
 		 * @brief Watch the current script to reload it when modified outside VTX.
