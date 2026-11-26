@@ -12,6 +12,7 @@ except ValueError:
     vtx.download(PDB_ID)
     system = vtx.getSystem(PDB_ID)
 
+system.setVisible(True)
 system.setRepresentation("ribbons")
 for category in system.getCategories():
     if category.residueCount == 0:
