@@ -38,6 +38,11 @@ namespace VTX::UI::QT::Widget
 		 */
 		bool eventFilter( QObject *, QEvent * ) override;
 
+		/**
+		 * @brief Reset default width.
+		 */
+		void resetLayout();
+
 	  protected:
 		/**
 		 * @brief Override events.
@@ -74,9 +79,24 @@ namespace VTX::UI::QT::Widget
 		FilePath _currentPath;
 
 		/**
+		 * @brief Read-only for sample scripts.
+		 */
+		bool _currentReadOnly = false;
+
+		/**
+		 * @brief Width ratio (%).
+		 */
+		float _widthRatio = 0.f;
+
+		/**
 		 * @brief Update the geometry of the widget based on its parent.
 		 */
 		void _updateGeometry();
+
+		/**
+		 * @brief Set the width of the editor based on a ratio of the parent widget's width.
+		 */
+		void _setWidth( int );
 
 		/**
 		 * @brief Handle selection change events to open or close the editor based on the selected script.
@@ -98,6 +118,10 @@ namespace VTX::UI::QT::Widget
 		 */
 		void _onScriptRun( const Events::ScriptRun & );
 
+		/**
+		 * @brief Check if the script at the given path is read-only.
+		 */
+		static bool _isReadOnly( const FilePath & );
 		/**
 		 * @brief Connections.
 		 */

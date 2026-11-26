@@ -9,6 +9,7 @@
 #include <QBoxLayout>
 #include <QFile>
 #include <QFileSystemModel>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPalette>
 #include <QPlainTextEdit>
@@ -21,8 +22,14 @@
 #include <QTextBlock>
 #include <QTextCursor>
 #include <QToolBar>
+#include <QToolButton>
+#include <algorithm>
 #include <app/action/io.hpp>
 #include <app/services.hpp>
+#include <app/session.hpp>
+#include <cmath>
+#include <filesystem>
+#include <functional>
 #include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
 #include <util/logger.hpp>
@@ -31,8 +38,11 @@
 
 namespace
 {
-	constexpr int DEFAULT_OPACITY	   = 50;
-	constexpr int OPACITY_SLIDER_WIDTH = 100;
+	constexpr int	DEFAULT_OPACITY		 = 50;
+	constexpr int	OPACITY_SLIDER_WIDTH = 100;
+	constexpr float DEFAULT_WIDTH_RATIO	 = 0.5f;
+	constexpr int	MIN_WIDTH			 = 240;
+	constexpr int	RESIZE_HANDLE_WIDTH	 = 6;
 } // namespace
 
 namespace VTX::UI::QT::Widget
@@ -126,7 +136,7 @@ namespace VTX::UI::QT::Widget
 
 		QPlainTextEdit::keyPressEvent( p_event );
 
-		if ( p_event->text().isEmpty() )
+		if ( isReadOnly() || p_event->text().isEmpty() )
 		{
 			_completer->popup()->hide();
 			return;
@@ -151,6 +161,11 @@ namespace VTX::UI::QT::Widget
 
 	void PythonTextEdit::_insertCompletion( const QString & p_completion )
 	{
+		if ( isReadOnly() )
+		{
+			return;
+		}
+
 		QTextCursor cursor = textCursor();
 		cursor.movePosition(
 			QTextCursor::Left, QTextCursor::KeepAnchor, static_cast<int>( _completer->completionPrefix().size() )
@@ -158,6 +173,32 @@ namespace VTX::UI::QT::Widget
 		cursor.insertText( p_completion );
 		setTextCursor( cursor );
 	}
+
+	class PythonEditorResizeHandle : public QWidget
+	{
+	  public:
+		PythonEditorResizeHandle( QWidget * const p_parent, std::function<void( const QPoint & )> p_onDrag ) :
+			QWidget( p_parent ), _onDrag( std::move( p_onDrag ) )
+		{
+			setCursor( Qt::SizeHorCursor );
+			setFixedWidth( RESIZE_HANDLE_WIDTH );
+		}
+
+	  protected:
+		void mousePressEvent( QMouseEvent * const p_event ) override { p_event->accept(); }
+
+		void mouseMoveEvent( QMouseEvent * const p_event ) override
+		{
+			if ( p_event->buttons() & Qt::LeftButton )
+			{
+				_onDrag( p_event->globalPosition().toPoint() );
+			}
+			p_event->accept();
+		}
+
+	  private:
+		std::function<void( const QPoint & )> _onDrag;
+	};
 
 	PythonEditor::PythonEditor( QWidget * const p_parent ) :
 		BaseWidget( p_parent ), _textEdit( Helper::makeQObject<PythonTextEdit>( this ) ),
@@ -194,9 +235,13 @@ namespace VTX::UI::QT::Widget
 		_opacitySlider->setValue( SETTINGS().value( SETTING_KEY_PYTHON_EDITOR_OPACITY, DEFAULT_OPACITY ).toInt() );
 		toolbar->addWidget( _opacitySlider );
 
-		const QAction * const closeAction
+		QAction * const closeAction
 			= toolbar->addAction( style()->standardIcon( QStyle::SP_TitleBarCloseButton ), "Close" );
 		connect( closeAction, &QAction::triggered, this, []() { SELECTION().clear( E_SELECTION_GROUP::SCRIPT ); } );
+		if ( QToolButton * const closeButton = qobject_cast<QToolButton *>( toolbar->widgetForAction( closeAction ) ) )
+		{
+			closeButton->setToolButtonStyle( Qt::ToolButtonIconOnly );
+		}
 
 		_textEdit->setFrameShape( QFrame::NoFrame );
 		QPalette textPalette = _textEdit->palette();
@@ -204,11 +249,28 @@ namespace VTX::UI::QT::Widget
 		_textEdit->setPalette( textPalette );
 		_highlighter = Helper::makeQObject<PythonHighlighter>( _textEdit->document() );
 
-		auto * const layout = Helper::makeQObject<QVBoxLayout>( this );
+		auto * const content	   = Helper::makeQObject<QWidget>( this );
+		auto * const contentLayout = Helper::makeQObject<QVBoxLayout>( content );
+		contentLayout->setContentsMargins( 0, 0, 0, 0 );
+		contentLayout->setSpacing( 0 );
+		contentLayout->addWidget( toolbar );
+		contentLayout->addWidget( _textEdit );
+
+		auto * const resizeHandle = Helper::makeQObject<PythonEditorResizeHandle>(
+			this, [ this ]( const QPoint & p_globalPosition ) { _setWidth( mapFromGlobal( p_globalPosition ).x() ); }
+		);
+
+		auto * const layout = Helper::makeQObject<QHBoxLayout>( this );
 		layout->setContentsMargins( 0, 0, 0, 0 );
 		layout->setSpacing( 0 );
-		layout->addWidget( toolbar );
-		layout->addWidget( _textEdit );
+		layout->addWidget( content );
+		layout->addWidget( resizeHandle );
+
+		_widthRatio = SETTINGS().value( SETTING_KEY_PYTHON_EDITOR_WIDTH, DEFAULT_WIDTH_RATIO ).toFloat();
+		if ( _widthRatio <= 0.f || _widthRatio > 1.f )
+		{
+			_widthRatio = DEFAULT_WIDTH_RATIO;
+		}
 
 		if ( p_parent != nullptr )
 		{
@@ -264,7 +326,33 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		setGeometry( parent->rect() );
+		const int parentWidth = parent->width();
+		const int width		  = std::clamp(
+			static_cast<int>( std::lround( _widthRatio * static_cast<float>( parentWidth ) ) ),
+			std::min( MIN_WIDTH, parentWidth ),
+			parentWidth
+		);
+		setGeometry( 0, 0, width, parent->height() );
+	}
+
+	void PythonEditor::resetLayout()
+	{
+		_widthRatio = DEFAULT_WIDTH_RATIO;
+		SETTINGS().setValue( SETTING_KEY_PYTHON_EDITOR_WIDTH, _widthRatio );
+		_updateGeometry();
+	}
+
+	void PythonEditor::_setWidth( const int p_width )
+	{
+		const QWidget * const parent = parentWidget();
+		if ( parent == nullptr || parent->width() <= 0 )
+		{
+			return;
+		}
+
+		_widthRatio = std::clamp( static_cast<float>( p_width ) / static_cast<float>( parent->width() ), 0.f, 1.f );
+		SETTINGS().setValue( SETTING_KEY_PYTHON_EDITOR_WIDTH, _widthRatio );
+		_updateGeometry();
 	}
 
 	void PythonEditor::_onSelectionChanged( const E_SELECTION_GROUP p_group, const QItemSelection & p_selection )
@@ -297,15 +385,27 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		_currentPath = p_path;
+		_currentPath	 = p_path;
+		_currentReadOnly = _isReadOnly( p_path );
 		_runAction->setEnabled( true );
 		_textEdit->setPlainText( QString::fromUtf8( file.readAll() ) );
+		_textEdit->setReadOnly( _currentReadOnly );
+	}
+
+	bool PythonEditor::_isReadOnly( const FilePath & p_path )
+	{
+		const FilePath examples = std::filesystem::weakly_canonical( App::SESSION().getDefaultScriptsDir() );
+		const FilePath path		= std::filesystem::weakly_canonical( p_path );
+		const std::pair<FilePath::const_iterator, FilePath::const_iterator> mismatch
+			= std::mismatch( examples.begin(), examples.end(), path.begin(), path.end() );
+		return mismatch.first == examples.end();
 	}
 
 	void PythonEditor::_close()
 	{
 		hide();
 		_currentPath.clear();
+		_currentReadOnly = false;
 		_runAction->setEnabled( false );
 		_textEdit->clear();
 	}
@@ -314,6 +414,12 @@ namespace VTX::UI::QT::Widget
 	{
 		if ( _currentPath.empty() )
 		{
+			return;
+		}
+
+		if ( _currentReadOnly )
+		{
+			App::ACTION().execute<App::Action::IO::RunPythonScript>( _currentPath );
 			return;
 		}
 
