@@ -526,13 +526,13 @@ namespace VTX::Tool::Structalign::backend
 
 						const double theta = ( p_transportMatrix[ it_q ][ it_q ] - p_transportMatrix[ it_p ][ it_p ] )
 											 / ( 2.0 * p_transportMatrix[ it_p ][ it_q ] );
-						const double t
-							= 1.0 / ( std::abs( theta ) + std::copysign( std::sqrt( theta * theta + 1.0 ), theta ) );
-						double sqqqqq = 0.;
-						if ( std::isinf( t ) )
+						if ( theta == VTX::TypeMax<double> )
 						{
-							sqqqqq = std::sqrt( theta * theta + 1.0 );
+							bool stop = true;
 						}
+						const double t
+							= std::copysign( 1., theta ) / ( std::abs( theta ) + std::sqrt( theta * theta + 1.0 ) );
+
 						const double c = 1.0 / std::sqrt( t * t + 1.0 );
 						const double s = t * c;
 
@@ -544,26 +544,28 @@ namespace VTX::Tool::Structalign::backend
 						p_transportMatrix[ it_p ][ it_q ] = p_transportMatrix[ it_q ][ it_p ] = 0.0;
 
 						// mix the rest of rows/columns p and q
-						for ( int r = 0; r < 4; r++ )
+						for ( int it_transportColIdx = 0; it_transportColIdx < 4; it_transportColIdx++ )
 						{
-							if ( r == it_p || r == it_q )
+							if ( it_transportColIdx == it_p || it_transportColIdx == it_q )
 							{
 								continue;
 							}
 
-							const double & nrp			   = p_transportMatrix[ r ][ it_p ];
-							const double & nrq			   = p_transportMatrix[ r ][ it_q ];
-							p_transportMatrix[ r ][ it_p ] = p_transportMatrix[ it_p ][ r ] = c * nrp - s * nrq;
-							p_transportMatrix[ r ][ it_q ] = p_transportMatrix[ it_q ][ r ] = s * nrp + c * nrq;
+							const double & nrp = p_transportMatrix[ it_transportColIdx ][ it_p ];
+							const double & nrq = p_transportMatrix[ it_transportColIdx ][ it_q ];
+							p_transportMatrix[ it_transportColIdx ][ it_p ]
+								= p_transportMatrix[ it_p ][ it_transportColIdx ] = c * nrp - s * nrq;
+							p_transportMatrix[ it_transportColIdx ][ it_q ]
+								= p_transportMatrix[ it_q ][ it_transportColIdx ] = s * nrp + c * nrq;
 						}
 
 						// accumulate this rotation into the eigenvector matrix
-						for ( int r = 0; r < 4; r++ )
+						for ( int it_transformedColIdx = 0; it_transformedColIdx < 4; it_transformedColIdx++ )
 						{
-							const double vrp			   = transformedMatrix[ r ][ it_p ];
-							const double vrq			   = transformedMatrix[ r ][ it_q ];
-							transformedMatrix[ r ][ it_p ] = c * vrp - s * vrq;
-							transformedMatrix[ r ][ it_q ] = s * vrp + c * vrq;
+							const double vrp = transformedMatrix[ it_transformedColIdx ][ it_p ];
+							const double vrq = transformedMatrix[ it_transformedColIdx ][ it_q ];
+							transformedMatrix[ it_transformedColIdx ][ it_p ] = c * vrp - s * vrq;
+							transformedMatrix[ it_transformedColIdx ][ it_q ] = s * vrp + c * vrq;
 						}
 					}
 				}
