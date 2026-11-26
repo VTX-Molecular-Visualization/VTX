@@ -4,6 +4,7 @@
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/python_completer.hpp"
 #include <QAbstractItemView>
 #include <QBoxLayout>
@@ -244,6 +245,9 @@ namespace VTX::UI::QT::Widget
 		}
 
 		_textEdit->setFrameShape( QFrame::NoFrame );
+		QFont font( Style::DEFAULT_FONT_FAMILY_SEQUENCE.toString(), Style::DEFAULT_FONT_SIZE );
+		font.setStyleHint( QFont::Monospace );
+		_textEdit->setFont( font );
 		QPalette textPalette = _textEdit->palette();
 		textPalette.setColor( QPalette::Base, Qt::transparent );
 		_textEdit->setPalette( textPalette );

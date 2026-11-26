@@ -2,7 +2,10 @@
 #define VTX_UI_QT_WIDGET_TREE_BASE_TREE_HPP
 
 #include "ui/qt/widget/base_widget.hpp"
+#include <QApplication>
+#include <QEvent>
 #include <QTreeWidget>
+#include <optional>
 
 namespace VTX::UI::QT::Widget::Tree
 {
@@ -21,6 +24,25 @@ namespace VTX::UI::QT::Widget::Tree
 		QSize minimumSizeHint() const override { return QSize( 0, 0 ); }
 
 		QSize sizeHint() const override { return QSize( QAbstractScrollArea::sizeHint().width(), _contentHeight() ); }
+
+		/**
+		 * @brief Set the tint color.
+		 */
+		void setTint( const int p_hue )
+		{
+			_tintHue = p_hue;
+			_applyTint();
+		}
+
+		bool event( QEvent * const p_event ) override
+		{
+			const bool result = W::event( p_event );
+			if ( p_event->type() == QEvent::ApplicationPaletteChange )
+			{
+				_applyTint();
+			}
+			return result;
+		}
 
 	  protected:
 		/**
@@ -45,6 +67,39 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 
 	  private:
+		/**
+		 * @brief Tint color hue.
+		 */
+		std::optional<int> _tintHue;
+
+		/**
+		 * @brief Apply the tint color to the tree.
+		 */
+		void _applyTint()
+		{
+			if ( not _tintHue )
+			{
+				return;
+			}
+
+			const QPalette appPalette = QApplication::palette();
+			const QColor   base		  = appPalette.color( QPalette::Base );
+			const bool	   isDark	  = base.lightness() < 128;
+			const QColor   hue		  = QColor::fromHsl( *_tintHue, 200, 128 );
+			const float	   strength	  = isDark ? 0.12f : 0.08f;
+
+			const auto mix = [ strength ]( const int p_a, const int p_b )
+			{ return static_cast<int>( p_a + ( p_b - p_a ) * strength ); };
+
+			const QColor tinted(
+				mix( base.red(), hue.red() ), mix( base.green(), hue.green() ), mix( base.blue(), hue.blue() )
+			);
+
+			QPalette pal = W::palette();
+			pal.setColor( QPalette::Base, tinted );
+			W::setPalette( pal );
+		}
+
 		/**
 		 * @brief Calculate the content height of the tree.
 		 */

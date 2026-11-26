@@ -116,6 +116,9 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea );
 
 		// Log area.
+		QFont font( Style::DEFAULT_FONT_FAMILY_SEQUENCE.toString(), Style::DEFAULT_FONT_SIZE );
+		font.setStyleHint( QFont::Monospace );
+		_textEdit->setFont( font );
 		_textEdit->setReadOnly( true );
 		_textEdit->setWordWrapMode( QTextOption::WrapAnywhere );
 		_textEdit->setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAsNeeded );
