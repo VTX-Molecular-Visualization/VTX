@@ -16,6 +16,8 @@ namespace VTX::Util::Color
 	class Rgba
 	{
 	  public:
+		static constexpr float BYTE_TO_FLOAT = 1.f / 255.f;
+
 		constexpr Rgba() = default;
 
 		constexpr Rgba( float p_r, float p_g, float p_b, float p_a ) noexcept : _v( p_r, p_g, p_b, p_a ) {}
@@ -23,11 +25,14 @@ namespace VTX::Util::Color
 		constexpr Rgba( float p_r, float p_g, float p_b ) noexcept : _v( p_r, p_g, p_b, 1.f ) {}
 
 		constexpr Rgba( int p_r, int p_g, int p_b, int p_a ) noexcept :
-			_v( p_r / 255.f, p_g / 255.f, p_b / 255.f, p_a / 255.f )
+			_v( p_r * BYTE_TO_FLOAT, p_g * BYTE_TO_FLOAT, p_b * BYTE_TO_FLOAT, p_a * BYTE_TO_FLOAT )
 		{
 		}
 
-		constexpr Rgba( int p_r, int p_g, int p_b ) noexcept : _v( p_r / 255.f, p_g / 255.f, p_b / 255.f, 1.f ) {}
+		constexpr Rgba( int p_r, int p_g, int p_b ) noexcept :
+			_v( p_r * BYTE_TO_FLOAT, p_g * BYTE_TO_FLOAT, p_b * BYTE_TO_FLOAT, 1.f )
+		{
+		}
 
 		explicit Rgba( const std::vector<float> & p_c ) noexcept
 		{
