@@ -14,6 +14,8 @@ except ValueError:
     vtx.download(PDB_ID)
     system = vtx.getSystem(PDB_ID)
 
+system.setVisible(True)
+
 ligand_indices = [residue.index for residue in system.getResidues() if residue.name == LIGAND_NAME]
 if not ligand_indices:
     raise RuntimeError(f"No residue named {LIGAND_NAME} in {PDB_ID}")
