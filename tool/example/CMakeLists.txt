@@ -20,6 +20,3 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/library.cmake")
 
 # Install target and headers.
 install(TARGETS vtx_tool_example FILE_SET public_headers)
-if (VTX_UI_QT)
-	vtx_qt_install_runtime(vtx_tool_example)
-endif()
