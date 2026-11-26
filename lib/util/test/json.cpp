@@ -15,7 +15,8 @@ namespace VTX::Test::Json
 	enum class E_JSON_TEST
 	{
 		ALPHA,
-		BETA
+		BETA,
+		COUNT
 	};
 
 	enum class E_JSON_TEST_BITMASK : uint8_t
@@ -169,6 +170,7 @@ TEST_CASE( "Util::Json::Enum", "[unit]" )
 	CHECK( json.get<E_JSON_TEST>() == E_JSON_TEST::BETA );
 
 	CHECK_THROWS_AS( Document( "GAMMA" ).get<E_JSON_TEST>(), std::invalid_argument );
+	CHECK_THROWS_AS( Document( "COUNT" ).get<E_JSON_TEST>(), std::invalid_argument );
 
 	const E_JSON_TEST_BITMASK flags	   = E_JSON_TEST_BITMASK::RED | E_JSON_TEST_BITMASK::BLUE;
 	const Document			  jsonBits = flags;
@@ -183,6 +185,7 @@ TEST_CASE( "Util::Json::Enum", "[unit]" )
 	CHECK( jsonNone.get<E_JSON_TEST_BITMASK>() == E_JSON_TEST_BITMASK::NONE );
 
 	CHECK_THROWS_AS( Document::array( { "RED", "PURPLE" } ).get<E_JSON_TEST_BITMASK>(), std::invalid_argument );
+	CHECK_THROWS_AS( Document( "RED" ).get<E_JSON_TEST_BITMASK>(), std::invalid_argument );
 }
 
 TEST_CASE( "Util::Json::File", "[unit]" )

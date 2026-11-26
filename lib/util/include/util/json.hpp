@@ -187,6 +187,13 @@ namespace nlohmann
 		{
 			if constexpr ( entt::enum_as_bitmask_v<E> )
 			{
+				if ( not p_json.is_array() )
+				{
+					throw std::invalid_argument(
+						"Expected an array for enum " + std::string( magic_enum::enum_type_name<E>() )
+					);
+				}
+
 				Bits value = 0;
 				for ( const BasicJsonType & item : p_json )
 				{
@@ -207,8 +214,13 @@ namespace nlohmann
 		static E _cast( const BasicJsonType & p_json )
 		{
 			const std::string	   name	 = p_json.template get<std::string>();
-			const std::optional<E> value = magic_enum::enum_cast<E>( name );
-			if ( not value )
+			const std::optional<E> value	= magic_enum::enum_cast<E>( name );
+			bool				   sentinel = false;
+			if constexpr ( requires { E::COUNT; } )
+			{
+				sentinel = value == E::COUNT;
+			}
+			if ( not value || sentinel )
 			{
 				throw std::invalid_argument(
 					"Invalid value \"" + name + "\" for enum " + std::string( magic_enum::enum_type_name<E>() )

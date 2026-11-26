@@ -44,4 +44,9 @@ TEST_CASE( "Util::Filesystem", "[unit]" )
 
 	std::filesystem::remove_all( "data_test" );
 	CHECK( std::filesystem::exists( "data_test" ) == false );
+
+	const VTX::FilePath noParentPath( "data_test_no_parent.txt" );
+	VTX::Util::Filesystem::writeFile( noParentPath, "Hello, world!" );
+	CHECK( VTX::Util::Filesystem::readPath( noParentPath ) == "Hello, world!" );
+	std::filesystem::remove( noParentPath );
 }

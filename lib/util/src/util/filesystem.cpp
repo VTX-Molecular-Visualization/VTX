@@ -123,14 +123,20 @@ namespace VTX::Util::Filesystem
 
 	void writeFile( const FilePath & p_filePath, const std::string & p_content )
 	{
-		std::filesystem::create_directories( p_filePath.parent_path() );
-		std::ofstream outputFile( p_filePath, std::ios::binary );
-
-		if ( outputFile.is_open() )
+		if ( not p_filePath.parent_path().empty() )
 		{
-			outputFile << p_content;
+			std::filesystem::create_directories( p_filePath.parent_path() );
 		}
-		else
+
+		std::ofstream outputFile( p_filePath, std::ios::binary );
+		if ( not outputFile.is_open() )
+		{
+			throw IOException( "Can not write to " + p_filePath.string() );
+		}
+
+		outputFile << p_content;
+		outputFile.close();
+		if ( outputFile.fail() )
 		{
 			throw IOException( "Can not write to " + p_filePath.string() );
 		}

@@ -206,7 +206,12 @@ namespace VTX::App::Action::Preset
 				);
 			}
 
-			return p_document.at( "data" ).get<T>();
+			T data = p_document.at( "data" ).get<T>();
+			if constexpr ( requires { data.clamp(); } )
+			{
+				data.clamp();
+			}
+			return data;
 		}
 
 		template<typename T>

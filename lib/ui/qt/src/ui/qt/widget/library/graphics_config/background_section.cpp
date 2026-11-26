@@ -243,7 +243,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	void BackgroundSection::setConfig( const Entity p_preset, const VTX::Renderer::GraphicsConfig & p_config )
 	{
 		_setCurrentPreset( p_preset );
-		_refreshEnvironmentMaps();
+		// _refreshEnvironmentMaps();
 		const QSignalBlocker blockerBackgroundColor( _radioBackgroundColor );
 		const QSignalBlocker blockerBackgroundEnvironment( _radioBackgroundEnvironment );
 		const QSignalBlocker blockerColor( _colorPicker );
@@ -263,20 +263,20 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_lineEnvironmentPath->setText( environmentPath );
 		_lineEnvironmentPath->setToolTip( environmentPath );
 		_buttonEnvironmentClear->setEnabled( p_config.shading.environmentPath.has_value() );
-		_listEnvironmentMaps->setCurrentRow( -1 );
-		if ( p_config.shading.environmentPath )
-		{
-			const QString currentPath
-				= QString::fromStdString( _normalizedPathString( *p_config.shading.environmentPath ) );
-			for ( int i = 0; i < _listEnvironmentMaps->count(); ++i )
-			{
-				if ( _listEnvironmentMaps->item( i )->data( Qt::UserRole ).toString() == currentPath )
-				{
-					_listEnvironmentMaps->setCurrentRow( i );
-					break;
-				}
-			}
-		}
+		// _listEnvironmentMaps->setCurrentRow( -1 );
+		// if ( p_config.shading.environmentPath )
+		// {
+		// 	const QString currentPath
+		// 		= QString::fromStdString( _normalizedPathString( *p_config.shading.environmentPath ) );
+		// 	for ( int i = 0; i < _listEnvironmentMaps->count(); ++i )
+		// 	{
+		// 		if ( _listEnvironmentMaps->item( i )->data( Qt::UserRole ).toString() == currentPath )
+		// 		{
+		// 			_listEnvironmentMaps->setCurrentRow( i );
+		// 			break;
+		// 		}
+		// 	}
+		// }
 		_sliderSkyboxIntensity->setValue( _exposureEvFromMultiplier( p_config.shading.skyboxIntensity ) );
 		_sliderIblIntensity->setValue( _exposureEvFromMultiplier( p_config.shading.iblIntensity ) );
 		_sliderEnvironmentRotation->setValue( Util::Math::degrees( p_config.shading.environmentRotation ) );

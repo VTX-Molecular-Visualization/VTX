@@ -169,6 +169,49 @@ TEST_CASE( "VTX_APP - Preset - Load directory", "[preset]" )
 	std::filesystem::remove_all( directory );
 }
 
+TEST_CASE( "VTX_APP - Preset - Out of range values", "[preset]" )
+{
+	App::Fixture app;
+
+	const FilePath directory = std::filesystem::temp_directory_path() / "vtx_app_test_presets_invalid";
+	std::filesystem::remove_all( directory );
+	std::filesystem::create_directories( directory );
+
+	Renderer::GraphicsConfig config;
+	config.ssao		   = Renderer::SSAOConfig {};
+	config.ssao->scale = 0.f;
+
+	Util::Json::Document ssao;
+	ssao[ "version" ] = Helper::Preset::VERSION<Renderer::GraphicsConfig>;
+	ssao[ "type" ]	  = Helper::Preset::TYPE_NAME<Renderer::GraphicsConfig>;
+	ssao[ "name" ]	  = "Clamped SSAO";
+	ssao[ "data" ]	  = config;
+	Util::Json::write( directory / "ssao.json", ssao );
+
+	Util::Json::Document shading = ssao;
+	shading[ "name" ]							= "Invalid shading";
+	shading[ "data" ][ "ssao" ][ "scale" ]		= Renderer::SSAO_SCALE_DEFAULT;
+	shading[ "data" ][ "shading" ][ "mode" ]	= "COUNT";
+	Util::Json::write( directory / "shading.json", shading );
+
+	ACTION().execute<Action::Preset::LoadDirectory<Renderer::GraphicsConfig>>( directory, false );
+
+	const std::optional<Entity> clamped = Helper::Preset::getByName<Renderer::GraphicsConfig>( "Clamped SSAO" );
+	REQUIRE( clamped.has_value() );
+	REQUIRE( REG().get<Renderer::GraphicsConfig>( *clamped ).ssao.has_value() );
+	CHECK( REG().get<Renderer::GraphicsConfig>( *clamped ).ssao->scale == Renderer::SSAO_SCALE_MIN );
+	CHECK( not Helper::Preset::exists<Renderer::GraphicsConfig>( "Invalid shading" ) );
+
+	ACTION().execute<Action::Preset::Add<Renderer::Representation>>( std::string_view( "Clamped representation" ) );
+	const Entity representation = *Helper::Preset::getByName<Renderer::Representation>( "Clamped representation" );
+	ACTION().execute<Action::Representation::Change<Renderer::E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float>>(
+		representation, 100.f
+	);
+	CHECK( REG().get<Renderer::Representation>( representation ).radiusCylinder == Renderer::RADIUS_CYLINDER_MAX );
+
+	std::filesystem::remove_all( directory );
+}
+
 TEST_CASE( "VTX_APP - Preset - Import", "[preset]" )
 {
 	App::Fixture app;

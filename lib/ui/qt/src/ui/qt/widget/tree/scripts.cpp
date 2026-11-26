@@ -33,9 +33,6 @@ namespace VTX::UI::QT::Widget::Tree
 
 	Scripts::Scripts( QWidget * const p_parent ) : BaseTree( p_parent )
 	{
-		std::error_code error;
-		std::filesystem::create_directories( App::SESSION().getScriptsDir(), error );
-
 		QTreeWidgetItem * const root = new QTreeWidgetItem( QStringList { "Scripts" } );
 		root->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::SCRIPT ) );
 		root->setFlags( Qt::ItemIsEnabled );
@@ -105,6 +102,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 	void Scripts::_refresh()
 	{
+		std::error_code error;
+		std::filesystem::create_directories( App::SESSION().getScriptsDir(), error );
+
 		const QList<QTreeWidgetItem *> selected = selectedItems();
 		const QString selectedPath = selected.isEmpty() ? QString() : selected.first()->data( 0, PATH_ROLE ).toString();
 		if ( not selectedPath.isEmpty() && not std::filesystem::exists( FilePath( selectedPath.toStdString() ) ) )
@@ -152,7 +152,8 @@ namespace VTX::UI::QT::Widget::Tree
 		std::vector<std::filesystem::directory_entry> entries;
 		for ( const std::filesystem::directory_entry & entry : std::filesystem::directory_iterator( p_directory, error ) )
 		{
-			if ( not _isHidden( entry.path() ) && ( entry.is_directory() || _isScript( entry ) ) )
+			const bool isDirectory = entry.is_directory() && not entry.is_symlink();
+			if ( not _isHidden( entry.path() ) && ( isDirectory || _isScript( entry ) ) )
 			{
 				entries.push_back( entry );
 			}
