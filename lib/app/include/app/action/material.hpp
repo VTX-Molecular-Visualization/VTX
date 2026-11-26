@@ -2,6 +2,7 @@
 #define VTX_APP_ACTION_MATERIAL_HPP
 
 #include "app/ecs.hpp"
+#include "app/helper/preset.hpp"
 #include <optional>
 #include <renderer/material.hpp>
 #include <util/filesystem.hpp>
@@ -25,6 +26,7 @@ namespace VTX::App::Action::Material
 	{
 		void execute( const Entity p_e, const T & p_value )
 		{
+			Helper::Preset::checkEditable( p_e );
 			REG().patch<Renderer::Material>(
 				p_e,
 				[ p_value ]( Renderer::Material & p_material )

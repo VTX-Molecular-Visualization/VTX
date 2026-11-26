@@ -4,6 +4,7 @@
 #include "app/extractor/mesh.hpp"
 #include "app/extractor/system.hpp"
 #include "app/helper/io.hpp"
+#include "app/helper/script.hpp"
 #include <util/action_manager.hpp>
 #if VTX_PYTHON_BINDING
 #include "app/python_binding/interpretor.hpp"
@@ -20,7 +21,6 @@
 #include <string>
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
-#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/resolution.hpp>
 
@@ -137,16 +137,7 @@ namespace VTX::App::Action::IO
 	}
 
 	void ImportScript::execute( const FilePath & p_path )
-	{
-		const FilePath directory = SESSION().getScriptsDir();
-		std::filesystem::create_directories( directory );
-		FilePath destination = directory / p_path.filename();
-		Util::Filesystem::generateUniqueFileName( destination );
-		std::filesystem::copy_file( p_path, destination );
-		VTX_INFO( "Script imported to {}", destination.string() );
-
-		ACTION().execute<RunPythonScript>( destination );
-	}
+	{ ACTION().execute<RunPythonScript>( Helper::Script::copyToUserDirectory( p_path ) ); }
 
 	void DownloadSystem::execute( const std::string & p_systemId, const bool p_force )
 	{

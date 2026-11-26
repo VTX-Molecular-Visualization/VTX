@@ -38,10 +38,12 @@ namespace VTX::Util::Color
 	Rgba Rgba::mixedWith( const Rgba & p_other, const float p_factor ) const noexcept
 	{
 		const float factor = Util::Math::clamp( p_factor, 0.f, 1.f );
-		return Rgba( Util::Math::lerp( r(), p_other.r(), factor ),
-					 Util::Math::lerp( g(), p_other.g(), factor ),
-					 Util::Math::lerp( b(), p_other.b(), factor ),
-					 a() );
+		return Rgba(
+			Util::Math::lerp( r(), p_other.r(), factor ),
+			Util::Math::lerp( g(), p_other.g(), factor ),
+			Util::Math::lerp( b(), p_other.b(), factor ),
+			a()
+		);
 	}
 
 	Rgba Rgba::toLinear() const noexcept
@@ -68,7 +70,8 @@ namespace VTX::Util::Color
 	{
 		const float grey = brightness();
 		Rgba		result(
-			grey + ( r() - grey ) * p_factor, grey + ( g() - grey ) * p_factor, grey + ( b() - grey ) * p_factor, a() );
+			grey + ( r() - grey ) * p_factor, grey + ( g() - grey ) * p_factor, grey + ( b() - grey ) * p_factor, a()
+		);
 		result.saturate();
 		return result;
 	}
@@ -133,10 +136,8 @@ namespace VTX::Util::Color
 		}
 
 		Rgba result = palette[ bestIndex ];
-		result		= result.mixedWith(
-			Rgba( 1.f, 1.f, 1.f, a() ), Util::Math::max( 0.f, brightnessValue - 0.6f ) * 0.35f
-		);
-		result		= result.withMinBrightness( 0.38f );
+		result = result.mixedWith( Rgba( 1.f, 1.f, 1.f, a() ), Util::Math::max( 0.f, brightnessValue - 0.6f ) * 0.35f );
+		result = result.withMinBrightness( 0.38f );
 		result.saturate();
 		return Rgba( result.r(), result.g(), result.b(), a() );
 	}
@@ -170,7 +171,8 @@ namespace VTX::Util::Color
 			const auto toByte = []( const float p_channel ) -> uint
 			{ return static_cast<uint>( std::lround( std::clamp( p_channel, 0.f, 1.f ) * 255.f ) ); };
 
-			return toByte( p_color.x ) << 24 | toByte( p_color.y ) << 16 | toByte( p_color.z ) << 8 | toByte( p_color.w );
+			return toByte( p_color.x ) << 24 | toByte( p_color.y ) << 16 | toByte( p_color.z ) << 8
+				   | toByte( p_color.w );
 		}
 	} // namespace
 
@@ -184,7 +186,7 @@ namespace VTX::Util::Color
 		if ( ( p_hexa.size() == 7 || hasAlpha ) && p_hexa.front() == '#' )
 		{
 			const char * const end	  = p_hexa.data() + p_hexa.size();
-			uint		   packed = 0;
+			uint			   packed = 0;
 
 			if ( std::from_chars( p_hexa.data() + 1, end, packed, 16 ).ptr == end )
 			{

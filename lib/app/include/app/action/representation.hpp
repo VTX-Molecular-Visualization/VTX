@@ -2,6 +2,7 @@
 #define VTX_APP_ACTION_REPRESENTATION_HPP
 
 #include "app/ecs.hpp"
+#include "app/helper/preset.hpp"
 #include "app/helper/system.hpp"
 #include "app/system/representation.hpp"
 #include "app/system/selection.hpp"
@@ -127,6 +128,7 @@ namespace VTX::App::Action::Representation
 	{
 		void execute( const Entity p_e, const T & p_value )
 		{
+			Helper::Preset::checkEditable( p_e );
 			REG().patch<Renderer::Representation>(
 				p_e,
 				[ p_value ]( Renderer::Representation & p_representation )

@@ -26,6 +26,9 @@ namespace VTX::UI::QT::Widget::Library
 		addWidget( _pixelizeSection );
 		_crtSection = Helper::makeQObject<GraphicsConfig::CRTSection>( presetGroupBox() );
 		addWidget( _crtSection );
+
+		_materialSection = Helper::makeQObject<GraphicsConfig::MaterialSection>( this );
+		addWidgetBelow( _materialSection );
 	}
 
 	void GraphicsConfigWidget::_update( const Entity p_preset )
@@ -40,5 +43,6 @@ namespace VTX::UI::QT::Widget::Library
 		_chromaticAberrationSection->setConfig( p_preset, config );
 		_pixelizeSection->setConfig( p_preset, config );
 		_crtSection->setConfig( p_preset, config );
+		_materialSection->setConfig( config );
 	}
 } // namespace VTX::UI::QT::Widget::Library

@@ -51,12 +51,7 @@ namespace VTX::App::Action::Preset
 		)
 		{
 			auto &		reg	 = REG();
-			std::string name = std::string { p_name.has_value() ? p_name.value() : DEFAULT_PRESET_NAME };
-
-			while ( Helper::Preset::exists<T>( name ) )
-			{
-				name += " (2)";
-			}
+			const std::string name = std::string { p_name.has_value() ? p_name.value() : DEFAULT_PRESET_NAME };
 
 			auto e = reg.create();
 			reg.emplace<App::Generic::Name>( e, name );
@@ -84,22 +79,14 @@ namespace VTX::App::Action::Preset
 	{
 		void execute( const Entity p_e, const std::string_view p_dest )
 		{
-			if ( REG().all_of<Generic::ReadOnly>( p_e ) )
-			{
-				throw VTXException( "Cannot rename a read-only preset." );
-			}
+			Helper::Preset::checkEditable( p_e );
 
-			std::string name { p_dest };
+			const std::string name { p_dest };
 
 			auto & src = REG().get<App::Generic::Name>( p_e );
 			if ( src.name == p_dest )
 			{
 				return;
-			}
-
-			while ( Helper::Preset::exists<T>( name ) )
-			{
-				name += " (2)";
 			}
 
 			auto & nameComponent = REG().get<App::Generic::Name>( p_e );
@@ -119,16 +106,12 @@ namespace VTX::App::Action::Preset
 			auto & reg = REG();
 			auto & src = reg.get<App::Generic::Name>( p_e );
 
-			std::string name = std::string { p_dest.has_value() ? p_dest.value() : src.name + "_copy" };
+			const std::string name = std::string { p_dest.has_value() ? p_dest.value() : src.name + " (copy)" };
 
-			while ( Helper::Preset::exists<T>( name ) )
-			{
-				name += "_copy";
-			}
-
-			auto e = reg.create();
+			const T data = reg.get<T>( p_e );
+			const Entity e	 = reg.create();
 			reg.emplace<App::Generic::Name>( e, name );
-			reg.emplace<T>( e, reg.get<T>( p_e ) );
+			reg.emplace<T>( e, data );
 		}
 	};
 
@@ -140,10 +123,7 @@ namespace VTX::App::Action::Preset
 	{
 		void execute( const Entity p_e )
 		{
-			if ( REG().all_of<Generic::ReadOnly>( p_e ) )
-			{
-				throw VTXException( "Cannot delete a read-only preset." );
-			}
+			Helper::Preset::checkEditable( p_e );
 
 			auto view = REG().view<App::Generic::Name, T>();
 
@@ -230,17 +210,25 @@ namespace VTX::App::Action::Preset
 		}
 
 		template<typename T>
-		Entity create( const std::string & p_name, T && p_data, const FilePath & p_path, const bool p_readOnly )
+		Entity create(
+			const std::string &				p_name,
+			T &&							p_data,
+			const std::optional<FilePath> & p_path,
+			const bool						p_readOnly
+		)
 		{
 			Registry &	 reg	= REG();
 			const Entity entity = reg.create();
 			reg.emplace<Generic::Name>( entity, p_name );
-			reg.emplace<T>( entity, std::move( p_data ) );
-			reg.emplace<Generic::File>( entity, p_path );
+			if ( p_path )
+			{
+				reg.emplace<Generic::File>( entity, *p_path );
+			}
 			if ( p_readOnly )
 			{
 				reg.emplace<Generic::ReadOnly>( entity );
 			}
+			reg.emplace<T>( entity, std::move( p_data ) );
 			return entity;
 		}
 	} // namespace Detail
@@ -259,12 +247,6 @@ namespace VTX::App::Action::Preset
 				T						   data		= Detail::read<T>( document );
 
 				const std::string name = document.at( "name" ).get<std::string>();
-				if ( Helper::Preset::exists<T>( name ) )
-				{
-					VTX_WARNING( "Preset {} skipped: a preset named \"{}\" already exists", p_path.string(), name );
-					return;
-				}
-
 				Detail::create<T>( name, std::move( data ), p_path, p_readOnly );
 			}
 			catch ( const std::exception & p_e )
@@ -325,8 +307,8 @@ namespace VTX::App::Action::Preset
 			Registry &	 reg	= REG();
 			const Entity entity = reg.create();
 			reg.emplace<Generic::Name>( entity, std::string( Helper::Preset::DEFAULT_NAME<T> ) );
-			reg.emplace<T>( entity );
 			reg.emplace<Generic::ReadOnly>( entity );
+			reg.emplace<T>( entity );
 		}
 	};
 

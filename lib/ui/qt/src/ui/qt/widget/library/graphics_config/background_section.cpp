@@ -57,6 +57,10 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_listEnvironmentMaps->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 		addWidget( _listEnvironmentMaps );
 
+		_labelExperimental = Helper::makeQObject<QLabel>( "Experimental", this );
+		_labelExperimental->setEnabled( false );
+		addWidget( _labelExperimental );
+
 		auto * const environmentPathWidget = Helper::makeQObject<QWidget>( this );
 		auto * const environmentPathLayout = Helper::makeQObject<QHBoxLayout>( environmentPathWidget );
 		environmentPathLayout->setContentsMargins( 0, 0, 0, 0 );
@@ -280,7 +284,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const bool hasEnvironment  = environmentMode && p_config.shading.environmentPath.has_value();
 		const bool pbr			   = p_config.shading.mode == VTX::Renderer::E_SHADING::PBR;
 		_colorPicker->setVisible( p_config.shading.backgroundMode == VTX::Renderer::E_BACKGROUND_MODE::COLOR );
-		_listEnvironmentMaps->setVisible( environmentMode );
+		_listEnvironmentMaps->setVisible( false );
+		_labelExperimental->setVisible( environmentMode );
 		_lineEnvironmentPath->parentWidget()->setVisible( environmentMode );
 		_labelSkyboxIntensity->setVisible( hasEnvironment );
 		_sliderSkyboxIntensity->setVisible( hasEnvironment );

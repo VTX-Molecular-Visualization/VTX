@@ -16,6 +16,7 @@ namespace VTX::UI::QT::Widget::Tree
 		{
 			addTopLevelItem( std::make_unique<QTreeWidgetItem>( QStringList() << "Graphics" ).release() );
 			topLevelItem( 0 )->setIcon( 0, STYLE().iconFromCodepoint( Style::Icons::GRAPHICS_CONFIG ) );
+			_addGroups();
 			_restoreExpansionState( SETTING_KEY_GRAPHICS_CONFIG_PRESETS_EXPANDED );
 			_connectAppliedPresetUpdates( App::REG() );
 		}

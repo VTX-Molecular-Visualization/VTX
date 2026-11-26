@@ -2,6 +2,7 @@
 #define VTX_APP_ACTION_GRAPHICS_CONFIG_HPP
 
 #include "app/ecs.hpp"
+#include "app/helper/preset.hpp"
 #include "app/services.hpp"
 #include "app/session.hpp"
 #include <filesystem>
@@ -42,15 +43,17 @@ namespace VTX::App::Action::GraphicsConfig
 				return std::nullopt;
 			}
 
-			FilePath ktxPath = SESSION().getHdrisDir() / FilePath( p_path.filename() ).replace_extension( ".ktx2" );
-			if ( ( not std::filesystem::exists( ktxPath )
-				   || std::filesystem::last_write_time( p_path ) > std::filesystem::last_write_time( ktxPath ) )
-				 && not Renderer::Baker::bakeEnvironmentMapToKtx( p_path, ktxPath, p_faceSize ) )
-			{
-				return std::nullopt;
-			}
+			// FilePath ktxPath = SESSION().getHdrisDir() / FilePath( p_path.filename() ).replace_extension( ".ktx2" );
+			// if ( ( not std::filesystem::exists( ktxPath )
+			//	   || std::filesystem::last_write_time( p_path ) > std::filesystem::last_write_time( ktxPath ) )
+			//	 && not Renderer::Baker::bakeEnvironmentMapToKtx( p_path, ktxPath, p_faceSize ) )
+			// {
+			//	return std::nullopt;
+			// }
 
-			return ktxPath;
+			// return ktxPath;
+
+			return p_path;
 		}
 	} // namespace Detail
 
@@ -62,6 +65,7 @@ namespace VTX::App::Action::GraphicsConfig
 	{
 		void execute( const Entity p_e, const T & p_value )
 		{
+			Helper::Preset::checkEditable( p_e );
 			REG().patch<Renderer::GraphicsConfig>(
 				p_e,
 				[ p_value ]( Renderer::GraphicsConfig & p_config )

@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QSignalBlocker>
 #include <QVBoxLayout>
+#include <app/action/preset.hpp>
 #include <app/action/scene.hpp>
 #include <app/generic/name.hpp>
 #include <app/scene/material.hpp>
@@ -13,26 +14,23 @@
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 {
-	MaterialSection::MaterialSection( QWidget * const p_parent ) : QWidget( p_parent )
+	MaterialSection::MaterialSection( QWidget * const p_parent ) : HideableGroupBox( "Material", p_parent )
 	{
 		using namespace Renderer;
+		setChecked( true );
 
-		auto * const layout = Helper::makeQObject<QVBoxLayout>( this );
-		layout->setContentsMargins( 0, 0, 0, 0 );
-
-		layout->addWidget( Helper::makeQObject<QLabel>( "Material", this ) );
 		_listMaterials = Helper::makeQObject<QListWidget>( this );
 		_listMaterials->setSelectionMode( QAbstractItemView::SingleSelection );
 		_listMaterials->setSortingEnabled( true );
-		layout->addWidget( _listMaterials );
+		addWidget( _listMaterials );
 
-		auto materialPresets = App::REG().view<App::Generic::Name, Material>();
-		for ( const Entity entity : materialPresets )
-		{
-			auto * const item = new QListWidgetItem(
-				QString::fromStdString( materialPresets.get<App::Generic::Name>( entity ).name ), _listMaterials );
-			item->setData( Qt::UserRole, QVariant::fromValue<Entity>( entity ) );
-		}
+		_readOnlyNotice = Helper::makeQObject<ReadOnlyNotice>( this );
+		addWidget( _readOnlyNotice );
+
+		_editor = Helper::makeQObject<QWidget>( this );
+		addWidget( _editor );
+		auto * const layout = Helper::makeQObject<QVBoxLayout>( _editor );
+		layout->setContentsMargins( 0, 0, 0, 0 );
 
 		layout->addWidget( Helper::makeQObject<QLabel>( "Metallic", this ) );
 		_sliderMetallic = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
@@ -119,6 +117,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 					 [ this, textureType ] { _changeTexture( textureType, FilePath {} ); } );
 		}
 
+		connect( _readOnlyNotice->button(), &QPushButton::clicked, [ this ] { _duplicateCurrentMaterial(); } );
 		connect( _listMaterials,
 				 &QListWidget::itemClicked,
 				 [ this ]( QListWidgetItem * const p_item )
@@ -149,8 +148,11 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sceneMaterialUpdatedConnection
 			= reg.on_update<App::Scene::Material>().connect<&MaterialSection::_onSceneMaterial>( this );
 		_materialUpdatedConnection = reg.on_update<Material>().connect<&MaterialSection::_onMaterialUpdated>( this );
+		_materialConstructedConnection
+			= reg.on_construct<Material>().connect<&MaterialSection::_onMaterialConstructed>( this );
+		_materialDestroyedConnection = reg.on_destroy<Material>().connect<&MaterialSection::_onMaterialDestroyed>( this );
 
-		_refresh();
+		_refreshList( InvalidEntity );
 	}
 
 	const std::optional<VTX::Renderer::MaterialTexture> & MaterialSection::_texture(
@@ -202,6 +204,53 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 
 	void MaterialSection::_onSceneMaterial( Registry &, Entity ) { _refresh(); }
 
+	void MaterialSection::_onMaterialConstructed( Registry &, const Entity p_e )
+	{
+		_lastConstructedMaterial = p_e;
+		_refreshList( InvalidEntity );
+	}
+
+	void MaterialSection::_onMaterialDestroyed( Registry &, const Entity p_e ) { _refreshList( p_e ); }
+
+	void MaterialSection::_duplicateCurrentMaterial()
+	{
+		if ( not App::REG().valid( _currentMaterial ) )
+		{
+			return;
+		}
+
+		_lastConstructedMaterial = InvalidEntity;
+		App::ACTION().execute<App::Action::Preset::Duplicate<VTX::Renderer::Material>>( _currentMaterial, std::nullopt );
+		if ( App::REG().valid( _lastConstructedMaterial ) )
+		{
+			App::ACTION().execute<App::Action::Scene::SetMaterial>( _lastConstructedMaterial );
+		}
+	}
+
+	void MaterialSection::_refreshList( const Entity p_ignored )
+	{
+		{
+			const QSignalBlocker blocker( _listMaterials );
+			_listMaterials->clear();
+
+			auto materialPresets = App::REG().view<App::Generic::Name, VTX::Renderer::Material>();
+			for ( const Entity entity : materialPresets )
+			{
+				if ( entity == p_ignored )
+				{
+					continue;
+				}
+
+				auto * const item = new QListWidgetItem(
+					QString::fromStdString( materialPresets.get<App::Generic::Name>( entity ).name ), _listMaterials
+				);
+				item->setData( Qt::UserRole, QVariant::fromValue<Entity>( entity ) );
+			}
+		}
+
+		_refresh();
+	}
+
 	void MaterialSection::_onMaterialUpdated( Registry &, const Entity p_e )
 	{
 		if ( p_e == _currentMaterial )
@@ -227,8 +276,14 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		if ( not App::REG().valid( _currentMaterial ) || not App::REG().all_of<VTX::Renderer::Material>( _currentMaterial ) )
 		{
 			_currentMaterial = InvalidEntity;
+			_readOnlyNotice->setVisible( false );
+			_editor->setVisible( false );
 			return;
 		}
+
+		const bool readOnly = ReadOnlyNotice::isReadOnly( _currentMaterial );
+		_readOnlyNotice->setVisible( readOnly );
+		_editor->setVisible( not readOnly );
 
 		for ( int i = 0; i < _listMaterials->count(); ++i )
 		{

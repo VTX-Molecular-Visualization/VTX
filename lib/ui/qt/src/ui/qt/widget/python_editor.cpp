@@ -4,32 +4,38 @@
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
 #include "ui/qt/settings.hpp"
+#include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/python_completer.hpp"
+#include "ui/qt/widget/tree/scripts.hpp"
 #include <QAbstractItemView>
 #include <QBoxLayout>
+#include <QDir>
 #include <QFile>
-#include <QFileSystemModel>
+#include <QFileInfo>
+#include <QLabel>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPalette>
 #include <QPlainTextEdit>
+#include <QPushButton>
 #include <QRegularExpression>
 #include <QSaveFile>
+#include <QScrollBar>
 #include <QSizePolicy>
 #include <QStringList>
 #include <QStyle>
 #include <QSyntaxHighlighter>
 #include <QTextBlock>
 #include <QTextCursor>
+#include <QTextDocument>
 #include <QToolBar>
 #include <QToolButton>
 #include <algorithm>
 #include <app/action/io.hpp>
+#include <app/helper/script.hpp>
 #include <app/services.hpp>
-#include <app/session.hpp>
 #include <cmath>
-#include <filesystem>
 #include <functional>
 #include <util/action_manager.hpp>
 #include <util/event_hub.hpp>
@@ -43,6 +49,9 @@ namespace
 	constexpr int	OPACITY_SLIDER_WIDTH = 100;
 	constexpr float DEFAULT_WIDTH_RATIO	 = 0.5f;
 	constexpr int	MIN_WIDTH			 = 240;
+	constexpr int	DUPLICATE_BUTTON_HEIGHT = 40;
+	constexpr int	RELOAD_DELAY			= 200;
+	constexpr int	STATUS_LABEL_MARGIN		= 6;
 	constexpr int	RESIZE_HANDLE_WIDTH	 = 6;
 } // namespace
 
@@ -104,6 +113,7 @@ namespace VTX::UI::QT::Widget
 		explicit PythonTextEdit( QWidget * p_parent );
 
 	  protected:
+		bool event( QEvent * ) override;
 		void keyPressEvent( QKeyEvent * ) override;
 
 	  private:
@@ -120,8 +130,27 @@ namespace VTX::UI::QT::Widget
 		);
 	}
 
+	bool PythonTextEdit::event( QEvent * const p_event )
+	{
+		if ( p_event->type() == QEvent::ShortcutOverride
+			 && static_cast<QKeyEvent *>( p_event )->matches( QKeySequence::Save ) )
+		{
+			p_event->accept();
+			return true;
+		}
+
+		return QPlainTextEdit::event( p_event );
+	}
+
 	void PythonTextEdit::keyPressEvent( QKeyEvent * const p_event )
 	{
+		if ( p_event->matches( QKeySequence::Save ) )
+		{
+			App::HUB().trigger<Events::ScriptSave>();
+			p_event->accept();
+			return;
+		}
+
 		if ( _completer->popup()->isVisible() )
 		{
 			switch ( p_event->key() )
@@ -203,11 +232,13 @@ namespace VTX::UI::QT::Widget
 
 	PythonEditor::PythonEditor( QWidget * const p_parent ) :
 		BaseWidget( p_parent ), _textEdit( Helper::makeQObject<PythonTextEdit>( this ) ),
-		_runAction( UI_ACTIONS().getAction( Action::Script::RUN ) )
+		_runAction( UI_ACTIONS().getAction( Action::Script::RUN ) ),
+		_saveAction( UI_ACTIONS().getAction( Action::Script::SAVE ) )
 	{
 		setAttribute( Qt::WA_NoMousePropagation );
 
 		_runAction->setEnabled( false );
+		_saveAction->setEnabled( false );
 
 		auto * const toolbar = Helper::makeQObject<QToolBar>( this );
 		toolbar->setMovable( false );
@@ -215,9 +246,19 @@ namespace VTX::UI::QT::Widget
 		toolbar->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
 		toolbar->layout()->setContentsMargins( 0, 0, 0, 0 );
 
-		auto * const spacer = Helper::makeQObject<QWidget>( toolbar );
-		spacer->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Preferred );
-		toolbar->addWidget( spacer );
+		auto * const status		  = Helper::makeQObject<QWidget>( this );
+		auto * const statusLayout = Helper::makeQObject<QVBoxLayout>( status );
+		statusLayout->setContentsMargins( STATUS_LABEL_MARGIN, 0, 0, 0 );
+		statusLayout->setSpacing( 0 );
+		_pathLabel = Helper::makeQObject<QLabel>( status );
+		_pathLabel->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Preferred );
+		_modifiedLabel = Helper::makeQObject<QLabel>( "(modified)", status );
+		QSizePolicy modifiedPolicy = _modifiedLabel->sizePolicy();
+		modifiedPolicy.setRetainSizeWhenHidden( true );
+		_modifiedLabel->setSizePolicy( modifiedPolicy );
+		_modifiedLabel->setVisible( false );
+		statusLayout->addWidget( _pathLabel );
+		statusLayout->addWidget( _modifiedLabel );
 
 		_opacitySlider = Helper::makeQObject<QSlider>( Qt::Horizontal, toolbar );
 		_opacitySlider->setRange( 0, 100 );
@@ -252,13 +293,48 @@ namespace VTX::UI::QT::Widget
 		textPalette.setColor( QPalette::Base, Qt::transparent );
 		_textEdit->setPalette( textPalette );
 		_highlighter = Helper::makeQObject<PythonHighlighter>( _textEdit->document() );
+		connect(
+			_textEdit->document(),
+			&QTextDocument::modificationChanged,
+			this,
+			[ this ]( const bool ) { _updateStatus(); }
+		);
+
+		_duplicateButton = Helper::makeQObject<QPushButton>( "DEMO SCRIPT - COPY TO EDIT", this );
+		_duplicateButton->setIcon( STYLE().iconFromCodepoint( Style::Icons::COPY ) );
+		_duplicateButton->setToolTip( "Copy this script into your scripts" );
+		_duplicateButton->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed );
+		_duplicateButton->setMinimumHeight( DUPLICATE_BUTTON_HEIGHT );
+		QFont duplicateFont = _duplicateButton->font();
+		duplicateFont.setBold( true );
+		_duplicateButton->setFont( duplicateFont );
+		_duplicateButton->setVisible( false );
+		connect( _duplicateButton, &QPushButton::clicked, this, [ this ]() { Helper::duplicateScript( _currentPath ); } );
+
+		auto * const actions	   = Helper::makeQObject<QWidget>( this );
+		auto * const actionsLayout = Helper::makeQObject<QHBoxLayout>( actions );
+		actionsLayout->setContentsMargins( 0, 0, 0, 0 );
+		actionsLayout->addStretch();
+		_saveButton = Helper::makeActionButton( *_saveAction, actions );
+		actionsLayout->addWidget( _saveButton );
+		QPushButton * const runButton = Helper::makeActionButton( *_runAction, actions );
+		actionsLayout->addWidget( runButton );
+
+		auto * const header		  = Helper::makeQObject<QWidget>( this );
+		auto * const headerLayout = Helper::makeQObject<QHBoxLayout>( header );
+		headerLayout->setContentsMargins( 0, 0, 0, 0 );
+		headerLayout->setSpacing( 0 );
+		headerLayout->addWidget( status, 1 );
+		headerLayout->addWidget( toolbar );
 
 		auto * const content	   = Helper::makeQObject<QWidget>( this );
 		auto * const contentLayout = Helper::makeQObject<QVBoxLayout>( content );
 		contentLayout->setContentsMargins( 0, 0, 0, 0 );
 		contentLayout->setSpacing( 0 );
-		contentLayout->addWidget( toolbar );
+		contentLayout->addWidget( _duplicateButton );
+		contentLayout->addWidget( header );
 		contentLayout->addWidget( _textEdit );
+		contentLayout->addWidget( actions );
 
 		auto * const resizeHandle = Helper::makeQObject<PythonEditorResizeHandle>(
 			this, [ this ]( const QPoint & p_globalPosition ) { _setWidth( mapFromGlobal( p_globalPosition ).x() ); }
@@ -282,8 +358,16 @@ namespace VTX::UI::QT::Widget
 		}
 		_updateGeometry();
 
+		_fileWatcher = Helper::makeQObject<QFileSystemWatcher>( this );
+		_reloadTimer = Helper::makeQObject<QTimer>( this );
+		_reloadTimer->setSingleShot( true );
+		_reloadTimer->setInterval( RELOAD_DELAY );
+		connect( _fileWatcher, &QFileSystemWatcher::fileChanged, _reloadTimer, qOverload<>( &QTimer::start ) );
+		connect( _reloadTimer, &QTimer::timeout, this, &PythonEditor::_reload );
+
 		connect( &SELECTION(), &SelectionManager::selectionChanged, this, &PythonEditor::_onSelectionChanged );
-		_scriptRunConnection = App::HUB().connect<Events::ScriptRun, &PythonEditor::_onScriptRun>( this );
+		_scriptRunConnection  = App::HUB().connect<Events::ScriptRun, &PythonEditor::_onScriptRun>( this );
+		_scriptSaveConnection = App::HUB().connect<Events::ScriptSave, &PythonEditor::_onScriptSave>( this );
 	}
 
 	PythonEditor::~PythonEditor() = default;
@@ -373,7 +457,7 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		_open( FilePath( indexes.first().data( QFileSystemModel::FilePathRole ).toString().toStdString() ) );
+		_open( FilePath( indexes.first().data( Tree::Scripts::PATH_ROLE ).toString().toStdString() ) );
 	}
 
 	void PythonEditor::_open( const FilePath & p_path )
@@ -384,34 +468,42 @@ namespace VTX::UI::QT::Widget
 		if ( not file.open( QIODevice::ReadOnly | QIODevice::Text ) )
 		{
 			_currentPath.clear();
+			_watch( {} );
+			_currentReadOnly = false;
+			_duplicateButton->setVisible( false );
 			_runAction->setEnabled( false );
+			_saveAction->setEnabled( false );
 			_textEdit->clear();
+			_textEdit->document()->setModified( false );
+			_updateStatus();
 			return;
 		}
 
 		_currentPath	 = p_path;
-		_currentReadOnly = _isReadOnly( p_path );
+		_watch( p_path );
+		_currentReadOnly = App::Helper::Script::isReadOnly( p_path );
+		_duplicateButton->setVisible( _currentReadOnly );
 		_runAction->setEnabled( true );
+		_saveAction->setEnabled( not _currentReadOnly );
+		_saveButton->setVisible( not _currentReadOnly );
 		_textEdit->setPlainText( QString::fromUtf8( file.readAll() ) );
+		_textEdit->document()->setModified( false );
 		_textEdit->setReadOnly( _currentReadOnly );
-	}
-
-	bool PythonEditor::_isReadOnly( const FilePath & p_path )
-	{
-		const FilePath examples = std::filesystem::weakly_canonical( App::SESSION().getDefaultScriptsDir() );
-		const FilePath path		= std::filesystem::weakly_canonical( p_path );
-		const std::pair<FilePath::const_iterator, FilePath::const_iterator> mismatch
-			= std::mismatch( examples.begin(), examples.end(), path.begin(), path.end() );
-		return mismatch.first == examples.end();
+		_updateStatus();
 	}
 
 	void PythonEditor::_close()
 	{
 		hide();
 		_currentPath.clear();
+		_watch( {} );
 		_currentReadOnly = false;
+		_duplicateButton->setVisible( false );
 		_runAction->setEnabled( false );
+		_saveAction->setEnabled( false );
 		_textEdit->clear();
+		_textEdit->document()->setModified( false );
+		_updateStatus();
 	}
 
 	void PythonEditor::_onScriptRun( const Events::ScriptRun & )
@@ -421,26 +513,110 @@ namespace VTX::UI::QT::Widget
 			return;
 		}
 
-		if ( _currentReadOnly )
+		if ( not _currentReadOnly && not _save() )
 		{
-			App::ACTION().execute<App::Action::IO::RunPythonScript>( _currentPath );
 			return;
 		}
 
+		App::ACTION().execute<App::Action::IO::RunPythonScript>( _currentPath );
+	}
+
+	void PythonEditor::_onScriptSave( const Events::ScriptSave & )
+	{
+		if ( _currentPath.empty() || _currentReadOnly )
+		{
+			return;
+		}
+
+		_save();
+	}
+
+	void PythonEditor::_watch( const FilePath & p_path )
+	{
+		_reloadTimer->stop();
+		if ( not _fileWatcher->files().isEmpty() )
+		{
+			_fileWatcher->removePaths( _fileWatcher->files() );
+		}
+		if ( not p_path.empty() )
+		{
+			_fileWatcher->addPath( QString::fromStdString( p_path.string() ) );
+		}
+	}
+
+	void PythonEditor::_updateStatus()
+	{
+		if ( _currentPath.empty() )
+		{
+			_pathLabel->clear();
+			_pathLabel->setToolTip( {} );
+			_modifiedLabel->setVisible( false );
+			return;
+		}
+
+		const QString path = QDir::toNativeSeparators(
+			QFileInfo( QString::fromStdString( _currentPath.string() ) ).absoluteFilePath()
+		);
+		_pathLabel->setText( path );
+		_pathLabel->setToolTip( path );
+		_modifiedLabel->setVisible( _textEdit->document()->isModified() );
+	}
+
+	void PythonEditor::_reload()
+	{
+		if ( _currentPath.empty() )
+		{
+			return;
+		}
+
+		const QString path = QString::fromStdString( _currentPath.string() );
+		QFile		  file( path );
+		if ( not file.open( QIODevice::ReadOnly | QIODevice::Text ) )
+		{
+			return;
+		}
+
+		if ( not _fileWatcher->files().contains( path ) )
+		{
+			_fileWatcher->addPath( path );
+		}
+
+		const QString content = QString::fromUtf8( file.readAll() );
+		if ( content == _textEdit->toPlainText() )
+		{
+			_textEdit->document()->setModified( false );
+			return;
+		}
+
+		const int position = _textEdit->textCursor().position();
+		const int scroll   = _textEdit->verticalScrollBar()->value();
+
+		_textEdit->setPlainText( content );
+		_textEdit->document()->setModified( false );
+
+		QTextCursor cursor = _textEdit->textCursor();
+		cursor.setPosition( std::min( position, _textEdit->document()->characterCount() - 1 ) );
+		_textEdit->setTextCursor( cursor );
+		_textEdit->verticalScrollBar()->setValue( scroll );
+	}
+
+	bool PythonEditor::_save()
+	{
 		QSaveFile file( QString::fromStdString( _currentPath.string() ) );
 		if ( not file.open( QIODevice::WriteOnly ) )
 		{
 			VTX_WARNING( "Unable to open script <{}> for writing.", _currentPath.string() );
-			return;
+			return false;
 		}
 
 		const QByteArray content = _textEdit->toPlainText().toUtf8();
 		if ( file.write( content ) != content.size() || not file.commit() )
 		{
 			VTX_WARNING( "Unable to save script <{}>.", _currentPath.string() );
-			return;
+			return false;
 		}
 
-		App::ACTION().execute<App::Action::IO::RunPythonScript>( _currentPath );
+		_textEdit->document()->setModified( false );
+		return true;
 	}
 } // namespace VTX::UI::QT::Widget

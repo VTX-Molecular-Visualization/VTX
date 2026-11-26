@@ -103,7 +103,7 @@ namespace VTX::App::PythonBinding
 					"Duplicate the preset, with an optional name for the copy.",
 					py::arg( "name" ) = py::none()
 				)
-				.def( "delete", &_deletePreset<T>, "Delete the preset." )
+				// .def( "delete", &_deletePreset<T>, "Delete the preset." )
 				.def(
 					"apply",
 					[]( const PresetHandle<T> & p_preset )

@@ -3,6 +3,8 @@
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/editable_slider.hpp"
+#include "ui/qt/widget/hideable_goupe_box.hpp"
+#include "ui/qt/widget/library/read_only_notice.hpp"
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
@@ -19,7 +21,7 @@
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 {
-	class MaterialSection final : public QWidget
+	class MaterialSection final : public HideableGroupBox
 	{
 	  public:
 		explicit MaterialSection( QWidget * );
@@ -53,16 +55,25 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		void _changeTexture( VTX::Renderer::Material::E_TEXTURE, const FilePath & );
 
 		void _refresh();
+		void _refreshList( Entity );
+		void _duplicateCurrentMaterial();
 		void _onSceneMaterial( Registry &, Entity );
 		void _onMaterialUpdated( Registry &, Entity );
+		void _onMaterialConstructed( Registry &, Entity );
+		void _onMaterialDestroyed( Registry &, Entity );
 
-		Entity _currentMaterial = InvalidEntity;
+		Entity _currentMaterial			= InvalidEntity;
+		Entity _lastConstructedMaterial = InvalidEntity;
 
 		VTX::Util::EventHub::ScopedConnection _sceneMaterialConstructedConnection;
 		VTX::Util::EventHub::ScopedConnection _sceneMaterialUpdatedConnection;
 		VTX::Util::EventHub::ScopedConnection _materialUpdatedConnection;
+		VTX::Util::EventHub::ScopedConnection _materialConstructedConnection;
+		VTX::Util::EventHub::ScopedConnection _materialDestroyedConnection;
 
 		QPointer<QListWidget>	 _listMaterials;
+		QPointer<ReadOnlyNotice> _readOnlyNotice;
+		QPointer<QWidget>		 _editor;
 		QPointer<EditableSlider> _sliderMetallic;
 		QPointer<EditableSlider> _sliderRoughness;
 		QPointer<EditableSlider> _sliderEmissiveIntensity;

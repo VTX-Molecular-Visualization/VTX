@@ -1,6 +1,10 @@
+#include <algorithm>
+#include <app/action/color_layout.hpp>
+#include <app/action/graphics_config.hpp>
 #include <app/action/io.hpp>
 #include <app/action/material.hpp>
 #include <app/action/preset.hpp>
+#include <app/action/representation.hpp>
 #include <app/fixture.hpp>
 #include <app/generic/file.hpp>
 #include <app/generic/name.hpp>
@@ -57,6 +61,21 @@ namespace
 		}
 	}
 
+	template<typename T>
+	std::vector<Entity> getAllByName( const std::string_view p_name )
+	{
+		std::vector<Entity> entities;
+		auto				view = REG().view<Generic::Name, T>();
+		for ( const Entity entity : view )
+		{
+			if ( view.template get<Generic::Name>( entity ).name == p_name )
+			{
+				entities.push_back( entity );
+			}
+		}
+		return entities;
+	}
+
 	void writePreset(
 		const FilePath &	   p_path,
 		const uint		   p_version,
@@ -81,7 +100,7 @@ TEST_CASE( "VTX_APP - Preset - Builtin presets", "[preset]" )
 		{ "Sticks", "Sticks and Ribbons", "Balls and sticks", "Van der Waals", "Ribbons", "SES" }
 	);
 	checkBuiltinPresets<Renderer::Color::Layout>( { "JMol", "CPK", "Rasmol" } );
-	checkBuiltinPresets<Renderer::GraphicsConfig>( { "Default", "Presentation", "Illustration", "PBR Metallic" } );
+	checkBuiltinPresets<Renderer::GraphicsConfig>( { "Default", "Presentation", "Illustration" } );
 	checkBuiltinPresets<Renderer::Material>( { "Default", "Matte", "Plastic", "Polished metal", "Brushed metal" } );
 
 	CHECK(
@@ -121,6 +140,7 @@ TEST_CASE( "VTX_APP - Preset - Load directory", "[preset]" )
 	writePreset( directory / "valid.json", 1, "Test preset" );
 	writePreset( directory / "newer.json", Helper::Preset::VERSION<Renderer::Representation> + 1, "Newer preset" );
 	writePreset( directory / "duplicate.json", 1, "Sticks" );
+	writePreset( directory / "default.json", 1, Helper::Preset::DEFAULT_NAME<Renderer::Representation> );
 	writePreset(
 		directory / "wrong_type.json", 1, "Wrong type preset", Helper::Preset::TYPE_NAME<Renderer::Material>
 	);
@@ -137,7 +157,12 @@ TEST_CASE( "VTX_APP - Preset - Load directory", "[preset]" )
 	CHECK( not Helper::Preset::exists<Renderer::Representation>( "Newer preset" ) );
 	CHECK( not Helper::Preset::exists<Renderer::Representation>( "Ignored preset" ) );
 	CHECK( not Helper::Preset::exists<Renderer::Representation>( "Wrong type preset" ) );
-	CHECK( REG().all_of<Generic::ReadOnly>( *Helper::Preset::getByName<Renderer::Representation>( "Sticks" ) ) );
+	const std::vector<Entity> sticks = getAllByName<Renderer::Representation>( "Sticks" );
+	REQUIRE( sticks.size() == 2 );
+	CHECK( REG().all_of<Generic::ReadOnly>( sticks[ 0 ] ) != REG().all_of<Generic::ReadOnly>( sticks[ 1 ] ) );
+	CHECK( not REG().all_of<Generic::ReadOnly>( *Helper::Preset::getByName<Renderer::Representation>( "Sticks" ) ) );
+	CHECK( REG().get<Generic::File>( *Helper::Preset::getDefault<Renderer::Representation>() ).path
+		   == directory / "default.json" );
 
 	ACTION().execute<Action::Preset::LoadDirectory<Renderer::Representation>>( directory / "missing", false );
 
@@ -170,31 +195,28 @@ TEST_CASE( "VTX_APP - Preset - Import", "[preset]" )
 	ACTION().execute<Action::Preset::Import>( directory / "unknown.json" );
 	ACTION().execute<Action::Preset::Import>( directory / "newer.json" );
 
-	const std::optional<Entity> imported = Helper::Preset::getByName<Renderer::Representation>( "Sticks (2)" );
-	REQUIRE( imported.has_value() );
-	CHECK( not REG().all_of<Generic::ReadOnly>( *imported ) );
+	const std::vector<Entity> sticks = getAllByName<Renderer::Representation>( "Sticks" );
+	REQUIRE( sticks.size() == 2 );
+	const std::vector<Entity>::const_iterator imported = std::ranges::find_if(
+		sticks, []( const Entity p_entity ) { return not REG().all_of<Generic::ReadOnly>( p_entity ); }
+	);
+	REQUIRE( imported != sticks.end() );
 
-	const FilePath importedPath = REG().get<Generic::File>( *imported ).path;
-	CHECK( importedPath.parent_path() == SESSION().getRepresentationsDir() );
-	CHECK( Util::Json::read( importedPath ).at( "name" ).get<std::string>() == "Sticks (2)" );
+	CHECK( not REG().all_of<Generic::File>( *imported ) );
+	CHECK( not std::filesystem::exists( SESSION().getRepresentationsDir() / "imported.json" ) );
 
 	const std::optional<Entity> opened = Helper::Preset::getByName<Renderer::Representation>( "Opened preset" );
 	REQUIRE( opened.has_value() );
-	const FilePath openedPath = REG().get<Generic::File>( *opened ).path;
+	CHECK( not REG().all_of<Generic::File>( *opened ) );
 
 	const std::optional<Entity> importedLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "Imported layout" );
 	REQUIRE( importedLayout.has_value() );
 	CHECK( ECS::getFirstComponent<App::Scene::ColorLayout>().preset == *importedLayout );
-	const FilePath layoutPath = REG().get<Generic::File>( *importedLayout ).path;
-	CHECK( layoutPath.parent_path() == SESSION().getColorLayoutsDir() );
+	CHECK( not std::filesystem::exists( SESSION().getColorLayoutsDir() / "layout.json" ) );
 
 	CHECK( not Helper::Preset::exists<Renderer::Representation>( "Unknown type preset" ) );
 	CHECK( not Helper::Preset::exists<Renderer::Representation>( "Newer preset" ) );
-	CHECK( not std::filesystem::exists( SESSION().getRepresentationsDir() / "newer.json" ) );
 
-	std::filesystem::remove( importedPath );
-	std::filesystem::remove( openedPath );
-	std::filesystem::remove( layoutPath );
 	std::filesystem::remove_all( directory );
 }
 
@@ -236,6 +258,23 @@ TEST_CASE( "VTX_APP - Preset - Read-only", "[preset]" )
 	CHECK_THROWS_AS( Util::ActionManager::run( remove, sticks ), VTXException );
 	CHECK( REG().valid( sticks ) );
 
+	const float radius = REG().get<Renderer::Representation>( sticks ).radiusCylinder;
+	Action::Representation::Change<Renderer::E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float> changeRepresentation;
+	CHECK_THROWS_AS( Util::ActionManager::run( changeRepresentation, sticks, radius + 1.f ), VTXException );
+	CHECK( REG().get<Renderer::Representation>( sticks ).radiusCylinder == radius );
+
+	const Entity jmol = *Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" );
+	Action::ColorLayout::Randomize randomize;
+	CHECK_THROWS_AS( Util::ActionManager::run( randomize, jmol ), VTXException );
+
+	const Entity defaultConfig = *Helper::Preset::getByName<Renderer::GraphicsConfig>( "Default" );
+	Action::GraphicsConfig::Change<Renderer::E_GRAPHICS_CONFIG_VALUES::LIGHT_INTENSITY, float> changeConfig;
+	CHECK_THROWS_AS( Util::ActionManager::run( changeConfig, defaultConfig, 0.5f ), VTXException );
+
+	const Entity matte = *Helper::Preset::getByName<Renderer::Material>( "Matte" );
+	Action::Material::Change<Renderer::E_MATERIAL_VALUES::ROUGHNESS, float> changeMaterial;
+	CHECK_THROWS_AS( Util::ActionManager::run( changeMaterial, matte, 0.25f ), VTXException );
+
 	ACTION().execute<Action::Preset::Duplicate<Renderer::Representation>>(
 		sticks, std::optional<std::string_view>( "Sticks copy" )
 	);
@@ -245,6 +284,11 @@ TEST_CASE( "VTX_APP - Preset - Read-only", "[preset]" )
 
 	ACTION().execute<Action::Preset::Rename<Renderer::Representation>>( *copy, std::string_view( "My sticks" ) );
 	CHECK( REG().get<Generic::Name>( *copy ).name == "My sticks" );
+
+	ACTION().execute<Action::Representation::Change<Renderer::E_REPRESENTATION_VALUES::RADIUS_CYLINDER, float>>(
+		*copy, radius + 1.f
+	);
+	CHECK( REG().get<Renderer::Representation>( *copy ).radiusCylinder == radius + 1.f );
 
 	ACTION().execute<Action::Preset::Delete<Renderer::Representation>>( *copy );
 	CHECK( not REG().valid( *copy ) );
@@ -286,14 +330,20 @@ TEST_CASE( "VTX_APP - Preset - Scene material", "[preset]" )
 	const Entity defaultMaterial = *Helper::Preset::getDefault<Renderer::Material>();
 	CHECK( ECS::getFirstComponent<App::Scene::Material>().preset == defaultMaterial );
 
-	const Entity brushedMetal = *Helper::Preset::getByName<Renderer::Material>( "Brushed metal" );
-	ACTION().execute<Action::Preset::Apply<Renderer::Material>>( brushedMetal );
-	CHECK( ECS::getFirstComponent<App::Scene::Material>().preset == brushedMetal );
+	ACTION().execute<Action::Preset::Duplicate<Renderer::Material>>(
+		*Helper::Preset::getByName<Renderer::Material>( "Brushed metal" ), std::optional<std::string_view>( "My metal" )
+	);
+	const Entity myMetal = *Helper::Preset::getByName<Renderer::Material>( "My metal" );
+	ACTION().execute<Action::Preset::Apply<Renderer::Material>>( myMetal );
+	CHECK( ECS::getFirstComponent<App::Scene::Material>().preset == myMetal );
 
-	ACTION().execute<Action::Material::Change<Renderer::E_MATERIAL_VALUES::ROUGHNESS, float>>( brushedMetal, 0.25f );
-	CHECK( REG().get<Renderer::Material>( brushedMetal ).roughness == 0.25f );
+	ACTION().execute<Action::Material::Change<Renderer::E_MATERIAL_VALUES::ROUGHNESS, float>>( myMetal, 0.25f );
+	CHECK( REG().get<Renderer::Material>( myMetal ).roughness == 0.25f );
 
-	const Entity matte = *Helper::Preset::getByName<Renderer::Material>( "Matte" );
+	ACTION().execute<Action::Preset::Duplicate<Renderer::Material>>(
+		*Helper::Preset::getByName<Renderer::Material>( "Matte" ), std::optional<std::string_view>( "My matte" )
+	);
+	const Entity matte = *Helper::Preset::getByName<Renderer::Material>( "My matte" );
 	ACTION().execute<Action::Material::Change<Renderer::E_MATERIAL_VALUES::ALBEDO_TEXTURE, FilePath>>(
 		matte, FilePath( "albedo.png" )
 	);

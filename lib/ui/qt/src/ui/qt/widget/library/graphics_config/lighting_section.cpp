@@ -1,6 +1,7 @@
 #include "ui/qt/widget/library/graphics_config/lighting_section.hpp"
 #include "ui/qt/helper.hpp"
 #include <QSignalBlocker>
+#include <QStandardItemModel>
 #include <util/math.hpp>
 
 namespace VTX::UI::QT::Widget::Library::GraphicsConfig
@@ -33,6 +34,11 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		for ( const QUtf8StringView shading : SHADING_STR )
 		{
 			_comboBoxShadingMode->addItem( shading.toString() );
+		}
+
+		if ( auto * const model = qobject_cast<QStandardItemModel *>( _comboBoxShadingMode->model() ) )
+		{
+			model->item( static_cast<int>( E_SHADING::PBR ) )->setEnabled( false );
 		}
 
 		_colorPickerLight = Helper::makeQObject<ColorPicker>( this );
@@ -103,9 +109,6 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_sliderToonSteps->setStep( 1 );
 		_sliderToonSteps->setDecimals( 0 );
 
-		_materialSection = Helper::makeQObject<MaterialSection>( this );
-		addWidget( _materialSection );
-
 		connect(
 			_comboBoxShadingMode,
 			QOverload<int>::of( &QComboBox::currentIndexChanged ),
@@ -167,7 +170,6 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 	void LightingSection::setConfig( const Entity p_preset, const VTX::Renderer::GraphicsConfig & p_config )
 	{
 		_setCurrentPreset( p_preset );
-		_materialSection->setConfig( p_config );
 		const QSignalBlocker blockerMode( _comboBoxShadingMode );
 		const QSignalBlocker blockerLight( _colorPickerLight );
 		const QSignalBlocker blockerLightIntensity( _sliderLightIntensity );

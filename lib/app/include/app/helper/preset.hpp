@@ -3,6 +3,7 @@
 
 #include "app/ecs.hpp"
 #include "app/generic/name.hpp"
+#include "app/generic/readonly.hpp"
 #include <algorithm>
 #include <optional>
 #include <renderer/color.hpp>
@@ -10,6 +11,7 @@
 #include <renderer/material.hpp>
 #include <renderer/representation.hpp>
 #include <string_view>
+#include <util/exceptions.hpp>
 #include <util/string.hpp>
 #include <util/types.hpp>
 
@@ -36,21 +38,44 @@ namespace VTX::App::Helper::Preset
 
 	/**
 	 * @brief Get a preset entity by its name.
+	 * Get user preset, built-in instead.
 	 */
 	template<typename T>
 	std::optional<Entity> getByName( const std::string_view p_name )
 	{
-		const std::string name = Util::String::toLower( std::string( p_name ) );
-		auto			  view = REG().view<App::Generic::Name, T>();
+		const std::string	  name = Util::String::toLower( std::string( p_name ) );
+		auto				  view = REG().view<App::Generic::Name, T>();
+		std::optional<Entity> readOnly;
 		for ( const Entity entity : view )
 		{
 			const auto & presetName = view.template get<App::Generic::Name>( entity ).name;
-			if ( Util::String::toLower( presetName ) == name )
+			if ( Util::String::toLower( presetName ) != name )
+			{
+				continue;
+			}
+
+			if ( not REG().all_of<Generic::ReadOnly>( entity ) )
 			{
 				return entity;
 			}
+
+			if ( not readOnly )
+			{
+				readOnly = entity;
+			}
 		}
-		return std::nullopt;
+		return readOnly;
+	}
+
+	/**
+	 * @brief Throw if the preset can't be modified.
+	 */
+	inline void checkEditable( const Entity p_preset )
+	{
+		if ( REG().all_of<Generic::ReadOnly>( p_preset ) )
+		{
+			throw VTXException( "Cannot modify a read-only preset." );
+		}
 	}
 
 	/**

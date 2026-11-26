@@ -107,7 +107,8 @@ namespace VTX::UI::QT::DockWidget
 		auto *	   tree	  = Helper::makeQObject<Widget::Tree::System>( entity, this );
 
 		tree->setSelectionMode( QAbstractItemView::NoSelection );
-		tree->setTint( Style::HUE_SYSTEM );
+		const uint lightnessIndex = _systemTreeCount++ % Style::LIGHTNESS_SYSTEM.size();
+		tree->setTint( Style::HUE_SYSTEM, Style::LIGHTNESS_SYSTEM[ lightnessIndex ] );
 
 		assert( not _mapSystemTreeWidgets.contains( entity ) );
 		_mapSystemTreeWidgets.emplace( entity, tree );

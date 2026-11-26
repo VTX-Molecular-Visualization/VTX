@@ -47,6 +47,8 @@ namespace VTX::UI::QT::Style
 	constexpr int HUE_CAMERA		  = 180;
 	constexpr int HUE_SYSTEM		  = 215;
 
+	constexpr std::array<int, 5> LIGHTNESS_SYSTEM = { 128, 80, 176, 56, 200 };
+
 	/**
 	 * @brief Class managing application style (themes, stylesheets, etc.).
 	 */
