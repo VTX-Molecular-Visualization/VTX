@@ -2,6 +2,7 @@
 #define VTX_RENDERER_REPRESENTATION_HPP
 
 #include <util/enum.hpp>
+#include <util/math.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer
@@ -88,6 +89,14 @@ namespace VTX::Renderer
 		bool			   hasSes		  = HAS_SES_DEFAULT;
 		E_SES_COMPUTE_MODE sesComputeMode = SES_COMPUTE_MODE_DEFAULT;
 		float			   sesProbeRadius = SES_PROBE_RADIUS_DEFAULT;
+
+		void clamp()
+		{
+			radiusSphereFixed = Util::Math::clamp( radiusSphereFixed, RADIUS_SPHERE_FIXED_MIN, RADIUS_SPHERE_FIXED_MAX );
+			radiusSphereAdd	  = Util::Math::clamp( radiusSphereAdd, RADIUS_SPHERE_ADD_MIN, RADIUS_SPHERE_ADD_MAX );
+			radiusCylinder	  = Util::Math::clamp( radiusCylinder, RADIUS_CYLINDER_MIN, RADIUS_CYLINDER_MAX );
+			sesProbeRadius	  = Util::Math::clamp( sesProbeRadius, SES_PROBE_RADIUS_MIN, SES_PROBE_RADIUS_MAX );
+		}
 	};
 } // namespace VTX::Renderer
 

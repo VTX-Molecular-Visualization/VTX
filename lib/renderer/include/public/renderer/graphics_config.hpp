@@ -87,6 +87,36 @@ namespace VTX::Renderer
 		std::optional<SelectionConfig> selection
 			= ACTIVE_SELECTION_DEFAULT ? std::optional<SelectionConfig> { SelectionConfig {} } : std::nullopt;
 		ToneMappingConfig toneMapping;
+
+		void clamp()
+		{
+			shading.clamp();
+			if ( ssao )
+			{
+				ssao->clamp();
+			}
+			if ( outline )
+			{
+				outline->clamp();
+			}
+			if ( fog )
+			{
+				fog->clamp();
+			}
+			if ( chromaticAberration )
+			{
+				chromaticAberration->clamp();
+			}
+			if ( pixelize )
+			{
+				pixelize->clamp();
+			}
+			if ( crt )
+			{
+				crt->clamp();
+			}
+			toneMapping.clamp();
+		}
 	};
 } // namespace VTX::Renderer
 

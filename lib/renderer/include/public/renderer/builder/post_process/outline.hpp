@@ -5,6 +5,7 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include <string_view>
+#include <util/math.hpp>
 #include <util/constants.hpp>
 #include <utility>
 
@@ -24,6 +25,12 @@ namespace VTX::Renderer
 		Util::Color::Rgba color = COLOR_OUTLINE_DEFAULT;
 		float			  sensitivity = OUTLINE_SENSITIVITY_DEFAULT;
 		uint			  thickness = OUTLINE_THICKNESS_DEFAULT;
+
+		void clamp()
+		{
+			sensitivity = Util::Math::clamp( sensitivity, OUTLINE_SENSITIVITY_MIN, OUTLINE_SENSITIVITY_MAX );
+			thickness	= Util::Math::clamp( thickness, OUTLINE_THICKNESS_MIN, OUTLINE_THICKNESS_MAX );
+		}
 	};
 } // namespace VTX::Renderer
 

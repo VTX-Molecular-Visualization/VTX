@@ -292,6 +292,8 @@ namespace VTX::App::Action::GraphicsConfig
 					else
 					{
 					}
+
+					p_config.clamp();
 				} );
 		}
 	};

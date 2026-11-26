@@ -71,6 +71,8 @@ namespace VTX::App::Action::Material
 					{
 						Detail::setTexture( p_material.emissiveTexture, p_value );
 					}
+
+					p_material.clamp();
 				}
 			);
 		}

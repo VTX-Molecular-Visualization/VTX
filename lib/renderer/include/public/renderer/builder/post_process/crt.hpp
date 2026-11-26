@@ -5,6 +5,7 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include <string_view>
+#include <util/math.hpp>
 #include <utility>
 
 namespace VTX::Renderer
@@ -41,6 +42,18 @@ namespace VTX::Renderer
 		float vignetteRoundness = CRT_VIGNETTE_ROUNDNESS_DEFAULT;
 		float vignetteIntensity = CRT_VIGNETTE_INTENSITY_DEFAULT;
 		float brightness = CRT_BRIGHTNESS_DEFAULT;
+
+		void clamp()
+		{
+			curvatureX		  = Util::Math::clamp( curvatureX, CRT_CURVATURE_MIN, CRT_CURVATURE_MAX );
+			curvatureY		  = Util::Math::clamp( curvatureY, CRT_CURVATURE_MIN, CRT_CURVATURE_MAX );
+			ratio			  = Util::Math::clamp( ratio, CRT_RATIO_MIN, CRT_RATIO_MAX );
+			graninessX		  = Util::Math::clamp( graninessX, CRT_GRANINESS_MIN, CRT_GRANINESS_MAX );
+			graninessY		  = Util::Math::clamp( graninessY, CRT_GRANINESS_MIN, CRT_GRANINESS_MAX );
+			vignetteRoundness = Util::Math::clamp( vignetteRoundness, CRT_VIGNETTE_ROUNDNESS_MIN, CRT_VIGNETTE_ROUNDNESS_MAX );
+			vignetteIntensity = Util::Math::clamp( vignetteIntensity, CRT_VIGNETTE_INTENSITY_MIN, CRT_VIGNETTE_INTENSITY_MAX );
+			brightness		  = Util::Math::clamp( brightness, CRT_BRIGHTNESS_MIN, CRT_BRIGHTNESS_MAX );
+		}
 	};
 } // namespace VTX::Renderer
 

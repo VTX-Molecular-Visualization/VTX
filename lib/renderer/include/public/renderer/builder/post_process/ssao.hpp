@@ -5,6 +5,7 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include <string_view>
+#include <util/math.hpp>
 #include <utility>
 
 namespace VTX::Renderer
@@ -42,6 +43,14 @@ namespace VTX::Renderer
 		float		  radius = SSAO_RADIUS_DEFAULT;
 		float		  scale = SSAO_SCALE_DEFAULT;
 		float		  blurSize = BLUR_SIZE_DEFAULT;
+
+		void clamp()
+		{
+			intensity = Util::Math::clamp( intensity, SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX );
+			radius	  = Util::Math::clamp( radius, SSAO_RADIUS_MIN, SSAO_RADIUS_MAX );
+			scale	  = Util::Math::clamp( scale, SSAO_SCALE_MIN, SSAO_SCALE_MAX );
+			blurSize  = Util::Math::clamp( blurSize, BLUR_SIZE_MIN, BLUR_SIZE_MAX );
+		}
 	};
 } // namespace VTX::Renderer
 

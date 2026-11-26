@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <optional>
 #include <string>
+#include <util/math.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer
@@ -77,6 +78,16 @@ namespace VTX::Renderer
 		std::optional<MaterialTexture> emissiveTexture;
 
 		bool doubleSided = false;
+
+		void clamp()
+		{
+			emissiveIntensity
+				= Util::Math::clamp( emissiveIntensity, MATERIAL_EMISSIVE_INTENSITY_MIN, MATERIAL_EMISSIVE_INTENSITY_MAX );
+			metallic	 = Util::Math::clamp( metallic, MATERIAL_METALLIC_MIN, MATERIAL_METALLIC_MAX );
+			roughness	 = Util::Math::clamp( roughness, MATERIAL_ROUGHNESS_MIN, MATERIAL_ROUGHNESS_MAX );
+			opacity		 = Util::Math::clamp( opacity, MATERIAL_OPACITY_MIN, MATERIAL_OPACITY_MAX );
+			textureScale = Util::Math::clamp( textureScale, MATERIAL_TEXTURE_SCALE_MIN, MATERIAL_TEXTURE_SCALE_MAX );
+		}
 
 		uint32_t textureMask() const noexcept
 		{

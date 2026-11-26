@@ -3,6 +3,7 @@
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/builder/post_process/ssao.hpp"
+#include "renderer/builder/post_process/tone_mapping.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include "renderer/material.hpp"
@@ -10,6 +11,7 @@
 #include <optional>
 #include <string_view>
 #include <util/constants.hpp>
+#include <util/math.hpp>
 #include <utility>
 
 namespace VTX::Renderer
@@ -83,6 +85,18 @@ namespace VTX::Renderer
 		float					iblIntensity		= 1.f;
 		float					environmentRotation = ENVIRONMENT_ROTATION_DEFAULT;
 		Material				material;
+
+		void clamp()
+		{
+			specularFactor		= Util::Math::clamp( specularFactor, SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX );
+			shininess			= Util::Math::clamp( shininess, SHININESS_MIN, SHININESS_MAX );
+			toonSteps			= Util::Math::clamp( toonSteps, TOON_STEPS_MIN, TOON_STEPS_MAX );
+			lightIntensity		= Util::Math::clamp( lightIntensity, LIGHT_INTENSITY_MIN, LIGHT_INTENSITY_MAX );
+			ambientIntensity	= Util::Math::clamp( ambientIntensity, AMBIENT_INTENSITY_MIN, AMBIENT_INTENSITY_MAX );
+			skyboxIntensity		= Util::Math::clamp( skyboxIntensity, TONE_MAPPING_EXPOSURE_MIN, TONE_MAPPING_EXPOSURE_MAX );
+			iblIntensity		= Util::Math::clamp( iblIntensity, TONE_MAPPING_EXPOSURE_MIN, TONE_MAPPING_EXPOSURE_MAX );
+			environmentRotation = Util::Math::clamp( environmentRotation, ENVIRONMENT_ROTATION_MIN, ENVIRONMENT_ROTATION_MAX );
+		}
 	};
 
 	struct FogConfig
@@ -91,6 +105,13 @@ namespace VTX::Renderer
 		float			  near = FOG_NEAR_DEFAULT;
 		float			  far = FOG_FAR_DEFAULT;
 		float			  density = FOG_DENSITY_DEFAULT;
+
+		void clamp()
+		{
+			near	= Util::Math::clamp( near, FOG_NEAR_MIN, FOG_NEAR_MAX );
+			far		= Util::Math::clamp( far, FOG_FAR_MIN, FOG_FAR_MAX );
+			density = Util::Math::clamp( density, FOG_DENSITY_MIN, FOG_DENSITY_MAX );
+		}
 	};
 } // namespace VTX::Renderer
 

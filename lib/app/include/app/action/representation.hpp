@@ -185,6 +185,8 @@ namespace VTX::App::Action::Representation
 					{
 						static_assert( always_false_v<S>, "Representation::Change: invalid representation value." );
 					}
+
+					p_representation.clamp();
 				}
 			);
 		}
