@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PASS_PASS_MANAGER_HPP
-#define VTX_APP_PASS_PASS_MANAGER_HPP
+#pragma once
 
 #include "app/pending_updates.hpp"
 #include <concepts>
@@ -154,5 +153,3 @@ namespace VTX::App::Pass
 		std::vector<Entry> _delegates;
 	};
 } // namespace VTX::App::Pass
-
-#endif

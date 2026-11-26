@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_TREE_SCRIPTS_HPP
-#define VTX_UI_QT_WIDGET_TREE_SCRIPTS_HPP
+#pragma once
 
 #include "ui/qt/widget/tree/base_tree.hpp"
 #include <QFileSystemModel>
@@ -40,5 +39,3 @@ namespace VTX::UI::QT::Widget::Tree
 		void _runScript( const QModelIndex & p_index );
 	};
 } // namespace VTX::UI::QT::Widget::Tree
-
-#endif

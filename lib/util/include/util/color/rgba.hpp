@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_COLOR_RGBA_HPP
-#define VTX_UTIL_COLOR_RGBA_HPP
+#pragma once
 
 #include "util/types.hpp"
 #include <cassert>
@@ -243,5 +242,3 @@ namespace VTX::Util::Color
 		Vec4f _v {};
 	};
 } // namespace VTX::Util::Color
-
-#endif

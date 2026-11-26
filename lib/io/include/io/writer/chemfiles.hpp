@@ -1,5 +1,4 @@
-#ifndef VTX_IO_WRITER_CHEMFILES_HPP
-#define VTX_IO_WRITER_CHEMFILES_HPP
+#pragma once
 
 #include <io/writer/shared.hpp>
 #include <string>
@@ -234,4 +233,3 @@ namespace VTX::IO::Writer
 		std::unique_ptr<Impl, Del> _ = nullptr;
 	};
 } // namespace VTX::IO::Writer
-#endif

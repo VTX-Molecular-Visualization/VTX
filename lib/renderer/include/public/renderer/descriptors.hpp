@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_DESCRIPTORS_HPP
-#define VTX_RENDERER_DESCRIPTORS_HPP
+#pragma once
 
 #include <array>
 #include <functional>
@@ -646,5 +645,3 @@ namespace VTX::Renderer::Desc
 	};
 
 } // namespace VTX::Renderer::Desc
-
-#endif

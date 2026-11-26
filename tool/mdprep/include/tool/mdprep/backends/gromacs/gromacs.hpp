@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMACS_HPP
-#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMACS_HPP
+#pragma once
 
 #include <array>
 #include <cstdint>
@@ -91,5 +90,3 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	};
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
-
-#endif

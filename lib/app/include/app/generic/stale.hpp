@@ -1,5 +1,4 @@
-#ifndef VTX_APP_GENERIC_STALE_HPP
-#define VTX_APP_GENERIC_STALE_HPP
+#pragma once
 
 namespace VTX::App::Generic
 {
@@ -17,5 +16,3 @@ namespace VTX::App::Generic
 	{
 	};
 } // namespace VTX::App::Generic
-
-#endif

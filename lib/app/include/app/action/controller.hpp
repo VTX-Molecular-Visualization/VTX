@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_CONTROLLER_HPP
-#define VTX_APP_ACTION_CONTROLLER_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/services.hpp"
@@ -77,5 +76,3 @@ namespace VTX::App::Action::Controller
 		void execute( float );
 	};
 } // namespace VTX::App::Action::Controller
-
-#endif

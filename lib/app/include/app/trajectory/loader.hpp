@@ -1,5 +1,4 @@
-#ifndef VTX_APP_TRAJECTORY_LOADER_HPP
-#define VTX_APP_TRAJECTORY_LOADER_HPP
+#pragma once
 
 #include "app/thread/trajectory_loader.hpp"
 #include "app/trajectory/types.hpp"
@@ -23,5 +22,3 @@ namespace VTX::App::Trajectory
 		FrameRange								  availableFrames;
 	};
 } // namespace VTX::App::Trajectory
-
-#endif

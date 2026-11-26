@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_BINDING_VTX_API_HPP
-#define VTX_PYTHON_BINDING_BINDING_VTX_API_HPP
+#pragma once
 
 #include <pybind11/pybind11.h>
 
@@ -13,5 +12,3 @@ namespace VTX::PythonBinding::Binding
 	void applyVtxApiBinding( pybind11::module_ & p_apiModule );
 
 } // namespace VTX::PythonBinding::Binding
-
-#endif

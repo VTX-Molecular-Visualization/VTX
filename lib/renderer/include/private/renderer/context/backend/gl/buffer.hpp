@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_BUFFER_HPP
-#define VTX_RENDERER_CONTEXT_BACKEND_GL_BUFFER_HPP
+#pragma once
 
 #include "include_opengl.hpp"
 #include <cassert>
@@ -168,5 +167,3 @@ namespace VTX::Renderer::Context::Backend::GL
 		GLsizei _size = 0;
 	};
 } // namespace VTX::Renderer::Context::Backend::GL
-
-#endif // VTX_RENDERER_CONTEXT_BACKEND_GL_BUFFER_HPP

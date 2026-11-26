@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_STRING_HPP
-#define VTX_UTIL_STRING_HPP
+#pragma once
 
 #include "types.hpp"
 #include <algorithm>
@@ -185,5 +184,3 @@ namespace VTX::Util::String
 	[[nodiscard]] std::string durationToStr( float p_durationInMS );
 
 } // namespace VTX::Util::String
-
-#endif

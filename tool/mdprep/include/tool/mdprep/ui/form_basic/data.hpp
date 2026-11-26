@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_FORM_BASIC_DATA_HPP
-#define VTX_TOOL_MDPREP_UI_FORM_BASIC_DATA_HPP
+#pragma once
 
 #include <functional>
 
@@ -47,4 +46,3 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		Impl _data;
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
-#endif

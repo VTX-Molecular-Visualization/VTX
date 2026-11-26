@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_DIALOG_EXPORT_IMAGE_HPP
-#define VTX_UI_QT_DIALOG_EXPORT_IMAGE_HPP
+#pragma once
 
 #include "ui/qt/dialog/base_dialog.hpp"
 #include "ui/qt/settings.hpp"
@@ -49,5 +48,3 @@ namespace VTX::UI::QT::Dialog
 	};
 
 } // namespace VTX::UI::QT::Dialog
-
-#endif

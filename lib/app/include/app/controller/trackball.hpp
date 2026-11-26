@@ -1,5 +1,4 @@
-#ifndef VTX_APP_CONTROLLER_TRACKBALL_HPP
-#define VTX_APP_CONTROLLER_TRACKBALL_HPP
+#pragma once
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
@@ -43,5 +42,3 @@ namespace VTX::App::Controller
 	};
 
 } // namespace VTX::App::Controller
-
-#endif

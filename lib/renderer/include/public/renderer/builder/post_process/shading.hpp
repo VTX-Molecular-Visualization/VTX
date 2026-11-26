@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_SHADING_HPP
-#define VTX_RENDERER_BUILDER_POST_PROCESS_SHADING_HPP
+#pragma once
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/builder/post_process/ssao.hpp"
@@ -257,5 +256,3 @@ namespace VTX::Renderer::Builder::PostProcess
 		static void loadMaterialTextures( Context::ContextWrapper &, const ShadingConfig & );
 	};
 } // namespace VTX::Renderer::Builder::PostProcess
-
-#endif

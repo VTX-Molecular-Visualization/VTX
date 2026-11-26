@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_MATERIAL_HPP
-#define VTX_RENDERER_MATERIAL_HPP
+#pragma once
 
 #include <cstddef>
 #include <optional>
@@ -92,5 +91,3 @@ namespace VTX::Renderer
 			= [] { return Material { .name = "Brushed metal", .metallic = 1.f, .roughness = 0.55f }; };
 	} // namespace Materials
 } // namespace VTX::Renderer
-
-#endif

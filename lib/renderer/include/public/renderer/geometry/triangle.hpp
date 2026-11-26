@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_GEOMETRY_TRIANGLE_HPP
-#define VTX_RENDERER_GEOMETRY_TRIANGLE_HPP
+#pragma once
 
 #include "base_geometry.hpp"
 #include <core/struct/mesh.hpp>
@@ -31,5 +30,3 @@ namespace VTX::Renderer::Geometry
 		}
 	};
 } // namespace VTX::Renderer::Geometry
-
-#endif // !VTX_RENDERER_GEOMETRY_TRIANGLE_HPP

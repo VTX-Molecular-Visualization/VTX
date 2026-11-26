@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_SSAO_HPP
-#define VTX_RENDERER_BUILDER_POST_PROCESS_SSAO_HPP
+#pragma once
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/context_wrapper.hpp"
@@ -122,5 +121,3 @@ namespace VTX::Renderer::Builder::PostProcess
 		}
 	};
 } // namespace VTX::Renderer::Builder::PostProcess
-
-#endif

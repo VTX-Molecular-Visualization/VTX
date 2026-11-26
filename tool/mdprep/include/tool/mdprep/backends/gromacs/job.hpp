@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_JOB_HPP
-#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_JOB_HPP
+#pragma once
 
 #include <filesystem>
 #include <functional>
@@ -57,5 +56,3 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	 */
 	void submitGromacsJob( const FilePath & p_gmxExe, const FilePath & p_workingDirectory, GromacsJobData & p_args );
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
-
-#endif

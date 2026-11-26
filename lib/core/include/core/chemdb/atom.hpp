@@ -1,5 +1,4 @@
-#ifndef VTX_CORE_CHEMDB_ATOM_HPP
-#define VTX_CORE_CHEMDB_ATOM_HPP
+#pragma once
 
 #include <algorithm>
 #include <array>
@@ -666,5 +665,3 @@ namespace VTX::Core::ChemDB::Atom
 
 	SYMBOL getSymbolFromString( const std::string & p_symbolStr );
 } // namespace VTX::Core::ChemDB::Atom
-
-#endif

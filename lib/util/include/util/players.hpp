@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_PLAYERS_HPP
-#define VTX_UTIL_PLAYERS_HPP
+#pragma once
 
 #include "util/types.hpp"
 #include <concepts>
@@ -226,5 +225,3 @@ namespace VTX::Util
 	} // namespace Players
 
 } // namespace VTX::Util
-
-#endif

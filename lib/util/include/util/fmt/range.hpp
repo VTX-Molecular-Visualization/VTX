@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_FMT_RANGE_HPP
-#define VTX_UTIL_FMT_RANGE_HPP
+#pragma once
 
 #include "util/math/range.hpp"
 #include <fmt/format.h>
@@ -23,5 +22,3 @@ struct fmt::formatter<VTX::Util::Math::Range<T>> : fmt::formatter<T>
 		return std::copy_n( " ]", 2, out );
 	}
 };
-
-#endif

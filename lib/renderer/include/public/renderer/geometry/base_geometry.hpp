@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_GEOMETRY_BASE_GEOMETRY_HPP
-#define VTX_RENDERER_GEOMETRY_BASE_GEOMETRY_HPP
+#pragma once
 
 #include "renderer/caches.hpp"
 #include "renderer/context/context_wrapper.hpp"
@@ -206,5 +205,3 @@ namespace VTX::Renderer::Geometry
 		Index _vertexSize = 0;
 	};
 } // namespace VTX::Renderer::Geometry
-
-#endif

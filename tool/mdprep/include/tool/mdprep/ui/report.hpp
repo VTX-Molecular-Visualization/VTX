@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_REPORT_HPP
-#define VTX_TOOL_MDPREP_UI_REPORT_HPP
+#pragma once
 
 #include <QPointer>
 #include <memory>
@@ -71,4 +70,3 @@ namespace VTX::Tool::Mdprep::ui
 	};
 
 } // namespace VTX::Tool::Mdprep::ui
-#endif

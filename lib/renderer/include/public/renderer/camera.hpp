@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CAMERA_HPP
-#define VTX_RENDERER_CAMERA_HPP
+#pragma once
 
 #include <util/math.hpp>
 
@@ -105,4 +104,3 @@ namespace VTX::Renderer
 
 	}; // namespace Camera
 } // namespace VTX::Renderer
-#endif

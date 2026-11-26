@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG_HPP
-#define VTX_TOOL_MDPREP_UI_FORM_BASIC_SETTINGS_DIALOG_HPP
+#pragma once
 
 #include "tool/mdprep/gateway/form_data.hpp"
 #include "tool/mdprep/ui/md_engine_specific_field_placer.hpp"
@@ -132,5 +131,3 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void		_cancelChanges() const;
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
-
-#endif

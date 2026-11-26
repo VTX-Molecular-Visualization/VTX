@@ -1,5 +1,4 @@
-#ifndef VTX_CORE_CHEMDB_CHAIN_HPP
-#define VTX_CORE_CHEMDB_CHAIN_HPP
+#pragma once
 
 #include <array>
 #include <string>
@@ -22,5 +21,3 @@ namespace VTX::Core::ChemDB::Chain
 	} );
 
 } // namespace VTX::Core::ChemDB::Chain
-
-#endif

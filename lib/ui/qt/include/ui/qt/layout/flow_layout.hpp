@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_LAYOUT_FLOW_LAYOUT_HPP
-#define VTX_UI_QT_LAYOUT_FLOW_LAYOUT_HPP
+#pragma once
 
 #include <QLayout>
 #include <QRect>
@@ -40,5 +39,3 @@ namespace VTX::UI::QT::Layout
 		int					 _vSpace;
 	};
 } // namespace VTX::UI::QT::Layout
-
-#endif

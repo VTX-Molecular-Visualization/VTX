@@ -1,5 +1,4 @@
-#ifndef VTX_APP_CONTROLLER_FREEFLY_HPP
-#define VTX_APP_CONTROLLER_FREEFLY_HPP
+#pragma once
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
@@ -25,4 +24,3 @@ namespace VTX::App::Controller
 		void stop() override {}
 	};
 } // namespace VTX::App::Controller
-#endif

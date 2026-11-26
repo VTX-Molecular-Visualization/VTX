@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_THREAD_BASE_THREAD_HPP
-#define VTX_UTIL_THREAD_BASE_THREAD_HPP
+#pragma once
 
 #include <atomic>
 #include <concepts>
@@ -187,4 +186,3 @@ namespace VTX::Util::Thread
 		OptionalThreadReference thrRef;
 	};
 } // namespace VTX::Util::Thread
-#endif

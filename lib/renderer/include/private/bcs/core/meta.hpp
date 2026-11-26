@@ -1,5 +1,4 @@
-#ifndef BCS_CORE_META_HPP
-#define BCS_CORE_META_HPP
+#pragma once
 
 #include <type_traits>
 
@@ -18,5 +17,3 @@ namespace bcs
 	constexpr typename std::underlying_type<Enum>::type toUnderlying( const Enum e ) noexcept
 	{ return static_cast<typename std::underlying_type<Enum>::type>( e ); }
 } // namespace bcs
-
-#endif // BCS_CORE_META_HPP

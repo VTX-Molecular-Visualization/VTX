@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_BINDER_HPP
-#define VTX_PYTHON_BINDING_BINDER_HPP
+#pragma once
 
 #include "python_binding/wrapper/module.hpp"
 #include <string>
@@ -88,5 +87,3 @@ namespace VTX::PythonBinding
 	void importFullModule( const std::string & p_moduleName );
 	void importObject( const std::string & p_moduleName, const std::string & p_objectName );
 } // namespace VTX::PythonBinding
-
-#endif

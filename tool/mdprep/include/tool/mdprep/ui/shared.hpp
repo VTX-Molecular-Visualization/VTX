@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_SHARED_HPP
-#define VTX_TOOL_MDPREP_UI_SHARED_HPP
+#pragma once
 
 #include <tool/mdprep/gateway/shared.hpp>
 #include <ui/qt/util.hpp>
@@ -126,4 +125,3 @@ namespace VTX::Tool::Mdprep::ui
 	}
 
 } // namespace VTX::Tool::Mdprep::ui
-#endif

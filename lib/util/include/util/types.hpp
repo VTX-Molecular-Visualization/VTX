@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_TYPES_HPP
-#define VTX_UTIL_TYPES_HPP
+#pragma once
 
 #include <cstdint>
 #include <glm/detail/qualifier.hpp>
@@ -51,5 +50,3 @@ namespace VTX
 	{ return static_cast<std::underlying_type_t<E>>( p_e ); }
 
 } // namespace VTX
-
-#endif

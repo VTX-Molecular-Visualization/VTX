@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_CONSTANTS_HPP
-#define VTX_UTIL_CONSTANTS_HPP
+#pragma once
 
 #include "util/color/rgba.hpp"
 #include "util/types.hpp"
@@ -66,5 +65,3 @@ namespace VTX
 	constexpr Index INVALID_INDEX = TypeMax<Index>;
 	constexpr int	INVALID_UID	  = 0;
 } // namespace VTX
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_LAYOUT_BASE_LAYOUT_HPP
-#define VTX_RENDERER_LAYOUT_BASE_LAYOUT_HPP
+#pragma once
 
 #include "renderer/context/context_wrapper.hpp"
 
@@ -81,5 +80,3 @@ namespace VTX::Renderer::Layout
 		IndexRangeList										 _rangeList;
 	};
 } // namespace VTX::Renderer::Layout
-
-#endif

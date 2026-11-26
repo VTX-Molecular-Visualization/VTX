@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_SETTINGS_HPP
-#define VTX_UI_QT_SETTINGS_HPP
+#pragma once
 
 #include <QSettings>
 
@@ -80,5 +79,3 @@ namespace VTX::UI::QT
 	};
 
 } // namespace VTX::UI::QT
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_BASE_WIDGET_HPP
-#define VTX_UI_QT_WIDGET_BASE_WIDGET_HPP
+#pragma once
 
 #include <QWidget>
 #include <type_traits>
@@ -60,5 +59,3 @@ namespace VTX::UI::QT::Widget
 	};
 
 } // namespace VTX::UI::QT::Widget
-
-#endif

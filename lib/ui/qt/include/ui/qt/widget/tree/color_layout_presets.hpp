@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_TREE_COLOR_LAYOUT_PRESETS_HPP
-#define VTX_UI_QT_WIDGET_TREE_COLOR_LAYOUT_PRESETS_HPP
+#pragma once
 
 #include "ui/qt/widget/tree/base_tree_presets.hpp"
 #include <app/scene/color_layout.hpp>
@@ -48,5 +47,3 @@ namespace VTX::UI::QT::Widget::Tree
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree
-
-#endif

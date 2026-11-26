@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_FOG_SECTION_HPP
-#define VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_FOG_SECTION_HPP
+#pragma once
 
 #include "ui/qt/widget/color_picker.hpp"
 #include "ui/qt/widget/editable_slider.hpp"
@@ -20,5 +19,3 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		QPointer<EditableSlider> _sliderDensity;
 	};
 } // namespace VTX::UI::QT::Widget::Library::GraphicsConfig
-
-#endif

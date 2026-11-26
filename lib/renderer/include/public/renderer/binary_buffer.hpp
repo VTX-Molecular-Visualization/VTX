@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_BINARY_BUFFER_HPP
-#define VTX_RENDERER_BINARY_BUFFER_HPP
+#pragma once
 
 #include "descriptors.hpp"
 #include <cstring>
@@ -429,5 +428,3 @@ namespace VTX::Renderer
 	using BinaryBuffer430 = BinaryBuffer<E_LAYOUT_TYPE::Std430>;
 
 } // namespace VTX::Renderer
-
-#endif

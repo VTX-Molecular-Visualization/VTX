@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_STRUCT_OPENGL_INFOS_HPP
-#define VTX_RENDERER_CONTEXT_BACKEND_GL_STRUCT_OPENGL_INFOS_HPP
+#pragma once
 
 #include <array>
 #include <util/fmt/mem_size.hpp>
@@ -70,5 +69,3 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 	};
 } // namespace VTX::Renderer::Context::Backend::GL
-
-#endif

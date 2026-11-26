@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_VISIBILITY_HPP
-#define VTX_APP_ACTION_VISIBILITY_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
@@ -115,5 +114,3 @@ namespace VTX::App::Action::Visibility
 	};
 
 } // namespace VTX::App::Action::Visibility
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_PRESET_HPP
-#define VTX_APP_ACTION_PRESET_HPP
+#pragma once
 
 #include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
@@ -254,4 +253,3 @@ namespace VTX::App::Action::Preset
 		}
 	};
 } // namespace VTX::App::Action::Preset
-#endif

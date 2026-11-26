@@ -1,5 +1,4 @@
-#ifndef VTX_CORE_CHEMDB_RESIDUE_HPP
-#define VTX_CORE_CHEMDB_RESIDUE_HPP
+#pragma once
 
 #include <array>
 #include <cstdint>
@@ -250,5 +249,3 @@ namespace VTX::Core::ChemDB::Residue
 	bool checkIfStandardFromName( const std::string & p_residueSymbol );
 
 } // namespace VTX::Core::ChemDB::Residue
-
-#endif

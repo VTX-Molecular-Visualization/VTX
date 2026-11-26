@@ -1,5 +1,4 @@
-#ifndef VTX_APP_TRAJECTORY_PLAYER_HPP
-#define VTX_APP_TRAJECTORY_PLAYER_HPP
+#pragma once
 
 #include <util/players.hpp>
 #include <util/types.hpp>
@@ -33,5 +32,3 @@ namespace VTX::App::Trajectory
 		uint		 currentFrameIndex	 = 0;
 	};
 } // namespace VTX::App::Trajectory
-
-#endif

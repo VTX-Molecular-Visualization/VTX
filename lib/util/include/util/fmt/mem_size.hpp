@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_FMT_MEM_SIZE_HPP
-#define VTX_UTIL_FMT_MEM_SIZE_HPP
+#pragma once
 
 #include "util/string.hpp"
 #include <cstddef>
@@ -30,5 +29,3 @@ struct fmt::formatter<VTX::Util::String::FormattedMemSize> : fmt::formatter<std:
 		return fmt::format_to( p_ctx.out(), "{:.2f} GB", size / static_cast<double>( base * base * base ) );
 	}
 };
-
-#endif

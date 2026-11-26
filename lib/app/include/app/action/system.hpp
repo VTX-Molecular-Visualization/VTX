@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_SYSTEM_HPP
-#define VTX_APP_ACTION_SYSTEM_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include <util/types.hpp>
@@ -39,5 +38,3 @@ namespace VTX::App::Action::System
 	};
 
 } // namespace VTX::App::Action::System
-
-#endif

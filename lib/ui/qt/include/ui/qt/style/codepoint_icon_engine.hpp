@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_STYLE_CODEPOINT_ICON_ENGINE_HPP
-#define VTX_UI_QT_STYLE_CODEPOINT_ICON_ENGINE_HPP
+#pragma once
 
 #include <QIconEngine>
 
@@ -53,5 +52,3 @@ namespace VTX::UI::QT::Style
 		const Codepoint _codepoint;
 	};
 } // namespace VTX::UI::QT::Style
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_UID_HPP
-#define VTX_UTIL_UID_HPP
+#pragma once
 
 #include <mutex>
 #include <util/exceptions.hpp>
@@ -110,5 +109,3 @@ namespace VTX::Util::Uid
 		std::mutex _mutex;
 	};
 } // namespace VTX::Util::Uid
-
-#endif

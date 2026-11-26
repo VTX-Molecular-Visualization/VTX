@@ -1,5 +1,4 @@
-#ifndef VTX_CORE_STRUCT_TOPOLOGY_HPP
-#define VTX_CORE_STRUCT_TOPOLOGY_HPP
+#pragma once
 
 #include "core/chemdb/atom.hpp"
 #include "core/chemdb/bond.hpp"
@@ -280,4 +279,3 @@ namespace VTX::Core::Struct
 	size_t dynamicMemoryUsage( const Topology & ) noexcept;
 
 } // namespace VTX::Core::Struct
-#endif

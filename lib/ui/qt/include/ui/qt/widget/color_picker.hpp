@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_COLOR_PICKER_HPP
-#define VTX_UI_QT_WIDGET_COLOR_PICKER_HPP
+#pragma once
 
 #include <QColor>
 #include <QPushButton>
@@ -43,4 +42,3 @@ namespace VTX::UI::QT::Widget
 		QColor _color;
 	};
 } // namespace VTX::UI::QT::Widget
-#endif

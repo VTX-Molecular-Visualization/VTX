@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SETTING_CONTROLLER_HPP
-#define VTX_APP_SETTING_CONTROLLER_HPP
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -66,5 +65,3 @@ namespace VTX::App::Setting
 	};
 
 } // namespace VTX::App::Setting
-
-#endif

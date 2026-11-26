@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SCENE_TAG_ROOT_HPP
-#define VTX_APP_SCENE_TAG_ROOT_HPP
+#pragma once
 
 #include <util/types.hpp>
 
@@ -13,5 +12,3 @@ namespace VTX::App::Scene
 	{
 	};
 } // namespace VTX::App::Scene
-
-#endif

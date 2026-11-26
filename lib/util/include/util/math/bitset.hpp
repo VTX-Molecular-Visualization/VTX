@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_MATH_BITSET_HPP
-#define VTX_UTIL_MATH_BITSET_HPP
+#pragma once
 
 #include "util/math/range_list.hpp"
 #include <algorithm>
@@ -871,5 +870,3 @@ namespace VTX::Util::Math
 	};
 
 } // namespace VTX::Util::Math
-
-#endif

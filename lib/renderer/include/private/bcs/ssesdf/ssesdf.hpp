@@ -1,5 +1,4 @@
-#ifndef BCS_SSESDF_SSESDF_HPP
-#define BCS_SSESDF_SSESDF_HPP
+#pragma once
 
 // #include "bcs/core/molecule.hpp"
 #include "bcs/cuda/grid.cuh"
@@ -77,5 +76,3 @@ namespace bcs
 	};
 
 } // namespace bcs
-
-#endif // BCS_SSESDF_SSESDF_HPP

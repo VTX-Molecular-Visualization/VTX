@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_GRAPHICS_CONFIG_HPP
-#define VTX_APP_ACTION_GRAPHICS_CONFIG_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/services.hpp"
@@ -345,4 +344,3 @@ namespace VTX::App::Action::GraphicsConfig
 	};
 
 } // namespace VTX::App::Action::GraphicsConfig
-#endif

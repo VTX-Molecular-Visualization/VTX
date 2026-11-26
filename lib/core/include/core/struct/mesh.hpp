@@ -1,5 +1,4 @@
-#ifndef VTX_CORE_STRUCT_MESH_HPP
-#define VTX_CORE_STRUCT_MESH_HPP
+#pragma once
 
 #include <util/types.hpp>
 #include <vector>
@@ -70,5 +69,3 @@ namespace VTX::Core::Struct
 	*/
 
 } // namespace VTX::Core::Struct
-
-#endif

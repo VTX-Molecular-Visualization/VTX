@@ -1,5 +1,4 @@
-#ifndef VTX_APP_EXTRACTOR_TRAJECTORY_BUFFER_HPP
-#define VTX_APP_EXTRACTOR_TRAJECTORY_BUFFER_HPP
+#pragma once
 
 #include "app/trajectory/types.hpp"
 #include <cstddef>
@@ -26,5 +25,3 @@ namespace VTX::App::Extractor
 		size_t getStorageFrameCount( Trajectory::TRAJECTORY_BUFFER_MODE, size_t ) const noexcept;
 	};
 } // namespace VTX::App::Extractor
-
-#endif

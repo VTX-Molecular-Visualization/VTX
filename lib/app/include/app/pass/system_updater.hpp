@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PASS_SYSTEM_UPDATER_HPP
-#define VTX_APP_PASS_SYSTEM_UPDATER_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/events.hpp"
@@ -106,5 +105,3 @@ namespace VTX::App::Pass
 		Util::EventHub::ScopedConnection _representationPresetDestroyedConnection;
 	};
 } // namespace VTX::App::Pass
-
-#endif

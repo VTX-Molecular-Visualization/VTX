@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_WRAPPER_MODULE_HPP
-#define VTX_PYTHON_BINDING_WRAPPER_MODULE_HPP
+#pragma once
 
 #include "python_binding/wrapper/function.hpp"
 #include "python_binding/wrapper/object.hpp"
@@ -150,5 +149,3 @@ namespace VTX::PythonBinding
 		};
 	} // namespace Wrapper
 }; // namespace VTX::PythonBinding
-
-#endif

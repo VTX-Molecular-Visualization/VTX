@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_SEQUENCE_HPP
-#define VTX_UI_QT_WIDGET_SEQUENCE_HPP
+#pragma once
 
 #include <QAbstractScrollArea>
 #include <QContextMenuEvent>
@@ -72,5 +71,3 @@ namespace VTX::UI::QT::Widget
 	};
 
 } // namespace VTX::UI::QT::Widget
-
-#endif

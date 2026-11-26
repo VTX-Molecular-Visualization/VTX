@@ -1,5 +1,4 @@
-#ifndef VTX_CORE_CHEMDB_SECONDARY_STRUCTURE_HPP
-#define VTX_CORE_CHEMDB_SECONDARY_STRUCTURE_HPP
+#pragma once
 
 #include <array>
 #include <util/constants.hpp>
@@ -33,5 +32,3 @@ namespace VTX::Core::ChemDB::SecondaryStructure
 	std::string enumToPdbFormatted( TYPE p_enum );
 
 } // namespace VTX::Core::ChemDB::SecondaryStructure
-
-#endif

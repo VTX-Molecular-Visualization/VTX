@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMPP_HPP
-#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_GROMPP_HPP
+#pragma once
 
 #include <filesystem>
 #include <util/filesystem.hpp>
@@ -52,5 +51,3 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	void convert( const GromppInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
-
-#endif

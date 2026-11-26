@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_RENDERER_HPP
-#define VTX_UI_QT_WIDGET_RENDERER_HPP
+#pragma once
 
 #include "ui/qt/events.hpp"
 #include "ui/qt/widget/base_widget.hpp"
@@ -163,5 +162,3 @@ namespace VTX::UI::QT::Widget
 		VTX::Util::EventHub::ScopedConnection _keyboardLayoutChangedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_TRAJECTORY_HPP
-#define VTX_APP_ACTION_TRAJECTORY_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/trajectory/player.hpp"
@@ -42,5 +41,3 @@ namespace VTX::App::Action::Trajectory
 		void execute( Entity, float );
 	};
 } // namespace VTX::App::Action::Trajectory
-
-#endif

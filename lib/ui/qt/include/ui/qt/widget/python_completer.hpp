@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_PYTHON_COMPLETER_HPP
-#define VTX_UI_QT_WIDGET_PYTHON_COMPLETER_HPP
+#pragma once
 
 #include <QCompleter>
 #include <QHash>
@@ -77,5 +76,3 @@ namespace VTX::UI::QT::Widget
 		VTX::Util::EventHub::ScopedConnection _pythonInitializedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
-
-#endif

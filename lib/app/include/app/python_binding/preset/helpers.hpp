@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_PRESET_HELPERS_HPP
-#define VTX_APP_PYTHON_BINDING_PRESET_HELPERS_HPP
+#pragma once
 
 #include "app/generic/name.hpp"
 #include "app/python_binding/module.hpp"
@@ -57,5 +56,3 @@ namespace VTX::App::PythonBinding::Preset
 		);
 	}
 } // namespace VTX::App::PythonBinding::Preset
-
-#endif

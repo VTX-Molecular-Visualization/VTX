@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PENDING_UPDATES_HPP
-#define VTX_APP_PENDING_UPDATES_HPP
+#pragma once
 
 #include "app/services.hpp"
 #include <cstdint>
@@ -55,5 +54,3 @@ namespace VTX::App
 	{ p_target.setOnPending( nullptr, nullptr ); }
 
 } // namespace VTX::App
-
-#endif

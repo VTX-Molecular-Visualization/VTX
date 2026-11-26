@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_INTERPRETOR_HPP
-#define VTX_APP_PYTHON_BINDING_INTERPRETOR_HPP
+#pragma once
 
 #include <functional>
 #include <future>
@@ -106,5 +105,3 @@ namespace VTX::App::PythonBinding
 		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
 } // namespace VTX::App::PythonBinding
-
-#endif

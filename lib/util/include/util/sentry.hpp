@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_SENTRY_HPP
-#define VTX_UTIL_SENTRY_HPP
+#pragma once
 
 #include <memory>
 #include <thread>
@@ -43,5 +42,3 @@ namespace VTX::Util
 		std::shared_ptr<std::atomic_bool> _targetAlive;
 	};
 } // namespace VTX::Util
-
-#endif

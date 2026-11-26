@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_FORM_BASIC_EVENT_MANAGER_HPP
-#define VTX_TOOL_MDPREP_UI_FORM_BASIC_EVENT_MANAGER_HPP
+#pragma once
 
 #include <functional>
 #include <optional>
@@ -91,5 +90,3 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void _systemSettingsApplied() noexcept;
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
-
-#endif

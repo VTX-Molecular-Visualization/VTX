@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_LIBRARY_REPRESENTATION_HPP
-#define VTX_UI_QT_WIDGET_LIBRARY_REPRESENTATION_HPP
+#pragma once
 
 #include "base_preset_widget.hpp"
 #include "ui/qt/widget/editable_slider.hpp"
@@ -66,4 +65,3 @@ namespace VTX::UI::QT::Widget::Library
 	};
 
 } // namespace VTX::UI::QT::Widget::Library
-#endif

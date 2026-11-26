@@ -1,5 +1,4 @@
-#ifndef VTX_APP_FIXTURE_HPP
-#define VTX_APP_FIXTURE_HPP
+#pragma once
 
 #include "action/io.hpp"
 #include "pending_updates.hpp"
@@ -103,5 +102,3 @@ namespace VTX::App
 		std::unique_ptr<VTXApp> _app;
 	};
 } // namespace VTX::App
-
-#endif

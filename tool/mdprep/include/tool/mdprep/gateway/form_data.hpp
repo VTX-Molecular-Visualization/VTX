@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_GATEWAY_FORM_DATA_HPP
-#define VTX_TOOL_MDPREP_GATEWAY_FORM_DATA_HPP
+#pragma once
 
 #include <any>
 #include <array>
@@ -111,5 +110,3 @@ namespace VTX::Tool::Mdprep::Gateway
 	};
 
 } // namespace VTX::Tool::Mdprep::Gateway
-
-#endif

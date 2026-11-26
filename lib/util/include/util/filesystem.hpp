@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_FILESYSTEM_HPP
-#define VTX_UTIL_FILESYSTEM_HPP
+#pragma once
 
 #include "types.hpp"
 #include <filesystem>
@@ -74,5 +73,3 @@ namespace VTX::Util::Filesystem
 	bool hasExtension( const FilePath & p_filePath, std::initializer_list<std::string_view> p_extensions );
 
 } // namespace VTX::Util::Filesystem
-
-#endif

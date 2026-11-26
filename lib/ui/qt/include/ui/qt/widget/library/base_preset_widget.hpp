@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_LIBRARY_BASE_PRESET_WIDGET_HPP
-#define VTX_UI_QT_WIDGET_LIBRARY_BASE_PRESET_WIDGET_HPP
+#pragma once
 
 #include "preset_selector.hpp"
 #include "ui/qt/helper.hpp"
@@ -56,4 +55,3 @@ namespace VTX::UI::QT::Widget::Library
 	};
 
 } // namespace VTX::UI::QT::Widget::Library
-#endif

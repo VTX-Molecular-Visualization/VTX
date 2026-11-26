@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SYSTEM_WRITER_HPP
-#define VTX_APP_SYSTEM_WRITER_HPP
+#pragma once
 
 #include <memory>
 #include <util/filesystem.hpp>
@@ -51,5 +50,3 @@ namespace VTX::App::System
 		std::unique_ptr<_impl> _ptr;
 	};
 } // namespace VTX::App::System
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_ACTIONS_HPP
-#define VTX_APP_PYTHON_BINDING_TOPOLOGY_ACTIONS_HPP
+#pragma once
 
 #include "app/action/color.hpp"
 #include "app/action/representation.hpp"
@@ -304,5 +303,3 @@ namespace VTX::App::PythonBinding::Topology
 		return p_class;
 	}
 } // namespace VTX::App::PythonBinding::Topology
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_RESOLUTION_HPP
-#define VTX_UTIL_RESOLUTION_HPP
+#pragma once
 
 #include <cstddef>
 #include <string_view>
@@ -39,5 +38,3 @@ namespace VTX::Util
 		inline constexpr Resolution UHD_16K	   = { "16K UHD", 15360, 8640 };
 	} // namespace ResolutionPreset
 } // namespace VTX::Util
-
-#endif

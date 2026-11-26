@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT_HPP
-#define VTX_UI_QT_WIDGET_LIBRARY_COLOR_LAYOUT_HPP
+#pragma once
 
 #include "base_preset_widget.hpp"
 #include "ui/qt/widget/color_picker.hpp"
@@ -55,5 +54,3 @@ namespace VTX::UI::QT::Widget::Library
 		// void _onCurrentPresetUpdated()
 	};
 } // namespace VTX::UI::QT::Widget::Library
-
-#endif

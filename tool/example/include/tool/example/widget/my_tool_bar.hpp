@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR_HPP
-#define VTX_TOOL_EXAMPLE_WIDGET_MY_TOOL_BAR_HPP
+#pragma once
 
 #include "tool/example/actions.hpp"
 #include <QGridLayout>
@@ -30,5 +29,3 @@ namespace VTX::Tool::Example::Widget
 	};
 
 } // namespace VTX::Tool::Example::Widget
-
-#endif

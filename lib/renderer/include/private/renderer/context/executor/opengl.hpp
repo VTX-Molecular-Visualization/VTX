@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_EXECUTOR_OPENGL_HPP
-#define VTX_RENDERER_CONTEXT_EXECUTOR_OPENGL_HPP
+#pragma once
 
 #include "renderer/context/backend/gl/debug.hpp"
 #include "renderer/context/backend/opengl.hpp"
@@ -475,5 +474,3 @@ namespace VTX::Renderer::Context::Executor
 		const Backend::OpenGL & _backend;
 	};
 } // namespace VTX::Renderer::Context::Executor
-
-#endif

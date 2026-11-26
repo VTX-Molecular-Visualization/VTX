@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_BUILDER_SYSTEM_BUILD_HPP
-#define VTX_RENDERER_BUILDER_SYSTEM_BUILD_HPP
+#pragma once
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/builder/post_process/blur.hpp"
@@ -1094,5 +1093,3 @@ namespace VTX::Renderer::Builder
 	};
 
 } // namespace VTX::Renderer::Builder
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_FORM_ADVANCED_FORM_ADVANCED_HPP
-#define VTX_TOOL_MDPREP_UI_FORM_ADVANCED_FORM_ADVANCED_HPP
+#pragma once
 
 #include "tool/mdprep/ui/form_advanced/event_manager.hpp"
 #include "tool/mdprep/ui/form_advanced/shared.hpp"
@@ -94,5 +93,3 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 	};
 
 } // namespace VTX::Tool::Mdprep::ui::form_advanced
-
-#endif

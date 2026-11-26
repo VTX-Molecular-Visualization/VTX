@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_MODULE_HPP
-#define VTX_APP_PYTHON_BINDING_MODULE_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/services.hpp"
@@ -141,5 +140,3 @@ namespace VTX::App::PythonBinding
 		{ return synchronizeCopy( [ & ]() -> decltype( auto ) { return ( p_object.*p_function )( p_args... ); } ); };
 	}
 } // namespace VTX::App::PythonBinding
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_TOOL_BAR_SELECTION_HPP
-#define VTX_UI_QT_TOOL_BAR_SELECTION_HPP
+#pragma once
 
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
@@ -97,5 +96,3 @@ namespace VTX::UI::QT::ToolBar
 	};
 
 } // namespace VTX::UI::QT::ToolBar
-
-#endif

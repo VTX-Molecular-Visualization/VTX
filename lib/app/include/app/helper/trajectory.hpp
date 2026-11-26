@@ -1,5 +1,4 @@
-#ifndef VTX_APP_HELPER_TRAJECTORY_HPP
-#define VTX_APP_HELPER_TRAJECTORY_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/trajectory/player.hpp"
@@ -79,5 +78,3 @@ namespace VTX::App::Helper::Trajectory
 	void get( Entity, VTX::IO::Writer::TrajectoryFrameGetter & );
 
 } // namespace VTX::App::Helper::Trajectory
-
-#endif

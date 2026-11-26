@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_DOCK_WIDGET_OPTIONS_HPP
-#define VTX_UI_QT_DOCK_WIDGET_OPTIONS_HPP
+#pragma once
 
 #include "ui/qt/dock_widget/base_dock_widget.hpp"
 #include "ui/qt/events.hpp"
@@ -57,5 +56,3 @@ namespace VTX::UI::QT::DockWidget
 	};
 
 } // namespace VTX::UI::QT::DockWidget
-
-#endif

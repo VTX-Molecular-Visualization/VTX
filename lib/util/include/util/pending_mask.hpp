@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_PENDING_MASK_HPP
-#define VTX_UTIL_PENDING_MASK_HPP
+#pragma once
 
 #include "util/atomic_callback.hpp"
 #include "util/enum.hpp"
@@ -67,5 +66,3 @@ namespace VTX::Util
 		AtomicCallback _onPending;
 	};
 } // namespace VTX::Util
-
-#endif

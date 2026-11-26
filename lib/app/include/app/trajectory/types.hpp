@@ -1,5 +1,4 @@
-#ifndef VTX_APP_TRAJECTORY_TYPES_HPP
-#define VTX_APP_TRAJECTORY_TYPES_HPP
+#pragma once
 
 #include <core/struct/trajectory.hpp>
 #include <cstdint>
@@ -55,5 +54,3 @@ namespace VTX::App::Trajectory
 	};
 
 } // namespace VTX::App::Trajectory
-
-#endif

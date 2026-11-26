@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_ACTIONABLE_PUSH_BUTTON_HPP
-#define VTX_UI_QT_WIDGET_ACTIONABLE_PUSH_BUTTON_HPP
+#pragma once
 
 #include <QPushButton>
 
@@ -29,4 +28,3 @@ namespace VTX::UI::QT::Widget
 		}
 	};
 } // namespace VTX::UI::QT::Widget
-#endif

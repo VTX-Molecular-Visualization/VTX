@@ -1,5 +1,4 @@
-#ifndef VTX_IO_UTIL_CHEMFILES_HPP
-#define VTX_IO_UTIL_CHEMFILES_HPP
+#pragma once
 
 #include <core/chemdb/bond.hpp>
 #include <util/math/aabb.hpp>
@@ -19,5 +18,3 @@ namespace VTX::IO::Util::Chemfiles
 	chemfiles::Bond::BondOrder convertBondOrder( VTX::Core::ChemDB::Bond::ORDER p_bondOrder );
 
 } // namespace VTX::IO::Util::Chemfiles
-
-#endif

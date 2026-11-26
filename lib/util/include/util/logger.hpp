@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_LOGGER_HPP
-#define VTX_UTIL_LOGGER_HPP
+#pragma once
 
 #include "util/enum.hpp"
 #include <exception>
@@ -234,5 +233,3 @@ namespace VTX
 	{ LOGGER::log( Util::LOG_LEVEL::LOG_INFO, Util::LOG_HINT::PY_OUT, p_fmt, std::forward<Args>( p_args )... ); }
 
 } // namespace VTX
-
-#endif

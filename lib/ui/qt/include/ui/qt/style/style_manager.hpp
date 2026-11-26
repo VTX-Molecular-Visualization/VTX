@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_STYLE_STYLE_MANAGER_HPP
-#define VTX_UI_QT_STYLE_STYLE_MANAGER_HPP
+#pragma once
 
 #include "ui/qt/application.hpp"
 #include "ui/qt/resources.hpp"
@@ -93,5 +92,3 @@ namespace VTX::UI::QT::Style
 		std::array<QPalette, toUnderlying( E_THEME::COUNT )> _themePalettes;
 	};
 } // namespace VTX::UI::QT::Style
-
-#endif

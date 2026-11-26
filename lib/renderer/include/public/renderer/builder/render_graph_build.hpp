@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_BUILDER_RENDER_GRAPH_BUILD_HPP
-#define VTX_RENDERER_BUILDER_RENDER_GRAPH_BUILD_HPP
+#pragma once
 
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/geometry/geometries.hpp"
@@ -61,5 +60,3 @@ namespace VTX::Renderer::Builder
 										  uintptr_t p_externalContext );
 	};
 } // namespace VTX::Renderer::Builder
-
-#endif

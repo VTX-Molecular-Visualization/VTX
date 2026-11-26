@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_MENU_CAMERA_HPP
-#define VTX_UI_QT_MENU_CAMERA_HPP
+#pragma once
 
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/actions.hpp"
@@ -79,5 +78,3 @@ namespace VTX::UI::QT::Menu
 	};
 
 } // namespace VTX::UI::QT::Menu
-
-#endif

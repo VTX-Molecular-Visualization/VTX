@@ -1,5 +1,4 @@
-#ifndef VTX_CORE_CHEMDB_BOND_HPP
-#define VTX_CORE_CHEMDB_BOND_HPP
+#pragma once
 
 #include <array>
 #include <string>
@@ -29,5 +28,3 @@ namespace VTX::Core::ChemDB::Bond
 	constexpr auto ORDER_STR = std::to_array<std::string_view>(
 		{ "Unknown", "Simple", "Double", "Triple", "Quadruple", "Quintuple", "Aromatique" } );
 } // namespace VTX::Core::ChemDB::Bond
-
-#endif

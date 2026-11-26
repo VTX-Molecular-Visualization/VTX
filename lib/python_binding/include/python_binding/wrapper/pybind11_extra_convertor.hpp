@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_WRAPPER_PYBIND11_EXTRA_CONVERTOR_HPP
-#define VTX_PYTHON_BINDING_WRAPPER_PYBIND11_EXTRA_CONVERTOR_HPP
+#pragma once
 
 #include "python_binding/wrapper/arg.hpp"
 
@@ -11,4 +10,3 @@ namespace VTX::PythonBinding::Wrapper
 	pybind11::arg_v convertToPybind11Extra( const Wrapper::VArg<V> & p_arg )
 	{ return p_arg.toPybind11ExtraWithDefault(); }
 }; // namespace VTX::PythonBinding::Wrapper
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_IDENTITY_HPP
-#define VTX_APP_PYTHON_BINDING_IDENTITY_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include <cstddef>
@@ -56,5 +55,3 @@ namespace VTX::App::PythonBinding
 		return p_class;
 	}
 } // namespace VTX::App::PythonBinding
-
-#endif

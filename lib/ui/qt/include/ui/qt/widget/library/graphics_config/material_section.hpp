@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_MATERIAL_SECTION_HPP
-#define VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_MATERIAL_SECTION_HPP
+#pragma once
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/editable_slider.hpp"
@@ -53,5 +52,3 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		std::array<TextureWidgets, static_cast<size_t>( VTX::Renderer::Material::E_TEXTURE::COUNT )> _textureWidgets;
 	};
 } // namespace VTX::UI::QT::Widget::Library::GraphicsConfig
-
-#endif

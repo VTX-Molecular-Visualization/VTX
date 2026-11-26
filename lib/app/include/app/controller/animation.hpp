@@ -1,5 +1,4 @@
-#ifndef VTX_APP_CONTROLLER_ANIMATION_HPP
-#define VTX_APP_CONTROLLER_ANIMATION_HPP
+#pragma once
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
@@ -81,5 +80,3 @@ namespace VTX::App::Controller
 		const InterpRotationFunc _interpRotation;
 	};
 } // namespace VTX::App::Controller
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_PYTHON_EDITOR_HPP
-#define VTX_UI_QT_WIDGET_PYTHON_EDITOR_HPP
+#pragma once
 
 #include "ui/qt/events.hpp"
 #include "ui/qt/selection_manager.hpp"
@@ -104,5 +103,3 @@ namespace VTX::UI::QT::Widget
 		VTX::Util::EventHub::ScopedConnection _scriptRunConnection;
 	};
 } // namespace VTX::UI::QT::Widget
-
-#endif

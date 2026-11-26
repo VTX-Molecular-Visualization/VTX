@@ -1,5 +1,4 @@
-#ifndef VTX_APP_HELPER_IO_HPP
-#define VTX_APP_HELPER_IO_HPP
+#pragma once
 
 #include "app/constants.hpp"
 #include <optional>
@@ -41,5 +40,3 @@ namespace VTX::App::Helper::IO
 	 */
 	void writeCache( std::string_view p_filename, const std::string & p_data );
 } // namespace VTX::App::Helper::IO
-
-#endif

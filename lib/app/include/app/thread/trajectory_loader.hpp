@@ -1,5 +1,4 @@
-#ifndef VTX_APP_THREAD_TRAJECTORY_LOADER_HPP
-#define VTX_APP_THREAD_TRAJECTORY_LOADER_HPP
+#pragma once
 
 #include "app/trajectory/types.hpp"
 #include <condition_variable>
@@ -112,5 +111,3 @@ namespace VTX::App::Thread
 		std::optional<Trajectory::LoadedFrameBatch> _loadedFrames;
 	};
 } // namespace VTX::App::Thread
-
-#endif

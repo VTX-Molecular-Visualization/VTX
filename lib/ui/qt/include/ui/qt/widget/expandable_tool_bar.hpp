@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_EXPANDABLE_TOOL_BAR_HPP
-#define VTX_UI_QT_WIDGET_EXPANDABLE_TOOL_BAR_HPP
+#pragma once
 
 #include "ui/qt/action_registry.hpp"
 #include "ui/qt/helper.hpp"
@@ -79,4 +78,3 @@ namespace VTX::UI::QT::Widget
 		}
 	};
 } // namespace VTX::UI::QT::Widget
-#endif

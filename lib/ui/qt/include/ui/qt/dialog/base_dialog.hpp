@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_DIALOG_BASE_DIALOG_HPP
-#define VTX_UI_QT_DIALOG_BASE_DIALOG_HPP
+#pragma once
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/base_widget.hpp"
@@ -28,5 +27,3 @@ namespace VTX::UI::QT::Dialog
 		~BaseDialog() override = default;
 	};
 } // namespace VTX::UI::QT::Dialog
-
-#endif

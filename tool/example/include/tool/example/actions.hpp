@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_EXAMPLE_ACTIONS_HPP
-#define VTX_TOOL_EXAMPLE_ACTIONS_HPP
+#pragma once
 
 #include <app/ui/concepts.hpp>
 #include <string_view>
@@ -48,5 +47,3 @@ namespace VTX::Tool::Example::Action
 	}
 
 } // namespace VTX::Tool::Example::Action
-
-#endif
