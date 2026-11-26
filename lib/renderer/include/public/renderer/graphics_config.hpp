@@ -86,7 +86,7 @@ namespace VTX::Renderer
 		std::optional<CRTConfig> crt = ACTIVE_CRT_DEFAULT ? std::optional<CRTConfig> { CRTConfig {} } : std::nullopt;
 		std::optional<SelectionConfig> selection
 			= ACTIVE_SELECTION_DEFAULT ? std::optional<SelectionConfig> { SelectionConfig {} } : std::nullopt;
-		ToneMappingConfig toneMapping = GraphicsConfigs::TONE_MAPPING_DEFAULT;
+		ToneMappingConfig toneMapping;
 	};
 } // namespace VTX::Renderer
 

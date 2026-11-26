@@ -22,13 +22,6 @@ namespace VTX::Renderer
 		float green = CHROMAB_GREEN_DEFAULT;
 		float blue = CHROMAB_BLUE_DEFAULT;
 	};
-
-	namespace GraphicsConfigs
-	{
-		inline const ChromaticAberrationConfig CHROMATIC_ABERRATION_DEFAULT { CHROMAB_RED_DEFAULT,
-																			  CHROMAB_GREEN_DEFAULT,
-																			  CHROMAB_BLUE_DEFAULT };
-	} // namespace GraphicsConfigs
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess

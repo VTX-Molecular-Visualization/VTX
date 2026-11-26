@@ -92,20 +92,6 @@ namespace VTX::Renderer
 		float			  far = FOG_FAR_DEFAULT;
 		float			  density = FOG_DENSITY_DEFAULT;
 	};
-
-	namespace GraphicsConfigs
-	{
-		inline constexpr auto SHADING_DEFAULT = []
-		{
-			return ShadingConfig { SHADING_MODE_DEFAULT,	COLOR_LIGHT_DEFAULT, COLOR_BACKGROUND_DEFAULT,
-								   SPECULAR_FACTOR_DEFAULT, SHININESS_DEFAULT,	 TOON_STEPS_DEFAULT };
-		};
-
-		inline const FogConfig FOG_DEFAULT { COLOR_FOG_DEFAULT,
-											 FOG_NEAR_DEFAULT,
-											 FOG_FAR_DEFAULT,
-											 FOG_DENSITY_DEFAULT };
-	} // namespace GraphicsConfigs
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess
@@ -218,7 +204,7 @@ namespace VTX::Renderer::Builder::PostProcess
 							const std::optional<SSAOConfig> & p_ssao )
 		{
 			BinaryBuffer140	  buffer;
-			const FogConfig & fog = p_fog.value_or( GraphicsConfigs::FOG_DEFAULT );
+			const FogConfig & fog = p_fog.value_or( FogConfig {} );
 
 			buffer.write( p_config.colorBackground.toLinear() );
 			buffer.write( p_config.colorLight.toLinear() );

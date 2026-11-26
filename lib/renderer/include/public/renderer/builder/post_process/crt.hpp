@@ -42,15 +42,6 @@ namespace VTX::Renderer
 		float vignetteIntensity = CRT_VIGNETTE_INTENSITY_DEFAULT;
 		float brightness = CRT_BRIGHTNESS_DEFAULT;
 	};
-
-	namespace GraphicsConfigs
-	{
-		inline const CRTConfig CRT_DEFAULT {
-			CRT_CURVATURE_X_DEFAULT,		CRT_CURVATURE_Y_DEFAULT, CRT_RATIO_DEFAULT,
-			CRT_GRANINESS_X_DEFAULT,		CRT_GRANINESS_Y_DEFAULT, CRT_VIGNETTE_ROUNDNESS_DEFAULT,
-			CRT_VIGNETTE_INTENSITY_DEFAULT, CRT_BRIGHTNESS_DEFAULT
-		};
-	} // namespace GraphicsConfigs
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess

@@ -33,12 +33,6 @@ namespace VTX::Renderer
 		E_TONE_MAPPING mode = TONE_MAPPING_MODE_DEFAULT;
 		float		   exposure = TONE_MAPPING_EXPOSURE_DEFAULT;
 	};
-
-	namespace GraphicsConfigs
-	{
-		inline const ToneMappingConfig TONE_MAPPING_DEFAULT { TONE_MAPPING_MODE_DEFAULT,
-															  TONE_MAPPING_EXPOSURE_DEFAULT };
-	} // namespace GraphicsConfigs
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess

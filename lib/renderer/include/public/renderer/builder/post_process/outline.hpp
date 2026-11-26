@@ -25,13 +25,6 @@ namespace VTX::Renderer
 		float			  sensitivity = OUTLINE_SENSITIVITY_DEFAULT;
 		uint			  thickness = OUTLINE_THICKNESS_DEFAULT;
 	};
-
-	namespace GraphicsConfigs
-	{
-		inline const OutlineConfig OUTLINE_DEFAULT { COLOR_OUTLINE_DEFAULT,
-													 OUTLINE_SENSITIVITY_DEFAULT,
-													 OUTLINE_THICKNESS_DEFAULT };
-	} // namespace GraphicsConfigs
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess

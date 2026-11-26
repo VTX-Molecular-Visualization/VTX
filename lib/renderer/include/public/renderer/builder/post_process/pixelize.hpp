@@ -21,11 +21,6 @@ namespace VTX::Renderer
 		uint size = PIXELIZE_SIZE_DEFAULT;
 		bool background = PIXELIZE_BACKGROUND_DEFAULT;
 	};
-
-	namespace GraphicsConfigs
-	{
-		inline const PixelizeConfig PIXELIZE_DEFAULT { PIXELIZE_SIZE_DEFAULT, PIXELIZE_BACKGROUND_DEFAULT };
-	} // namespace GraphicsConfigs
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess

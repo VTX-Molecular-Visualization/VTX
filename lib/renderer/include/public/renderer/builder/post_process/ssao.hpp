@@ -43,15 +43,6 @@ namespace VTX::Renderer
 		float		  scale = SSAO_SCALE_DEFAULT;
 		float		  blurSize = BLUR_SIZE_DEFAULT;
 	};
-
-	namespace GraphicsConfigs
-	{
-		inline const SSAOConfig SSAO_DEFAULT { SSAO_METHOD_DEFAULT,
-											   SSAO_INTENSITY_DEFAULT,
-											   SSAO_RADIUS_DEFAULT,
-											   SSAO_SCALE_DEFAULT,
-											   BLUR_SIZE_DEFAULT };
-	} // namespace GraphicsConfigs
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess

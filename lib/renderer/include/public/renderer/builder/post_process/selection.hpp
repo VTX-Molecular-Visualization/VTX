@@ -16,11 +16,6 @@ namespace VTX::Renderer
 	{
 		Util::Color::Rgba color = COLOR_SELECTION_DEFAULT;
 	};
-
-	namespace GraphicsConfigs
-	{
-		inline const SelectionConfig SELECTION_DEFAULT { COLOR_SELECTION_DEFAULT };
-	} // namespace GraphicsConfigs
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess
