@@ -88,6 +88,14 @@ namespace VTX::App::Action::IO
 	};
 
 	/**
+	 * @brief Import a script into the user scripts directory and run it.
+	 */
+	struct ImportScript
+	{
+		void execute( const FilePath & p_path );
+	};
+
+	/**
 	 * @brief Download a molecular system from a remote source.
 	 */
 	struct DownloadSystem

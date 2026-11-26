@@ -4,7 +4,6 @@
 #include <array>
 #include <charconv>
 #include <cmath>
-#include <cstdint>
 #include <fmt/format.h>
 #include <limits>
 #include <stdexcept>
@@ -166,10 +165,10 @@ namespace VTX::Util::Color
 
 	namespace
 	{
-		uint32_t _toPacked( const Vec4f & p_color ) noexcept
+		uint _toPacked( const Vec4f & p_color ) noexcept
 		{
-			const auto toByte = []( const float p_channel ) -> uint32_t
-			{ return static_cast<uint32_t>( std::lround( std::clamp( p_channel, 0.f, 1.f ) * 255.f ) ); };
+			const auto toByte = []( const float p_channel ) -> uint
+			{ return static_cast<uint>( std::lround( std::clamp( p_channel, 0.f, 1.f ) * 255.f ) ); };
 
 			return toByte( p_color.x ) << 24 | toByte( p_color.y ) << 16 | toByte( p_color.z ) << 8 | toByte( p_color.w );
 		}
@@ -185,7 +184,7 @@ namespace VTX::Util::Color
 		if ( ( p_hexa.size() == 7 || hasAlpha ) && p_hexa.front() == '#' )
 		{
 			const char * const end	  = p_hexa.data() + p_hexa.size();
-			uint32_t		   packed = 0;
+			uint		   packed = 0;
 
 			if ( std::from_chars( p_hexa.data() + 1, end, packed, 16 ).ptr == end )
 			{

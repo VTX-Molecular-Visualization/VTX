@@ -1,3 +1,4 @@
+#include <app/action/io.hpp>
 #include <app/action/material.hpp>
 #include <app/action/preset.hpp>
 #include <app/fixture.hpp>
@@ -5,6 +6,7 @@
 #include <app/generic/name.hpp>
 #include <app/generic/readonly.hpp>
 #include <app/helper/preset.hpp>
+#include <app/scene/color_layout.hpp>
 #include <app/scene/material.hpp>
 #include <app/serialization/renderer.hpp>
 #include <app/services.hpp>
@@ -57,7 +59,7 @@ namespace
 
 	void writePreset(
 		const FilePath &	   p_path,
-		const uint32_t		   p_version,
+		const uint		   p_version,
 		const std::string_view p_name,
 		const std::string_view p_type = Helper::Preset::TYPE_NAME<Renderer::Representation>
 	)
@@ -139,6 +141,60 @@ TEST_CASE( "VTX_APP - Preset - Load directory", "[preset]" )
 
 	ACTION().execute<Action::Preset::LoadDirectory<Renderer::Representation>>( directory / "missing", false );
 
+	std::filesystem::remove_all( directory );
+}
+
+TEST_CASE( "VTX_APP - Preset - Import", "[preset]" )
+{
+	App::Fixture app;
+
+	const FilePath directory = std::filesystem::temp_directory_path() / "vtx_app_test_presets_import";
+	std::filesystem::remove_all( directory );
+	std::filesystem::create_directories( directory );
+
+	writePreset( directory / "imported.json", 1, "Sticks" );
+	writePreset( directory / "opened.json", 1, "Opened preset" );
+	writePreset( directory / "unknown.json", 1, "Unknown type preset", "unknown" );
+	writePreset( directory / "newer.json", Helper::Preset::VERSION<Renderer::Representation> + 1, "Newer preset" );
+
+	Util::Json::Document layout;
+	layout[ "version" ] = Helper::Preset::VERSION<Renderer::Color::Layout>;
+	layout[ "type" ]	= Helper::Preset::TYPE_NAME<Renderer::Color::Layout>;
+	layout[ "name" ]	= "Imported layout";
+	layout[ "data" ]	= Renderer::Color::Layout {};
+	Util::Json::write( directory / "layout.json", layout );
+
+	ACTION().execute<Action::Preset::Import>( directory / "imported.json" );
+	ACTION().execute<Action::Preset::Import>( directory / "layout.json" );
+	ACTION().execute<Action::IO::Open>( directory / "opened.json" );
+	ACTION().execute<Action::Preset::Import>( directory / "unknown.json" );
+	ACTION().execute<Action::Preset::Import>( directory / "newer.json" );
+
+	const std::optional<Entity> imported = Helper::Preset::getByName<Renderer::Representation>( "Sticks (2)" );
+	REQUIRE( imported.has_value() );
+	CHECK( not REG().all_of<Generic::ReadOnly>( *imported ) );
+
+	const FilePath importedPath = REG().get<Generic::File>( *imported ).path;
+	CHECK( importedPath.parent_path() == SESSION().getRepresentationsDir() );
+	CHECK( Util::Json::read( importedPath ).at( "name" ).get<std::string>() == "Sticks (2)" );
+
+	const std::optional<Entity> opened = Helper::Preset::getByName<Renderer::Representation>( "Opened preset" );
+	REQUIRE( opened.has_value() );
+	const FilePath openedPath = REG().get<Generic::File>( *opened ).path;
+
+	const std::optional<Entity> importedLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "Imported layout" );
+	REQUIRE( importedLayout.has_value() );
+	CHECK( ECS::getFirstComponent<App::Scene::ColorLayout>().preset == *importedLayout );
+	const FilePath layoutPath = REG().get<Generic::File>( *importedLayout ).path;
+	CHECK( layoutPath.parent_path() == SESSION().getColorLayoutsDir() );
+
+	CHECK( not Helper::Preset::exists<Renderer::Representation>( "Unknown type preset" ) );
+	CHECK( not Helper::Preset::exists<Renderer::Representation>( "Newer preset" ) );
+	CHECK( not std::filesystem::exists( SESSION().getRepresentationsDir() / "newer.json" ) );
+
+	std::filesystem::remove( importedPath );
+	std::filesystem::remove( openedPath );
+	std::filesystem::remove( layoutPath );
 	std::filesystem::remove_all( directory );
 }
 

@@ -1,4 +1,5 @@
 #include "app/action/io.hpp"
+#include "app/action/preset.hpp"
 #include "app/constants.hpp"
 #include "app/extractor/mesh.hpp"
 #include "app/extractor/system.hpp"
@@ -19,6 +20,7 @@
 #include <string>
 #include <util/chrono.hpp>
 #include <util/exceptions.hpp>
+#include <util/filesystem.hpp>
 #include <util/logger.hpp>
 #include <util/resolution.hpp>
 
@@ -45,13 +47,11 @@ namespace VTX::App::Action::IO
 	{
 		if ( VTX::IO::isScriptFileFormat( p_path ) )
 		{
-			if ( ARGS().noPython )
-			{
-				VTX_WARNING( "Python is disabled. VTX will skip script <{}>.", p_path.string() );
-				return;
-			}
-
-			ACTION().execute<RunPythonScript>( std::move( p_path ) );
+			ACTION().execute<ImportScript>( p_path );
+		}
+		else if ( VTX::IO::isPresetFileFormat( p_path ) )
+		{
+			ACTION().execute<Preset::Import>( p_path );
 		}
 		else if ( VTX::IO::MeshReader::isMeshFileFormat( p_path ) )
 		{
@@ -127,10 +127,25 @@ namespace VTX::App::Action::IO
 	void RunPythonScript::execute( const FilePath & p_path )
 	{
 #if VTX_PYTHON_BINDING
-		INTERPRETOR().runScript( p_path );
-#else
-		VTX_WARNING( "Python is disabled. VTX will skip script <{}>.", p_path.string() );
+		if ( not ARGS().noPython )
+		{
+			INTERPRETOR().runScript( p_path );
+			return;
+		}
 #endif
+		VTX_WARNING( "Python is disabled. VTX will skip script <{}>.", p_path.string() );
+	}
+
+	void ImportScript::execute( const FilePath & p_path )
+	{
+		const FilePath directory = SESSION().getScriptsDir();
+		std::filesystem::create_directories( directory );
+		FilePath destination = directory / p_path.filename();
+		Util::Filesystem::generateUniqueFileName( destination );
+		std::filesystem::copy_file( p_path, destination );
+		VTX_INFO( "Script imported to {}", destination.string() );
+
+		ACTION().execute<RunPythonScript>( destination );
 	}
 
 	void DownloadSystem::execute( const std::string & p_systemId, const bool p_force )

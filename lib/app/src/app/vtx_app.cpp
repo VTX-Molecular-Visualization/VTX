@@ -320,29 +320,37 @@ namespace VTX::App
 	void VTXApp::handleArgs()
 	{
 		const Arguments & args = ARGS();
-		for ( const auto & it_file : args.positionalFiles )
+		for ( const auto & file : args.positionalFiles )
 		{
-			if ( it_file.empty() )
+			if ( file.empty() )
 			{
 				continue; // The user probably didn't do it on purpose so no need to complain here
 			}
 
-			if ( not std::filesystem::exists( it_file ) )
+			if ( not std::filesystem::exists( file ) )
 			{
 				// Maybe there is a problem with the path so we need to tell 'em
-				VTX_WARNING( "File <{}> not found. VTX will skip it.", it_file );
+				VTX_WARNING( "File <{}> not found. VTX will skip it.", file );
 				continue;
 			}
 
 #if VTX_PYTHON_BINDING
-			if ( args.noGui && ECS::hasCtx<PythonBinding::Interpretor>() && VTX::IO::isScriptFileFormat( it_file ) )
+			// Run script.
+			if ( args.noGui && ECS::hasCtx<PythonBinding::Interpretor>() && VTX::IO::isScriptFileFormat( file ) )
 			{
-				runScriptUntilDone( *this, it_file );
+				runScriptUntilDone( *this, file );
 				continue;
 			}
 #endif
+			// No python but copy script in user data.
+			if ( VTX::IO::isScriptFileFormat( file ) )
+			{
+				ACTION().execute<Action::IO::RunPythonScript>( file );
+				continue;
+			}
+
 			Action::IO::Open openAction;
-			ACTION().execute( openAction, it_file );
+			ACTION().execute( openAction, file );
 		}
 	}
 

@@ -4,7 +4,6 @@
 #include "app/ecs.hpp"
 #include "app/generic/name.hpp"
 #include <algorithm>
-#include <cstdint>
 #include <optional>
 #include <renderer/color.hpp>
 #include <renderer/graphics_config.hpp>
@@ -59,7 +58,7 @@ namespace VTX::App::Helper::Preset
 	 * // TODO: move to settings.
 	 */
 	template<typename T>
-	inline constexpr uint32_t VERSION = 1;
+	inline constexpr uint VERSION = 1;
 
 	template<typename T>
 	inline constexpr std::string_view TYPE_NAME = "";

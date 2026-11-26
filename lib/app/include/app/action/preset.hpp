@@ -12,7 +12,6 @@
 #include "app/serialization/renderer.hpp"
 #include "app/services.hpp"
 #include <algorithm>
-#include <cstdint>
 #include <exception>
 #include <filesystem>
 #include <optional>
@@ -28,6 +27,7 @@
 #include <util/json.hpp>
 #include <util/logger.hpp>
 #include <util/type_traits.hpp>
+#include <util/types.hpp>
 #include <vector>
 
 namespace VTX::App::Action::Preset
@@ -205,6 +205,75 @@ namespace VTX::App::Action::Preset
 		}
 	};
 
+	namespace Detail
+	{
+		template<typename T>
+		T read( const Util::Json::Document & p_document )
+		{
+			const uint version = p_document.at( "version" ).get<uint>();
+			if ( version > Helper::Preset::VERSION<T> )
+			{
+				throw VTXException(
+					"version {} is newer than supported version {}", version, Helper::Preset::VERSION<T>
+				);
+			}
+
+			const std::string type = p_document.at( "type" ).get<std::string>();
+			if ( type != Helper::Preset::TYPE_NAME<T> )
+			{
+				throw VTXException(
+					"type \"{}\" does not match expected type \"{}\"", type, Helper::Preset::TYPE_NAME<T>
+				);
+			}
+
+			return p_document.at( "data" ).get<T>();
+		}
+
+		template<typename T>
+		Entity create( const std::string & p_name, T && p_data, const FilePath & p_path, const bool p_readOnly )
+		{
+			Registry &	 reg	= REG();
+			const Entity entity = reg.create();
+			reg.emplace<Generic::Name>( entity, p_name );
+			reg.emplace<T>( entity, std::move( p_data ) );
+			reg.emplace<Generic::File>( entity, p_path );
+			if ( p_readOnly )
+			{
+				reg.emplace<Generic::ReadOnly>( entity );
+			}
+			return entity;
+		}
+	} // namespace Detail
+
+	/**
+	 * @brief Load a preset from a file.
+	 */
+	template<typename T>
+	struct LoadFile
+	{
+		void execute( const FilePath & p_path, const bool p_readOnly )
+		{
+			try
+			{
+				const Util::Json::Document document = Util::Json::read( p_path );
+				T						   data		= Detail::read<T>( document );
+
+				const std::string name = document.at( "name" ).get<std::string>();
+				if ( Helper::Preset::exists<T>( name ) )
+				{
+					VTX_WARNING( "Preset {} skipped: a preset named \"{}\" already exists", p_path.string(), name );
+					return;
+				}
+
+				Detail::create<T>( name, std::move( data ), p_path, p_readOnly );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_WARNING( "Can not load preset {}: {}", p_path.string(), p_e.what() );
+			}
+		}
+	};
+
 	/**
 	 * @brief Load all presets from a directory.
 	 */
@@ -230,63 +299,7 @@ namespace VTX::App::Action::Preset
 
 			for ( const FilePath & file : files )
 			{
-				_load( file, p_readOnly );
-			}
-		}
-
-	  private:
-		void _load( const FilePath & p_path, const bool p_readOnly )
-		{
-			try
-			{
-				const Util::Json::Document document = Util::Json::read( p_path );
-
-				const uint32_t version = document.at( "version" ).get<uint32_t>();
-				if ( version > Helper::Preset::VERSION<T> )
-				{
-					VTX_WARNING(
-						"Preset {} skipped: version {} is newer than supported version {}",
-						p_path.string(),
-						version,
-						Helper::Preset::VERSION<T>
-					);
-					return;
-				}
-
-				const std::string type = document.at( "type" ).get<std::string>();
-				if ( type != Helper::Preset::TYPE_NAME<T> )
-				{
-					VTX_WARNING(
-						"Preset {} skipped: type \"{}\" does not match expected type \"{}\"",
-						p_path.string(),
-						type,
-						Helper::Preset::TYPE_NAME<T>
-					);
-					return;
-				}
-
-				const std::string name = document.at( "name" ).get<std::string>();
-				if ( Helper::Preset::exists<T>( name ) )
-				{
-					VTX_WARNING( "Preset {} skipped: a preset named \"{}\" already exists", p_path.string(), name );
-					return;
-				}
-
-				T data = document.at( "data" ).get<T>();
-
-				Registry &	 reg	= REG();
-				const Entity entity = reg.create();
-				reg.emplace<Generic::Name>( entity, name );
-				reg.emplace<T>( entity, std::move( data ) );
-				reg.emplace<Generic::File>( entity, p_path );
-				if ( p_readOnly )
-				{
-					reg.emplace<Generic::ReadOnly>( entity );
-				}
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_WARNING( "Can not load preset {}: {}", p_path.string(), p_e.what() );
+				ACTION().execute<LoadFile<T>>( file, p_readOnly );
 			}
 		}
 	};
@@ -322,5 +335,17 @@ namespace VTX::App::Action::Preset
 	 */
 	struct LoadAll
 	{ void execute(); };
+
+	/**
+	 * @brief Import a preset file into user data and apply it.
+	 */
+	struct Import
+	{
+		void execute( const FilePath & p_path );
+
+	  private:
+		template<typename T>
+		void _import( Util::Json::Document & p_document, const FilePath & p_path, const FilePath & p_userDirectory );
+	};
 } // namespace VTX::App::Action::Preset
 #endif
