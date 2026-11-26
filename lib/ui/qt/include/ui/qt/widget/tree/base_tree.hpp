@@ -38,7 +38,8 @@ namespace VTX::UI::QT::Widget::Tree
 		bool event( QEvent * const p_event ) override
 		{
 			const bool result = W::event( p_event );
-			if ( p_event->type() == QEvent::ApplicationPaletteChange )
+			if ( ( p_event->type() == QEvent::ApplicationPaletteChange || p_event->type() == QEvent::PaletteChange )
+				 && not _applyingTint )
 			{
 				_applyTint();
 			}
@@ -93,6 +94,7 @@ namespace VTX::UI::QT::Widget::Tree
 		 */
 		std::optional<int> _tintHue;
 		int				   _tintLightness = DEFAULT_TINT_LIGHTNESS;
+		bool			   _applyingTint  = false;
 
 		/**
 		 * @brief Apply the tint color to the tree.
@@ -119,7 +121,9 @@ namespace VTX::UI::QT::Widget::Tree
 
 			QPalette pal = W::palette();
 			pal.setColor( QPalette::Base, tinted );
+			_applyingTint = true;
 			W::setPalette( pal );
+			_applyingTint = false;
 		}
 
 		/**

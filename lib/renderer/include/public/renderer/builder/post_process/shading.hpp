@@ -3,7 +3,6 @@
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/builder/post_process/ssao.hpp"
-#include "renderer/builder/post_process/tone_mapping.hpp"
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include "renderer/material.hpp"
@@ -55,6 +54,16 @@ namespace VTX::Renderer
 	constexpr float				ENVIRONMENT_ROTATION_DEFAULT = 0.f;
 	constexpr float				ENVIRONMENT_ROTATION_MIN	 = 0.f;
 	constexpr float				ENVIRONMENT_ROTATION_MAX	 = TWO_PIf;
+	constexpr float				SKYBOX_INTENSITY_DEFAULT	 = 1.f;
+	constexpr float				SKYBOX_INTENSITY_MIN		 = 1.f / 1024.f;
+	constexpr float				SKYBOX_INTENSITY_MAX		 = 1024.f;
+	constexpr float				SKYBOX_INTENSITY_EV_MIN		 = -10.f;
+	constexpr float				SKYBOX_INTENSITY_EV_MAX		 = 10.f;
+	constexpr float				IBL_INTENSITY_DEFAULT		 = 1.f;
+	constexpr float				IBL_INTENSITY_MIN			 = 1.f / 1024.f;
+	constexpr float				IBL_INTENSITY_MAX			 = 1024.f;
+	constexpr float				IBL_INTENSITY_EV_MIN		 = -10.f;
+	constexpr float				IBL_INTENSITY_EV_MAX		 = 10.f;
 
 	constexpr bool			ACTIVE_FOG_DEFAULT	= false;
 	const Util::Color::Rgba COLOR_FOG_DEFAULT	= COLOR_GREY;
@@ -81,8 +90,8 @@ namespace VTX::Renderer
 		E_BACKGROUND_MODE		backgroundMode	 = BACKGROUND_MODE_DEFAULT;
 		std::optional<FilePath> environmentPath;
 		uint					environmentFaceSize = 1024;
-		float					skyboxIntensity		= 1.f;
-		float					iblIntensity		= 1.f;
+		float					skyboxIntensity		= SKYBOX_INTENSITY_DEFAULT;
+		float					iblIntensity		= IBL_INTENSITY_DEFAULT;
 		float					environmentRotation = ENVIRONMENT_ROTATION_DEFAULT;
 		Material				material;
 
@@ -93,8 +102,8 @@ namespace VTX::Renderer
 			toonSteps			= Util::Math::clamp( toonSteps, TOON_STEPS_MIN, TOON_STEPS_MAX );
 			lightIntensity		= Util::Math::clamp( lightIntensity, LIGHT_INTENSITY_MIN, LIGHT_INTENSITY_MAX );
 			ambientIntensity	= Util::Math::clamp( ambientIntensity, AMBIENT_INTENSITY_MIN, AMBIENT_INTENSITY_MAX );
-			skyboxIntensity		= Util::Math::clamp( skyboxIntensity, TONE_MAPPING_EXPOSURE_MIN, TONE_MAPPING_EXPOSURE_MAX );
-			iblIntensity		= Util::Math::clamp( iblIntensity, TONE_MAPPING_EXPOSURE_MIN, TONE_MAPPING_EXPOSURE_MAX );
+			skyboxIntensity		= Util::Math::clamp( skyboxIntensity, SKYBOX_INTENSITY_MIN, SKYBOX_INTENSITY_MAX );
+			iblIntensity		= Util::Math::clamp( iblIntensity, IBL_INTENSITY_MIN, IBL_INTENSITY_MAX );
 			environmentRotation = Util::Math::clamp( environmentRotation, ENVIRONMENT_ROTATION_MIN, ENVIRONMENT_ROTATION_MAX );
 		}
 	};

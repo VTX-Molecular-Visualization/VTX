@@ -95,8 +95,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		addWidget( _labelSkyboxIntensity );
 		_sliderSkyboxIntensity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderSkyboxIntensity );
-		_sliderSkyboxIntensity->setMinimum( TONE_MAPPING_EXPOSURE_EV_MIN );
-		_sliderSkyboxIntensity->setMaximum( TONE_MAPPING_EXPOSURE_EV_MAX );
+		_sliderSkyboxIntensity->setMinimum( SKYBOX_INTENSITY_EV_MIN );
+		_sliderSkyboxIntensity->setMaximum( SKYBOX_INTENSITY_EV_MAX );
 		_sliderSkyboxIntensity->setStep( 0.1f );
 		_sliderSkyboxIntensity->setDecimals( 2 );
 		_sliderSkyboxIntensity->setSuffix( "EV" );
@@ -105,8 +105,8 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		addWidget( _labelIblIntensity );
 		_sliderIblIntensity = Helper::makeQObject<EditableSlider>( Qt::Orientation::Horizontal, this );
 		addWidget( _sliderIblIntensity );
-		_sliderIblIntensity->setMinimum( TONE_MAPPING_EXPOSURE_EV_MIN );
-		_sliderIblIntensity->setMaximum( TONE_MAPPING_EXPOSURE_EV_MAX );
+		_sliderIblIntensity->setMinimum( IBL_INTENSITY_EV_MIN );
+		_sliderIblIntensity->setMaximum( IBL_INTENSITY_EV_MAX );
 		_sliderIblIntensity->setStep( 0.1f );
 		_sliderIblIntensity->setDecimals( 2 );
 		_sliderIblIntensity->setSuffix( "EV" );
