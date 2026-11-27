@@ -1,5 +1,4 @@
-#ifndef VTX_APP_HELPER_CHEMISTRY_HPP
-#define VTX_APP_HELPER_CHEMISTRY_HPP
+#pragma once
 
 #include <core/struct/topology.hpp>
 #include <string>
@@ -11,5 +10,3 @@ namespace VTX::App::Helper::Chemistry
 	std::vector<Index> findResiduesByName( const Core::Struct::Topology & p_topology,
 										   const std::string &			  p_residueName );
 } // namespace VTX::App::Helper::Chemistry
-
-#endif

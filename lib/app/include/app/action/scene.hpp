@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_SCENE_HPP
-#define VTX_APP_ACTION_SCENE_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include <util/types.hpp>
@@ -43,4 +42,3 @@ namespace VTX::App::Action::Scene
 	struct SetMaterial
 	{ void execute( Entity p_e ); };
 } // namespace VTX::App::Action::Scene
-#endif

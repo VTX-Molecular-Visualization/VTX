@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_TYPES_HPP
-#define VTX_APP_PYTHON_BINDING_TOPOLOGY_TYPES_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include <core/struct/topology.hpp>
@@ -127,5 +126,3 @@ namespace VTX::App::PythonBinding::Topology
 	};
 
 } // namespace VTX::App::PythonBinding::Topology
-
-#endif

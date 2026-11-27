@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_BACKEND_OPENGL_HPP
-#define VTX_RENDERER_CONTEXT_BACKEND_OPENGL_HPP
+#pragma once
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/backend/gl/buffer.hpp"
@@ -286,5 +285,3 @@ namespace VTX::Renderer::Context::Backend
 		void				  _getOpenglInfos();
 	};
 } // namespace VTX::Renderer::Context::Backend
-
-#endif

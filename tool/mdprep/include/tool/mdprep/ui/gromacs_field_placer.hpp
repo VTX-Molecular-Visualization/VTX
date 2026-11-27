@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_GROMACS_FIELD_PLACER_HPP
-#define VTX_TOOL_MDPREP_UI_GROMACS_FIELD_PLACER_HPP
+#pragma once
 
 #include "tool/mdprep/ui/shared.hpp"
 #include <array>
@@ -53,5 +52,3 @@ namespace VTX::Tool::Mdprep::ui
 		} _uiObjects;
 	};
 } // namespace VTX::Tool::Mdprep::ui
-
-#endif

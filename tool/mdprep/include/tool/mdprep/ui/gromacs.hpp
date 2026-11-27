@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_GROMACS_HPP
-#define VTX_TOOL_MDPREP_UI_GROMACS_HPP
+#pragma once
 
 #include <cstdint>
 #include <memory>
@@ -41,5 +40,3 @@ namespace VTX::Tool::Mdprep::ui
 
 	void get( const Gromacs &, Gateway::EngineSpecificCommonInformation & );
 } // namespace VTX::Tool::Mdprep::ui
-
-#endif

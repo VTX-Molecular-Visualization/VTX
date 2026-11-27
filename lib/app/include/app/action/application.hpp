@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_APPLICATION_HPP
-#define VTX_APP_ACTION_APPLICATION_HPP
+#pragma once
 
 #include <util/thread/base_thread.hpp>
 #include <util/types.hpp>
@@ -73,4 +72,3 @@ namespace VTX::App::Action::Application
 	};
 
 } // namespace VTX::App::Action::Application
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_GRAPHICS_CONFIG_HPP
-#define VTX_RENDERER_GRAPHICS_CONFIG_HPP
+#pragma once
 
 #include "renderer/builder/post_process/chromatic_aberration.hpp"
 #include "renderer/builder/post_process/crt.hpp"
@@ -119,5 +118,3 @@ namespace VTX::Renderer
 		}
 	};
 } // namespace VTX::Renderer
-
-#endif

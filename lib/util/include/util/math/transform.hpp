@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_MATH_TRANSFORM_HPP
-#define VTX_UTIL_MATH_TRANSFORM_HPP
+#pragma once
 
 #include "util/math.hpp"
 #include "util/types.hpp"
@@ -133,5 +132,3 @@ namespace VTX::Util::Math
 		Vec3f _scale = VEC3F_XYZ;
 	};
 } // namespace VTX::Util::Math
-
-#endif

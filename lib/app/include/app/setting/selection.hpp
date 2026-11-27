@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SETTING_SELECTION_HPP
-#define VTX_APP_SETTING_SELECTION_HPP
+#pragma once
 
 #include <string>
 
@@ -15,5 +14,3 @@ namespace VTX::App::Setting
 	};
 
 } // namespace VTX::App::Setting
-
-#endif

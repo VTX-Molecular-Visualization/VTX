@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_HASHING_HPP
-#define VTX_UTIL_HASHING_HPP
+#pragma once
 
 #include "type_traits.hpp"
 #include "types.hpp"
@@ -53,4 +52,3 @@ namespace VTX::Util
 	{ return typeid( DefaultHashProcess<T> ).name(); }
 
 } // namespace VTX::Util
-#endif

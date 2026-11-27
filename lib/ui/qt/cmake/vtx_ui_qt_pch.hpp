@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_PCH_HPP
-#define VTX_UI_QT_PCH_HPP
+#pragma once
 
 #include <QBoxLayout>
 #include <QLayout>
@@ -7,5 +6,3 @@
 #include <QString>
 #include <QVariant>
 #include <QWidget>
-
-#endif

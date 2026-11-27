@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_LAYOUT_VOXELS_HPP
-#define VTX_RENDERER_LAYOUT_VOXELS_HPP
+#pragma once
 
 #include "base_layout.hpp"
 #include <string_view>
@@ -53,5 +52,3 @@ namespace VTX::Renderer::Layout
 		static constexpr std::string_view VOXELS_MAXS = "Voxels.Maxs";
 	};
 } // namespace VTX::Renderer::Layout
-
-#endif

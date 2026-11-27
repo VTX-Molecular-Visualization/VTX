@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_GEOMETRY_CYLINDER_HPP
-#define VTX_RENDERER_GEOMETRY_CYLINDER_HPP
+#pragma once
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
@@ -81,5 +80,3 @@ namespace VTX::Renderer::Geometry
 		std::unordered_map<Desc::Handle, Construction> _construction;
 	};
 } // namespace VTX::Renderer::Geometry
-
-#endif

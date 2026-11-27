@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_VIEWPOINT_HPP
-#define VTX_UI_QT_WIDGET_VIEWPOINT_HPP
+#pragma once
 
 #include "ui/qt/widget/transform.hpp"
 #include <QLineEdit>
@@ -41,5 +40,3 @@ namespace VTX::UI::QT::Widget
 		VTX::Util::EventHub::ScopedConnection _viewPointRenamedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
-
-#endif

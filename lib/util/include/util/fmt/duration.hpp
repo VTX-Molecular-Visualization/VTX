@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_FMT_DURATION_HPP
-#define VTX_UTIL_FMT_DURATION_HPP
+#pragma once
 
 #include "util/string.hpp"
 #include <fmt/format.h>
@@ -42,5 +41,3 @@ struct fmt::formatter<VTX::Util::String::FormattedDuration> : fmt::formatter<std
 		return out;
 	}
 };
-
-#endif

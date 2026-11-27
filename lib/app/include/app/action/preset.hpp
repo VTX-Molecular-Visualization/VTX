@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_PRESET_HPP
-#define VTX_APP_ACTION_PRESET_HPP
+#pragma once
 
 #include "app/action/representation.hpp"
 #include "app/action/scene.hpp"
@@ -335,4 +334,3 @@ namespace VTX::App::Action::Preset
 		void _import( Util::Json::Document & p_document, const FilePath & p_path, const FilePath & p_userDirectory );
 	};
 } // namespace VTX::App::Action::Preset
-#endif

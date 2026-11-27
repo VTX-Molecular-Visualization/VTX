@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_RESOURCES_HPP
-#define VTX_UI_QT_RESOURCES_HPP
+#pragma once
 
 #include <QString>
 
@@ -27,5 +26,3 @@ namespace VTX::UI::QT::Resources
 	constexpr QUtf8StringView FONT_OPEN_DYSLEXIC_FAMILY { "OpenDyslexic" };
 
 } // namespace VTX::UI::QT::Resources
-
-#endif

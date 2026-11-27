@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SYSTEM_COLOR_HPP
-#define VTX_APP_SYSTEM_COLOR_HPP
+#pragma once
 
 #include <core/struct/topology.hpp>
 #include <renderer/color.hpp>
@@ -47,5 +46,3 @@ namespace VTX::App::System
 	};
 
 } // namespace VTX::App::System
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_MATERIAL_HPP
-#define VTX_APP_ACTION_MATERIAL_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/helper/preset.hpp"
@@ -78,5 +77,3 @@ namespace VTX::App::Action::Material
 		}
 	};
 } // namespace VTX::App::Action::Material
-
-#endif

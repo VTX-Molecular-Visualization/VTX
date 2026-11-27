@@ -1,5 +1,4 @@
-#ifndef VTX_APP_TOOL_BASE_TOOL_HPP
-#define VTX_APP_TOOL_BASE_TOOL_HPP
+#pragma once
 
 #include <optional>
 #include <string>
@@ -42,5 +41,3 @@ namespace VTX::App::Tool
 	};
 
 } // namespace VTX::App::Tool
-
-#endif

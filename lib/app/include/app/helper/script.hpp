@@ -1,5 +1,4 @@
-#ifndef VTX_APP_HELPER_SCRIPT_HPP
-#define VTX_APP_HELPER_SCRIPT_HPP
+#pragma once
 
 #include <util/filesystem.hpp>
 
@@ -20,5 +19,3 @@ namespace VTX::App::Helper::Script
 	 */
 	FilePath duplicate( const FilePath & p_path );
 } // namespace VTX::App::Helper::Script
-
-#endif

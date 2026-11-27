@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_SELECTION_HPP
-#define VTX_UI_QT_WIDGET_SELECTION_HPP
+#pragma once
 
 #include "ui/qt/widget/transform.hpp"
 #include <QListWidget>
@@ -66,5 +65,3 @@ namespace VTX::UI::QT::Widget
 		VTX::Util::EventHub::ScopedConnection _connMetadataChanged;
 	};
 } // namespace VTX::UI::QT::Widget
-
-#endif

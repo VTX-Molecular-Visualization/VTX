@@ -1,5 +1,4 @@
-#ifndef VTX_IO_WRITER_SYSTEM_HPP
-#define VTX_IO_WRITER_SYSTEM_HPP
+#pragma once
 
 #include <concepts>
 #include <core/struct/topology.hpp>
@@ -122,5 +121,3 @@ namespace VTX::IO::Writer
 	void writeFile( WriteArgs );
 
 } // namespace VTX::IO::Writer
-
-#endif

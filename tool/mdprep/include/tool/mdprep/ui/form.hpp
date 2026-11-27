@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_FORM_HPP
-#define VTX_TOOL_MDPREP_UI_FORM_HPP
+#pragma once
 
 #include <memory>
 #include <util/concepts.hpp>
@@ -104,5 +103,3 @@ namespace VTX::Tool::Mdprep::ui
 		std::unique_ptr<_interface> _ptr = nullptr;
 	};
 } // namespace VTX::Tool::Mdprep::ui
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_CORE_STRUCT_TRAJECTORY_HPP
-#define VTX_CORE_STRUCT_TRAJECTORY_HPP
+#pragma once
 
 #include <cstddef>
 #include <span>
@@ -48,5 +47,3 @@ namespace VTX::Core::Struct
 	};
 
 } // namespace VTX::Core::Struct
-
-#endif

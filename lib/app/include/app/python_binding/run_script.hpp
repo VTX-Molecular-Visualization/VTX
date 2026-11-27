@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_RUN_SCRIPT_HPP
-#define VTX_APP_PYTHON_BINDING_RUN_SCRIPT_HPP
+#pragma once
 
 #include <python_binding/wrapper/module.hpp>
 #include <util/filesystem.hpp>
@@ -14,5 +13,3 @@ namespace VTX::App::PythonBinding
 	};
 
 } // namespace VTX::App::PythonBinding
-
-#endif

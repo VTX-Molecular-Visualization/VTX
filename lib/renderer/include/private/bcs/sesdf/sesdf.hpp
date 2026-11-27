@@ -1,5 +1,4 @@
-#ifndef BCS_SESDF_SESDF_HPP
-#define BCS_SESDF_SESDF_HPP
+#pragma once
 
 #include "bcs/core/type.hpp"
 #include "bcs/cuda/grid.cuh"
@@ -99,5 +98,3 @@ namespace bcs
 	};
 
 } // namespace bcs
-
-#endif // BCS_SESDF_SESDF_HPP

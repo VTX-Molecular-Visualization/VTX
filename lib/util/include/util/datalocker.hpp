@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_DATALOCKER_HPP
-#define VTX_UTIL_DATALOCKER_HPP
+#pragma once
 
 #include "concepts.hpp"
 #include <mutex>
@@ -120,5 +119,3 @@ namespace VTX::Util
 		const ReservedDataType & operator*() const noexcept { return *_dataPtr; }
 	};
 } // namespace VTX::Util
-
-#endif

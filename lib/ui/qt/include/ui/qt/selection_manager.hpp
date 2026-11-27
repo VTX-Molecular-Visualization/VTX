@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_SELECTION_MANAGER_HPP
-#define VTX_UI_QT_SELECTION_MANAGER_HPP
+#pragma once
 
 #include <QAbstractItemView>
 #include <QItemSelectionModel>
@@ -155,5 +154,3 @@ namespace VTX::UI::QT
 		// std::optional<Current> _current;
 	};
 } // namespace VTX::UI::QT
-
-#endif

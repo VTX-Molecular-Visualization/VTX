@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_STYLE_ICONS_HPP
-#define VTX_UI_QT_STYLE_ICONS_HPP
+#pragma once
 
 #include "ui/qt/style/codepoint_icon_engine.hpp"
 
@@ -58,5 +57,3 @@ namespace VTX::UI::QT::Style::Icons
 	constexpr Codepoint VISIBILITY_OFF		  = 0xe8f5;	 // VISIBILITY_OFF
 
 } // namespace VTX::UI::QT::Style::Icons
-
-#endif

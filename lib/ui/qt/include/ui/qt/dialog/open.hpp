@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_DIALOG_OPEN_HPP
-#define VTX_UI_QT_DIALOG_OPEN_HPP
+#pragma once
 
 #include "ui/qt/dialog/base_dialog.hpp"
 #include <QFileDialog>
@@ -14,5 +13,3 @@ namespace VTX::UI::QT::Dialog
 	};
 
 } // namespace VTX::UI::QT::Dialog
-
-#endif

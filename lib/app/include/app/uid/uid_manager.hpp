@@ -1,5 +1,4 @@
-#ifndef VTX_APP_UID_UID_MANAGER_HPP
-#define VTX_APP_UID_UID_MANAGER_HPP
+#pragma once
 
 #include <util/uid.hpp>
 
@@ -28,5 +27,3 @@ namespace VTX::App::Uid
 		Util::Uid::Pool<UID32> _pickingPool;
 	};
 } // namespace VTX::App::Uid
-
-#endif

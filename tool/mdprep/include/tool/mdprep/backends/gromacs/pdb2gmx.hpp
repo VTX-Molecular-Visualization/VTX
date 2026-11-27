@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_PDB2GMX_HPP
-#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_PDB2GMX_HPP
+#pragma once
 
 #include <filesystem>
 #include <optional>
@@ -144,5 +143,3 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	void convert( const Pdb2gmxInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_FMT_GLM_HPP
-#define VTX_UTIL_FMT_GLM_HPP
+#pragma once
 
 #include "util/types.hpp"
 #include <fmt/format.h>
@@ -72,5 +71,3 @@ struct fmt::formatter<glm::qua<T>> : fmt::formatter<T>
 		return std::copy_n( " ]", 2, out );
 	}
 };
-
-#endif

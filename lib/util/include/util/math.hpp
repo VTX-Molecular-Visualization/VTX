@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_MATH_HPP
-#define VTX_UTIL_MATH_HPP
+#pragma once
 
 #include "constants.hpp"
 #include "types.hpp"
@@ -311,5 +310,3 @@ namespace VTX::Util::Math
 	Vec3f orthogonalVector( const Vec3f & normal ) noexcept;
 
 } // namespace VTX::Util::Math
-
-#endif

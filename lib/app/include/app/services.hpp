@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SERVICES_HPP
-#define VTX_APP_SERVICES_HPP
+#pragma once
 
 /**
  * @brief Forward declarations of services stored in the ECS context.
@@ -104,5 +103,3 @@ namespace VTX::App
 	Uid::UIDManager & UID();
 
 } // namespace VTX::App
-
-#endif

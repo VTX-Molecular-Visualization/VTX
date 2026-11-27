@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_CHRONO_HPP
-#define VTX_RENDERER_CONTEXT_BACKEND_GL_CHRONO_HPP
+#pragma once
 
 #include <cassert>
 
@@ -61,5 +60,3 @@ namespace VTX::Renderer::Context::Backend::GL
 		return static_cast<float>( c.stop() );
 	}
 } // namespace VTX::Renderer::Context::Backend::GL
-
-#endif

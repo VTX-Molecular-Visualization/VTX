@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_DIALOG_PROGRESS_HPP
-#define VTX_UI_QT_DIALOG_PROGRESS_HPP
+#pragma once
 
 #include "ui/qt/dialog/base_dialog.hpp"
 #include <QProgressDialog>
@@ -19,5 +18,3 @@ namespace VTX::UI::QT::Dialog
 		}
 	};
 } // namespace VTX::UI::QT::Dialog
-
-#endif

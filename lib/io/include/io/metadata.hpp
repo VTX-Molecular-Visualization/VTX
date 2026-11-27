@@ -1,5 +1,4 @@
-#ifndef VTX_IO_METADATA_HPP
-#define VTX_IO_METADATA_HPP
+#pragma once
 
 #include "io/constants.hpp"
 #include <string>
@@ -26,4 +25,3 @@ namespace VTX::IO
 		*/
 	};
 } // namespace VTX::IO
-#endif

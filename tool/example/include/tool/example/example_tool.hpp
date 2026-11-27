@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_EXAMPLE_EXAMPLE_TOOL_HPP
-#define VTX_TOOL_EXAMPLE_EXAMPLE_TOOL_HPP
+#pragma once
 
 #include <app/tool/base_tool.hpp>
 
@@ -18,5 +17,3 @@ namespace VTX::Tool::Example
 	};
 
 } // namespace VTX::Tool::Example
-
-#endif

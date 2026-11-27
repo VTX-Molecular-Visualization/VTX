@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_COLOR_LAYOUT_HPP
-#define VTX_APP_ACTION_COLOR_LAYOUT_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include <renderer/color.hpp>
@@ -33,4 +32,3 @@ namespace VTX::App::Action::ColorLayout
 	};
 
 } // namespace VTX::App::Action::ColorLayout
-#endif

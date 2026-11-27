@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SETTING_ACCESSIBILITY_HPP
-#define VTX_APP_SETTING_ACCESSIBILITY_HPP
+#pragma once
 
 #include <util/types.hpp>
 
@@ -30,5 +29,3 @@ namespace VTX::App::Setting
 		bool					   forceDyslexicFont = FORCE_DYSLEXIC_FONT_DEFAULT;
 	};
 } // namespace VTX::App::Setting
-
-#endif

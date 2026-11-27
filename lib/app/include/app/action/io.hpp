@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_IO_HPP
-#define VTX_APP_ACTION_IO_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include <optional>
@@ -132,4 +131,3 @@ namespace VTX::App::Action::IO
 	};
 
 } // namespace VTX::App::Action::IO
-#endif

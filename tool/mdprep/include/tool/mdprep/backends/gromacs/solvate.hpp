@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_SOLVATE_HPP
-#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_SOLVATE_HPP
+#pragma once
 
 #include <filesystem>
 #include <util/filesystem.hpp>
@@ -32,5 +31,3 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	void convert( const SolvateInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
-
-#endif

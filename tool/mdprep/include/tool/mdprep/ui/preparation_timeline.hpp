@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_PREPARATION_TIMELINE_HPP
-#define VTX_TOOL_MDPREP_UI_PREPARATION_TIMELINE_HPP
+#pragma once
 
 #include <string>
 #include <tool/mdprep/gateway/shared.hpp>
@@ -59,5 +58,3 @@ namespace VTX::Tool::Mdprep::ui
 	void showPreparationTimeline();
 
 } // namespace VTX::Tool::Mdprep::ui
-
-#endif

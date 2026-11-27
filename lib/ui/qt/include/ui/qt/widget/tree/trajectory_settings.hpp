@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_TREE_TRAJECTORY_SETTINGS_HPP
-#define VTX_UI_QT_WIDGET_TREE_TRAJECTORY_SETTINGS_HPP
+#pragma once
 
 #include <QComboBox>
 #include <QPointer>
@@ -48,5 +47,3 @@ namespace VTX::UI::QT::Widget::Tree
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree
-
-#endif

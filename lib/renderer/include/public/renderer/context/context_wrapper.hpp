@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_CONTEXT_WRAPPER_HPP
-#define VTX_RENDERER_CONTEXT_CONTEXT_WRAPPER_HPP
+#pragma once
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/context/command_buffer.hpp"
@@ -219,5 +218,3 @@ namespace VTX::Renderer::Context
 	};
 
 } // namespace VTX::Renderer::Context
-
-#endif

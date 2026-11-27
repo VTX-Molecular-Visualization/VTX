@@ -1,5 +1,4 @@
-#ifndef VTX_IO_CONSTANTS_HPP
-#define VTX_IO_CONSTANTS_HPP
+#pragma once
 
 #include <string_view>
 #include <util/enum.hpp>
@@ -43,5 +42,3 @@ namespace VTX::IO
 		ATOM_RESIDUE_MEMBERSHIP = 1 << 4
 	};
 } // namespace VTX::IO
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_FORM_ADVANCED_EVENT_MANAGER_HPP
-#define VTX_TOOL_MDPREP_UI_FORM_ADVANCED_EVENT_MANAGER_HPP
+#pragma once
 
 #include <array>
 #include <util/sentry.hpp>
@@ -74,5 +73,3 @@ namespace VTX::Tool::Mdprep::ui::form_advanced
 		std::function<void()>	_getInputCheckCallback();
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_advanced
-
-#endif

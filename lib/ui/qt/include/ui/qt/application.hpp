@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_APPLICATION_HPP
-#define VTX_UI_QT_APPLICATION_HPP
+#pragma once
 
 #include "QSplashScreen"
 #include "settings.hpp"
@@ -99,5 +98,3 @@ namespace VTX::UI::QT
 	 */
 	inline static QApplication * Q_APP() { return qApp; }
 } // namespace VTX::UI::QT
-
-#endif

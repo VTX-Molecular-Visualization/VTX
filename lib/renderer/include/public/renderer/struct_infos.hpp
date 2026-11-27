@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_STRUCT_INFOS_HPP
-#define VTX_RENDERER_STRUCT_INFOS_HPP
+#pragma once
 
 #include <array>
 #include <cstddef>
@@ -30,5 +29,3 @@ namespace VTX::Renderer
 		size_t currentSizeCPUCache {};
 	};
 } // namespace VTX::Renderer
-
-#endif

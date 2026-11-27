@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_MENU_REPRESENTATION_HPP
-#define VTX_UI_QT_MENU_REPRESENTATION_HPP
+#pragma once
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/style/icons.hpp"
@@ -46,5 +45,3 @@ namespace VTX::UI::QT::Menu
 	};
 
 } // namespace VTX::UI::QT::Menu
-
-#endif

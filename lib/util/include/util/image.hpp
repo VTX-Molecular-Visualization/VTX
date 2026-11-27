@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_IMAGE_HPP
-#define VTX_UTIL_IMAGE_HPP
+#pragma once
 
 #include "types.hpp"
 #include <cstdint>
@@ -62,5 +61,3 @@ namespace VTX::Util::Image
 	FloatImage readFloatImage( const FilePath & );
 
 } // namespace VTX::Util::Image
-
-#endif

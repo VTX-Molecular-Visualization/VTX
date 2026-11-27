@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_LIBRARY_PRESET_SELECTOR_HPP
-#define VTX_UI_QT_WIDGET_LIBRARY_PRESET_SELECTOR_HPP
+#pragma once
 
 #include "read_only_notice.hpp"
 #include "ui/qt/helper.hpp"
@@ -406,4 +405,3 @@ namespace VTX::UI::QT::Widget::Library
 		}
 	};
 } // namespace VTX::UI::QT::Widget::Library
-#endif

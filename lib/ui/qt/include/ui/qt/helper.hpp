@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_HELPER_HPP
-#define VTX_UI_QT_HELPER_HPP
+#pragma once
 
 #include <QBoxLayout>
 #include <QColor>
@@ -99,5 +98,3 @@ namespace VTX::UI::QT::Helper
 	}
 
 } // namespace VTX::UI::QT::Helper
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_LAYOUT_MESHES_HPP
-#define VTX_RENDERER_LAYOUT_MESHES_HPP
+#pragma once
 
 #include "base_layout.hpp"
 #include <core/struct/mesh.hpp>
@@ -38,5 +37,3 @@ namespace VTX::Renderer::Layout
 		}
 	};
 } // namespace VTX::Renderer::Layout
-
-#endif // !VTX_RENDERER_LAYOUT_MESHES_HPP

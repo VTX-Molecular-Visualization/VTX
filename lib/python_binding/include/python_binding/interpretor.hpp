@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_INTERPRETOR_HPP
-#define VTX_PYTHON_BINDING_INTERPRETOR_HPP
+#pragma once
 
 #include "python_binding/binder.hpp"
 #include <memory>
@@ -69,5 +68,3 @@ namespace VTX::PythonBinding
 	};
 
 } // namespace VTX::PythonBinding
-
-#endif

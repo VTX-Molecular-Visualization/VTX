@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_OPENGL_RENDERER_HPP
-#define VTX_UI_QT_WIDGET_OPENGL_RENDERER_HPP
+#pragma once
 
 #include <QOpenGLWidget>
 #include <QSurfaceFormat>
@@ -47,5 +46,3 @@ namespace VTX::UI::QT::Widget
 	};
 
 } // namespace VTX::UI::QT::Widget
-
-#endif

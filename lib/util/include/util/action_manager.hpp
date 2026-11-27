@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_ACTION_MANAGER_HPP
-#define VTX_UTIL_ACTION_MANAGER_HPP
+#pragma once
 
 #include "util/chrono.hpp"
 #include "util/fmt/duration.hpp"
@@ -161,5 +160,3 @@ namespace VTX::Util
 		}
 	};
 } // namespace VTX::Util
-
-#endif

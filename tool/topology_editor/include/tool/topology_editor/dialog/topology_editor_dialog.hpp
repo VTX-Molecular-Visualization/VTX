@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_TOPOLOGY_EDITOR_DIALOG_TOPOLOGY_EDITOR_DIALOG_HPP
-#define VTX_TOOL_TOPOLOGY_EDITOR_DIALOG_TOPOLOGY_EDITOR_DIALOG_HPP
+#pragma once
 
 #include <QPointer>
 #include <app/ecs.hpp>
@@ -61,5 +60,3 @@ namespace VTX::Tool::TopologyEditor::Dialog
 		void _updateBondInspector( Index p_index );
 	};
 } // namespace VTX::Tool::TopologyEditor::Dialog
-
-#endif

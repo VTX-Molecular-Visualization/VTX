@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_PCH_HPP
-#define VTX_UTIL_PCH_HPP
+#pragma once
 
 #include <algorithm>
 #include <chrono>
@@ -38,4 +37,3 @@
 // GCC leaks the resulting __OPTIMIZE__ macro to every TU using the pch.
 // #include <spdlog/spdlog.h>
 // #include <fmt/format.h>
-#endif

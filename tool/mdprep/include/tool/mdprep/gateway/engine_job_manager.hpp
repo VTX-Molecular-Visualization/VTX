@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_GATEWAY_ENGINE_JOB_MANAGER_HPP
-#define VTX_TOOL_MDPREP_GATEWAY_ENGINE_JOB_MANAGER_HPP
+#pragma once
 
 #include "tool/mdprep/gateway/shared.hpp"
 #include <functional>
@@ -118,5 +117,3 @@ namespace VTX::Tool::Mdprep::Gateway
 		}
 	};
 } // namespace VTX::Tool::Mdprep::Gateway
-
-#endif

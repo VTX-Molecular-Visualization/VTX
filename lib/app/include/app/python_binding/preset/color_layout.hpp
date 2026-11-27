@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_PRESET_COLOR_LAYOUT_HPP
-#define VTX_APP_PYTHON_BINDING_PRESET_COLOR_LAYOUT_HPP
+#pragma once
 
 #include "app/python_binding/module.hpp"
 #include "app/python_binding/preset/types.hpp"
@@ -12,5 +11,3 @@ namespace VTX::App::PythonBinding::Preset
 	 */
 	void bindColorLayout( Module &, pybind11::class_<ColorLayoutHandle> & );
 } // namespace VTX::App::PythonBinding::Preset
-
-#endif

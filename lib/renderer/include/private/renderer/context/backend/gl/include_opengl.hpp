@@ -1,6 +1,3 @@
-#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_INCLUDE_OPENGL_HPP
-#define VTX_RENDERER_CONTEXT_BACKEND_GL_INCLUDE_OPENGL_HPP
+#pragma once
 
 #include <glad/gl.h>
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_LAYOUT_RESIDUES_HPP
-#define VTX_RENDERER_LAYOUT_RESIDUES_HPP
+#pragma once
 
 #include "base_layout.hpp"
 #include "renderer/caches.hpp"
@@ -97,5 +96,3 @@ namespace VTX::Renderer::Layout
 		static constexpr std::string_view RESIDUES_REPRESENTATIONS = "Residues.Representations";
 	};
 } // namespace VTX::Renderer::Layout
-
-#endif

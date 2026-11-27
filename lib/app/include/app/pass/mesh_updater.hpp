@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PASS_MESH_UPDATER_HPP
-#define VTX_APP_PASS_MESH_UPDATER_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/events.hpp"
@@ -59,5 +58,3 @@ namespace VTX::App::Pass
 		Util::EventHub::ScopedConnection _meshDestroyedConnection;
 	};
 } // namespace VTX::App::Pass
-
-#endif // !VTX_APP_PASS_MESH_UPDATER_HPP

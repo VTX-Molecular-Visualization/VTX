@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_ECS_HPP
-#define VTX_UTIL_ECS_HPP
+#pragma once
 
 #include <entt/entity/entity.hpp>
 #include <entt/entity/registry.hpp>
@@ -14,5 +13,3 @@ namespace VTX
 	using Entity				   = entt::entity;
 	constexpr Entity InvalidEntity = entt::null;
 } // namespace VTX
-
-#endif

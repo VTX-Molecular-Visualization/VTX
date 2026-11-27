@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_THREAD_THREAD_MANAGER_HPP
-#define VTX_UTIL_THREAD_THREAD_MANAGER_HPP
+#pragma once
 
 #include "util/atomic_callback.hpp"
 #include "util/thread/base_thread.hpp"
@@ -299,5 +298,3 @@ namespace VTX::Util::Thread
 	};
 
 } // namespace VTX::Util::Thread
-
-#endif

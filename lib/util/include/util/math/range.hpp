@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_MATH_RANGE_HPP
-#define VTX_UTIL_MATH_RANGE_HPP
+#pragma once
 
 #include "util/constants.hpp"
 #include "util/math.hpp"
@@ -452,5 +451,3 @@ namespace VTX::Util::Math
 	};
 
 } // namespace VTX::Util::Math
-
-#endif

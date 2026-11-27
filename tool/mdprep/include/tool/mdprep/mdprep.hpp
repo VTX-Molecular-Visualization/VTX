@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_MDPREP_HPP
-#define VTX_TOOL_MDPREP_MDPREP_HPP
+#pragma once
 
 #include <app/tool/base_tool.hpp>
 
@@ -15,4 +14,3 @@ namespace VTX::Tool::Mdprep
 	};
 
 } // namespace VTX::Tool::Mdprep
-#endif

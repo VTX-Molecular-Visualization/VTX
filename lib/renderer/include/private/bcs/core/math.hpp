@@ -1,5 +1,4 @@
-#ifndef BCS_CORE_MATH_HPP
-#define BCS_CORE_MATH_HPP
+#pragma once
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -24,5 +23,3 @@ namespace bcs
 } // namespace bcs
 
 #include "bcs/core/math.inl"
-
-#endif // BCS_CORE_MATH_HPP

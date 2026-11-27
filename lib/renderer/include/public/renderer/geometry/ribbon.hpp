@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_GEOMETRY_RIBBON_HPP
-#define VTX_RENDERER_GEOMETRY_RIBBON_HPP
+#pragma once
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
@@ -243,5 +242,3 @@ namespace VTX::Renderer::Geometry
 	};
 
 } // namespace VTX::Renderer::Geometry
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_BUILDER_MODEL_BUILD_HPP
-#define VTX_RENDERER_BUILDER_MODEL_BUILD_HPP
+#pragma once
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/caches.hpp"
@@ -51,5 +50,3 @@ namespace VTX::Renderer::Builder
 		}
 	};
 } // namespace VTX::Renderer::Builder
-
-#endif // !VTX_RENDERER_BUILDER_MODEL_BUILD_HPP

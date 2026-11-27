@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_PACK_HPP
-#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_PACK_HPP
+#pragma once
 
 #include <filesystem>
 #include <util/filesystem.hpp>
@@ -67,5 +66,3 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	ErrorReport pack( const FilePath & p_dest, const CumulativeOuputFiles &, MdInstructions & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
-
-#endif

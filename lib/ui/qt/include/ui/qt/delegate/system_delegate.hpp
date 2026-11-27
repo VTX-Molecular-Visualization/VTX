@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE_HPP
-#define VTX_UI_QT_DELEGATE_SYSTEM_DELEGATE_HPP
+#pragma once
 
 #include <QStyleOptionViewItem>
 #include <QStyledItemDelegate>
@@ -106,4 +105,3 @@ namespace VTX::UI::QT::Delegate
 	};
 
 } // namespace VTX::UI::QT::Delegate
-#endif

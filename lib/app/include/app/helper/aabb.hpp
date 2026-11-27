@@ -1,5 +1,4 @@
-#ifndef VTX_APP_HELPER_AABB_HPP
-#define VTX_APP_HELPER_AABB_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include <core/struct/topology.hpp>
@@ -54,5 +53,3 @@ namespace VTX::App::Helper::AABB
 	 */
 	Util::Math::AABB getBonds( Entity p_entity, const Core::Struct::IndexRangeList & p_ranges );
 } // namespace VTX::App::Helper::AABB
-
-#endif

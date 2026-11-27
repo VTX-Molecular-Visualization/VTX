@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_MENU_COLOR_SCHEME_HPP
-#define VTX_UI_QT_MENU_COLOR_SCHEME_HPP
+#pragma once
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
@@ -163,5 +162,3 @@ namespace VTX::UI::QT::Menu
 	};
 
 } // namespace VTX::UI::QT::Menu
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_MENU_SELECTION_HPP
-#define VTX_UI_QT_MENU_SELECTION_HPP
+#pragma once
 
 #include "ui/qt/menu/color_scheme.hpp"
 #include "ui/qt/menu/representation.hpp"
@@ -27,5 +26,3 @@ namespace VTX::UI::QT::Menu
 	};
 
 } // namespace VTX::UI::QT::Menu
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_EXAMPLE_WIDGET_MY_DOCK_WIDGET_HPP
-#define VTX_TOOL_EXAMPLE_WIDGET_MY_DOCK_WIDGET_HPP
+#pragma once
 
 #include <QDockWidget>
 #include <ui/qt/dock_widget/base_dock_widget.hpp>
@@ -17,5 +16,3 @@ namespace VTX::Tool::Example::Widget
 	};
 
 } // namespace VTX::Tool::Example::Widget
-
-#endif

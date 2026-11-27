@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_MD_ENGINE_HPP
-#define VTX_TOOL_MDPREP_UI_MD_ENGINE_HPP
+#pragma once
 
 #include <memory>
 #include <util/concepts.hpp>
@@ -118,5 +117,3 @@ namespace VTX::Tool::Mdprep::ui
 	};
 
 } // namespace VTX::Tool::Mdprep::ui
-
-#endif

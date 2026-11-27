@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_COMMAND_FILTER_HPP
-#define VTX_PYTHON_BINDING_COMMAND_FILTER_HPP
+#pragma once
 
 #include <string>
 
@@ -39,5 +38,3 @@ namespace VTX::PythonBinding
 	 */
 	FilterResult filter( const std::string & );
 } // namespace VTX::PythonBinding
-
-#endif

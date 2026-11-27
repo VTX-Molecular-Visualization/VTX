@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_UTIL_HPP
-#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_UTIL_HPP
+#pragma once
 
 #include <filesystem>
 #include <util/filesystem.hpp>
@@ -45,5 +44,3 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	void replace( std::string & p_text, const char * p_pattern, const std::string & p_repl );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
-
-#endif

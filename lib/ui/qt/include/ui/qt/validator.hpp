@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_VALIDATOR_HPP
-#define VTX_UI_QT_VALIDATOR_HPP
+#pragma once
 
 #include <qvalidator.h>
 #include <util/constants.hpp>
@@ -20,5 +19,3 @@ namespace VTX::UI::QT
 		uint64_t _max = TypeMax<uint64_t>;
 	};
 } // namespace VTX::UI::QT
-
-#endif

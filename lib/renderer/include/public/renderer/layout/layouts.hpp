@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_LAYOUT_LAYOUTS_HPP
-#define VTX_RENDERER_LAYOUT_LAYOUTS_HPP
+#pragma once
 
 #include "renderer/layout/atoms.hpp"
 #include "renderer/layout/meshes.hpp"
@@ -45,5 +44,3 @@ namespace VTX::Renderer
 		}
 	};
 } // namespace VTX::Renderer
-
-#endif

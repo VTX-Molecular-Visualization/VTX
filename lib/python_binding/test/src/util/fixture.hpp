@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_TEST_UTIL_FIXTURE_HPP
-#define VTX_PYTHON_BINDING_TEST_UTIL_FIXTURE_HPP
+#pragma once
 
 #include <python_binding/interpretor.hpp>
 
@@ -14,5 +13,3 @@ namespace VTX::PythonBinding::Test
 		Interpretor interpretor;
 	};
 } // namespace VTX::PythonBinding::Test
-
-#endif

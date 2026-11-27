@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_BLUR_HPP
-#define VTX_RENDERER_BUILDER_POST_PROCESS_BLUR_HPP
+#pragma once
 
 #include "renderer/binary_buffer.hpp"
 #include "renderer/builder/post_process/ssao.hpp"
@@ -76,5 +75,3 @@ namespace VTX::Renderer::Builder::PostProcess
 		}
 	};
 } // namespace VTX::Renderer::Builder::PostProcess
-
-#endif

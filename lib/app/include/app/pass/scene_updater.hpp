@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PASS_SCENE_UPDATER_HPP
-#define VTX_APP_PASS_SCENE_UPDATER_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/pass/pass_manager.hpp"
@@ -81,4 +80,3 @@ namespace VTX::App::Pass
 		Util::EventHub::ScopedConnection _accessibilityUpdatedConnection;
 	};
 } // namespace VTX::App::Pass
-#endif

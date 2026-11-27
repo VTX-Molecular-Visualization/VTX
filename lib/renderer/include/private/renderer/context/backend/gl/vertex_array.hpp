@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_VERTEX_ARRAY_HPP
-#define VTX_RENDERER_CONTEXT_BACKEND_GL_VERTEX_ARRAY_HPP
+#pragma once
 
 #include "include_opengl.hpp"
 #include <type_traits>
@@ -216,5 +215,3 @@ namespace VTX::Renderer::Context::Backend::GL
 		GLuint _id = GL_INVALID_INDEX;
 	};
 } // namespace VTX::Renderer::Context::Backend::GL
-
-#endif // VTX_RENDERER_CONTEXT_BACKEND_GL_VERTEX_ARRAY_HPP

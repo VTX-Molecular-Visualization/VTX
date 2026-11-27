@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_BACKEND_INTEROP_OPENGL_CUDA_INTEROP_HPP
-#define VTX_RENDERER_CONTEXT_BACKEND_INTEROP_OPENGL_CUDA_INTEROP_HPP
+#pragma once
 
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/descriptors.hpp"
@@ -59,5 +58,3 @@ namespace VTX::Renderer::Context::Backend::Interop
 		std::unique_ptr<Impl> _impl;
 	};
 } // namespace VTX::Renderer::Context::Backend::Interop
-
-#endif

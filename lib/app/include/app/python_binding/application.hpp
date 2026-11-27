@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_APPLICATION_HPP
-#define VTX_APP_PYTHON_BINDING_APPLICATION_HPP
+#pragma once
 
 #include "app/python_binding/module.hpp"
 
@@ -11,5 +10,3 @@ namespace VTX::App::PythonBinding
 		void bind( Module & p_vtxModule );
 	};
 } // namespace VTX::App::PythonBinding
-
-#endif

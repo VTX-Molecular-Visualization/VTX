@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_GATEWAY_BACKEND_GROMACS_HPP
-#define VTX_TOOL_MDPREP_GATEWAY_BACKEND_GROMACS_HPP
+#pragma once
 
 #include "tool/mdprep/gateway/shared.hpp"
 #include <array>
@@ -91,4 +90,3 @@ namespace VTX::Tool::Mdprep::Gateway::Gromacs
 	};
 
 } // namespace VTX::Tool::Mdprep::Gateway::Gromacs
-#endif

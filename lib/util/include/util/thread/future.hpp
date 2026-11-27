@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_THREAD_FUTURE_HPP
-#define VTX_UTIL_THREAD_FUTURE_HPP
+#pragma once
 
 #include <chrono>
 #include <future>
@@ -13,5 +12,3 @@ namespace VTX::Util::Thread
 	bool isReady( const std::future<T> & p_future )
 	{ return p_future.wait_for( std::chrono::seconds( 0 ) ) == std::future_status::ready; }
 } // namespace VTX::Util::Thread
-
-#endif

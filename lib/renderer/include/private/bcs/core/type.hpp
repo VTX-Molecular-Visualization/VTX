@@ -1,5 +1,4 @@
-#ifndef BCS_CORE_TYPE_HPP
-#define BCS_CORE_TYPE_HPP
+#pragma once
 
 #include <cstddef>
 #include <vector>
@@ -54,5 +53,3 @@ namespace bcs
 } // namespace bcs
 
 #include "bcs/core/type.inl"
-
-#endif // BCS_CORE_TYPE_HPP

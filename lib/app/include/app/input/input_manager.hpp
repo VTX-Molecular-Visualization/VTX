@@ -1,5 +1,4 @@
-#ifndef VTX_APP_INPUT_INPUT_MANAGER_HPP
-#define VTX_APP_INPUT_INPUT_MANAGER_HPP
+#pragma once
 
 #include "app/pending_updates.hpp"
 #include "app/services.hpp"
@@ -157,5 +156,3 @@ namespace VTX::App::Input
 		int _zoom {};
 	};
 } // namespace VTX::App::Input
-
-#endif

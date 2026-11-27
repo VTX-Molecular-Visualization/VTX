@@ -1,5 +1,4 @@
-#ifndef VTX_IO_UTIL_BOND_RECOMPUTATION_HPP
-#define VTX_IO_UTIL_BOND_RECOMPUTATION_HPP
+#pragma once
 
 #include <core/struct/topology.hpp>
 #include <util/math/grid.hpp>
@@ -27,5 +26,3 @@ namespace VTX::IO::Util::BondRecomputation
 						 const BondRecomputeFilter &		  p_filter = BondRecomputeFilter {} );
 
 } // namespace VTX::IO::Util::BondRecomputation
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_IO_UTIL_BOND_ORDER_GUESSING_HPP
-#define VTX_IO_UTIL_BOND_ORDER_GUESSING_HPP
+#pragma once
 
 #include <core/struct/topology.hpp>
 #include <core/struct/trajectory.hpp>
@@ -12,5 +11,3 @@ namespace VTX::IO::Util
 	void recomputeBondOrders( VTX::Core::Struct::Topology & p_topology, const VTX::Core::Struct::Frame & p_frame );
 
 } // namespace VTX::IO::Util
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_ACCESSIBILITY_HPP
-#define VTX_APP_ACTION_ACCESSIBILITY_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/setting/accessibility.hpp"
@@ -26,5 +25,3 @@ namespace VTX::App::Action::Accessibility
 		}
 	};
 } // namespace VTX::App::Action::Accessibility
-
-#endif

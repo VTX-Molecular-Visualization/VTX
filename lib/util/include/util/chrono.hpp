@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_CHRONO_HPP
-#define VTX_UTIL_CHRONO_HPP
+#pragma once
 
 #include "util/fmt/duration.hpp"
 #include "util/logger.hpp"
@@ -105,4 +104,3 @@ namespace VTX::Util
 		Util::LOG_HINT	_hint = Util::LOG_HINT::STD;
 	};
 } // namespace VTX::Util
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_COLOR_HPP
-#define VTX_APP_ACTION_COLOR_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/helper/system.hpp"
@@ -417,5 +416,3 @@ namespace VTX::App::Action::Color
 	};
 
 } // namespace VTX::App::Action::Color
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_SSAO_SECTION_HPP
-#define VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_SSAO_SECTION_HPP
+#pragma once
 
 #include "ui/qt/widget/editable_slider.hpp"
 #include "ui/qt/widget/library/graphics_config/section.hpp"
@@ -20,5 +19,3 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		QPointer<EditableSlider> _sliderBlurSize;
 	};
 } // namespace VTX::UI::QT::Widget::Library::GraphicsConfig
-
-#endif
