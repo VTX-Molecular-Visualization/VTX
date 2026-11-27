@@ -48,7 +48,6 @@ PAGES = {
         "GraphicsConfigPreset",
         "COLOR_SCHEME",
         "SECONDARY_STRUCTURE_COLOR_SCHEME",
-        "COLOR_LAYOUT_INDEX",
         "SES_COMPUTE_MODE",
         "SHADING_MODE",
         "BACKGROUND_MODE",

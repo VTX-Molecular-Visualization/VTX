@@ -151,7 +151,7 @@ namespace VTX::App::PythonBinding
 			"getColorLayoutPresets",
 			"createColorLayoutPreset"
 		);
-		Preset::bindColorLayout( p_vtxModule, colorLayout );
+		Preset::bindColorLayout( colorLayout );
 
 		auto graphicsConfig = _bindPreset<Renderer::GraphicsConfig>(
 			p_vtxModule,

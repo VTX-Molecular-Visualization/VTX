@@ -169,12 +169,12 @@ for removed_name in (
     "setGraphicsConfig",
     "REPRESENTATION_VALUE",
     "GRAPHICS_CONFIG_VALUE",
+    "COLOR_LAYOUT_INDEX",
 ):
-    require(not hasattr(vtx, removed_name), f"Duplicate module binding should be removed: {removed_name}")
+    require(not hasattr(vtx, removed_name), f"Unexpected module binding: {removed_name}")
 
 for enum_name in (
     "SES_COMPUTE_MODE",
-    "COLOR_LAYOUT_INDEX",
     "SHADING_MODE",
     "BACKGROUND_MODE",
     "SSAO_METHOD",

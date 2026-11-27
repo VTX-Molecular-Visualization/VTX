@@ -2,7 +2,6 @@
 #include "app/action/color_layout.hpp"
 #include "app/python_binding/preset/helpers.hpp"
 #include <pybind11/stl.h>
-#include <python_binding/binding/helper.hpp>
 #include <renderer/color.hpp>
 
 namespace VTX::App::PythonBinding::Preset
@@ -44,12 +43,8 @@ namespace VTX::App::PythonBinding::Preset
 		}
 	} // namespace
 
-	void bindColorLayout( Module & p_vtxModule, pybind11::class_<ColorLayoutHandle> & p_binding )
+	void bindColorLayout( pybind11::class_<ColorLayoutHandle> & p_binding )
 	{
-		VTX::PythonBinding::Helper::declareEnum<Renderer::Color::E_LAYOUT_COLOR_INDEX>(
-			p_vtxModule.pyModule(), "COLOR_LAYOUT_INDEX", "Named color indices of a color layout."
-		);
-
 		p_binding
 			.def_property(
 				"colors",
