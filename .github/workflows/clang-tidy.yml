@@ -1,9 +1,9 @@
 name: clang-tidy
 
 on:
-  # Nightly analysis of the default branch (dev). Cron is UTC: 23:00 UTC = midnight in Paris (winter time).
+  # Nightly analysis of the default branch (dev). Cron is UTC: 22:37 UTC = 23:37 in Paris (winter time), off the hour to limit GitHub's scheduling delay.
   schedule:
-    - cron: '0 23 * * *'
+    - cron: '37 22 * * *'
   workflow_dispatch:
 
 # Scheduled runs: a new run cancels a previous one still running.

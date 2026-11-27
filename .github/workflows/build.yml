@@ -3,6 +3,9 @@ name: build
 on:
   pull_request:
     branches: [ "dev" ]
+  # Nightly build of the default branch (dev). Cron is UTC: 22:37 UTC = 23:37 in Paris (winter time), off the hour to limit GitHub's scheduling delay.
+  schedule:
+    - cron: '37 22 * * *'
   workflow_dispatch:
     inputs:
       build_type:
@@ -31,6 +34,7 @@ on:
         required: false
 
 # Pull requests: one group per PR, a new commit cancels the previous run.
+# Scheduled runs: a new run cancels a previous one still running.
 # Manual runs: a unique group per run (run_id), so they never wait for or cancel each other.
 concurrency:
   group: build-${{ github.event_name }}-${{ github.event_name == 'workflow_dispatch' && github.run_id || github.ref }}
