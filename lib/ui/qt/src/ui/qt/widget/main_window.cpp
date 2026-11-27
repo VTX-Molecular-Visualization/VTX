@@ -87,7 +87,8 @@ namespace VTX::UI::QT::Widget
 		// Main area : opengl widget.
 		auto * renderer = Helper::makeQObject<Renderer>( this );
 		setCentralWidget( renderer );
-		Helper::makeQObject<PythonEditor>( renderer )->hide();
+		_pythonEditor = Helper::makeQObject<PythonEditor>( renderer );
+		_pythonEditor->hide();
 
 		// Dock widgets.
 		auto * dwSequence = createDockWidget<DockWidget::Sequences>( Qt::TopDockWidgetArea );
@@ -211,6 +212,11 @@ namespace VTX::UI::QT::Widget
 		// Restore geometry and state.
 		restoreGeometry( _defaultGeometry );
 		restoreState( _defaultState );
+
+		if ( _pythonEditor )
+		{
+			_pythonEditor->resetLayout();
+		}
 	}
 
 	OpenGLRenderer * MainWindow::getOpenGLRenderer() const

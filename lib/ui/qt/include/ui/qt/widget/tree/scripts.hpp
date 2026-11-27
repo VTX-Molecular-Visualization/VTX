@@ -1,41 +1,51 @@
 #pragma once
 
+#include "ui/qt/events.hpp"
 #include "ui/qt/widget/tree/base_tree.hpp"
-#include <QFileSystemModel>
+#include <QFileSystemWatcher>
 #include <QPointer>
-#include <QSortFilterProxyModel>
-#include <QTreeView>
+#include <QSet>
+#include <QString>
+#include <QTimer>
+#include <QTreeWidget>
+#include <util/event_hub.hpp>
+#include <util/filesystem.hpp>
 
 namespace VTX::UI::QT::Widget::Tree
 {
 	/**
-	 * @brief Tree reflecting the content of the user scripts directory.
+	 * @brief Tree reflecting the built-in example scripts and the user scripts on disk.
 	 */
-	class Scripts : public Widget::Tree::BaseTree<Scripts, QTreeView>
+	class Scripts : public Widget::Tree::BaseTree<Scripts>
 	{
 	  public:
+		/**
+		 * @brief Item data role holding the path on disk.
+		 */
+		static constexpr int PATH_ROLE = Qt::UserRole;
+
 		/**
 		 * @brief Constructor.
 		 */
 		Scripts( QWidget * p_parent );
 
-	  protected:
-		/**
-		 * @brief Override of the selection command to run the script on double click.
-		 */
-		QItemSelectionModel::SelectionFlags selectionCommand( const QModelIndex &, const QEvent * ) const override;
-
 	  private:
-		/**
-		 * @brief File system model.
-		 */
-		QPointer<QFileSystemModel> _fileModel;
+		QTreeWidgetItem *			 _builtInItem = nullptr;
+		QTreeWidgetItem *			 _userItem   = nullptr;
+		QPointer<QFileSystemWatcher> _watcher;
+		QPointer<QTimer>			 _refreshTimer;
+
+		VTX::Util::EventHub::ScopedConnection _scriptCopiedConnection;
 
 		/**
-		 * @brief Proxy model to filter the file system model.
+		 * @brief Rebuild the tree from disk, keeping expansion and selection.
 		 */
-		QPointer<QSortFilterProxyModel> _proxyModel;
-
-		void _runScript( const QModelIndex & p_index );
+		void _refresh();
+		void _fill( QTreeWidgetItem &, const FilePath &, const QSet<QString> & );
+		void _collectExpanded( const QTreeWidgetItem &, QSet<QString> & ) const;
+		QTreeWidgetItem * _find( const QTreeWidgetItem &, const QString & ) const;
+		QTreeWidgetItem * _find( const QString & ) const;
+		void			  _select( const FilePath & );
+		void			  _onScriptCopied( const Events::ScriptCopied & );
 	};
 } // namespace VTX::UI::QT::Widget::Tree

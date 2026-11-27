@@ -4,6 +4,7 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include <string_view>
+#include <util/math.hpp>
 #include <utility>
 
 namespace VTX::Renderer
@@ -36,21 +37,20 @@ namespace VTX::Renderer
 
 	struct SSAOConfig
 	{
-		E_SSAO_METHOD method;
-		float		  intensity;
-		float		  radius;
-		float		  scale;
-		float		  blurSize;
-	};
+		E_SSAO_METHOD method = SSAO_METHOD_DEFAULT;
+		float		  intensity = SSAO_INTENSITY_DEFAULT;
+		float		  radius = SSAO_RADIUS_DEFAULT;
+		float		  scale = SSAO_SCALE_DEFAULT;
+		float		  blurSize = BLUR_SIZE_DEFAULT;
 
-	namespace GraphicsConfigs
-	{
-		inline const SSAOConfig SSAO_DEFAULT { SSAO_METHOD_DEFAULT,
-											   SSAO_INTENSITY_DEFAULT,
-											   SSAO_RADIUS_DEFAULT,
-											   SSAO_SCALE_DEFAULT,
-											   BLUR_SIZE_DEFAULT };
-	} // namespace GraphicsConfigs
+		void clamp()
+		{
+			intensity = Util::Math::clamp( intensity, SSAO_INTENSITY_MIN, SSAO_INTENSITY_MAX );
+			radius	  = Util::Math::clamp( radius, SSAO_RADIUS_MIN, SSAO_RADIUS_MAX );
+			scale	  = Util::Math::clamp( scale, SSAO_SCALE_MIN, SSAO_SCALE_MAX );
+			blurSize  = Util::Math::clamp( blurSize, BLUR_SIZE_MIN, BLUR_SIZE_MAX );
+		}
+	};
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess

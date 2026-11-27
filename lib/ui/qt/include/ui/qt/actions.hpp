@@ -252,7 +252,18 @@ namespace VTX::UI::QT
 
 		namespace Script
 		{
-			inline constexpr std::string_view RUN = "script.run";
+			inline constexpr std::string_view RUN  = "script.run";
+			inline constexpr std::string_view SAVE = "script.save";
+
+			inline App::UI::DescAction saveAction()
+			{
+				App::UI::DescAction action;
+				action.key	= SAVE;
+				action.name = "Save";
+				action.tip	= "Save the current script";
+				action.icon = Style::Icons::SAVE;
+				return action;
+			}
 
 			inline App::UI::DescAction runAction()
 			{
@@ -414,10 +425,9 @@ namespace VTX::UI::QT
 			inline App::UI::DescAction invertAction()
 			{
 				App::UI::DescAction action;
-				action.key		= INVERT;
-				action.name		= "Invert";
-				action.tip		= "Invert selection among visible atoms";
-				action.shortcut = "Ctrl+I";
+				action.key	= INVERT;
+				action.name = "Invert";
+				action.tip	= "Invert selection among visible atoms";
 				return action;
 			}
 

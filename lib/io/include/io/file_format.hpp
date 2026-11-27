@@ -14,4 +14,9 @@ namespace VTX::IO
 	 * @brief Check if the file format is a trajectory file format.
 	 */
 	bool isTrajectoryFileFormat( const FilePath & p_path );
+
+	/**
+	 * @brief Check if the file format is a preset file format.
+	 */
+	bool isPresetFileFormat( const FilePath & p_path );
 } // namespace VTX::IO

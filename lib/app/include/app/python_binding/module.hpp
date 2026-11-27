@@ -1,10 +1,12 @@
 #pragma once
 
+#include "app/controller/animation.hpp"
 #include "app/ecs.hpp"
 #include "app/services.hpp"
 #include <functional>
 #include <pybind11/pybind11.h>
 #include <python_binding/wrapper/module.hpp>
+#include <renderer/camera.hpp>
 #include <string>
 #include <type_traits>
 #include <util/action_manager.hpp>
@@ -14,12 +16,49 @@
 namespace VTX::App::PythonBinding
 {
 	/**
+	 * @brief Check if the camera is animating.
+	 */
+	inline bool isCameraAnimating()
+	{
+		return REG().all_of<App::Controller::CameraAnimating>(
+			ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>()
+		);
+	}
+
+	/**
+	 * @brief Wait the caller until the current camera animation is over.
+	 */
+	inline void waitCameraAnimation() { THREAD().waitUntil( []() { return not isCameraAnimating(); } ); }
+
+	/**
+	 * @brief Execute a function from python on the main thread (blocking).
+	 * Then wait for animation end.
+	 */
+	template<typename Func>
+	void executeOnMainThread( const Func & p_function )
+	{
+		const bool animating = THREAD().synchronize(
+			[ &p_function ]()
+			{
+				p_function();
+				return isCameraAnimating();
+			}
+		);
+
+		if ( animating )
+		{
+			waitCameraAnimation();
+			// TODO: maybe wait for other things.
+		}
+	}
+
+	/**
 	 * @brief Execute action from python on the main thread (blocking).
 	 */
 	template<typename Action, typename... Args>
 	void executeAction( Args &&... p_args )
 	{
-		THREAD().synchronize(
+		executeOnMainThread(
 			[ & ]()
 			{
 				Action action;

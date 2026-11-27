@@ -8,13 +8,19 @@
 #include "ui/qt/style/style_manager.hpp"
 #include "ui/qt/widget/camera.hpp"
 #include "ui/qt/widget/controller.hpp"
+#include "ui/qt/widget/library/read_only_notice.hpp"
 #include "ui/qt/widget/selection.hpp"
+#include "ui/qt/widget/tree/scripts.hpp"
+#include <QDesktopServices>
 #include <QFontDatabase>
 #include <QLabel>
-#include <QToolButton>
+#include <QPushButton>
+#include <QUrl>
 #include <algorithm>
+#include <app/events.hpp>
+#include <app/helper/script.hpp>
+#include <app/services.hpp>
 #include <app/system/selection.hpp>
-#include <core/struct/topology.hpp>
 #include <renderer/camera.hpp>
 #include <util/event_hub.hpp>
 
@@ -25,10 +31,7 @@ namespace VTX::UI::QT::DockWidget
 		setAllowedAreas( Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea );
 		setWindowIcon( STYLE().iconFromCodepoint( Style::Icons::SELECTION ) );
 
-		_lockButton = Helper::makeQObject<QToolButton>( this );
-		_lockButton->setDefaultAction( UI_ACTIONS().getAction( Action::Selection::LOCK ) );
-		_lockButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-		_lockButton->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
+		_lockButton = Helper::makeActionButton( *UI_ACTIONS().getAction( Action::Selection::LOCK ), this );
 		_layout->addWidget( _lockButton );
 
 		_filler = Helper::makeQObject<QWidget>( this );
@@ -56,6 +59,12 @@ namespace VTX::UI::QT::DockWidget
 				const Entity   preset	 = data.value<Entity>();
 				const bool	   hasPreset = data.isValid();
 
+				const QVariant scopeData
+					= ( hasPreset ? index.parent() : index ).data( Widget::Library::PRESET_SCOPE_ROLE );
+				const Widget::Library::E_PRESET_SCOPE scope = scopeData.isValid()
+																  ? Widget::Library::E_PRESET_SCOPE( scopeData.toInt() )
+																  : Widget::Library::E_PRESET_SCOPE::ALL;
+
 				// Insert widget.
 				switch ( p_group )
 				{
@@ -81,6 +90,7 @@ namespace VTX::UI::QT::DockWidget
 				{
 					if ( _graphicsConfigWidget )
 					{
+						_graphicsConfigWidget->setScope( scope );
 						if ( hasPreset )
 						{
 							_graphicsConfigWidget->setCurrentPreset( preset );
@@ -94,6 +104,7 @@ namespace VTX::UI::QT::DockWidget
 
 					_clear();
 					_graphicsConfigWidget = Helper::makeQObject<Widget::Library::GraphicsConfigWidget>( this );
+					_graphicsConfigWidget->setScope( scope );
 					if ( hasPreset )
 					{
 						_graphicsConfigWidget->setCurrentPreset( preset );
@@ -109,6 +120,7 @@ namespace VTX::UI::QT::DockWidget
 				{
 					if ( _colorLayoutWidget )
 					{
+						_colorLayoutWidget->setScope( scope );
 						if ( hasPreset )
 						{
 							_colorLayoutWidget->setCurrentPreset( preset );
@@ -122,6 +134,7 @@ namespace VTX::UI::QT::DockWidget
 
 					_clear();
 					_colorLayoutWidget = Helper::makeQObject<Widget::Library::ColorLayout>( this );
+					_colorLayoutWidget->setScope( scope );
 					if ( hasPreset )
 					{
 						_colorLayoutWidget->setCurrentPreset( preset );
@@ -137,6 +150,7 @@ namespace VTX::UI::QT::DockWidget
 				{
 					if ( _representationWidget )
 					{
+						_representationWidget->setScope( scope );
 						if ( hasPreset )
 						{
 							_representationWidget->setCurrentPreset( preset );
@@ -150,6 +164,7 @@ namespace VTX::UI::QT::DockWidget
 
 					_clear();
 					_representationWidget = Helper::makeQObject<Widget::Library::Representation>( this );
+					_representationWidget->setScope( scope );
 					if ( hasPreset )
 					{
 						_representationWidget->setCurrentPreset( preset );
@@ -164,10 +179,59 @@ namespace VTX::UI::QT::DockWidget
 				case E_SELECTION_GROUP::SCRIPT:
 				{
 					_clear();
-					auto * const runButton = Helper::makeQObject<QToolButton>( this );
-					runButton->setDefaultAction( UI_ACTIONS().getAction( Action::Script::RUN ) );
-					runButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-					runButton->setToolButtonStyle( Qt::ToolButtonTextBesideIcon );
+					QPushButton * const runButton
+						= Helper::makeActionButton( *UI_ACTIONS().getAction( Action::Script::RUN ), this );
+
+					const FilePath path = index.data( Widget::Tree::Scripts::PATH_ROLE ).toString().toStdString();
+					if ( App::Helper::Script::isReadOnly( path ) )
+					{
+						auto * const notice = Helper::makeQObject<Widget::Library::ReadOnlyNotice>(
+							this,
+							"Built-in scripts are read-only\nDuplicate to edit",
+							"Copy this script into your scripts"
+						);
+						notice->setVisible( true );
+						_layout->insertWidget( _layout->indexOf( _filler ), notice );
+						connect(
+							notice->button(),
+							&QPushButton::clicked,
+							this,
+							[ path ]() { Helper::duplicateScript( path ); }
+						);
+					}
+					else
+					{
+						QPushButton * const saveButton
+							= Helper::makeActionButton( *UI_ACTIONS().getAction( Action::Script::SAVE ), this );
+						_layout->insertWidget( _layout->indexOf( _filler ), saveButton );
+
+						auto * const openFolderButton = Helper::makeQObject<QPushButton>( this );
+						openFolderButton->setText( "Open folder" );
+						openFolderButton->setIcon( STYLE().iconFromCodepoint( Style::Icons::OPEN ) );
+						openFolderButton->setToolTip( "Open the folder containing this script" );
+						_layout->insertWidget( _layout->indexOf( _filler ), openFolderButton );
+						connect(
+							openFolderButton,
+							&QPushButton::clicked,
+							this,
+							[ path ]()
+							{
+								QDesktopServices::openUrl(
+									QUrl::fromLocalFile( QString::fromStdString( path.parent_path().string() ) )
+								);
+							}
+						);
+
+						auto * const copyButton = Helper::makeQObject<QPushButton>( this );
+						copyButton->setText( "Copy" );
+						copyButton->setIcon( STYLE().iconFromCodepoint( Style::Icons::COPY ) );
+						copyButton->setToolTip( "Duplicate this script next to it" );
+						_layout->insertWidget( _layout->indexOf( _filler ), copyButton );
+						connect(
+							copyButton, &QPushButton::clicked, this, [ path ]() { Helper::duplicateScript( path ); }
+						);
+					}
+
 					_layout->insertWidget( _layout->indexOf( _filler ), runButton );
 					break;
 				}
@@ -179,7 +243,7 @@ namespace VTX::UI::QT::DockWidget
 		_selectionUpdatedConnection
 			= App::REG().on_update<App::System::Selection>().connect<&Inspector::_onSystemSelectionUpdated>( this );
 		_systemDestroyedConnection
-			= App::REG().on_destroy<Core::Struct::Topology>().connect<&Inspector::_onSystemSelectionUpdated>( this );
+			= App::HUB().connect<App::Events::SystemDestroyed, &Inspector::_onSystemDestroyed>( this );
 	}
 
 	void Inspector::_clear()
@@ -210,6 +274,7 @@ namespace VTX::UI::QT::DockWidget
 					_viewPointWidget = nullptr;
 				}
 				_layout->removeWidget( w );
+				w->hide();
 				w->deleteLater();
 			}
 		}
@@ -247,5 +312,8 @@ namespace VTX::UI::QT::DockWidget
 		_selectionListWidget = Helper::makeQObject<Widget::Selection>( this );
 		_layout->insertWidget( _layout->indexOf( _filler ), _selectionListWidget );
 	}
+
+	void Inspector::_onSystemDestroyed( const App::Events::SystemDestroyed & p_event )
+	{ _onSystemSelectionUpdated( App::REG(), p_event.system ); }
 
 } // namespace VTX::UI::QT::DockWidget

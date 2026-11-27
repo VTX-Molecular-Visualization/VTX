@@ -32,7 +32,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		_setCurrentPreset( p_preset );
 		const QSignalBlocker blockerGroup( this );
 		const QSignalBlocker blockerColor( _colorPicker );
-		const auto			 config = p_config.selection.value_or( VTX::Renderer::GraphicsConfigs::SELECTION_DEFAULT );
+		const auto			 config = p_config.selection.value_or( VTX::Renderer::SelectionConfig {} );
 		setChecked( p_config.selection.has_value() );
 		_colorPicker->setColor( Helper::toQColor( config.color ) );
 	}

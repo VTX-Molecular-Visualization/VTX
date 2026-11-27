@@ -4,6 +4,7 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include <string_view>
+#include <util/math.hpp>
 #include <utility>
 
 namespace VTX::Renderer
@@ -17,17 +18,17 @@ namespace VTX::Renderer
 
 	struct ChromaticAberrationConfig
 	{
-		float red;
-		float green;
-		float blue;
-	};
+		float red = CHROMAB_RED_DEFAULT;
+		float green = CHROMAB_GREEN_DEFAULT;
+		float blue = CHROMAB_BLUE_DEFAULT;
 
-	namespace GraphicsConfigs
-	{
-		inline const ChromaticAberrationConfig CHROMATIC_ABERRATION_DEFAULT { CHROMAB_RED_DEFAULT,
-																			  CHROMAB_GREEN_DEFAULT,
-																			  CHROMAB_BLUE_DEFAULT };
-	} // namespace GraphicsConfigs
+		void clamp()
+		{
+			red	  = Util::Math::clamp( red, CHROMAB_RGB_MIN, CHROMAB_RGB_MAX );
+			green = Util::Math::clamp( green, CHROMAB_RGB_MIN, CHROMAB_RGB_MAX );
+			blue  = Util::Math::clamp( blue, CHROMAB_RGB_MIN, CHROMAB_RGB_MAX );
+		}
+	};
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess

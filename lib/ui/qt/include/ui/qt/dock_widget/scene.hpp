@@ -50,6 +50,11 @@ namespace VTX::UI::QT::DockWidget
 		std::unordered_map<Entity, QPointer<Widget::Tree::System>> _mapSystemTreeWidgets;
 
 		/**
+		 * @brief Counter to alternate tree hints.
+		 */
+		uint _systemTreeCount = 0;
+
+		/**
 		 * @brief Thread widgets.
 		 */
 		std::unordered_map<Util::Thread::ID, QPointer<Widget::Thread>> _mapThreadWidgets;

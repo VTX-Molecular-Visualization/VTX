@@ -2,7 +2,6 @@
 
 #include "ui/qt/widget/color_picker.hpp"
 #include "ui/qt/widget/editable_slider.hpp"
-#include "ui/qt/widget/library/graphics_config/material_section.hpp"
 #include "ui/qt/widget/library/graphics_config/section.hpp"
 #include <QComboBox>
 #include <QLabel>
@@ -33,6 +32,5 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		QPointer<EditableSlider>  _sliderShininess;
 		QPointer<QLabel>		  _labelToonSteps;
 		QPointer<EditableSlider>  _sliderToonSteps;
-		QPointer<MaterialSection> _materialSection;
 	};
 } // namespace VTX::UI::QT::Widget::Library::GraphicsConfig

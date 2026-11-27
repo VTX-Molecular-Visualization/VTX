@@ -95,13 +95,18 @@ function(vtx_configure_target p_target)
 			$<$<COMPILE_LANGUAGE:CXX>:-fexperimental-library>
 		)
 	elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-		target_compile_options(${p_target} PRIVATE -Wpedantic -Wall -ffast-math -fno-finite-math-only)
+		target_compile_options(${p_target} PRIVATE
+			$<$<COMPILE_LANGUAGE:CXX>:-Wpedantic>
+			$<$<COMPILE_LANGUAGE:CXX>:-Wall>
+			$<$<COMPILE_LANGUAGE:CXX>:-ffast-math>
+			$<$<COMPILE_LANGUAGE:CXX>:-fno-finite-math-only>
+		)
 		target_compile_options(${p_target} PRIVATE
         	$<$<CONFIG:Release>:-O2>
     	)
 		if(VTX_ENABLE_NATIVE_OPTIMIZATIONS)
 			target_compile_options(${p_target} PRIVATE
-				$<$<CONFIG:Release>:-march=native>
+				$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:CXX>>:-march=native>
 			)
 		endif()
 	elseif(MSVC)

@@ -4,6 +4,7 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include <string_view>
+#include <util/math.hpp>
 #include <utility>
 
 namespace VTX::Renderer
@@ -32,24 +33,27 @@ namespace VTX::Renderer
 
 	struct CRTConfig
 	{
-		float curvatureX;
-		float curvatureY;
-		float ratio;
-		float graninessX;
-		float graninessY;
-		float vignetteRoundness;
-		float vignetteIntensity;
-		float brightness;
-	};
+		float curvatureX = CRT_CURVATURE_X_DEFAULT;
+		float curvatureY = CRT_CURVATURE_Y_DEFAULT;
+		float ratio = CRT_RATIO_DEFAULT;
+		float graninessX = CRT_GRANINESS_X_DEFAULT;
+		float graninessY = CRT_GRANINESS_Y_DEFAULT;
+		float vignetteRoundness = CRT_VIGNETTE_ROUNDNESS_DEFAULT;
+		float vignetteIntensity = CRT_VIGNETTE_INTENSITY_DEFAULT;
+		float brightness = CRT_BRIGHTNESS_DEFAULT;
 
-	namespace GraphicsConfigs
-	{
-		inline const CRTConfig CRT_DEFAULT {
-			CRT_CURVATURE_X_DEFAULT,		CRT_CURVATURE_Y_DEFAULT, CRT_RATIO_DEFAULT,
-			CRT_GRANINESS_X_DEFAULT,		CRT_GRANINESS_Y_DEFAULT, CRT_VIGNETTE_ROUNDNESS_DEFAULT,
-			CRT_VIGNETTE_INTENSITY_DEFAULT, CRT_BRIGHTNESS_DEFAULT
-		};
-	} // namespace GraphicsConfigs
+		void clamp()
+		{
+			curvatureX		  = Util::Math::clamp( curvatureX, CRT_CURVATURE_MIN, CRT_CURVATURE_MAX );
+			curvatureY		  = Util::Math::clamp( curvatureY, CRT_CURVATURE_MIN, CRT_CURVATURE_MAX );
+			ratio			  = Util::Math::clamp( ratio, CRT_RATIO_MIN, CRT_RATIO_MAX );
+			graninessX		  = Util::Math::clamp( graninessX, CRT_GRANINESS_MIN, CRT_GRANINESS_MAX );
+			graninessY		  = Util::Math::clamp( graninessY, CRT_GRANINESS_MIN, CRT_GRANINESS_MAX );
+			vignetteRoundness = Util::Math::clamp( vignetteRoundness, CRT_VIGNETTE_ROUNDNESS_MIN, CRT_VIGNETTE_ROUNDNESS_MAX );
+			vignetteIntensity = Util::Math::clamp( vignetteIntensity, CRT_VIGNETTE_INTENSITY_MIN, CRT_VIGNETTE_INTENSITY_MAX );
+			brightness		  = Util::Math::clamp( brightness, CRT_BRIGHTNESS_MIN, CRT_BRIGHTNESS_MAX );
+		}
+	};
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess

@@ -31,7 +31,7 @@ namespace VTX::App::PythonBinding::Preset
 	template<typename Action, typename T, typename... Args>
 	void executePresetAction( const Handle<T> & p_preset, Args &&... p_args )
 	{
-		THREAD().synchronize(
+		executeOnMainThread(
 			[ & ]()
 			{
 				validate( p_preset );

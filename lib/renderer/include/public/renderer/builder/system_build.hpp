@@ -737,7 +737,7 @@ namespace VTX::Renderer::Builder
 			BinaryBuffer<E_LAYOUT_TYPE::Std140> buffer;
 			if ( p_representations.empty() )
 			{
-				_write( buffer, VTX::Renderer::Representations::STICKS_AND_RIBBONS );
+				_write( buffer, Representation {} );
 			}
 			else
 			{
@@ -747,11 +747,12 @@ namespace VTX::Renderer::Builder
 					lastHandle = Util::Math::max( lastHandle, entry.handle );
 				}
 
+				const Representation fallback {};
 				for ( Desc::Handle handle = 0; handle <= lastHandle; ++handle )
 				{
 					const Representation & representation = p_representations.contains( handle )
 																? *p_representations.get( handle ).data.rep
-																: VTX::Renderer::Representations::STICKS_AND_RIBBONS;
+																: fallback;
 					_write( buffer, representation );
 				}
 			}
@@ -785,7 +786,7 @@ namespace VTX::Renderer::Builder
 			p_buffer.write( static_cast<uint>( isSphereRadiusFixed ) );
 			p_buffer.write( p_representation.radiusCylinder );
 			p_buffer.write( static_cast<uint>( p_representation.cylinderColorBlending ) );
-			p_buffer.write( p_representation.ribbonColorBlending );
+			p_buffer.write( static_cast<uint>( p_representation.ribbonColorBlending ) );
 			p_buffer.write( p_representation.sesProbeRadius );
 			p_buffer.write( Geometry::SES::MAX_PROBE_NEIGHBOR_NB );
 		}

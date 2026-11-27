@@ -42,7 +42,6 @@ namespace VTX::UI::QT::Widget::Tree
 	{
 		setExpandsOnDoubleClick( false );
 		setMouseTracking( true );
-		setIndentation( 12 );
 
 		// Model.
 		_model = Helper::makeQObject<Model::SystemModel>( p_system, this );

@@ -82,7 +82,7 @@ namespace VTX::App::PythonBinding::Preset
 			)
 			.def_property(
 				"ribbonColorBlending",
-				[]( const RepresentationHandle & p_preset ) { return getData( p_preset ).ribbonColorBlending != 0; },
+				[]( const RepresentationHandle & p_preset ) { return getData( p_preset ).ribbonColorBlending; },
 				&_setValue<Renderer::E_REPRESENTATION_VALUES::RIBBON_COLOR_BLENDING, bool>,
 				"Whether ribbon colors blend between residues."
 			)

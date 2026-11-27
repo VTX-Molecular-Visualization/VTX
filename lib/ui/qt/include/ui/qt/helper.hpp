@@ -12,7 +12,11 @@
 #include <string_view>
 #include <type_traits>
 #include <util/color/rgba.hpp>
+#include <util/filesystem.hpp>
 #include <utility>
+
+class QAction;
+class QPushButton;
 
 namespace VTX::UI::QT::Helper
 {
@@ -28,6 +32,16 @@ namespace VTX::UI::QT::Helper
 	QColor				   toQColor( const VTX::Util::Color::Rgba & );
 
 	/**
+	 * @brief Duplicate a script and select the copy.
+	 */
+	void duplicateScript( const FilePath & );
+
+	/**
+	 * @brief Create a push button from custom action.
+	 */
+	QPushButton * makeActionButton( QAction &, QWidget * );
+
+	/**
 	 * @brief Format number with current locale.
 	 */
 	template<typename T>
@@ -35,8 +49,9 @@ namespace VTX::UI::QT::Helper
 	{
 		using Value = std::remove_cv_t<T>;
 
-		static_assert( std::is_arithmetic_v<Value> && not std::is_same_v<Value, bool>,
-					   "formatNumber expects a numeric value" );
+		static_assert(
+			std::is_arithmetic_v<Value> && not std::is_same_v<Value, bool>, "formatNumber expects a numeric value"
+		);
 
 		if constexpr ( std::is_floating_point_v<Value> )
 		{

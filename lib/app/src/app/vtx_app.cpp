@@ -279,10 +279,7 @@ namespace VTX::App
 		PASS().addPass<Pass::TrajectoryUpdater>();
 
 		// Default presets.
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::Color::Layout>>();
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::Representation>>();
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::Material>>();
-		ACTION().execute<Action::Preset::CreateDefault<Renderer::GraphicsConfig>>();
+		ACTION().execute<Action::Preset::LoadAll>();
 	}
 
 	void VTXApp::finishStartup()
@@ -305,15 +302,9 @@ namespace VTX::App
 		}
 #endif
 
-		const Entity defaultGraphicsConfig
-			= Helper::Preset::getByName<Renderer::GraphicsConfig>( "Default" )
-				  .value_or( ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::GraphicsConfig>() );
-		ACTION().execute<Action::Scene::SetGraphicsConfig>( defaultGraphicsConfig );
-
-		const Entity defaultColorLayout = Helper::Preset::getByName<Renderer::Color::Layout>( "JMol" ).value_or(
-			ECS::getFirstEntityOnlyWithComponents<Generic::Name, Renderer::Color::Layout>()
-		);
-		ACTION().execute<Action::Scene::SetColorLayout>( defaultColorLayout );
+		ACTION().execute<Action::Scene::SetGraphicsConfig>( *Helper::Preset::getDefault<Renderer::GraphicsConfig>() );
+		ACTION().execute<Action::Scene::SetColorLayout>( *Helper::Preset::getDefault<Renderer::Color::Layout>() );
+		ACTION().execute<Action::Scene::SetMaterial>( *Helper::Preset::getDefault<Renderer::Material>() );
 
 		HUB().trigger<Events::ApplicationStart>();
 
@@ -329,29 +320,37 @@ namespace VTX::App
 	void VTXApp::handleArgs()
 	{
 		const Arguments & args = ARGS();
-		for ( const auto & it_file : args.positionalFiles )
+		for ( const auto & file : args.positionalFiles )
 		{
-			if ( it_file.empty() )
+			if ( file.empty() )
 			{
 				continue; // The user probably didn't do it on purpose so no need to complain here
 			}
 
-			if ( not std::filesystem::exists( it_file ) )
+			if ( not std::filesystem::exists( file ) )
 			{
 				// Maybe there is a problem with the path so we need to tell 'em
-				VTX_WARNING( "File <{}> not found. VTX will skip it.", it_file );
+				VTX_WARNING( "File <{}> not found. VTX will skip it.", file );
 				continue;
 			}
 
 #if VTX_PYTHON_BINDING
-			if ( args.noGui && ECS::hasCtx<PythonBinding::Interpretor>() && VTX::IO::isScriptFileFormat( it_file ) )
+			// Run script.
+			if ( args.noGui && ECS::hasCtx<PythonBinding::Interpretor>() && VTX::IO::isScriptFileFormat( file ) )
 			{
-				runScriptUntilDone( *this, it_file );
+				runScriptUntilDone( *this, file );
 				continue;
 			}
 #endif
+			// No python but copy script in user data.
+			if ( VTX::IO::isScriptFileFormat( file ) )
+			{
+				ACTION().execute<Action::IO::RunPythonScript>( file );
+				continue;
+			}
+
 			Action::IO::Open openAction;
-			ACTION().execute( openAction, it_file );
+			ACTION().execute( openAction, file );
 		}
 	}
 

@@ -61,7 +61,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const QSignalBlocker blockerVignetteRoundness( _sliderVignetteRoundness );
 		const QSignalBlocker blockerVignetteIntensity( _sliderVignetteIntensity );
 		const QSignalBlocker blockerBrightness( _sliderBrightness );
-		const auto			 config = p_config.crt.value_or( VTX::Renderer::GraphicsConfigs::CRT_DEFAULT );
+		const auto			 config = p_config.crt.value_or( VTX::Renderer::CRTConfig {} );
 		setChecked( p_config.crt.has_value() );
 		_sliderCurvatureX->setValue( config.curvatureX );
 		_sliderCurvatureY->setValue( config.curvatureY );

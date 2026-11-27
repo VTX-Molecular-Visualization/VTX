@@ -80,7 +80,6 @@ namespace VTX::UI::QT::Menu
 		addSeparator();
 
 		UI_ACTIONS().addTo( *this, Action::Selection::SELECT_ALL );
-		UI_ACTIONS().addTo( *this, Action::Selection::INVERT );
 
 		_extendMenu = Helper::makeQObject<QMenu>( this );
 		_extendMenu->setTitle( "Extend" );
@@ -104,6 +103,7 @@ namespace VTX::UI::QT::Menu
 		UI_ACTIONS().addTo( *_extendMenu, Action::Selection::EXTEND );
 		_extendMenu->setEnabled( not UI_ACTIONS().isChecked( Action::Selection::LOCK ) );
 		addMenu( _extendMenu );
+		UI_ACTIONS().addTo( *this, Action::Selection::INVERT );
 
 		UI_ACTIONS().addTo( *this, Action::Selection::CLEAR );
 

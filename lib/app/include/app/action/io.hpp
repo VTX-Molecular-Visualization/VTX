@@ -87,6 +87,14 @@ namespace VTX::App::Action::IO
 	};
 
 	/**
+	 * @brief Import a script into the user scripts directory and run it.
+	 */
+	struct ImportScript
+	{
+		void execute( const FilePath & p_path );
+	};
+
+	/**
 	 * @brief Download a molecular system from a remote source.
 	 */
 	struct DownloadSystem
@@ -95,8 +103,10 @@ namespace VTX::App::Action::IO
 		DownloadSystem() = default;
 		DownloadSystem( Util::Thread::ThreadData );
 
-		void execute( const std::string & p_url, FilePath p_path );
-		void execute( const std::string & p_systemId );
+		void execute( const std::string & p_url, FilePath p_path, const bool p_force = false );
+		void execute( const std::string & p_url, const char * const p_path, const bool p_force = false )
+		{ execute( p_url, FilePath( p_path ), p_force ); }
+		void execute( const std::string & p_systemId, const bool p_force = false );
 
 	  private:
 		Util::Thread::ThreadData _threadData;

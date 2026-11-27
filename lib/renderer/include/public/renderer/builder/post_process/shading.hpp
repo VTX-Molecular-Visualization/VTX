@@ -9,6 +9,7 @@
 #include <optional>
 #include <string_view>
 #include <util/constants.hpp>
+#include <util/math.hpp>
 #include <utility>
 
 namespace VTX::Renderer
@@ -52,6 +53,16 @@ namespace VTX::Renderer
 	constexpr float				ENVIRONMENT_ROTATION_DEFAULT = 0.f;
 	constexpr float				ENVIRONMENT_ROTATION_MIN	 = 0.f;
 	constexpr float				ENVIRONMENT_ROTATION_MAX	 = TWO_PIf;
+	constexpr float				SKYBOX_INTENSITY_DEFAULT	 = 1.f;
+	constexpr float				SKYBOX_INTENSITY_MIN		 = 1.f / 1024.f;
+	constexpr float				SKYBOX_INTENSITY_MAX		 = 1024.f;
+	constexpr float				SKYBOX_INTENSITY_EV_MIN		 = -10.f;
+	constexpr float				SKYBOX_INTENSITY_EV_MAX		 = 10.f;
+	constexpr float				IBL_INTENSITY_DEFAULT		 = 1.f;
+	constexpr float				IBL_INTENSITY_MIN			 = 1.f / 1024.f;
+	constexpr float				IBL_INTENSITY_MAX			 = 1024.f;
+	constexpr float				IBL_INTENSITY_EV_MIN		 = -10.f;
+	constexpr float				IBL_INTENSITY_EV_MAX		 = 10.f;
 
 	constexpr bool			ACTIVE_FOG_DEFAULT	= false;
 	const Util::Color::Rgba COLOR_FOG_DEFAULT	= COLOR_GREY;
@@ -68,8 +79,8 @@ namespace VTX::Renderer
 	struct ShadingConfig
 	{
 		E_SHADING				mode = SHADING_MODE_DEFAULT;
-		Util::Color::Rgba		colorLight;
-		Util::Color::Rgba		colorBackground;
+		Util::Color::Rgba		colorLight = COLOR_LIGHT_DEFAULT;
+		Util::Color::Rgba		colorBackground = COLOR_BACKGROUND_DEFAULT;
 		float					specularFactor	 = SPECULAR_FACTOR_DEFAULT;
 		float					shininess		 = SHININESS_DEFAULT;
 		uint					toonSteps		 = TOON_STEPS_DEFAULT;
@@ -78,33 +89,38 @@ namespace VTX::Renderer
 		E_BACKGROUND_MODE		backgroundMode	 = BACKGROUND_MODE_DEFAULT;
 		std::optional<FilePath> environmentPath;
 		uint					environmentFaceSize = 1024;
-		float					skyboxIntensity		= 1.f;
-		float					iblIntensity		= 1.f;
+		float					skyboxIntensity		= SKYBOX_INTENSITY_DEFAULT;
+		float					iblIntensity		= IBL_INTENSITY_DEFAULT;
 		float					environmentRotation = ENVIRONMENT_ROTATION_DEFAULT;
-		Material				material			= Materials::DEFAULT();
+		Material				material;
+
+		void clamp()
+		{
+			specularFactor		= Util::Math::clamp( specularFactor, SPECULAR_FACTOR_MIN, SPECULAR_FACTOR_MAX );
+			shininess			= Util::Math::clamp( shininess, SHININESS_MIN, SHININESS_MAX );
+			toonSteps			= Util::Math::clamp( toonSteps, TOON_STEPS_MIN, TOON_STEPS_MAX );
+			lightIntensity		= Util::Math::clamp( lightIntensity, LIGHT_INTENSITY_MIN, LIGHT_INTENSITY_MAX );
+			ambientIntensity	= Util::Math::clamp( ambientIntensity, AMBIENT_INTENSITY_MIN, AMBIENT_INTENSITY_MAX );
+			skyboxIntensity		= Util::Math::clamp( skyboxIntensity, SKYBOX_INTENSITY_MIN, SKYBOX_INTENSITY_MAX );
+			iblIntensity		= Util::Math::clamp( iblIntensity, IBL_INTENSITY_MIN, IBL_INTENSITY_MAX );
+			environmentRotation = Util::Math::clamp( environmentRotation, ENVIRONMENT_ROTATION_MIN, ENVIRONMENT_ROTATION_MAX );
+		}
 	};
 
 	struct FogConfig
 	{
-		Util::Color::Rgba color;
-		float			  near;
-		float			  far;
-		float			  density;
-	};
+		Util::Color::Rgba color = COLOR_FOG_DEFAULT;
+		float			  near = FOG_NEAR_DEFAULT;
+		float			  far = FOG_FAR_DEFAULT;
+		float			  density = FOG_DENSITY_DEFAULT;
 
-	namespace GraphicsConfigs
-	{
-		inline constexpr auto SHADING_DEFAULT = []
+		void clamp()
 		{
-			return ShadingConfig { SHADING_MODE_DEFAULT,	COLOR_LIGHT_DEFAULT, COLOR_BACKGROUND_DEFAULT,
-								   SPECULAR_FACTOR_DEFAULT, SHININESS_DEFAULT,	 TOON_STEPS_DEFAULT };
-		};
-
-		inline const FogConfig FOG_DEFAULT { COLOR_FOG_DEFAULT,
-											 FOG_NEAR_DEFAULT,
-											 FOG_FAR_DEFAULT,
-											 FOG_DENSITY_DEFAULT };
-	} // namespace GraphicsConfigs
+			near	= Util::Math::clamp( near, FOG_NEAR_MIN, FOG_NEAR_MAX );
+			far		= Util::Math::clamp( far, FOG_FAR_MIN, FOG_FAR_MAX );
+			density = Util::Math::clamp( density, FOG_DENSITY_MIN, FOG_DENSITY_MAX );
+		}
+	};
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess
@@ -217,7 +233,7 @@ namespace VTX::Renderer::Builder::PostProcess
 							const std::optional<SSAOConfig> & p_ssao )
 		{
 			BinaryBuffer140	  buffer;
-			const FogConfig & fog = p_fog.value_or( GraphicsConfigs::FOG_DEFAULT );
+			const FogConfig & fog = p_fog.value_or( FogConfig {} );
 
 			buffer.write( p_config.colorBackground.toLinear() );
 			buffer.write( p_config.colorLight.toLinear() );

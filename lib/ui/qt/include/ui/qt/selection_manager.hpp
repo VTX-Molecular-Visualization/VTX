@@ -7,7 +7,11 @@
 #include <app/ecs.hpp>
 #include <app/services.hpp>
 #include <core/struct/topology.hpp>
+#include <renderer/color.hpp>
+#include <renderer/graphics_config.hpp>
+#include <renderer/representation.hpp>
 #include <util/action_manager.hpp>
+#include <util/type_traits.hpp>
 #include <util/types.hpp>
 
 namespace VTX::UI::QT
@@ -23,6 +27,31 @@ namespace VTX::UI::QT
 		CAMERA,
 		SCRIPT
 	};
+
+	namespace Detail
+	{
+		template<typename P>
+		consteval E_SELECTION_GROUP unsupportedSelectionGroup()
+		{
+			static_assert( always_false_t<P>, "Unsupported preset type." );
+			return E_SELECTION_GROUP::GRAPHICS_CONFIG;
+		}
+	} // namespace Detail
+
+	/**
+	 * @brief Selection group of a preset type.
+	 */
+	template<typename P>
+	inline constexpr E_SELECTION_GROUP SELECTION_GROUP = Detail::unsupportedSelectionGroup<P>();
+
+	template<>
+	inline constexpr E_SELECTION_GROUP SELECTION_GROUP<Renderer::GraphicsConfig> = E_SELECTION_GROUP::GRAPHICS_CONFIG;
+
+	template<>
+	inline constexpr E_SELECTION_GROUP SELECTION_GROUP<Renderer::Color::Layout> = E_SELECTION_GROUP::COLOR_LAYOUT;
+
+	template<>
+	inline constexpr E_SELECTION_GROUP SELECTION_GROUP<Renderer::Representation> = E_SELECTION_GROUP::REPRESENTATION;
 
 	/**
 	 * @brief QSelectionModel manager.
@@ -72,6 +101,11 @@ namespace VTX::UI::QT
 		 * @brief Clear selection of all group except the given one.
 		 */
 		void clearBut( E_SELECTION_GROUP );
+
+		/**
+		 * @brief Select the preset item in the views of a group.
+		 */
+		void selectPreset( E_SELECTION_GROUP, Entity );
 
 		/**
 		 * @brief Select item.

@@ -2,10 +2,13 @@
 #include "app/helper/aabb.hpp"
 #include "app/scene/color_layout.hpp"
 #include "app/scene/graphics_config.hpp"
+#include "app/scene/material.hpp"
 #include "app/services.hpp"
 #include "app/setting/accessibility.hpp"
 #include <core/struct/mesh.hpp>
 #include <core/struct/topology.hpp>
+#include <renderer/graphics_config.hpp>
+#include <renderer/material.hpp>
 #include <renderer/renderer.hpp>
 #include <util/math/aabb.hpp>
 #include <util/math/transform.hpp>
@@ -37,6 +40,11 @@ namespace VTX::App::Pass
 			= reg.on_update<Renderer::GraphicsConfig>().connect<&SceneUpdater::_onUpdateGraphicsConfigPreset>( this );
 		_colorLayoutPresetUpdatedConnection
 			= reg.on_update<Renderer::Color::Layout>().connect<&SceneUpdater::_onUpdateColorLayoutPreset>( this );
+		_materialConstructedConnection
+			= reg.on_construct<Scene::Material>().connect<&SceneUpdater::_onUpdateMaterial>( this );
+		_materialUpdatedConnection = reg.on_update<Scene::Material>().connect<&SceneUpdater::_onUpdateMaterial>( this );
+		_materialPresetUpdatedConnection
+			= reg.on_update<Renderer::Material>().connect<&SceneUpdater::_onUpdateMaterialPreset>( this );
 		_accessibilityUpdatedConnection
 			= reg.on_update<Setting::Accessibility>().connect<&SceneUpdater::_onUpdateAccessibility>( this );
 	}
@@ -58,10 +66,27 @@ namespace VTX::App::Pass
 
 	void SceneUpdater::_onUpdateGraphicsConfig( Registry & p_r, Entity )
 	{
-		auto &		 renderer = RENDERER();
-		const auto & instance = p_r.get<Scene::GraphicsConfig>( _entity );
-		const auto & preset	  = p_r.get<Renderer::GraphicsConfig>( instance.preset );
-		renderer.setGraphicsConfig( preset );
+		auto &					 renderer = RENDERER();
+		const auto &			 instance = p_r.get<Scene::GraphicsConfig>( _entity );
+		Renderer::GraphicsConfig config	  = p_r.get<Renderer::GraphicsConfig>( instance.preset );
+
+		if ( const Scene::Material * const material = p_r.try_get<Scene::Material>( _entity ) )
+		{
+			if ( p_r.valid( material->preset ) && p_r.all_of<Renderer::Material>( material->preset ) )
+			{
+				config.shading.material = p_r.get<Renderer::Material>( material->preset );
+			}
+		}
+
+		renderer.setGraphicsConfig( config );
+	}
+
+	void SceneUpdater::_onUpdateMaterial( Registry & p_r, Entity )
+	{
+		if ( p_r.all_of<Scene::GraphicsConfig>( _entity ) )
+		{
+			_onUpdateGraphicsConfig( p_r, _entity );
+		}
 	}
 
 	void SceneUpdater::_onUpdateColorLayout( Registry & p_r, Entity )
@@ -98,6 +123,15 @@ namespace VTX::App::Pass
 		if ( instance.preset == p_e )
 		{
 			_onUpdateColorLayout( p_r, _entity );
+		}
+	}
+
+	void SceneUpdater::_onUpdateMaterialPreset( Registry & p_r, Entity p_e )
+	{
+		const Scene::Material * const instance = p_r.try_get<Scene::Material>( _entity );
+		if ( instance != nullptr && instance->preset == p_e )
+		{
+			_onUpdateMaterial( p_r, _entity );
 		}
 	}
 

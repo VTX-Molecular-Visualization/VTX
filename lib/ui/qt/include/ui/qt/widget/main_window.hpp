@@ -23,6 +23,7 @@ namespace VTX::UI::QT::Dialog
 
 namespace VTX::UI::QT::Widget
 {
+	class PythonEditor;
 
 	/**
 	 * @brief The application main window.
@@ -157,6 +158,8 @@ namespace VTX::UI::QT::Widget
 		 * @brief The progress dialog shown during blocking operations.
 		 */
 		QPointer<Dialog::Progress> _progressDialog;
+
+		QPointer<PythonEditor> _pythonEditor;
 
 		/**
 		 * @brief Default geometry for layout reset.

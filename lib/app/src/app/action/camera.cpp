@@ -7,6 +7,7 @@
 #include <cmath>
 #include <core/struct/topology.hpp>
 #include <util/action_manager.hpp>
+#include <util/constants.hpp>
 #include <util/event_hub.hpp>
 #include <util/math.hpp>
 #include <util/math/transform.hpp>
@@ -49,6 +50,20 @@ namespace VTX::App::Action::Camera
 		transform.setRotation( p_rotation );
 		const Vec3f toTarget = camera.target - transform.getPosition();
 		camera.target		 = transform.getPosition() + delta * toTarget;
+		HUB().trigger<Events::CameraTransformChange>();
+	}
+
+	void LookAt::execute( const Vec3f & p_target )
+	{
+		const auto [ _, camera, transform ]
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+		if ( Util::Math::length2( p_target - transform.getPosition() ) < EPSILON2 )
+		{
+			return;
+		}
+
+		transform.lookAt( p_target );
+		camera.target = p_target;
 		HUB().trigger<Events::CameraTransformChange>();
 	}
 

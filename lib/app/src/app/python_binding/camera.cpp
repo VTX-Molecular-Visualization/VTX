@@ -100,27 +100,9 @@ namespace VTX::App::PythonBinding
 			);
 		}
 
-		bool _isCameraAnimating()
-		{
-			return REG().all_of<App::Controller::CameraAnimating>(
-				ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>()
-			);
-		}
-
-		void _waitCameraAnimation( const float p_duration )
-		{
-			if ( p_duration > 0.f )
-			{
-				waitUntil( []() { return not _isCameraAnimating(); } );
-			}
-		}
-
 		template<typename Action, typename... Args>
 		void _animateCamera( const float p_duration, Args &&... p_args )
-		{
-			executeAction<Action>( std::forward<Args>( p_args )..., p_duration );
-			_waitCameraAnimation( p_duration );
-		}
+		{ executeAction<Action>( std::forward<Args>( p_args )..., p_duration ); }
 
 		void _orient( const Util::Math::AABB & p_target, const float p_duration )
 		{ _animateCamera<App::Action::Camera::Orient>( p_duration, p_target ); }
@@ -152,7 +134,7 @@ namespace VTX::App::PythonBinding
 		template<typename Action, typename... Args>
 		void _executeViewpointAction( const Viewpoint & p_viewpoint, Args &&... p_args )
 		{
-			THREAD().synchronize(
+			executeOnMainThread(
 				[ & ]()
 				{
 					_validateViewpoint( p_viewpoint.entity );
@@ -277,7 +259,6 @@ namespace VTX::App::PythonBinding
 				[]( const Viewpoint & p_viewpoint, const float p_duration )
 				{
 					_executeViewpointAction<App::Action::Camera::GoToViewPoint>( p_viewpoint, p_duration );
-					_waitCameraAnimation( p_duration );
 				},
 				"Move the camera to this viewpoint.",
 				pybind11::arg( "duration" ) = 0.f
@@ -352,6 +333,13 @@ namespace VTX::App::PythonBinding
 				{ executeAction<App::Action::Camera::SetRotation>( p_rotation ); },
 				"Set the rotation quaternion.",
 				pybind11::arg( "rotation" )
+			)
+			.def(
+				"lookAt",
+				[]( const CameraView &, const Vec3f & p_target )
+				{ executeAction<App::Action::Camera::LookAt>( p_target ); },
+				"Rotate the camera to look at a point in world space.",
+				pybind11::arg( "target" )
 			)
 			.def(
 				"setFov",

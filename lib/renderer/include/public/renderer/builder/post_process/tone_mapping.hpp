@@ -5,6 +5,7 @@
 #include "renderer/graph_builder.hpp"
 #include <cstdint>
 #include <string_view>
+#include <util/math.hpp>
 #include <utility>
 
 namespace VTX::Renderer
@@ -29,15 +30,11 @@ namespace VTX::Renderer
 
 	struct ToneMappingConfig
 	{
-		E_TONE_MAPPING mode;
-		float		   exposure;
-	};
+		E_TONE_MAPPING mode = TONE_MAPPING_MODE_DEFAULT;
+		float		   exposure = TONE_MAPPING_EXPOSURE_DEFAULT;
 
-	namespace GraphicsConfigs
-	{
-		inline const ToneMappingConfig TONE_MAPPING_DEFAULT { TONE_MAPPING_MODE_DEFAULT,
-															  TONE_MAPPING_EXPOSURE_DEFAULT };
-	} // namespace GraphicsConfigs
+		void clamp() { exposure = Util::Math::clamp( exposure, TONE_MAPPING_EXPOSURE_MIN, TONE_MAPPING_EXPOSURE_MAX ); }
+	};
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess

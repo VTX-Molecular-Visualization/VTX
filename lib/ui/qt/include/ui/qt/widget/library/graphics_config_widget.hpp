@@ -6,6 +6,7 @@
 #include "graphics_config/crt_section.hpp"
 #include "graphics_config/fog_section.hpp"
 #include "graphics_config/lighting_section.hpp"
+#include "graphics_config/material_section.hpp"
 #include "graphics_config/outline_section.hpp"
 #include "graphics_config/pixelize_section.hpp"
 #include "graphics_config/selection_section.hpp"
@@ -31,5 +32,6 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<GraphicsConfig::ChromaticAberrationSection> _chromaticAberrationSection;
 		QPointer<GraphicsConfig::PixelizeSection>			 _pixelizeSection;
 		QPointer<GraphicsConfig::CRTSection>				 _crtSection;
+		QPointer<GraphicsConfig::MaterialSection>			 _materialSection;
 	};
 } // namespace VTX::UI::QT::Widget::Library

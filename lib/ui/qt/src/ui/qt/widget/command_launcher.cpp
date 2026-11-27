@@ -2,6 +2,7 @@
 #include "app/python_binding/interpretor.hpp"
 #include "app/services.hpp"
 #include "ui/qt/helper.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include <QAbstractItemView>
 #include <qevent.h>
 #include <string>
@@ -13,6 +14,9 @@ namespace VTX::UI::QT::Widget
 	CommandLauncher::CommandLauncher( QWidget * const p_parent ) :
 		BaseWidget( p_parent ), _completer( Helper::makeQObject<PythonCompleter>( this ) )
 	{
+		QFont font( Style::DEFAULT_FONT_FAMILY_SEQUENCE.toString(), Style::DEFAULT_FONT_SIZE );
+		font.setStyleHint( QFont::Monospace );
+		setFont( font );
 		setPlaceholderText( "help()" );
 		setClearButtonEnabled( true );
 		setEnabled( false );

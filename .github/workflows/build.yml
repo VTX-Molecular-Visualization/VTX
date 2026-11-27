@@ -142,7 +142,7 @@ jobs:
       if: ${{ !cancelled() && env.VTX_CONAN_AUTHENTICATED == 'true' }}
       run: |
         for pkg in \
-          glm spdlog magic_enum entt cpr stb tinyexr miniz fmt bzip2 zlib libcurl openssl platformfolders \
+          glm spdlog magic_enum entt cpr stb tinyexr miniz fmt bzip2 zlib libcurl openssl platformfolders nlohmann_json \
           assimp clipper draco kuba-zip openddl-parser poly2tri pugixml rapidjson utfcpp minizip exiv2 inih catch2 \
           argparse chemfiles \
           ktx zstd \
