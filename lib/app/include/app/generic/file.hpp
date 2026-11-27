@@ -1,5 +1,4 @@
-#ifndef VTX_APP_GENERIC_FILE_HPP
-#define VTX_APP_GENERIC_FILE_HPP
+#pragma once
 
 #include <util/filesystem.hpp>
 
@@ -11,5 +10,3 @@ namespace VTX::App::Generic
 	struct File
 	{ FilePath path; };
 } // namespace VTX::App::Generic
-
-#endif

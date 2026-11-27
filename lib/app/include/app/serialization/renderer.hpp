@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SERIALIZATION_RENDERER_HPP
-#define VTX_APP_SERIALIZATION_RENDERER_HPP
+#pragma once
 
 #include <renderer/color.hpp>
 #include <renderer/graphics_config.hpp>
@@ -113,5 +112,3 @@ namespace VTX::Renderer::Color
 	void to_json( Util::Json::Document & p_json, const Layout & p_layout );
 	void from_json( const Util::Json::Document & p_json, Layout & p_layout );
 } // namespace VTX::Renderer::Color
-
-#endif

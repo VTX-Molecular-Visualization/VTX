@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_JSON_HPP
-#define VTX_UTIL_JSON_HPP
+#pragma once
 
 #include "util/color/rgba.hpp"
 #include "util/filesystem.hpp"
@@ -230,5 +229,3 @@ namespace nlohmann
 		}
 	};
 } // namespace nlohmann
-
-#endif
