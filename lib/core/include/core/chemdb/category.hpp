@@ -1,5 +1,4 @@
-#ifndef VTX_CORE_CHEMDB_CATEGORY_HPP
-#define VTX_CORE_CHEMDB_CATEGORY_HPP
+#pragma once
 
 #include <array>
 #include <string>
@@ -50,5 +49,3 @@ namespace VTX::Core::ChemDB::Category
 	 */
 	Dictionary createDefaultDictionary();
 } // namespace VTX::Core::ChemDB::Category
-
-#endif

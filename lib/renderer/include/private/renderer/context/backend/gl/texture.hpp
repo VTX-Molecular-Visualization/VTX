@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_TEXTURE_HPP
-#define VTX_RENDERER_CONTEXT_BACKEND_GL_TEXTURE_HPP
+#pragma once
 
 #include "include_opengl.hpp"
 #include <cassert>
@@ -171,5 +170,3 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 	};
 } // namespace VTX::Renderer::Context::Backend::GL
-
-#endif // VTX_RENDERER_CONTEXT_BACKEND_GL_TEXTURE_HPP

@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_HISTORY_BROWSER_HPP
-#define VTX_UTIL_HISTORY_BROWSER_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -63,5 +62,3 @@ namespace VTX::Util
 		size_t					 _historyIdx	  = 0;
 	};
 } // namespace VTX::Util
-
-#endif

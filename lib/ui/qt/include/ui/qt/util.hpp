@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_UTIL_HPP
-#define VTX_UI_QT_UTIL_HPP
+#pragma once
 
 #include "ui/qt/helper.hpp"
 #include <QBitmap>
@@ -167,5 +166,3 @@ namespace VTX::UI::QT::Util
 	void get( const QLineEdit * p_src, uint64_t & p_dest );
 
 } // namespace VTX::UI::QT::Util
-
-#endif

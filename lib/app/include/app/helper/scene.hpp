@@ -1,5 +1,4 @@
-#ifndef VTX_APP_HELPER_SCENE_HPP
-#define VTX_APP_HELPER_SCENE_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include <optional>
@@ -34,5 +33,3 @@ namespace VTX::App::Helper::Scene
 	std::optional<Entity> findSystemByResidueUID( UID32 );
 
 } // namespace VTX::App::Helper::Scene
-
-#endif

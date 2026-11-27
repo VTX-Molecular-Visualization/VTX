@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SCENE_GRAPHICS_CONFIG_HPP
-#define VTX_APP_SCENE_GRAPHICS_CONFIG_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 
@@ -17,5 +16,3 @@ namespace VTX::App::Scene
 		Entity preset;
 	};
 } // namespace VTX::App::Scene
-
-#endif

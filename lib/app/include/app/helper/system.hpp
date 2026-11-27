@@ -1,5 +1,4 @@
-#ifndef VTX_APP_HELPER_SYSTEM_HPP
-#define VTX_APP_HELPER_SYSTEM_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/scene/tag_root.hpp"
@@ -229,5 +228,3 @@ namespace VTX::App::Helper::System
 	bool isRepresentationRoot( const SystemItemView & );
 
 } // namespace VTX::App::Helper::System
-
-#endif

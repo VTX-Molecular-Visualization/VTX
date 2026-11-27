@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SYSTEM_SELECTION_HPP
-#define VTX_APP_SYSTEM_SELECTION_HPP
+#pragma once
 
 #include <core/struct/topology.hpp>
 #include <util/math/bitset.hpp>
@@ -28,5 +27,3 @@ namespace VTX::App::System
 	};
 
 } // namespace VTX::App::System
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_GEOMETRY_SPHERE_HPP
-#define VTX_RENDERER_GEOMETRY_SPHERE_HPP
+#pragma once
 
 #include "base_geometry.hpp"
 #include "renderer/caches.hpp"
@@ -56,5 +55,3 @@ namespace VTX::Renderer::Geometry
 	};
 
 } // namespace VTX::Renderer::Geometry
-
-#endif

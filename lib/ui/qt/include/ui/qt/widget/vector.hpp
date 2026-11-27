@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_VECTOR_HPP
-#define VTX_UI_QT_WIDGET_VECTOR_HPP
+#pragma once
 
 #include "ui/qt/helper.hpp"
 #include <QDoubleSpinBox>
@@ -215,5 +214,3 @@ namespace VTX::UI::QT::Widget
 	};
 
 } // namespace VTX::UI::QT::Widget
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_PRESET_TYPES_HPP
-#define VTX_APP_PYTHON_BINDING_PRESET_TYPES_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 
@@ -26,5 +25,3 @@ namespace VTX::App::PythonBinding::Preset
 	using GraphicsConfigHandle = Handle<Renderer::GraphicsConfig>;
 	using RepresentationHandle = Handle<Renderer::Representation>;
 } // namespace VTX::App::PythonBinding::Preset
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_CONSTANTS_HPP
-#define VTX_APP_CONSTANTS_HPP
+#pragma once
 
 #include <string>
 #include <string_view>
@@ -34,5 +33,3 @@ namespace VTX::App
 	constexpr std::string_view LOG_LINK_FORMAT = "//file=[{}]";
 
 } // namespace VTX::App
-
-#endif

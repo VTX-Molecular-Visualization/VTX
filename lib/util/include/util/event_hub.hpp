@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_EVENT_HUB_HPP
-#define VTX_UTIL_EVENT_HUB_HPP
+#pragma once
 
 #include <entt/signal/delegate.hpp>
 #include <entt/signal/dispatcher.hpp>
@@ -172,5 +171,3 @@ namespace VTX::Util
 		AtomicCallback _onPending;
 	};
 } // namespace VTX::Util
-
-#endif

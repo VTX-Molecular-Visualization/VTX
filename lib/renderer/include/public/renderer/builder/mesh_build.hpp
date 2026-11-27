@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_BUILDER_MESH_BUILD_HPP
-#define VTX_RENDERER_BUILDER_MESH_BUILD_HPP
+#pragma once
 
 #include "renderer/caches.hpp"
 #include "renderer/geometry/geometries.hpp"
@@ -43,5 +42,3 @@ namespace VTX::Renderer::Builder
 		}
 	};
 } // namespace VTX::Renderer::Builder
-
-#endif // !VTX_RENDERER_BUILDER_MESH_BUILD_HPP

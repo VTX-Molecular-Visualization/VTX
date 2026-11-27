@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_GENION_HPP
-#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_GENION_HPP
+#pragma once
 
 #include <filesystem>
 #include <optional>
@@ -37,4 +36,3 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	void convert( const GenionInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
-#endif

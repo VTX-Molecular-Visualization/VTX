@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SYSTEM_REPRESENTATION_HPP
-#define VTX_APP_SYSTEM_REPRESENTATION_HPP
+#pragma once
 
 #include <core/struct/topology.hpp>
 #include <renderer/representation.hpp>
@@ -20,5 +19,3 @@ namespace VTX::App::System
 	};
 
 } // namespace VTX::App::System
-
-#endif

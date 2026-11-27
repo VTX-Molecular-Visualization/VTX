@@ -1,5 +1,4 @@
-#ifndef VTX_APP_CONTROLLER_CONCEPTS_HPP
-#define VTX_APP_CONTROLLER_CONCEPTS_HPP
+#pragma once
 
 #include "app/setting/controller.hpp"
 #include <util/math/transform.hpp>
@@ -29,5 +28,3 @@ namespace VTX::App::Controller
 	};
 
 } // namespace VTX::App::Controller
-
-#endif

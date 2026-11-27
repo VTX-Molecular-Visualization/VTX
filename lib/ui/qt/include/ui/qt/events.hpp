@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_EVENTS_HPP
-#define VTX_UI_QT_EVENTS_HPP
+#pragma once
 
 #include <util/filesystem.hpp>
 
@@ -50,5 +49,3 @@ namespace VTX::UI::QT::Events
 	};
 
 } // namespace VTX::UI::QT::Events
-
-#endif

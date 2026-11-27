@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_ENUM_HPP
-#define VTX_UTIL_ENUM_HPP
+#pragma once
 
 #include "exceptions.hpp"
 #include "types.hpp"
@@ -83,5 +82,3 @@ namespace VTX::Util::Enum
 		return enumCast<E2>( std::string( name ) );
 	}
 } // namespace VTX::Util::Enum
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_INPUT_CHECKER_HPP
-#define VTX_TOOL_MDPREP_UI_INPUT_CHECKER_HPP
+#pragma once
 
 #include "tool/mdprep/gateway/shared.hpp"
 #include <memory>
@@ -94,5 +93,3 @@ namespace VTX::Tool::Mdprep::ui
 		}
 	};
 } // namespace VTX::Tool::Mdprep::ui
-
-#endif

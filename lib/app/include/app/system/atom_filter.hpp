@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SYSTEM_ATOM_FILTER_HPP
-#define VTX_APP_SYSTEM_ATOM_FILTER_HPP
+#pragma once
 
 #include <memory>
 
@@ -36,4 +35,3 @@ namespace VTX::App::System::atomFilters
 		std::reference_wrapper<const Selection> _selection;
 	};
 } // namespace VTX::App::System::atomFilters
-#endif

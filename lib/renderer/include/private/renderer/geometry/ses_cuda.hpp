@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_GEOMETRY_SES_CUDA_HPP
-#define VTX_RENDERER_GEOMETRY_SES_CUDA_HPP
+#pragma once
 
 #include <array>
 #include <core/chemdb/atom.hpp>
@@ -115,5 +114,3 @@ namespace VTX::Renderer::Geometry::SESDetail
 	void				  readConstructionVisibilityData( CudaConstruction &, SesdfVisibilityData & );
 	void				  releaseCachedCudaMemory();
 } // namespace VTX::Renderer::Geometry::SESDetail
-
-#endif

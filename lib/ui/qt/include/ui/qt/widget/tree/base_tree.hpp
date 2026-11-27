@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_TREE_BASE_TREE_HPP
-#define VTX_UI_QT_WIDGET_TREE_BASE_TREE_HPP
+#pragma once
 
 #include "ui/qt/widget/base_widget.hpp"
 #include <QApplication>
@@ -173,5 +172,3 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 	};
 } // namespace VTX::UI::QT::Widget::Tree
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SYSTEM_UID_HPP
-#define VTX_APP_SYSTEM_UID_HPP
+#pragma once
 
 #include <util/math/range_list.hpp>
 #include <util/uid.hpp>
@@ -36,5 +35,3 @@ namespace VTX::App::System
 		bool containsAtomUID( const UID32 p_uid ) const { return atoms.contains( p_uid ); }
 	};
 } // namespace VTX::App::System
-
-#endif

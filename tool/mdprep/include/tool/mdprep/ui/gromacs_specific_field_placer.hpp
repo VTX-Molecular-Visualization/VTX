@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_GROMACS_SPECIFIC_FIELD_PLACER_HPP
-#define VTX_TOOL_MDPREP_UI_GROMACS_SPECIFIC_FIELD_PLACER_HPP
+#pragma once
 
 class QFormLayout;
 class QLineEdit;
@@ -81,5 +80,3 @@ namespace VTX::Tool::Mdprep::ui
 		void _addAnglesXYZ();
 	};
 } // namespace VTX::Tool::Mdprep::ui
-
-#endif

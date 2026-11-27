@@ -1,5 +1,4 @@
-#ifndef VTX_IO_FILE_FORMAT_HPP
-#define VTX_IO_FILE_FORMAT_HPP
+#pragma once
 
 #include <util/filesystem.hpp>
 #include <util/types.hpp>
@@ -21,5 +20,3 @@ namespace VTX::IO
 	 */
 	bool isPresetFileFormat( const FilePath & p_path );
 } // namespace VTX::IO
-
-#endif

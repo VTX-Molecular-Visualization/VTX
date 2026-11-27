@@ -1,5 +1,4 @@
-#ifndef VTX_APP_UI_CONCEPTS_HPP
-#define VTX_APP_UI_CONCEPTS_HPP
+#pragma once
 
 #include <optional>
 #include <string>
@@ -29,5 +28,3 @@ namespace VTX::App::UI
 		bool					   checkable = false;
 	};
 } // namespace VTX::App::UI
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_GEOMETRY_GRID_HPP
-#define VTX_RENDERER_GEOMETRY_GRID_HPP
+#pragma once
 
 #include "renderer/descriptors.hpp"
 #include <limits>
@@ -50,5 +49,3 @@ namespace VTX::Renderer::Geometry
 		uint32_t _voxelCount = 0;
 	};
 } // namespace VTX::Renderer::Geometry
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION_HPP
-#define VTX_APP_PYTHON_BINDING_TOPOLOGY_COLLECTION_HPP
+#pragma once
 
 #include "app/helper/aabb.hpp"
 #include "app/python_binding/topology/actions.hpp"
@@ -174,5 +173,3 @@ namespace VTX::App::PythonBinding::Topology
 		return cls;
 	}
 } // namespace VTX::App::PythonBinding::Topology
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SESSION_HPP
-#define VTX_APP_SESSION_HPP
+#pragma once
 
 #include "app/constants.hpp"
 #include "app/events.hpp"
@@ -121,5 +120,3 @@ namespace VTX::App
 		void _onUpdateDownloadProgress( const Events::Update & );
 	};
 } // namespace VTX::App
-
-#endif

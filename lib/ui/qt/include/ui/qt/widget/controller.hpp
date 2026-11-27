@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_CONTROLLER_HPP
-#define VTX_UI_QT_WIDGET_CONTROLLER_HPP
+#pragma once
 
 #include "ui/qt/widget/editable_slider.hpp"
 #include <QCheckBox>
@@ -36,4 +35,3 @@ namespace VTX::UI::QT::Widget
 		VTX::Util::EventHub::ScopedConnection _controllerUpdatedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
-#endif

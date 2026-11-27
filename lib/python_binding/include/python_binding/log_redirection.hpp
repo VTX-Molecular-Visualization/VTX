@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_LOG_REDIRECTION_HPP
-#define VTX_PYTHON_BINDING_LOG_REDIRECTION_HPP
+#pragma once
 
 #include <string>
 
@@ -16,5 +15,3 @@ namespace VTX::PythonBinding
 	};
 
 } // namespace VTX::PythonBinding
-
-#endif

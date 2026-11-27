@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_WRAPPER_FUNCTION_HPP
-#define VTX_PYTHON_BINDING_WRAPPER_FUNCTION_HPP
+#pragma once
 
 #include <pybind11/pybind11.h>
 #include <string>
@@ -86,5 +85,3 @@ namespace VTX::PythonBinding::Wrapper
 		}
 	};
 }; // namespace VTX::PythonBinding::Wrapper
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_WIDGET_HPP
-#define VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_WIDGET_HPP
+#pragma once
 
 #include "base_preset_widget.hpp"
 #include "graphics_config/background_section.hpp"
@@ -36,5 +35,3 @@ namespace VTX::UI::QT::Widget::Library
 		QPointer<GraphicsConfig::MaterialSection>			 _materialSection;
 	};
 } // namespace VTX::UI::QT::Widget::Library
-
-#endif

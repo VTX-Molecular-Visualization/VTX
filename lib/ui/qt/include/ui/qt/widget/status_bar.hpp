@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_STATUS_BAR_HPP
-#define VTX_UI_QT_WIDGET_STATUS_BAR_HPP
+#pragma once
 
 #include "ui/qt/tool_button/resolution_selector.hpp"
 #include <QLabel>
@@ -86,5 +85,3 @@ namespace VTX::UI::QT::Widget
 	};
 
 } // namespace VTX::UI::QT::Widget
-
-#endif

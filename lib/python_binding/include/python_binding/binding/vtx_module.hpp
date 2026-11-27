@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_BINDING_VTX_MODULE_HPP
-#define VTX_PYTHON_BINDING_BINDING_VTX_MODULE_HPP
+#pragma once
 
 namespace VTX::PythonBinding
 {
@@ -15,5 +14,3 @@ namespace VTX::PythonBinding
 	const char * vtx_initialization_script_name();
 
 } // namespace VTX::PythonBinding
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_SPLASHSCREEN_HPP
-#define VTX_UI_QT_WIDGET_SPLASHSCREEN_HPP
+#pragma once
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/resources.hpp"
@@ -68,4 +67,3 @@ namespace VTX::UI::QT::Widget
 		QPointer<QMovie> _splashMovie;
 	};
 } // namespace VTX::UI::QT::Widget
-#endif

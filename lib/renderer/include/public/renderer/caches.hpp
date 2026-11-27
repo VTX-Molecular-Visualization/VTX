@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CACHES_HPP
-#define VTX_RENDERER_CACHES_HPP
+#pragma once
 
 #include "renderer/camera.hpp"
 #include "renderer/color.hpp"
@@ -166,5 +165,3 @@ namespace VTX::Renderer::Cache
 		bool showSes;
 	};
 } // namespace VTX::Renderer::Cache
-
-#endif

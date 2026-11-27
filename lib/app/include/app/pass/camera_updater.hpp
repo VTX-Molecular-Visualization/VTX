@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PASS_CAMERA_UPDATER_HPP
-#define VTX_APP_PASS_CAMERA_UPDATER_HPP
+#pragma once
 
 #include "app/controller/concepts.hpp"
 #include "app/ecs.hpp"
@@ -178,5 +177,3 @@ namespace VTX::App::Pass
 		Util::EventHub::ScopedConnection _transformChangedConnection;
 	}; // namespace VTX::App::Pass
 } // namespace VTX::App::Pass
-
-#endif

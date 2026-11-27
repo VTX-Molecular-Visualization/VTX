@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_DEBUG_HPP
-#define VTX_RENDERER_CONTEXT_BACKEND_GL_DEBUG_HPP
+#pragma once
 
 #include "renderer/context/backend/gl/include_opengl.hpp"
 #include <iostream>
@@ -120,5 +119,3 @@ namespace VTX::Renderer::Context::Backend::GL::Debug
 		return std::string( log.begin(), log.end() );
 	}
 } // namespace VTX::Renderer::Context::Backend::GL::Debug
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_SYSTEM_VISIBILITY_HPP
-#define VTX_APP_SYSTEM_VISIBILITY_HPP
+#pragma once
 
 #include <util/math/bitset.hpp>
 
@@ -29,5 +28,3 @@ namespace VTX::App::System
 	bool isAnythingVisible();
 
 } // namespace VTX::App::System
-
-#endif

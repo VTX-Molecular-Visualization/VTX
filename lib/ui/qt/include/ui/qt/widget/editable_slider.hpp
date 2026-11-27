@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_EDITABLE_SLIDER_HPP
-#define VTX_UI_QT_WIDGET_EDITABLE_SLIDER_HPP
+#pragma once
 
 #include "ui/qt/helper.hpp"
 #include <QDoubleSpinBox>
@@ -87,4 +86,3 @@ namespace VTX::UI::QT::Widget
 		QPointer<QDoubleSpinBox> _spinbox;
 	};
 } // namespace VTX::UI::QT::Widget
-#endif

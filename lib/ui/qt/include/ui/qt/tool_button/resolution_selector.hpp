@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_TOOL_BUTTON_RESOLUTION_SELECTOR_HPP
-#define VTX_UI_QT_TOOL_BUTTON_RESOLUTION_SELECTOR_HPP
+#pragma once
 
 #include <QToolButton>
 
@@ -33,5 +32,3 @@ namespace VTX::UI::QT::ToolButton
 	};
 
 } // namespace VTX::UI::QT::ToolButton
-
-#endif

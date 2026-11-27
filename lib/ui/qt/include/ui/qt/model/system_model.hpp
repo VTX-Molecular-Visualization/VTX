@@ -1,5 +1,4 @@
-﻿#ifndef VTX_UI_QT_MODEL_SYSTEM_MODEL_HPP
-#define VTX_UI_QT_MODEL_SYSTEM_MODEL_HPP
+﻿#pragma once
 
 #include <QAbstractItemModel>
 #include <QString>
@@ -103,4 +102,3 @@ namespace VTX::UI::QT::Model
 	};
 
 } // namespace VTX::UI::QT::Model
-#endif

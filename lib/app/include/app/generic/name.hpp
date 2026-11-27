@@ -1,5 +1,4 @@
-#ifndef VTX_APP_GENERIC_NAME_HPP
-#define VTX_APP_GENERIC_NAME_HPP
+#pragma once
 
 #include <string>
 
@@ -13,5 +12,3 @@ namespace VTX::App::Generic
 		std::string name;
 	};
 } // namespace VTX::App::Generic
-
-#endif

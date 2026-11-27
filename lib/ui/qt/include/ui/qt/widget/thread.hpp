@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_THREAD_HPP
-#define VTX_UI_QT_WIDGET_THREAD_HPP
+#pragma once
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/services.hpp"
@@ -84,5 +83,3 @@ namespace VTX::UI::QT::Widget
 		QPointer<QPushButton>  _cancelButton;
 	};
 } // namespace VTX::UI::QT::Widget
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_MATH_RANGE_LIST_HPP
-#define VTX_UTIL_MATH_RANGE_LIST_HPP
+#pragma once
 
 #include "util/math/range.hpp"
 #include <algorithm>
@@ -599,5 +598,3 @@ namespace VTX::Util::Math
 		std::vector<RangeType> _ranges;
 	};
 } // namespace VTX::Util::Math
-
-#endif

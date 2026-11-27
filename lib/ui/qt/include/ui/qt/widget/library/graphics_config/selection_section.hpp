@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_SELECTION_SECTION_HPP
-#define VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_SELECTION_SECTION_HPP
+#pragma once
 
 #include "ui/qt/widget/color_picker.hpp"
 #include "ui/qt/widget/library/graphics_config/section.hpp"
@@ -16,5 +15,3 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		QPointer<ColorPicker> _colorPicker;
 	};
 } // namespace VTX::UI::QT::Widget::Library::GraphicsConfig
-
-#endif

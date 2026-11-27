@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_BACKENDS_GROMACS_EDITCONF_HPP
-#define VTX_TOOL_MDPREP_BACKENDS_GROMACS_EDITCONF_HPP
+#pragma once
 
 #include <array>
 #include <filesystem>
@@ -64,5 +63,3 @@ namespace VTX::Tool::Mdprep::backends::Gromacs
 	void convert( const EditconfInstructions &, GromacsJobData & );
 
 } // namespace VTX::Tool::Mdprep::backends::Gromacs
-
-#endif

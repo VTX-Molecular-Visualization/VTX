@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_ACTION_REGISTRY_HPP
-#define VTX_UI_QT_ACTION_REGISTRY_HPP
+#pragma once
 
 #include <QAction>
 #include <QMenu>
@@ -117,5 +116,3 @@ namespace VTX::UI::QT
 		void _bindTrigger( QAction &, std::string_view );
 	};
 } // namespace VTX::UI::QT
-
-#endif

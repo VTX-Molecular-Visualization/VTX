@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_ACTIONS_JOBS_HPP
-#define VTX_TOOL_MDPREP_ACTIONS_JOBS_HPP
+#pragma once
 
 #include <memory>
 #include <string>
@@ -56,4 +55,3 @@ namespace VTX::Tool::Mdprep::Actions
 		std::unique_ptr<Impl, Del> _impl = nullptr;
 	};
 } // namespace VTX::Tool::Mdprep::Actions
-#endif

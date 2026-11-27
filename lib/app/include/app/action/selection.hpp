@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_SELECTION_HPP
-#define VTX_APP_ACTION_SELECTION_HPP
+#pragma once
 
 #include "app/helper/system.hpp"
 #include "app/system/selection.hpp"
@@ -190,5 +189,3 @@ namespace VTX::App::Action::Selection
 	struct ExtendSelection
 	{ void execute( float p_distance ); };
 } // namespace VTX::App::Action::Selection
-
-#endif

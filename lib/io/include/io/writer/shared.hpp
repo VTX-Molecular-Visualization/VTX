@@ -1,5 +1,4 @@
-#ifndef VTX_IO_WRITER_SHARED_HPP
-#define VTX_IO_WRITER_SHARED_HPP
+#pragma once
 
 #include <cstdint>
 
@@ -30,5 +29,3 @@ namespace VTX::IO::Writer
 		trajectory
 	};
 } // namespace VTX::IO::Writer
-
-#endif

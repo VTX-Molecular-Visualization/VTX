@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_LAYOUT_ATOMS_HPP
-#define VTX_RENDERER_LAYOUT_ATOMS_HPP
+#pragma once
 
 #include "base_layout.hpp"
 #include "renderer/caches.hpp"
@@ -91,5 +90,3 @@ namespace VTX::Renderer::Layout
 		}
 	};
 } // namespace VTX::Renderer::Layout
-
-#endif

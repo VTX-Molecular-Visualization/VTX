@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_API_ARGUMENTS_HPP
-#define VTX_PYTHON_BINDING_API_ARGUMENTS_HPP
+#pragma once
 
 #include <cstdint>
 #include <memory>
@@ -73,4 +72,3 @@ namespace VTX::PythonBinding::API
 	};
 
 } // namespace VTX::PythonBinding::API
-#endif

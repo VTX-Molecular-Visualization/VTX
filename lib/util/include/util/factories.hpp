@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_FACTORIES_HPP
-#define VTX_UTIL_FACTORIES_HPP
+#pragma once
 
 #include <memory>
 
@@ -35,4 +34,3 @@ namespace VTX::Util::Factories
 		return ptr;
 	}
 } // namespace VTX::Util::Factories
-#endif

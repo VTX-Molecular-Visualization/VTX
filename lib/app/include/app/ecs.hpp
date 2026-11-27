@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ECS_HPP
-#define VTX_APP_ECS_HPP
+#pragma once
 
 #include <util/ecs.hpp>
 
@@ -115,5 +114,3 @@ namespace VTX::App
 	inline Registry & REG() { return ECS::registry(); }
 
 } // namespace VTX::App
-
-#endif

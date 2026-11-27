@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_HIDEABLE_GOUPE_BOX_HPP
-#define VTX_UI_QT_WIDGET_HIDEABLE_GOUPE_BOX_HPP
+#pragma once
 
 #include "ui/qt/helper.hpp"
 #include <QGroupBox>
@@ -68,4 +67,3 @@ namespace VTX::UI::QT::Widget
 		QPointer<QGroupBox>	  _groupbox;
 	};
 } // namespace VTX::UI::QT::Widget
-#endif

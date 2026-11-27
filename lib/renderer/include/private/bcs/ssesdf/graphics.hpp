@@ -1,5 +1,4 @@
-#ifndef BCS_SSESDF_GRAPHICS_HPP
-#define BCS_SSESDF_GRAPHICS_HPP
+#pragma once
 
 #include "bcs/core/type.hpp"
 #include "bcs/cuda/math.cuh"
@@ -50,5 +49,3 @@ namespace bcs::ssesdf
 		uint16_t maxConcaveNeighbors = 0;
 	};
 } // namespace bcs::ssesdf
-
-#endif // BCS_SSESDF_GRAPHICS_HPP

@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_SECTION_HPP
-#define VTX_UI_QT_WIDGET_LIBRARY_GRAPHICS_CONFIG_SECTION_HPP
+#pragma once
 
 #include "ui/qt/services.hpp"
 #include "ui/qt/widget/hideable_goupe_box.hpp"
@@ -31,5 +30,3 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		Entity _currentPreset = InvalidEntity;
 	};
 } // namespace VTX::UI::QT::Widget::Library::GraphicsConfig
-
-#endif

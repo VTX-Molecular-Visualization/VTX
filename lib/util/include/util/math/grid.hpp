@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_MATH_GRID_HPP
-#define VTX_UTIL_MATH_GRID_HPP
+#pragma once
 
 #include "util/math.hpp"
 #include "util/types.hpp"
@@ -364,5 +363,3 @@ namespace VTX::Util::Math
 		}
 	};
 } // namespace VTX::Util::Math
-
-#endif

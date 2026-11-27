@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_HELPERS_HPP
-#define VTX_APP_PYTHON_BINDING_TOPOLOGY_HELPERS_HPP
+#pragma once
 
 #include "app/python_binding/topology/types.hpp"
 #include <app/system/selection.hpp>
@@ -40,5 +39,3 @@ namespace VTX::App::PythonBinding::Topology
 	bool isFullySelected( Entity p_entity, SystemItem p_item, std::optional<Index> p_index );
 
 } // namespace VTX::App::PythonBinding::Topology
-
-#endif

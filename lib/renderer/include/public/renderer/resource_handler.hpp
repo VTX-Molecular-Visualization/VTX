@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_RESOURCE_HANDLER_HPP
-#define VTX_RENDERER_RESOURCE_HANDLER_HPP
+#pragma once
 
 #include "renderer/descriptors.hpp"
 #include <algorithm>
@@ -697,5 +696,3 @@ namespace VTX::Renderer
 	};
 
 } // namespace VTX::Renderer
-
-#endif

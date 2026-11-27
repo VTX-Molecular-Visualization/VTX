@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ACTION_CAMERA_HPP
-#define VTX_APP_ACTION_CAMERA_HPP
+#pragma once
 
 #include "app/controller/animation.hpp"
 #include "app/controller/freefly.hpp"
@@ -256,5 +255,3 @@ namespace VTX::App::Action::Camera
 	};
 
 } // namespace VTX::App::Action::Camera
-
-#endif

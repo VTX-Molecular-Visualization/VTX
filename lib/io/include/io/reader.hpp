@@ -1,5 +1,4 @@
-#ifndef VTX_IO_READER_HPP
-#define VTX_IO_READER_HPP
+#pragma once
 
 #include "io/constants.hpp"
 #include "io/metadata.hpp"
@@ -74,5 +73,3 @@ namespace VTX::IO
 	};
 
 } // namespace VTX::IO
-
-#endif // !VTX_IO_READER_HPP

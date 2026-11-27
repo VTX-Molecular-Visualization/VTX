@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_DIALOG_UPDATER_HPP
-#define VTX_UI_QT_DIALOG_UPDATER_HPP
+#pragma once
 
 #include "ui/qt/dialog/base_dialog.hpp"
 #include <QDialogButtonBox>
@@ -37,5 +36,3 @@ namespace VTX::UI::QT::Dialog
 	};
 
 } // namespace VTX::UI::QT::Dialog
-
-#endif

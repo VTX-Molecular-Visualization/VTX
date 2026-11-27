@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_MATERIAL_HPP
-#define VTX_RENDERER_MATERIAL_HPP
+#pragma once
 
 #include <cstddef>
 #include <optional>
@@ -104,5 +103,3 @@ namespace VTX::Renderer
 		}
 	};
 } // namespace VTX::Renderer
-
-#endif

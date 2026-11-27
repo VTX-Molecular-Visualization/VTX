@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_PROGRAM_HPP
-#define VTX_RENDERER_CONTEXT_BACKEND_GL_PROGRAM_HPP
+#pragma once
 
 #include "renderer/context/backend/gl/debug.hpp"
 #include <array>
@@ -305,5 +304,3 @@ namespace VTX::Renderer::Context::Backend::GL
 		}
 	};
 } // namespace VTX::Renderer::Context::Backend::GL
-
-#endif

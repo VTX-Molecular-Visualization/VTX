@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_REPRESENTATION_HPP
-#define VTX_RENDERER_REPRESENTATION_HPP
+#pragma once
 
 #include <util/enum.hpp>
 #include <util/math.hpp>
@@ -99,5 +98,3 @@ namespace VTX::Renderer
 		}
 	};
 } // namespace VTX::Renderer
-
-#endif

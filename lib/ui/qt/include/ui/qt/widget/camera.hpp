@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_CAMERA_HPP
-#define VTX_UI_QT_WIDGET_CAMERA_HPP
+#pragma once
 
 #include "ui/qt/widget/editable_slider.hpp"
 #include "ui/qt/widget/transform.hpp"
@@ -32,4 +31,3 @@ namespace VTX::UI::QT::Widget
 		VTX::Util::EventHub::ScopedConnection _cameraUpdatedConnection;
 	};
 } // namespace VTX::UI::QT::Widget
-#endif

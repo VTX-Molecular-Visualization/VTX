@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PIPELINE_HPP
-#define VTX_APP_PIPELINE_HPP
+#pragma once
 
 #include "app/pending_updates.hpp"
 #include <exception>
@@ -47,5 +46,3 @@ namespace VTX::App
 	};
 
 } // namespace VTX::App
-
-#endif

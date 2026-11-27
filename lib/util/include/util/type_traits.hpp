@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_TYPE_TRAITS_HPP
-#define VTX_UTIL_TYPE_TRAITS_HPP
+#pragma once
 
 #include "color/rgba.hpp"
 #include "types.hpp"
@@ -42,5 +41,3 @@ namespace VTX
 	constexpr bool always_false_v = false;
 
 } // namespace VTX
-
-#endif

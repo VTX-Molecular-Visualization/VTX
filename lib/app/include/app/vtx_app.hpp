@@ -1,5 +1,4 @@
-#ifndef VTX_APP_VTX_APP_HPP
-#define VTX_APP_VTX_APP_HPP
+#pragma once
 
 #include "app/arguments.hpp"
 #include "app/ecs.hpp"
@@ -170,5 +169,3 @@ namespace VTX::App
 	};
 
 } // namespace VTX::App
-
-#endif

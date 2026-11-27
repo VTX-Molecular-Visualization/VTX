@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_BINDING_HELPER_HPP
-#define VTX_PYTHON_BINDING_BINDING_HELPER_HPP
+#pragma once
 
 #include <pybind11/native_enum.h>
 #include <pybind11/pybind11.h>
@@ -46,5 +45,3 @@ namespace VTX::PythonBinding
 		}
 	};
 } // namespace VTX::PythonBinding
-
-#endif

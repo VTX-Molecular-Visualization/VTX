@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_SERVICES_HPP
-#define VTX_UI_QT_SERVICES_HPP
+#pragma once
 
 namespace VTX::UI::QT
 {
@@ -33,5 +32,3 @@ namespace VTX::UI::QT
 	Widget::MainWindow & MAIN_WINDOW();
 
 } // namespace VTX::UI::QT
-
-#endif

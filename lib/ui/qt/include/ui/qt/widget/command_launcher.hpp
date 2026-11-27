@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_COMMAND_LAUNCHER_HPP
-#define VTX_UI_QT_WIDGET_COMMAND_LAUNCHER_HPP
+#pragma once
 
 #include "ui/qt/widget/base_widget.hpp"
 #include "ui/qt/widget/python_completer.hpp"
@@ -68,4 +67,3 @@ namespace VTX::UI::QT::Widget
 		void _pythonInitialized( const App::Events::PythonInitialized & );
 	};
 } // namespace VTX::UI::QT::Widget
-#endif

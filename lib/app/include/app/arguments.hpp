@@ -1,5 +1,4 @@
-#ifndef VTX_APP_ARGUMENTS_HPP
-#define VTX_APP_ARGUMENTS_HPP
+#pragma once
 
 #include <memory>
 #include <string>
@@ -51,5 +50,3 @@ namespace VTX::App
 	std::vector<std::string> toStringVector( const Arguments & );
 
 } // namespace VTX::App
-
-#endif

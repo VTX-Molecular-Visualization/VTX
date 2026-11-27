@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_COMMAND_BUFFER_HPP
-#define VTX_RENDERER_CONTEXT_COMMAND_BUFFER_HPP
+#pragma once
 
 #include "renderer/descriptors.hpp"
 #include <cassert>
@@ -586,5 +585,3 @@ namespace VTX::Renderer::Context
 		}
 	};
 } // namespace VTX::Renderer::Context
-
-#endif

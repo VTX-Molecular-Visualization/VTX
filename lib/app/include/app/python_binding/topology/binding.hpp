@@ -1,5 +1,4 @@
-#ifndef VTX_APP_PYTHON_BINDING_TOPOLOGY_BINDING_HPP
-#define VTX_APP_PYTHON_BINDING_TOPOLOGY_BINDING_HPP
+#pragma once
 
 #include "app/python_binding/module.hpp"
 #include <pybind11/pybind11.h>
@@ -14,5 +13,3 @@ namespace VTX::App::PythonBinding::Topology
 	void bindBond( pybind11::module_ & p_module );
 	void bindCategory( pybind11::module_ & p_module );
 } // namespace VTX::App::PythonBinding::Topology
-
-#endif

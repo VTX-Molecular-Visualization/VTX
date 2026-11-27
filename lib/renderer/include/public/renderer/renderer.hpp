@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_RENDERER_HPP
-#define VTX_RENDERER_RENDERER_HPP
+#pragma once
 
 #include "renderer/builder/render_graph_build.hpp"
 #include "renderer/caches.hpp"
@@ -306,4 +305,3 @@ namespace VTX::Renderer
 		static void _executeSESExternalPass( uintptr_t );
 	};
 } // namespace VTX::Renderer
-#endif

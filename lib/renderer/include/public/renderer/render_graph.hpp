@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_RENDER_GRAPH_HPP
-#define VTX_RENDERER_RENDER_GRAPH_HPP
+#pragma once
 
 #include "renderer/descriptors.hpp"
 #include "renderer/graph_builder.hpp"
@@ -53,4 +52,3 @@ namespace VTX::Renderer
 	};
 
 } // namespace VTX::Renderer
-#endif

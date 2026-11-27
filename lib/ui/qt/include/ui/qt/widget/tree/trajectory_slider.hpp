@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_TREE_TRAJECTORY_SLIDER_HPP
-#define VTX_UI_QT_WIDGET_TREE_TRAJECTORY_SLIDER_HPP
+#pragma once
 
 #include <QSlider>
 
@@ -28,5 +27,3 @@ namespace VTX::UI::QT::Widget::Tree
 	};
 
 } // namespace VTX::UI::QT::Widget::Tree
-
-#endif

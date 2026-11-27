@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_BAKER_HPP
-#define VTX_RENDERER_BAKER_HPP
+#pragma once
 
 #include <util/filesystem.hpp>
 #include <util/types.hpp>
@@ -31,5 +30,3 @@ namespace VTX::Renderer::Baker
 	 */
 	bool bakeEnvironmentMapToKtx( const FilePath & p_path, const FilePath & p_outputPath, uint p_faceSize );
 } // namespace VTX::Renderer::Baker
-
-#endif

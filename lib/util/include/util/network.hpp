@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_NETWORK_HPP
-#define VTX_UTIL_NETWORK_HPP
+#pragma once
 
 #include "exceptions.hpp"
 #include "logger.hpp"
@@ -15,5 +14,3 @@ namespace VTX::Util::Network
 						 const ProgressCallback & p_progress = nullptr );
 
 } // namespace VTX::Util::Network
-
-#endif

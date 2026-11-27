@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_BUILDER_POST_PROCESS_LINEARIZE_DEPTH_HPP
-#define VTX_RENDERER_BUILDER_POST_PROCESS_LINEARIZE_DEPTH_HPP
+#pragma once
 
 #include "renderer/graph_builder.hpp"
 #include <string_view>
@@ -25,5 +24,3 @@ namespace VTX::Renderer::Builder::PostProcess
 		}
 	};
 } // namespace VTX::Renderer::Builder::PostProcess
-
-#endif

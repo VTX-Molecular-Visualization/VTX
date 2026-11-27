@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_COLOR_HPP
-#define VTX_RENDERER_COLOR_HPP
+#pragma once
 
 #include <array>
 #include <core/chemdb/atom.hpp>
@@ -446,5 +445,3 @@ namespace VTX::Renderer::Color
 	}
 
 } // namespace VTX::Renderer::Color
-
-#endif

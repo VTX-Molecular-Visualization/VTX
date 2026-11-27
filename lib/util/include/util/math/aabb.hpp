@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_MATH_AABB_HPP
-#define VTX_UTIL_MATH_AABB_HPP
+#pragma once
 
 #include "util/constants.hpp"
 #include "util/math.hpp"
@@ -126,5 +125,3 @@ namespace VTX::Util::Math
 		Vec3f _max = VEC3F_LOWEST;
 	};
 } // namespace VTX::Util::Math
-
-#endif

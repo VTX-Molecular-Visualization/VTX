@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_CONCEPTS_HPP
-#define VTX_UTIL_CONCEPTS_HPP
+#pragma once
 
 #include <concepts>
 #include <type_traits>
@@ -23,5 +22,3 @@ namespace VTX
 	};
 
 } // namespace VTX
-
-#endif

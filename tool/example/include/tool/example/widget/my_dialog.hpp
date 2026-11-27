@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_EXAMPLE_WIDGET_MY_DIALOG_HPP
-#define VTX_TOOL_EXAMPLE_WIDGET_MY_DIALOG_HPP
+#pragma once
 
 #include <QDialogButtonBox>
 #include <QPushButton>
@@ -50,5 +49,3 @@ namespace VTX::Tool::Example::Widget
 	};
 
 } // namespace VTX::Tool::Example::Widget
-
-#endif

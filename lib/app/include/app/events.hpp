@@ -1,5 +1,4 @@
-#ifndef VTX_APP_EVENTS_HPP
-#define VTX_APP_EVENTS_HPP
+#pragma once
 
 #include "app/controller/animation.hpp"
 #include "app/ecs.hpp"
@@ -172,5 +171,3 @@ namespace VTX::App::Events
 	};
 
 } // namespace VTX::App::Events
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_FORM_BASIC_FORM_BASIC_HPP
-#define VTX_TOOL_MDPREP_UI_FORM_BASIC_FORM_BASIC_HPP
+#pragma once
 
 #include <array>
 #include <functional>
@@ -96,4 +95,3 @@ namespace VTX::Tool::Mdprep::ui::form_basic
 		void _setupSlots();
 	};
 } // namespace VTX::Tool::Mdprep::ui::form_basic
-#endif

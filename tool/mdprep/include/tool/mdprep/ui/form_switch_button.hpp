@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_FORM_SWITCH_BUTTON_HPP
-#define VTX_TOOL_MDPREP_UI_FORM_SWITCH_BUTTON_HPP
+#pragma once
 
 #include <array>
 #include <functional>
@@ -45,5 +44,3 @@ namespace VTX::Tool::Mdprep::ui
 	};
 
 } // namespace VTX::Tool::Mdprep::ui
-
-#endif

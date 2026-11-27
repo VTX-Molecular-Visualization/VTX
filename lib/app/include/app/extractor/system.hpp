@@ -1,5 +1,4 @@
-#ifndef VTX_APP_EXTRACTOR_SYSTEM_HPP
-#define VTX_APP_EXTRACTOR_SYSTEM_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/extractor/trajectory_buffer.hpp"
@@ -45,4 +44,3 @@ namespace VTX::App::Extractor
 	};
 
 } // namespace VTX::App::Extractor
-#endif // !VTX_APP_EXTRACTOR_SYSTEM_HPP

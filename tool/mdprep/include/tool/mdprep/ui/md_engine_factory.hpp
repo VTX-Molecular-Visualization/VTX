@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_UI_MD_ENGINE_FACTORY_HPP
-#define VTX_TOOL_MDPREP_UI_MD_ENGINE_FACTORY_HPP
+#pragma once
 
 #include <array>
 
@@ -28,5 +27,3 @@ namespace VTX::Tool::Mdprep::ui
 	class MdEngine;
 	void get( const E_MD_ENGINE &, MdEngine & );
 } // namespace VTX::Tool::Mdprep::ui
-
-#endif

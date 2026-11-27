@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_ATOMIC_CALLBACK_HPP
-#define VTX_UTIL_ATOMIC_CALLBACK_HPP
+#pragma once
 
 #include <atomic>
 #include <concepts>
@@ -67,5 +66,3 @@ namespace VTX::Util
 			  { p_target.setOnPending( p_function, p_context ) } noexcept -> std::same_as<void>;
 		  };
 } // namespace VTX::Util
-
-#endif

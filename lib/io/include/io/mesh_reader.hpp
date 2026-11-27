@@ -1,5 +1,4 @@
-#ifndef VTX_IO_MESH_READER_HPP
-#define VTX_IO_MESH_READER_HPP
+#pragma once
 
 #include <util/filesystem.hpp>
 #include <util/thread/base_thread.hpp>
@@ -37,5 +36,3 @@ namespace VTX::IO
 	};
 
 } // namespace VTX::IO
-
-#endif

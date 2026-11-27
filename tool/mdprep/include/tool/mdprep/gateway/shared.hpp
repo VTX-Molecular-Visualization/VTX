@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_GATEWAY_SHARED_HPP
-#define VTX_TOOL_MDPREP_GATEWAY_SHARED_HPP
+#pragma once
 
 #include <memory>
 #include <string>
@@ -67,5 +66,3 @@ namespace VTX::Tool::Mdprep::Gateway
 		bool success = false;
 	};
 } // namespace VTX::Tool::Mdprep::Gateway
-
-#endif

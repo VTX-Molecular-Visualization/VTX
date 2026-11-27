@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_EXCEPTIONS_HPP
-#define VTX_UTIL_EXCEPTIONS_HPP
+#pragma once
 
 #include <exception>
 #include <fmt/format.h>
@@ -224,5 +223,3 @@ namespace VTX::Util
 		std::exception_ptr _error;
 	};
 } // namespace VTX::Util
-
-#endif

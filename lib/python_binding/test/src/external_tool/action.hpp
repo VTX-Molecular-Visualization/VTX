@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_TEST_EXTERNAL_TOOL_ACTION_HPP
-#define VTX_PYTHON_BINDING_TEST_EXTERNAL_TOOL_ACTION_HPP
+#pragma once
 
 namespace VTX::Test::ExternalTool::Action
 {
@@ -15,5 +14,3 @@ namespace VTX::Test::ExternalTool::Action
 		void execute();
 	};
 } // namespace VTX::Test::ExternalTool::Action
-
-#endif

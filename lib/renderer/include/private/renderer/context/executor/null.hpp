@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_EXECUTOR_NULL_HPP
-#define VTX_RENDERER_CONTEXT_EXECUTOR_NULL_HPP
+#pragma once
 
 #include "renderer/context/command_buffer.hpp"
 
@@ -21,5 +20,3 @@ namespace VTX::Renderer::Context::Executor
 		}
 	};
 } // namespace VTX::Renderer::Context::Executor
-
-#endif

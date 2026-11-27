@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_ACTIONS_HPP
-#define VTX_UI_QT_ACTIONS_HPP
+#pragma once
 
 #include "ui/qt/style/icons.hpp"
 #include <app/ui/concepts.hpp>
@@ -594,5 +593,3 @@ namespace VTX::UI::QT
 	} // namespace Action
 
 } // namespace VTX::UI::QT
-
-#endif

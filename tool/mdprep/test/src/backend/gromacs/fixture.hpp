@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_MDPREP_TEST_BACKEND_GROMACS_FIXTURE_HPP
-#define VTX_TOOL_MDPREP_TEST_BACKEND_GROMACS_FIXTURE_HPP
+#pragma once
 
 #include <memory>
 #include <qapplication.h>
@@ -161,5 +160,3 @@ namespace VTX::test
 	std::string getFileContent( const FilePath & p_file ) noexcept;
 
 } // namespace VTX::test
-
-#endif

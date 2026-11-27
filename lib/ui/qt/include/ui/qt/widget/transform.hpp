@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_WIDGET_TRANSFORM_HPP
-#define VTX_UI_QT_WIDGET_TRANSFORM_HPP
+#pragma once
 
 #include "ui/qt/helper.hpp"
 #include "ui/qt/widget/vector.hpp"
@@ -181,5 +180,3 @@ namespace VTX::UI::QT::Widget
 	};
 
 } // namespace VTX::UI::QT::Widget
-
-#endif

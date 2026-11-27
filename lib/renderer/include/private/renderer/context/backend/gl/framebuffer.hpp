@@ -1,5 +1,4 @@
-#ifndef VTX_RENDERER_CONTEXT_BACKEND_GL_FRAMEBUFFER_HPP
-#define VTX_RENDERER_CONTEXT_BACKEND_GL_FRAMEBUFFER_HPP
+#pragma once
 
 #include "include_opengl.hpp"
 #include "texture.hpp"
@@ -111,5 +110,3 @@ namespace VTX::Renderer::Context::Backend::GL
 		bool   _owned = true;
 	};
 } // namespace VTX::Renderer::Context::Backend::GL
-
-#endif // VTX_RENDERER_CONTEXT_BACKEND_GL_FRAMEBUFFER_HPP

@@ -1,5 +1,4 @@
-#ifndef VTX_APP_EXTRACTOR_MESH_HPP
-#define VTX_APP_EXTRACTOR_MESH_HPP
+#pragma once
 
 #include <util/filesystem.hpp>
 #include <util/thread/base_thread.hpp>
@@ -27,5 +26,3 @@ namespace VTX::App::Extractor
 		FilePath _sourcePath;
 	};
 } // namespace VTX::App::Extractor
-
-#endif // !VTX_APP_EXTRACTOR_MESH_HPP

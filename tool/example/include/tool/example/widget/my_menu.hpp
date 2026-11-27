@@ -1,5 +1,4 @@
-#ifndef VTX_TOOL_EXAMPLE_WIDGET_MY_MENU_HPP
-#define VTX_TOOL_EXAMPLE_WIDGET_MY_MENU_HPP
+#pragma once
 
 #include "tool/example/actions.hpp"
 #include <QMenu>
@@ -31,5 +30,3 @@ namespace VTX::Tool::Example::Widget
 	};
 
 } // namespace VTX::Tool::Example::Widget
-
-#endif

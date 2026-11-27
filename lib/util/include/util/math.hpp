@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_MATH_HPP
-#define VTX_UTIL_MATH_HPP
+#pragma once
 
 #include "constants.hpp"
 #include "types.hpp"
@@ -341,5 +340,3 @@ namespace VTX::Util::Math
 	}
 
 } // namespace VTX::Util::Math
-
-#endif

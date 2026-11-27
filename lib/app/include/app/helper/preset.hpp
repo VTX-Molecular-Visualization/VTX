@@ -1,5 +1,4 @@
-#ifndef VTX_APP_HELPER_PRESET_HPP
-#define VTX_APP_HELPER_PRESET_HPP
+#pragma once
 
 #include "app/ecs.hpp"
 #include "app/generic/name.hpp"
@@ -126,5 +125,3 @@ namespace VTX::App::Helper::Preset
 	}
 
 } // namespace VTX::App::Helper::Preset
-
-#endif

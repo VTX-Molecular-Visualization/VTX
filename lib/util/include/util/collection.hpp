@@ -1,5 +1,4 @@
-#ifndef VTX_UTIL_COLLECTION_HPP
-#define VTX_UTIL_COLLECTION_HPP
+#pragma once
 
 #include <functional>
 #include <iostream>
@@ -221,4 +220,3 @@ namespace VTX::Util
 	};
 
 } // namespace VTX::Util
-#endif

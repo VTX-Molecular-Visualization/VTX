@@ -1,5 +1,4 @@
-#ifndef VTX_UI_QT_DIALOG_TRAJECTORY_ASSOCIATION_HPP
-#define VTX_UI_QT_DIALOG_TRAJECTORY_ASSOCIATION_HPP
+#pragma once
 
 #include "ui/qt/dialog/base_dialog.hpp"
 #include <QComboBox>
@@ -20,4 +19,3 @@ namespace VTX::UI::QT::Dialog
 		QPointer<QComboBox> _cbSystem;
 	};
 } // namespace VTX::UI::QT::Dialog
-#endif

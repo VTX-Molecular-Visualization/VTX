@@ -1,5 +1,4 @@
-#ifndef VTX_PYTHON_BINDING_API_COLLECTION_HPP
-#define VTX_PYTHON_BINDING_API_COLLECTION_HPP
+#pragma once
 
 #include <concepts>
 #include <cstddef>
@@ -163,5 +162,3 @@ namespace VTX::PythonBinding::API
 		}
 	};
 } // namespace VTX::PythonBinding::API
-
-#endif
