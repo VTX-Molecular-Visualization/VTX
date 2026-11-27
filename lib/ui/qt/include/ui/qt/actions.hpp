@@ -253,7 +253,18 @@ namespace VTX::UI::QT
 
 		namespace Script
 		{
-			inline constexpr std::string_view RUN = "script.run";
+			inline constexpr std::string_view RUN  = "script.run";
+			inline constexpr std::string_view SAVE = "script.save";
+
+			inline App::UI::DescAction saveAction()
+			{
+				App::UI::DescAction action;
+				action.key	= SAVE;
+				action.name = "Save";
+				action.tip	= "Save the current script";
+				action.icon = Style::Icons::SAVE;
+				return action;
+			}
 
 			inline App::UI::DescAction runAction()
 			{
@@ -353,6 +364,9 @@ namespace VTX::UI::QT
 			inline constexpr std::string_view SAVE					  = "selection.save";
 			inline constexpr std::string_view CLEAR					  = "selection.clear";
 			inline constexpr std::string_view SELECT_ALL			  = "selection.selectAll";
+			inline constexpr std::string_view INVERT				  = "selection.invert";
+			inline constexpr std::string_view EXTEND				  = "selection.extend";
+			inline constexpr std::string_view EXTEND_TO_RESIDUE		  = "selection.extendToResidue";
 			inline constexpr std::string_view SET_GRANULARITY_SYSTEM  = "selection.setGranularitySystem";
 			inline constexpr std::string_view SET_GRANULARITY_CHAIN	  = "selection.setGranularityChain";
 			inline constexpr std::string_view SET_GRANULARITY_RESIDUE = "selection.setGranularityResidue";
@@ -366,6 +380,7 @@ namespace VTX::UI::QT
 			inline constexpr std::string_view PARAM_COLOR_SCHEME	  = "colorScheme";
 			inline constexpr std::string_view PARAM_COLOR_INDEX		  = "colorIndex";
 			inline constexpr std::string_view PARAM_REPRESENTATION	  = "representation";
+			inline constexpr std::string_view PARAM_DISTANCE		  = "distance";
 
 			inline App::UI::DescAction lockAction()
 			{
@@ -405,6 +420,33 @@ namespace VTX::UI::QT
 				action.name		= "Select all";
 				action.tip		= "Select all systems";
 				action.shortcut = "Ctrl+A";
+				return action;
+			}
+
+			inline App::UI::DescAction invertAction()
+			{
+				App::UI::DescAction action;
+				action.key	= INVERT;
+				action.name = "Invert";
+				action.tip	= "Invert selection among visible atoms";
+				return action;
+			}
+
+			inline App::UI::DescAction extendAction()
+			{
+				App::UI::DescAction action;
+				action.key	= EXTEND;
+				action.name = "Within...";
+				action.tip	= "Extend selection to visible atoms within a distance";
+				return action;
+			}
+
+			inline App::UI::DescAction extendToResidueAction()
+			{
+				App::UI::DescAction action;
+				action.key	= EXTEND_TO_RESIDUE;
+				action.name = "To residue";
+				action.tip	= "Extend selection to whole residues";
 				return action;
 			}
 

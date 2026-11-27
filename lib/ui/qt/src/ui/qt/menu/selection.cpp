@@ -52,6 +52,7 @@ namespace VTX::UI::QT::Menu
 		clear();
 		delete _colorSchemeMenu;
 		delete _representationMenu;
+		delete _extendMenu;
 
 		UI_ACTIONS().addTo( *this, Action::Selection::SHOW );
 		UI_ACTIONS().addTo( *this, Action::Selection::HIDE );
@@ -76,6 +77,35 @@ namespace VTX::UI::QT::Menu
 										   representationParams( p_representation ) );
 				 } );
 		addMenu( _representationMenu );
+		addSeparator();
+
+		UI_ACTIONS().addTo( *this, Action::Selection::SELECT_ALL );
+
+		_extendMenu = Helper::makeQObject<QMenu>( this );
+		_extendMenu->setTitle( "Extend" );
+		UI_ACTIONS().addTo( *_extendMenu, Action::Selection::EXTEND_TO_RESIDUE );
+		_extendMenu->addSeparator();
+		for ( const double distance : { 3.0, 5.0, 8.0 } )
+		{
+			QAction * const action = _extendMenu->addAction( QString( "Within %1 Å" ).arg( distance ) );
+			connect(
+				action,
+				&QAction::triggered,
+				[ distance ]()
+				{
+					UI_ACTIONS().trigger(
+						Action::Selection::EXTEND,
+						ActionRegistry::ActionParams { { std::string( Action::Selection::PARAM_DISTANCE ), distance } }
+					);
+				}
+			);
+		}
+		UI_ACTIONS().addTo( *_extendMenu, Action::Selection::EXTEND );
+		_extendMenu->setEnabled( not UI_ACTIONS().isChecked( Action::Selection::LOCK ) );
+		addMenu( _extendMenu );
+		UI_ACTIONS().addTo( *this, Action::Selection::INVERT );
+
+		UI_ACTIONS().addTo( *this, Action::Selection::CLEAR );
 
 		auto &	   reg		= REG();
 		const auto entities = reg.view<App::System::Selection>();

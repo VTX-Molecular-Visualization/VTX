@@ -4,11 +4,12 @@
 #include "app/helper/system.hpp"
 #include "app/services.hpp"
 #include "app/system/selection.hpp"
-#include <algorithm>
 #include <cmath>
 #include <core/struct/topology.hpp>
 #include <util/action_manager.hpp>
+#include <util/constants.hpp>
 #include <util/event_hub.hpp>
+#include <util/math.hpp>
 #include <util/math/transform.hpp>
 
 namespace
@@ -52,17 +53,31 @@ namespace VTX::App::Action::Camera
 		HUB().trigger<Events::CameraTransformChange>();
 	}
 
+	void LookAt::execute( const Vec3f & p_target )
+	{
+		const auto [ _, camera, transform ]
+			= ECS::getFirstEntityWithComponents<Renderer::Camera, Util::Math::Transform>();
+		if ( Util::Math::length2( p_target - transform.getPosition() ) < EPSILON2 )
+		{
+			return;
+		}
+
+		transform.lookAt( p_target );
+		camera.target = p_target;
+		HUB().trigger<Events::CameraTransformChange>();
+	}
+
 	void SetFov::execute( const float p_fov )
 	{
 		const auto	entity	   = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
-		const float clampedFov = std::clamp( p_fov, Renderer::FOV_MIN, Renderer::FOV_MAX );
+		const float clampedFov = Util::Math::clamp( p_fov, Renderer::FOV_MIN, Renderer::FOV_MAX );
 		REG().patch<Renderer::Camera>( entity, [ clampedFov ]( Renderer::Camera & p_cam ) { p_cam.fov = clampedFov; } );
 	}
 
 	void SetNearClip::execute( const float p_near )
 	{
 		const auto	entity		= ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
-		const float clampedNear = std::clamp( p_near, Renderer::NEAR_CLIP_MIN, Renderer::NEAR_CLIP_MAX );
+		const float clampedNear = Util::Math::clamp( p_near, Renderer::NEAR_CLIP_MIN, Renderer::NEAR_CLIP_MAX );
 		REG().patch<Renderer::Camera>(
 			entity, [ clampedNear ]( Renderer::Camera & p_cam ) { p_cam.near = clampedNear; }
 		);
@@ -71,7 +86,7 @@ namespace VTX::App::Action::Camera
 	void SetFarClip::execute( const float p_far )
 	{
 		const auto	entity	   = ECS::getFirstEntityOnlyWithComponents<Renderer::Camera>();
-		const float clampedFar = std::clamp( p_far, Renderer::FAR_CLIP_MIN, Renderer::FAR_CLIP_MAX );
+		const float clampedFar = Util::Math::clamp( p_far, Renderer::FAR_CLIP_MIN, Renderer::FAR_CLIP_MAX );
 		REG().patch<Renderer::Camera>( entity, [ clampedFar ]( Renderer::Camera & p_cam ) { p_cam.far = clampedFar; } );
 	}
 

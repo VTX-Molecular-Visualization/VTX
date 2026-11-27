@@ -1,6 +1,5 @@
 #include "renderer/baker.hpp"
 #include <array>
-#include <cmath>
 #include <cstddef>
 #include <cstring>
 #include <filesystem>
@@ -121,7 +120,7 @@ namespace VTX::Renderer::Baker
 			using namespace Util::Math;
 
 			const float mapped = p_value / ( p_value + 1.f );
-			return static_cast<uint8_t>( clamp( std::pow( mapped, 1.f / 2.2f ) * 255.f, 0.f, 255.f ) );
+			return static_cast<uint8_t>( clamp( pow( mapped, 1.f / 2.2f ) * 255.f, 0.f, 255.f ) );
 		}
 
 		bool _writeThumbnail( const FilePath & p_outputPath, const Util::Image::FloatImage & p_image )

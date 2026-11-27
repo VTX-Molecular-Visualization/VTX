@@ -34,43 +34,43 @@ namespace VTX::App::PythonBinding::Preset
 		Renderer::SSAOConfig _getSsao( const GraphicsConfigHandle & p_preset )
 		{
 			const auto config = getData( p_preset ).ssao;
-			return config ? *config : Renderer::GraphicsConfigs::SSAO_DEFAULT;
+			return config ? *config : Renderer::SSAOConfig {};
 		}
 
 		Renderer::FogConfig _getFog( const GraphicsConfigHandle & p_preset )
 		{
 			const auto config = getData( p_preset ).fog;
-			return config ? *config : Renderer::GraphicsConfigs::FOG_DEFAULT;
+			return config ? *config : Renderer::FogConfig {};
 		}
 
 		Renderer::OutlineConfig _getOutline( const GraphicsConfigHandle & p_preset )
 		{
 			const auto config = getData( p_preset ).outline;
-			return config ? *config : Renderer::GraphicsConfigs::OUTLINE_DEFAULT;
+			return config ? *config : Renderer::OutlineConfig {};
 		}
 
 		Renderer::ChromaticAberrationConfig _getChromaticAberration( const GraphicsConfigHandle & p_preset )
 		{
 			const auto config = getData( p_preset ).chromaticAberration;
-			return config ? *config : Renderer::GraphicsConfigs::CHROMATIC_ABERRATION_DEFAULT;
+			return config ? *config : Renderer::ChromaticAberrationConfig {};
 		}
 
 		Renderer::PixelizeConfig _getPixelize( const GraphicsConfigHandle & p_preset )
 		{
 			const auto config = getData( p_preset ).pixelize;
-			return config ? *config : Renderer::GraphicsConfigs::PIXELIZE_DEFAULT;
+			return config ? *config : Renderer::PixelizeConfig {};
 		}
 
 		Renderer::CRTConfig _getCrt( const GraphicsConfigHandle & p_preset )
 		{
 			const auto config = getData( p_preset ).crt;
-			return config ? *config : Renderer::GraphicsConfigs::CRT_DEFAULT;
+			return config ? *config : Renderer::CRTConfig {};
 		}
 
 		Renderer::SelectionConfig _getSelection( const GraphicsConfigHandle & p_preset )
 		{
 			const auto config = getData( p_preset ).selection;
-			return config ? *config : Renderer::GraphicsConfigs::SELECTION_DEFAULT;
+			return config ? *config : Renderer::SelectionConfig {};
 		}
 
 	} // namespace

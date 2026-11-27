@@ -80,7 +80,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		const QSignalBlocker blockerScale( _comboBoxScale );
 		const QSignalBlocker blockerIntensity( _sliderIntensity );
 		const QSignalBlocker blockerBlur( _sliderBlurSize );
-		const auto			 config = p_config.ssao.value_or( VTX::Renderer::GraphicsConfigs::SSAO_DEFAULT );
+		const auto			 config = p_config.ssao.value_or( VTX::Renderer::SSAOConfig {} );
 		setChecked( p_config.ssao.has_value() );
 		_comboBoxMethod->setCurrentIndex( static_cast<int>( config.method ) );
 		_comboBoxScale->setCurrentIndex( _scaleToUi( config.scale ) );

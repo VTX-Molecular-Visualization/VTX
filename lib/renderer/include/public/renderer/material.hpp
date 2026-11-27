@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <optional>
 #include <string>
+#include <util/math.hpp>
 #include <util/types.hpp>
 
 namespace VTX::Renderer
@@ -23,6 +24,20 @@ namespace VTX::Renderer
 	constexpr float MATERIAL_TEXTURE_SCALE_DEFAULT		= 1.f;
 	constexpr float MATERIAL_TEXTURE_SCALE_MIN			= 0.01f;
 	constexpr float MATERIAL_TEXTURE_SCALE_MAX			= 10.f;
+
+	enum struct E_MATERIAL_VALUES : uint8_t
+	{
+		METALLIC,
+		ROUGHNESS,
+		EMISSIVE_INTENSITY,
+		TEXTURE_SCALE,
+		ALBEDO_TEXTURE,
+		NORMAL_TEXTURE,
+		METALLIC_TEXTURE,
+		ROUGHNESS_TEXTURE,
+		AMBIENT_OCCLUSION_TEXTURE,
+		EMISSIVE_TEXTURE
+	};
 
 	struct MaterialTexture
 	{
@@ -48,7 +63,6 @@ namespace VTX::Renderer
 			COUNT
 		};
 
-		std::string name;
 		Vec3f		emissiveColor { 0.f };
 		float		emissiveIntensity = MATERIAL_EMISSIVE_INTENSITY_DEFAULT;
 		float		metallic		  = MATERIAL_METALLIC_DEFAULT;
@@ -65,6 +79,16 @@ namespace VTX::Renderer
 
 		bool doubleSided = false;
 
+		void clamp()
+		{
+			emissiveIntensity
+				= Util::Math::clamp( emissiveIntensity, MATERIAL_EMISSIVE_INTENSITY_MIN, MATERIAL_EMISSIVE_INTENSITY_MAX );
+			metallic	 = Util::Math::clamp( metallic, MATERIAL_METALLIC_MIN, MATERIAL_METALLIC_MAX );
+			roughness	 = Util::Math::clamp( roughness, MATERIAL_ROUGHNESS_MIN, MATERIAL_ROUGHNESS_MAX );
+			opacity		 = Util::Math::clamp( opacity, MATERIAL_OPACITY_MIN, MATERIAL_OPACITY_MAX );
+			textureScale = Util::Math::clamp( textureScale, MATERIAL_TEXTURE_SCALE_MIN, MATERIAL_TEXTURE_SCALE_MAX );
+		}
+
 		uint32_t textureMask() const noexcept
 		{
 			return ( static_cast<uint32_t>( albedoTexture.has_value() ) << static_cast<uint8_t>( E_TEXTURE::ALBEDO ) )
@@ -79,18 +103,6 @@ namespace VTX::Renderer
 					   << static_cast<uint8_t>( E_TEXTURE::EMISSIVE ) );
 		}
 	};
-
-	namespace Materials
-	{
-		inline constexpr auto DEFAULT = [] { return Material { .name = "Default" }; };
-		inline constexpr auto MATTE	  = [] { return Material { .name = "Matte", .metallic = 0.f, .roughness = 0.9f }; };
-		inline constexpr auto PLASTIC
-			= [] { return Material { .name = "Plastic", .metallic = 0.f, .roughness = 0.35f }; };
-		inline constexpr auto POLISHED_METAL
-			= [] { return Material { .name = "Polished metal", .metallic = 1.f, .roughness = 0.1f }; };
-		inline constexpr auto BRUSHED_METAL
-			= [] { return Material { .name = "Brushed metal", .metallic = 1.f, .roughness = 0.55f }; };
-	} // namespace Materials
 } // namespace VTX::Renderer
 
 #endif

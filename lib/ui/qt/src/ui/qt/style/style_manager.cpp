@@ -72,10 +72,18 @@ namespace VTX::UI::QT::Style
 		Q_APP()->setStyle( "Fusion" );
 
 		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_MATERIAL_SYMBOLS ) );
-		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_INTER ) );
-		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_LIBERATION_MONO ) );
-		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_CASCADIA_CODE ) );
-		QFontDatabase::addApplicationFont( QString::fromUtf8( FONT_OPEN_DYSLEXIC ) );
+
+		for ( const QUtf8StringView font : { FONT_CASCADIA_CODE, FONT_LIBERATION_MONO, FONT_INTER, FONT_OPEN_DYSLEXIC } )
+		{
+			const int id = QFontDatabase::addApplicationFont( QString::fromUtf8( font ) );
+			for ( const QString & family : QFontDatabase::applicationFontFamilies( id ) )
+			{
+				if ( not _bundledFonts.contains( family ) )
+				{
+					_bundledFonts.append( family );
+				}
+			}
+		}
 
 		// Linux only?
 		// QIcon::setThemeName( "Material Symbols Outlined" );
@@ -160,5 +168,37 @@ namespace VTX::UI::QT::Style
 
 	QIcon StyleManager::iconFromCodepoint( const Codepoint p_codepoint )
 	{ return QIcon( new CodepointIconEngine( p_codepoint ) ); }
+
+	QStringList StyleManager::getSystemFonts() const
+	{
+		QStringList fonts;
+
+		const QString iconsFamily = DEFAULT_FONT_FAMILY_ICONS.toString();
+
+		// Filter not useful.
+		for ( const QString & family : QFontDatabase::families() )
+		{
+			if ( _bundledFonts.contains( family ) || family == iconsFamily )
+			{
+				continue;
+			}
+
+			if ( QFontDatabase::isPrivateFamily( family ) || not QFontDatabase::isScalable( family ) )
+			{
+				continue;
+			}
+
+			const QList<QFontDatabase::WritingSystem> writingSystems = QFontDatabase::writingSystems( family );
+			if ( not writingSystems.contains( QFontDatabase::Latin )
+				 || writingSystems.contains( QFontDatabase::Symbol ) )
+			{
+				continue;
+			}
+
+			fonts.append( family );
+		}
+
+		return fonts;
+	}
 
 } // namespace VTX::UI::QT::Style

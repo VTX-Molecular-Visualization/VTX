@@ -32,7 +32,7 @@ class VTXRecipe(ConanFile):
 
     generators = "CMakeDeps"
     
-    exports_sources = "CMakeLists.txt", "src/*", "asset/*", "default_user_data/*", "cmake/*", "license.txt"
+    exports_sources = "CMakeLists.txt", "src/*", "asset/*", "cmake/*", "license.txt"
 
     def configure(self):
         self.options["vtx_app"].renderer = self.options.renderer

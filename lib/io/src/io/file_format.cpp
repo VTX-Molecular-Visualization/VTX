@@ -8,4 +8,7 @@ namespace VTX::IO
 
 	bool isTrajectoryFileFormat( const FilePath & p_path )
 	{ return VTX::Util::Filesystem::hasExtension( p_path, { ".xtc", ".dcd", ".lammpstrj", ".trj" } ); }
+
+	bool isPresetFileFormat( const FilePath & p_path )
+	{ return VTX::Util::Filesystem::hasExtension( p_path, { ".json" } ); }
 } // namespace VTX::IO

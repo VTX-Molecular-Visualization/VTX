@@ -123,6 +123,11 @@ namespace VTX::App::Events
 		Entity system;
 	};
 
+	struct SystemDestroyed
+	{
+		Entity system;
+	};
+
 	struct MeshLoad
 	{
 		Entity mesh;

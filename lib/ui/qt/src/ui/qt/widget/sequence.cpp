@@ -143,7 +143,7 @@ namespace VTX::UI::QT::Widget
 				}
 				else
 				{
-					_oIdData.ruleSize += std::max( static_cast<Index>( 1 ), residueOriginalId );
+					_oIdData.ruleSize += Util::Math::max( static_cast<Index>( 1 ), residueOriginalId );
 				}
 
 				_oIdData.ruleIndex2residueIndex[ _oIdData.ruleSize - 1 ]
@@ -172,7 +172,8 @@ namespace VTX::UI::QT::Widget
 		ResidueIterator end( Index p_lastIndex )
 		{
 			return ResidueIterator(
-				[ this ]( Index p_ ) { return this->residueAtRuleIndex( p_ ); }, std::min( p_lastIndex, ruleSize() )
+				[ this ]( Index p_ ) { return this->residueAtRuleIndex( p_ ); },
+				Util::Math::min( p_lastIndex, ruleSize() )
 			);
 		}
 
@@ -434,7 +435,7 @@ namespace VTX::UI::QT::Widget
 			painter.drawText( x, SEQ_CHAR_HEIGHT * 2, QString( residue->oneLetterSymbol ) );
 
 			x += SEQ_CHAR_WIDTH;
-			labelChainWidth = std::max( 0, labelChainWidth - SEQ_CHAR_WIDTH );
+			labelChainWidth = Util::Math::max( 0, labelChainWidth - SEQ_CHAR_WIDTH );
 		}
 	}
 

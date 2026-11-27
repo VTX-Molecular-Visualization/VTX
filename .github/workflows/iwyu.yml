@@ -3,6 +3,19 @@ name: iwyu
 on:
   workflow_dispatch:
       inputs:
+        lib:
+          description: 'Library to analyze'
+          required: true
+          default: 'util'
+          type: choice
+          options:
+          - util
+          - core
+          - io
+          - renderer
+          - app
+          - python_binding
+          - ui/qt
         iwyu_args:
           description: 'Extra IWYU arguments (e.g. -Xiwyu --no_fwd_decls)'
           required: false
@@ -58,12 +71,13 @@ jobs:
           -DCMAKE_GLOBAL_AUTOGEN_TARGET=ON
 
     - name: Generate Qt sources
+      if: inputs.lib == 'ui/qt'
       run: cmake --build ${{env.BUILD_DIR}} --target autogen
 
     - name: Filter compilation database
       working-directory: ${{env.BUILD_DIR}}
       run: |
-        jq '[.[] | select((.file | test("/(lib|tool|app)/")) and (.file | test("/vendor/|/build/|/test/") | not))]' compile_commands.json > compile_commands.filtered.json
+        jq --arg lib "/lib/${{ inputs.lib }}/" '[.[] | select((.file | contains($lib)) and (.file | test("/vendor/|/build/|/test/") | not))]' compile_commands.json > compile_commands.filtered.json
         mv compile_commands.filtered.json compile_commands.json
         echo "Translation units: $(jq length compile_commands.json)"
 
@@ -83,10 +97,36 @@ jobs:
           ${{ inputs.iwyu_args }} \
           > iwyu.out 2>&1 || true
 
+    - name: Build patch
+      working-directory: ${{github.workspace}}
+      shell: bash
+      run: |
+        FIX_INCLUDES=$(command -v fix_include || command -v fix_includes.py)
+        "$FIX_INCLUDES" --nocomments --noreorder --nosafe_headers < iwyu.out || true
+        git diff > iwyu.patch
+
+    - name: Summary
+      working-directory: ${{github.workspace}}
+      shell: bash
+      run: |
+        {
+          echo "## IWYU: \`${{ inputs.lib }}\`"
+          echo ""
+          echo "- Files with suggestions: $(grep -c 'should add these lines:' iwyu.out || true)"
+          echo "- Errors: $(grep -c 'error:' iwyu.out || true)"
+          echo "- Patch: $(git diff --shortstat)"
+          echo ""
+          echo "### Forward declarations suggested"
+          echo '```'
+          grep -E '^(namespace .*\{ *)?(class|struct) [A-Za-z_][A-Za-z0-9_:<>, ]*;' iwyu.out | sort | uniq -c | sort -rn | head -200 || true
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
+
     - name: Upload results
       uses: actions/upload-artifact@v4
       with:
-        name: iwyu
+        name: iwyu-${{ github.run_id }}
         path: |
           iwyu.out
+          iwyu.patch
           ${{env.BUILD_DIR}}/compile_commands.json

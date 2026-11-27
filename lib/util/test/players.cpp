@@ -18,7 +18,7 @@ TEST_CASE( "Player propagates callback exceptions", "[players][constexpr-audit]"
 	CHECK_THROWS_AS( player.increment( 2 ), std::runtime_error );
 }
 
-TEST_CASE( "Util::Players", "[players][forward]" )
+TEST_CASE( "Util::Players - forward", "[players][forward]" )
 {
 	using namespace VTX;
 	using namespace VTX::Util;
@@ -71,7 +71,7 @@ TEST_CASE( "Util::Players", "[players][forward]" )
 	}
 }
 
-TEST_CASE( "Util::Players", "[players][forwardloop]" )
+TEST_CASE( "Util::Players - forward loop", "[players][forwardloop]" )
 {
 	using namespace VTX;
 	using namespace VTX::Util;
@@ -153,7 +153,7 @@ TEST_CASE( "Util::Players", "[players][forwardloop]" )
 	}
 }
 
-TEST_CASE( "Util::Players", "[players][backward]" )
+TEST_CASE( "Util::Players - backward", "[players][backward]" )
 {
 	using namespace VTX;
 	using namespace VTX::Util;
@@ -252,7 +252,7 @@ TEST_CASE( "Util::Players", "[players][backward]" )
 	}
 }
 
-TEST_CASE( "Util::Players", "[players][backwardloop]" )
+TEST_CASE( "Util::Players - backward loop", "[players][backwardloop]" )
 {
 	using namespace VTX;
 	using namespace VTX::Util;
@@ -361,7 +361,7 @@ TEST_CASE( "Util::Players", "[players][backwardloop]" )
 	}
 }
 
-TEST_CASE( "Util::Players", "[players][pingpong]" )
+TEST_CASE( "Util::Players - ping pong", "[players][pingpong]" )
 {
 	using namespace VTX;
 	using namespace VTX::Util;

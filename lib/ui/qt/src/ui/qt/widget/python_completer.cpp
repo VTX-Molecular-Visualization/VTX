@@ -1,5 +1,6 @@
 #include "ui/qt/widget/python_completer.hpp"
 #include "ui/qt/helper.hpp"
+#include "ui/qt/style/style_manager.hpp"
 #include <QAbstractItemView>
 #include <QRegularExpression>
 #include <QRegularExpressionMatch>
@@ -70,6 +71,10 @@ namespace VTX::UI::QT::Widget
 		setWidget( p_widget );
 		setCaseSensitivity( Qt::CaseInsensitive );
 		setCompletionMode( QCompleter::PopupCompletion );
+
+		QFont font( Style::DEFAULT_FONT_FAMILY_SEQUENCE.toString(), Style::DEFAULT_FONT_SIZE );
+		font.setStyleHint( QFont::Monospace );
+		popup()->setFont( font );
 
 		_pythonInitializedConnection
 			= App::HUB().connect<App::Events::PythonInitialized, &PythonCompleter::_onPythonInitialized>( this );

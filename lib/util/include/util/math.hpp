@@ -24,6 +24,7 @@ namespace VTX::Util::Math
 	using ::glm::all;
 	using ::glm::any;
 	using ::glm::atan2;
+	using ::glm::ceil;
 	using ::glm::clamp;
 	using ::glm::conjugate;
 	using ::glm::cos;
@@ -217,9 +218,9 @@ namespace VTX::Util::Math
 			u = u1 / sqrtf( u );
 			v = v1 / sqrtf( v );
 
-			if ( std::abs( u ) > 0.01f || std::abs( v ) > 0.01f )
+			if ( abs( u ) > 0.01f || abs( v ) > 0.01f )
 			{
-				angle = std::atan2( v, u );
+				angle = atan2( v, u );
 			}
 			else
 			{

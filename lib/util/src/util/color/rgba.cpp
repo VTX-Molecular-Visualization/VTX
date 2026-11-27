@@ -2,7 +2,11 @@
 #include "util/math.hpp"
 #include <algorithm>
 #include <array>
+#include <charconv>
+#include <cmath>
+#include <fmt/format.h>
 #include <limits>
+#include <stdexcept>
 
 namespace VTX::Util::Color
 {
@@ -34,10 +38,12 @@ namespace VTX::Util::Color
 	Rgba Rgba::mixedWith( const Rgba & p_other, const float p_factor ) const noexcept
 	{
 		const float factor = Util::Math::clamp( p_factor, 0.f, 1.f );
-		return Rgba( Util::Math::lerp( r(), p_other.r(), factor ),
-					 Util::Math::lerp( g(), p_other.g(), factor ),
-					 Util::Math::lerp( b(), p_other.b(), factor ),
-					 a() );
+		return Rgba(
+			Util::Math::lerp( r(), p_other.r(), factor ),
+			Util::Math::lerp( g(), p_other.g(), factor ),
+			Util::Math::lerp( b(), p_other.b(), factor ),
+			a()
+		);
 	}
 
 	Rgba Rgba::toLinear() const noexcept
@@ -54,7 +60,7 @@ namespace VTX::Util::Color
 			return *this;
 		}
 
-		const float factor = ( p_minBrightness - current ) / std::max( 1.f - current, 1e-4f );
+		const float factor = ( p_minBrightness - current ) / Util::Math::max( 1.f - current, 1e-4f );
 		Rgba		result = mixedWith( Rgba( 1.f, 1.f, 1.f, a() ), factor );
 		result.saturate();
 		return result;
@@ -64,7 +70,8 @@ namespace VTX::Util::Color
 	{
 		const float grey = brightness();
 		Rgba		result(
-			grey + ( r() - grey ) * p_factor, grey + ( g() - grey ) * p_factor, grey + ( b() - grey ) * p_factor, a() );
+			grey + ( r() - grey ) * p_factor, grey + ( g() - grey ) * p_factor, grey + ( b() - grey ) * p_factor, a()
+		);
 		result.saturate();
 		return result;
 	}
@@ -77,7 +84,7 @@ namespace VTX::Util::Color
 		}
 
 		Rgba		result	   = withSaturation( 1.35f ).withMinBrightness( 0.42f );
-		const float maxChannel = std::max( { result.r(), result.g(), result.b() } );
+		const float maxChannel = Util::Math::max( result.r(), Util::Math::max( result.g(), result.b() ) );
 		if ( maxChannel > 0.f )
 		{
 			result /= maxChannel;
@@ -85,7 +92,7 @@ namespace VTX::Util::Color
 
 		result = result.withMinBrightness( 0.5f );
 		result.saturate();
-		return result;
+		return Rgba( result.r(), result.g(), result.b(), a() );
 	}
 
 	Rgba Rgba::toColorblind() const noexcept
@@ -110,9 +117,9 @@ namespace VTX::Util::Color
 			return Rgba( 0.45f, 0.45f, 0.45f, a() );
 		}
 
-		if ( std::abs( r() - g() ) < 0.08f && std::abs( g() - b() ) < 0.08f )
+		if ( Util::Math::abs( r() - g() ) < 0.08f && Util::Math::abs( g() - b() ) < 0.08f )
 		{
-			const float target = std::clamp( std::max( brightnessValue, 0.38f ), 0.f, 1.f );
+			const float target = Util::Math::clamp( Util::Math::max( brightnessValue, 0.38f ), 0.f, 1.f );
 			return Rgba( target, target, target, a() );
 		}
 
@@ -129,8 +136,8 @@ namespace VTX::Util::Color
 		}
 
 		Rgba result = palette[ bestIndex ];
-		result		= result.mixedWith( Rgba( 1.f, 1.f, 1.f, a() ), std::max( 0.f, brightnessValue - 0.6f ) * 0.35f );
-		result		= result.withMinBrightness( 0.38f );
+		result = result.mixedWith( Rgba( 1.f, 1.f, 1.f, a() ), Util::Math::max( 0.f, brightnessValue - 0.6f ) * 0.35f );
+		result = result.withMinBrightness( 0.38f );
 		result.saturate();
 		return Rgba( result.r(), result.g(), result.b(), a() );
 	}
@@ -140,6 +147,7 @@ namespace VTX::Util::Color
 		_v.x = Util::Math::clamp( _v.x, 0.f, 1.f );
 		_v.y = Util::Math::clamp( _v.y, 0.f, 1.f );
 		_v.z = Util::Math::clamp( _v.z, 0.f, 1.f );
+		_v.w = Util::Math::clamp( _v.w, 0.f, 1.f );
 	}
 
 	void Rgba::applyGamma( const float & p_gamma ) noexcept
@@ -155,6 +163,52 @@ namespace VTX::Util::Color
 		_v.y = 1.f - _v.y;
 		_v.z = 1.f - _v.z;
 	}
+
+	namespace
+	{
+		uint _toPacked( const Vec4f & p_color ) noexcept
+		{
+			const auto toByte = []( const float p_channel ) -> uint
+			{ return static_cast<uint>( std::lround( std::clamp( p_channel, 0.f, 1.f ) * 255.f ) ); };
+
+			return toByte( p_color.x ) << 24 | toByte( p_color.y ) << 16 | toByte( p_color.z ) << 8
+				   | toByte( p_color.w );
+		}
+	} // namespace
+
+	std::string Rgba::toHexaString() const { return fmt::format( "#{:08X}", _toPacked( _v ) ); }
+
+	std::string Rgba::toHexaString( const Rgba & p_color ) { return p_color.toHexaString(); }
+
+	void Rgba::fromHexaString( const std::string_view p_hexa )
+	{
+		const bool hasAlpha = p_hexa.size() == 9;
+		if ( ( p_hexa.size() == 7 || hasAlpha ) && p_hexa.front() == '#' )
+		{
+			const char * const end	  = p_hexa.data() + p_hexa.size();
+			uint			   packed = 0;
+
+			if ( std::from_chars( p_hexa.data() + 1, end, packed, 16 ).ptr == end )
+			{
+				if ( not hasAlpha )
+				{
+					packed = packed << 8 | 0xFF;
+				}
+
+				*this = Rgba(
+					static_cast<int>( packed >> 24 ),
+					static_cast<int>( packed >> 16 & 0xFF ),
+					static_cast<int>( packed >> 8 & 0xFF ),
+					static_cast<int>( packed & 0xFF )
+				);
+				return;
+			}
+		}
+
+		throw std::invalid_argument( "Invalid color \"" + std::string( p_hexa ) + "\", expected #RRGGBB or #RRGGBBAA" );
+	}
+
+	void Rgba::fromHexaString( const std::string_view p_hexa, Rgba & p_color ) { p_color.fromHexaString( p_hexa ); }
 
 	Rgba Rgba::random()
 	{ return Rgba( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() ); }

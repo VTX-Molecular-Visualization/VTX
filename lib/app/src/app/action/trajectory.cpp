@@ -1,5 +1,5 @@
 #include "app/action/trajectory.hpp"
-#include <algorithm>
+#include <util/math.hpp>
 #include <cmath>
 #include <core/struct/trajectory.hpp>
 #include <utility>
@@ -100,7 +100,7 @@ namespace VTX::App::Action::Trajectory
 			return;
 		}
 
-		const float speed = std::max( 1.f, p_speed );
+		const float speed = Util::Math::max( 1.f, p_speed );
 		_patch( p_entity, [ speed ]( App::Trajectory::Player & traj ) { traj.playingSpeed = speed; } );
 	}
 

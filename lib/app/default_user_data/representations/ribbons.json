@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "type": "representation",
+    "name": "Ribbons",
+    "data": {
+        "hasSphere": false,
+        "radiusSphereFixed": 0.5,
+        "radiusSphereAdd": 0.0,
+        "isRadiusSphereFixed": true,
+        "hasCylinder": false,
+        "radiusCylinder": 0.1,
+        "cylinderColorBlending": false,
+        "hasRibbon": true,
+        "ribbonColorBlending": true,
+        "hasSes": false,
+        "sesComputeMode": [
+            "POLYMER",
+            "CARBOHYDRATE"
+        ],
+        "sesProbeRadius": 1.4
+    }
+}

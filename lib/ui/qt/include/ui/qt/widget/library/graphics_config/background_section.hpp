@@ -32,6 +32,7 @@ namespace VTX::UI::QT::Widget::Library::GraphicsConfig
 		QPointer<QLabel>		 _labelIblIntensity;
 		QPointer<EditableSlider> _sliderIblIntensity;
 		QPointer<QLabel>		 _labelEnvironmentRotation;
+		QPointer<QLabel>		 _labelExperimental;
 		QPointer<EditableSlider> _sliderEnvironmentRotation;
 
 		void _refreshEnvironmentMaps();

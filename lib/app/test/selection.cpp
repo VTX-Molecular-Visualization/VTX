@@ -194,7 +194,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelecti
 	App::ACTION().execute<SetSelected<E_SYSTEM_ITEM::ATOM>>( system2, toSelect );
 	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system2, toMask, false );
 
-	App::ACTION().execute<App::Action::Selection::ExtendSelectionRes>();
+	App::ACTION().execute<App::Action::Selection::ExtendSelectionToResidue>();
 
 	int count { 0 };
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
@@ -231,7 +231,7 @@ TEST_CASE( "VTX_APP - Selection - Extend selection to residues", "[extendSelecti
 	atomList = { 0, 5 };
 	expected2.set( atomList );
 
-	App::ACTION().execute<App::Action::Selection::ExtendSelectionRes>();
+	App::ACTION().execute<App::Action::Selection::ExtendSelectionToResidue>();
 
 	CHECK( selection3.atoms == expected1 );
 	CHECK( selection4.atoms == expected2 );
@@ -256,7 +256,7 @@ TEST_CASE( "VTX_APP - Selection - RevertSelection", "[revertSelection][selection
 	toMask = static_cast<Index>( selection1.atoms.size() - 1 );
 	App::ACTION().execute<SetVisible<E_SYSTEM_ITEM::ATOM>>( system1, toMask, false );
 
-	App::ACTION().execute<App::Action::Selection::RevertSelection>();
+	App::ACTION().execute<App::Action::Selection::InvertSelection>();
 
 	int count { 0 };
 	for ( auto system : App::REG().view<Core::Struct::Topology>() )
@@ -295,7 +295,7 @@ TEST_CASE( "VTX_APP - Selection - RevertSelection", "[revertSelection][selection
 	visible4.atoms.reset( 0 );
 	expected2.set( atomList );
 
-	App::ACTION().execute<App::Action::Selection::RevertSelection>();
+	App::ACTION().execute<App::Action::Selection::InvertSelection>();
 
 	CHECK( selection3.atoms == expected1 );
 	CHECK( selection4.atoms == expected2 );
@@ -329,7 +329,7 @@ TEST_CASE( "VTX_APP - Selection - SetSelected maps items to atom selections", "[
 	app.loadSystem();
 	const auto [ system, topology, selection ] = App::ECS::getFirstEntityWithComponents<Topology, System::Selection>();
 
-	SECTION( "atom overloads support replace, append and subtract" )
+	SECTION( "atom overloads support replace / append / subtract" )
 	{
 		const auto residueIndexOpt = _findResidueWithMinimumAtomCount( topology, 2 );
 		REQUIRE( residueIndexOpt.has_value() );
@@ -404,7 +404,7 @@ TEST_CASE( "VTX_APP - Selection - SetSelected maps items to atom selections", "[
 	}
 }
 
-TEST_CASE( "VTX_APP - Selection - Clear handles this system, others and all systems", "[integration][selection]" )
+TEST_CASE( "VTX_APP - Selection - Clear handles this system / others / all systems", "[integration][selection]" )
 {
 	using namespace VTX;
 

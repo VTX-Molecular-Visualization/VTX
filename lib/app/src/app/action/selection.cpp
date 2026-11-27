@@ -5,12 +5,17 @@
 #include "app/services.hpp"
 #include "app/system/uid.hpp"
 #include "app/system/visibility.hpp"
+#include "util/math.hpp"
 #include "util/math/grid.hpp"
 #include "util/math/range_list.hpp"
+#include "util/math/transform.hpp"
+#include <cassert>
+#include <cmath>
 #include <optional>
 #include <renderer/renderer.hpp>
 #include <util/action_manager.hpp>
 #include <util/exceptions.hpp>
+#include <vector>
 
 namespace VTX::App::Action::Selection
 {
@@ -45,16 +50,9 @@ namespace VTX::App::Action::Selection
 
 	void SelectAll::execute()
 	{
-		REG().view<System::Selection>().each(
-			[]( const Entity p_ent, System::Selection & p_selection )
-			{
-				if ( p_selection.atoms.all() )
-				{
-					return;
-				}
-
-				patchSelection( p_ent, Util::Math::BitSet( p_selection.atoms.size(), true ) );
-			}
+		REG().view<System::Selection, System::Visibility>().each(
+			[]( const Entity p_ent, const System::Selection &, const System::Visibility & p_visibility )
+			{ patchSelection( p_ent, p_visibility.atoms ); }
 		);
 	}
 
@@ -271,13 +269,17 @@ namespace VTX::App::Action::Selection
 			// Holds all data associated with a loaded system
 			Entity							entity;
 			std::span<const Vec3f>			positions;
-			App::System::Selection &		selection;
+			Mat4f							localToWorld;
+			Mat4f							worldToLocal;
+			Vec3f							scale;
+			int64_t							neighbourDist;
+			const App::System::Selection &	selection;
 			const Util::Math::Grid<Index> & grid;
-			App::System::Visibility &		visibility;
+			const App::System::Visibility & visibility;
 			Core::Struct::IndexRangeList	toSelect;
 		};
 
-		void unselecMaskedItems()
+		void unselectMaskedItems()
 		{
 			// Remove masked items from selection
 			// System loop
@@ -291,247 +293,308 @@ namespace VTX::App::Action::Selection
 			}
 		}
 
-		bool isWithinDist( const Vec3f & p1, const Vec3f & p2, const float p_threshold, const float threshold2 )
+		bool isWithinDist(
+			const Vec3f & p1,
+			const Vec3f & p2,
+			const Vec3f & p_scale,
+			const double  p_distance,
+			const double  p_distance2
+		)
 		{
 			// checking distance on axes before calculating distance i - j
-			const float dx = p1.x - p2.x;
-			if ( dx > p_threshold || dx < -p_threshold )
+			const double dx
+				= ( static_cast<double>( p1.x ) - static_cast<double>( p2.x ) ) * static_cast<double>( p_scale.x );
+			if ( dx > p_distance || dx < -p_distance )
 			{
 				return false;
 			}
 
-			const float dy = p1.y - p2.y;
-			if ( dy > p_threshold || dy < -p_threshold )
+			const double dy
+				= ( static_cast<double>( p1.y ) - static_cast<double>( p2.y ) ) * static_cast<double>( p_scale.y );
+			if ( dy > p_distance || dy < -p_distance )
 			{
 				return false;
 			}
 
-			const float dz = p1.z - p2.z;
-			if ( dz > p_threshold || dz < -p_threshold )
+			const double dz
+				= ( static_cast<double>( p1.z ) - static_cast<double>( p2.z ) ) * static_cast<double>( p_scale.z );
+			if ( dz > p_distance || dz < -p_distance )
 			{
 				return false;
 			}
 
-			const float dist2 = dx * dx + dy * dy + dz * dz;
-			return dist2 <= threshold2;
+			const double dist2 = dx * dx + dy * dy + dz * dz;
+			return dist2 <= p_distance2;
+		}
+
+		int64_t neighbourCellDist(
+			const Util::Math::Grid<Index> & p_grid,
+			const Vec3f &					p_scale,
+			const float						p_distance
+		)
+		{
+			using namespace Util::Math;
+
+			const float minScale = min( p_scale.x, min( p_scale.y, p_scale.z ) );
+			assert( minScale > 0.f );
+
+			const Vec3f & cellSize = p_grid.getCellSize();
+			const float	  minSide  = min( cellSize.x, min( cellSize.y, cellSize.z ) );
+
+			const double radius = ceil( static_cast<double>( p_distance ) / minScale / minSide );
+			if ( not( radius < static_cast<double>( Grid<Index>::MAX_NEIGHBOUR_DIST ) ) )
+			{
+				return Grid<Index>::MAX_NEIGHBOUR_DIST;
+			}
+
+			return static_cast<int64_t>( radius );
+		}
+
+		Vec3f transformPoint( const Mat4f & p_matrix, const Vec3f & p_point )
+		{ return Vec3f( p_matrix * Vec4f( p_point, 1.f ) ); }
+
+		std::vector<Mat4f> computeRelativeTransforms(
+			const std::vector<SystemData> & p_systems,
+			const Mat4f &					p_sourceLocalToWorld
+		)
+		{
+			std::vector<Mat4f> transforms;
+			transforms.reserve( p_systems.size() );
+			for ( const SystemData & system : p_systems )
+			{
+				transforms.emplace_back( system.worldToLocal * p_sourceLocalToWorld );
+			}
+			return transforms;
+		}
+
+		std::vector<SystemData> collectSystems( const float p_distance )
+		{
+			std::vector<SystemData> systems;
+			for ( const Entity system : REG().view<Core::Struct::Topology>() )
+			{
+				const auto & transform	  = REG().get<Util::Math::Transform>( system );
+				const Mat4f	 localToWorld = transform.computeMatrix();
+
+				std::span<const Vec3f> positions;
+				if ( not Helper::Trajectory::visitCurrentFrame(
+						 system, [ &positions ]( const Core::Struct::FrameView p_frame ) { positions = p_frame; }
+					 ) )
+				{
+					throw VTXException( "Trajectory frame is unavailable" );
+				}
+
+				const Util::Math::Grid<Index> & grid = Helper::System::getAtomGrid( system );
+
+				systems.emplace_back(
+					system,
+					positions,
+					localToWorld,
+					Util::Math::inverse( localToWorld ),
+					transform.getScale(),
+					neighbourCellDist( grid, transform.getScale(), p_distance ),
+					REG().get<App::System::Selection>( system ),
+					grid,
+					REG().get<App::System::Visibility>( system ),
+					Core::Struct::IndexRangeList {}
+				);
+			}
+			return systems;
+		}
+
+		void extendFromUnselected( const float p_distance )
+		{
+			// Adds to the selection all atoms within distance Å of a selected atom
+			// strategy : for each unselected atom, look through neighbor voxels for a selected atom
+
+			// storing systems info
+			std::vector<SystemData> systems = collectSystems( p_distance );
+
+			// square to avoid using square root during distance calculation
+			const double distance2 = static_cast<double>( p_distance ) * static_cast<double>( p_distance );
+
+			// system loop
+			for ( SystemData & testedSystem : systems )
+			{
+				const std::vector<Mat4f> toTestingLocal
+					= computeRelativeTransforms( systems, testedSystem.localToWorld );
+
+				// system's atoms loop
+				for ( Index i = 0; i < testedSystem.selection.atoms.size(); ++i )
+				{
+					if ( not testedSystem.visibility.atoms.test( i ) || testedSystem.selection.atoms.test( i ) )
+					{
+						continue;
+					}
+
+					bool found = false;
+					// system loop
+					for ( size_t k = 0; k < systems.size(); ++k )
+					{
+						SystemData & testingSystem = systems[ k ];
+						const Vec3f	 q1			   = &testingSystem == &testedSystem
+														 ? testedSystem.positions[ i ]
+														 : transformPoint( toTestingLocal[ k ], testedSystem.positions[ i ] );
+						// atom i voxel
+						const Util::Math::Grid<Index>::CellPosition cell = testingSystem.grid.gridPosition( q1 );
+						// neighbor voxels loop
+						testingSystem.grid.forEachNeighbourCell(
+							cell,
+							[ & ](
+								const Util::Math::Grid<Index>::CellPosition &,
+								const Util::Math::Grid<Index>::Cell & p_neighborCell
+							)
+							{
+								// stop looking for a selected atom since we already found one
+								if ( found )
+								{
+									return;
+								}
+
+								for ( const Index j : p_neighborCell )
+								{
+									if ( not testingSystem.selection.atoms.test( j ) )
+									{
+										continue;
+									}
+									const Vec3f & p2 = testingSystem.positions[ j ];
+
+									// checking distance on axes before calculating distance i - j
+									if ( not isWithinDist( q1, p2, testingSystem.scale, p_distance, distance2 ) )
+									{
+										continue;
+									}
+									testedSystem.toSelect.addRange( i );
+									found = true;
+									break;
+								}
+							},
+							testingSystem.neighbourDist
+						);
+						// stop looking for a selected atom since we already found one
+						if ( found )
+						{
+							break;
+						}
+					}
+				}
+			}
+			for ( const SystemData & v : systems )
+			{
+				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( v.entity, v.toSelect, true, true );
+			}
+		}
+
+		void extendFromSelected( const float p_distance )
+		{
+			// Adds to the selection all atoms within distance Å of a selected atom
+			// strategy : for each selected atom, look through neighbor voxels for an unselected atom
+
+			// storing systems info
+			std::vector<SystemData> systems = collectSystems( p_distance );
+
+			// square to avoid using square root during distance calculation
+			const double distance2 = static_cast<double>( p_distance ) * static_cast<double>( p_distance );
+
+			// systems loop
+			for ( const SystemData & testingSystem : systems )
+			{
+				const std::vector<Mat4f> toTestedLocal
+					= computeRelativeTransforms( systems, testingSystem.localToWorld );
+
+				// selected atoms loop
+				for ( const size_t i : testingSystem.selection.atoms )
+				{
+					// systems loop
+					for ( size_t k = 0; k < systems.size(); ++k )
+					{
+						SystemData & testedSystem = systems[ k ];
+						const Vec3f	 q1			  = &testedSystem == &testingSystem
+														? testingSystem.positions[ i ]
+														: transformPoint( toTestedLocal[ k ], testingSystem.positions[ i ] );
+						// atom i voxel
+						const Util::Math::Grid<Index>::CellPosition cell = testedSystem.grid.gridPosition( q1 );
+						// neighbor voxels loop
+						testedSystem.grid.forEachNeighbourCell(
+							cell,
+							[ & ](
+								const Util::Math::Grid<Index>::CellPosition &,
+								const Util::Math::Grid<Index>::Cell & p_neighborCell
+							)
+							{
+								for ( const Index j : p_neighborCell )
+								{
+									if ( not testedSystem.visibility.atoms.test( j )
+										 || testedSystem.selection.atoms.test( j ) )
+									{
+										continue;
+									}
+
+									// coord atom j
+									const Vec3f & p2 = testedSystem.positions[ j ];
+
+									// checking distance on axes before calculating distance i - j
+									if ( not isWithinDist( q1, p2, testedSystem.scale, p_distance, distance2 ) )
+									{
+										continue;
+									}
+									testedSystem.toSelect.addRange( j );
+								}
+							},
+							testedSystem.neighbourDist
+						);
+					}
+				}
+			}
+			for ( const SystemData & v : systems )
+			{
+				ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( v.entity, v.toSelect, true, true );
+			}
 		}
 	} // namespace
 
-	void ExtendSelection::execute( const float p_threshold )
+	void ExtendSelection::execute( const float p_distance )
 	{
 		// Selects the most efficient extension strategy depending on selection density.
-		unselecMaskedItems();
+		if ( not std::isfinite( p_distance ) )
+		{
+			throw VTXException( "Distance must be finite" );
+		}
+		if ( p_distance <= 0.f )
+		{
+			return;
+		}
+
+		unselectMaskedItems();
 		size_t selec { 0 };
 		size_t tot { 0 };
 		// System loop
-		for ( const Entity system : REG().view<App::System::Selection>() )
+		for ( const Entity system : REG().view<App::System::Selection, App::System::Visibility>() )
 		{
-			auto & selection = REG().get<App::System::Selection>( system );
+			const auto & selection	= REG().get<App::System::Selection>( system );
+			const auto & visibility = REG().get<App::System::Visibility>( system );
 
-			tot += selection.atoms.size();
+			tot += visibility.atoms.count();
 			selec += selection.atoms.count();
+		}
+
+		if ( selec == 0 )
+		{
+			return;
 		}
 
 		if ( selec > tot / 2 )
 		{
-			ACTION().execute<App::Action::Selection::ExtendSelectionFromNonSelec>( p_threshold );
+			extendFromUnselected( p_distance );
 		}
 		else
 		{
-			ACTION().execute<App::Action::Selection::ExtendSelectionFromSelec>( p_threshold );
+			extendFromSelected( p_distance );
 		}
 	}
 
-	void ExtendSelectionFromNonSelec::execute( const float p_threshold )
+	void ExtendSelectionToResidue::execute()
 	{
-		// Adds to the selection all atoms within threshold Å of a selected atom
-		// strategy : for each unselected atom, look through neighbor voxels for a selected atom
-
-		// storing systems info
-
-		std::vector<SystemData> systems;
-		for ( const Entity system : REG().view<Core::Struct::Topology>() )
-		{
-			std::span<const Vec3f> positions;
-			if ( not Helper::Trajectory::visitCurrentFrame(
-					 system, [ &positions ]( const Core::Struct::FrameView p_frame ) { positions = p_frame; }
-				 ) )
-			{
-				return;
-			}
-			systems.emplace_back(
-				system,
-				positions,
-				REG().get<App::System::Selection>( system ),
-				Helper::System::getAtomGrid( system ),
-				REG().get<App::System::Visibility>( system )
-			);
-		}
-
-		const Vec3u	 voxelSize = systems[ 0 ].grid.getSize();
-		const size_t minSide   = std::min( { voxelSize.x, voxelSize.y, voxelSize.z } );
-		// square to avoid using square root during distance calculation
-		const float threshold2 = p_threshold * p_threshold;
-		// distance of neighbor voxels to check
-		const int vd = static_cast<int>( std::ceil( p_threshold / minSide ) );
-
-		// system loop
-		for ( const SystemData & testedSystem : systems )
-		{
-			Core::Struct::IndexRangeList toSelect;
-
-			// system's atoms loop
-			for ( Index i = 0; i < testedSystem.selection.atoms.size(); ++i )
-			{
-				if ( not testedSystem.visibility.atoms.test( i ) || testedSystem.selection.atoms.test( i ) )
-				{
-					continue;
-				}
-
-				// coord atom i
-				const Vec3f & p1 = testedSystem.positions[ i ];
-
-				bool found = false;
-				// system loop
-				for ( SystemData & testingSystem : systems )
-				{
-					// atom i voxel
-					const Util::Math::Grid<Index>::CellPosition cell = testingSystem.grid.gridPosition( p1 );
-					// neighbor voxels loop
-					testingSystem.grid.forEachNeighbourCell(
-						cell,
-						[ & ](
-							const Util::Math::Grid<Index>::CellPosition &,
-							const Util::Math::Grid<Index>::Cell & p_neighborCell
-						)
-						{
-							// stop looking for a selected atom since we already found one
-							if ( found )
-							{
-								return;
-							}
-
-							for ( const Index j : p_neighborCell )
-							{
-								if ( not testingSystem.selection.atoms.test( j ) )
-								{
-									continue;
-								}
-								const Vec3f & p2 = testingSystem.positions[ j ];
-
-								// checking distance on axes before calculating distance i - j
-								if ( not isWithinDist( p1, p2, p_threshold, threshold2 ) )
-								{
-									continue;
-								}
-								toSelect.addRange( i );
-								found = true;
-								break;
-							}
-						},
-						vd
-					);
-					// stop looking for a selected atom since we already found one
-					if ( found )
-					{
-						break;
-					}
-				}
-			}
-			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>(
-				testedSystem.entity, toSelect, true, true
-			);
-		}
-	}
-
-	void ExtendSelectionFromSelec::execute( const float p_threshold )
-	{
-		// Adds to the selection all atoms within threshold Å of a selected atom
-		// strategy : for each selected atom, look through neighbor voxels for an unselected atom
-
-		// storing systems info
-
-		std::vector<SystemData> systems;
-		for ( const Entity system : REG().view<Core::Struct::Topology>() )
-		{
-			std::span<const Vec3f> positions;
-			if ( not Helper::Trajectory::visitCurrentFrame(
-					 system, [ &positions ]( const Core::Struct::FrameView p_frame ) { positions = p_frame; }
-				 ) )
-			{
-				return;
-			}
-			systems.emplace_back(
-				system,
-				positions,
-				REG().get<App::System::Selection>( system ),
-				Helper::System::getAtomGrid( system ),
-				REG().get<App::System::Visibility>( system ),
-				Core::Struct::IndexRangeList {}
-			);
-		}
-
-		const Vec3u voxelSize = systems[ 0 ].grid.getSize();
-		// square to avoid using square root during distance calculation
-		const float threshold2 = p_threshold * p_threshold;
-		// distance of neighbor voxels to check
-		const int vd = static_cast<int>( std::ceil( p_threshold / voxelSize.x ) );
-
-		// systems loop
-		for ( const SystemData & testingSystem : systems )
-		{
-			// selected atoms loop
-			for ( const size_t i : testingSystem.selection.atoms )
-			{
-				// coord atom i
-				const Vec3f & p1 = testingSystem.positions[ i ];
-
-				// systems loop
-				for ( SystemData & testedSystem : systems )
-				{
-					// atom i voxel
-					const Util::Math::Grid<Index>::CellPosition cell = testedSystem.grid.gridPosition( p1 );
-					// neighbor voxels loop
-					testedSystem.grid.forEachNeighbourCell(
-						cell,
-						[ & ](
-							const Util::Math::Grid<Index>::CellPosition & p_cellPos,
-							const Util::Math::Grid<Index>::Cell &		  p_neighborCell
-						)
-						{
-							for ( const Index j : p_neighborCell )
-							{
-								if ( not testedSystem.visibility.atoms.test( j )
-									 || testedSystem.selection.atoms.test( j ) )
-								{
-									continue;
-								}
-
-								// coord atom j
-								const Vec3f & p2 = testedSystem.positions[ j ];
-
-								// checking distance on axes before calculating distance i - j
-								if ( not isWithinDist( p1, p2, p_threshold, threshold2 ) )
-								{
-									continue;
-								}
-								testedSystem.toSelect.addRange( j );
-							}
-						},
-						vd
-					);
-				}
-			}
-		}
-		for ( const SystemData & v : systems )
-		{
-			ACTION().execute<SetSelected<Core::Struct::E_SYSTEM_ITEM::ATOM>>( v.entity, v.toSelect, true, true );
-		}
-	}
-
-	void ExtendSelectionRes::execute()
-	{
-		unselecMaskedItems();
+		unselectMaskedItems();
 		// systems loop
 		for ( const Entity system : REG().view<Core::Struct::Topology>() )
 		{
@@ -557,7 +620,7 @@ namespace VTX::App::Action::Selection
 		}
 	}
 
-	void RevertSelection::execute()
+	void InvertSelection::execute()
 	{
 		// system loop
 		for ( const Entity system : REG().view<Core::Struct::Topology>() )

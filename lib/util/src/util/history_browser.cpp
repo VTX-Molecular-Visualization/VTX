@@ -1,5 +1,6 @@
 
 #include "util/history_browser.hpp"
+#include "util/math.hpp"
 
 namespace VTX::Util
 {
@@ -17,7 +18,7 @@ namespace VTX::Util
 	{
 		if ( _browsingHistory )
 		{
-			_historyIdx = std::min( _history.size() - 1, _historyIdx + 1 );
+			_historyIdx = Util::Math::min( _history.size() - 1, _historyIdx + 1 );
 		}
 		_browsingHistory = true;
 	}

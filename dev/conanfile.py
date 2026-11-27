@@ -78,7 +78,7 @@ class VTXRecipe(ConanFile):
         self.requires("spdlog/1.17.0")
         self.requires("fmt/12.1.0")
         self.requires("magic_enum/0.9.8")
-        self.requires("cpr/1.14.2")
+        self.requires("cpr/1.15.1")
         self.requires("catch2/3.16.1")
         self.requires("chemfiles/2026.02.5")
         self.requires("argparse/3.2")
@@ -105,6 +105,7 @@ class VTXRecipe(ConanFile):
             self.requires("libarchive/3.8.7")
             self.requires("boost/1.87.0") # 1.88 version break process package on windows
         self.requires("platformfolders/4.3.0")
+        self.requires("nlohmann_json/3.12.0")
         if self.options.python_binding:
             self.requires("cpython/{}".format(str(self._python_version())))
             self.requires("mpdecimal/4.0.0", force=True)

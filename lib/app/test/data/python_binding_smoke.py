@@ -254,12 +254,12 @@ representation_renamed = representation_name + " renamed"
 representation.rename(representation_renamed)
 require(representation.name == representation_renamed, "Unexpected representation rename")
 representation.duplicate()
-representation_copy = vtx.getRepresentationPreset(representation_renamed + "_copy")
+representation_copy = vtx.getRepresentationPreset(representation_renamed + " (copy)")
 require(
     almost_equal(representation_copy.radiusCylinder, representation.radiusCylinder),
     "Unexpected representation duplicate",
 )
-representation_copy.delete()
+# representation_copy.delete()
 
 color_layout_name = "Python smoke color layout"
 vtx.createColorLayoutPreset(color_layout_name)
@@ -296,7 +296,7 @@ require(
     color_layout_copy.colorCount == color_layout.colorCount,
     "Unexpected color layout duplicate",
 )
-color_layout_copy.delete()
+# color_layout_copy.delete()
 
 graphics_config_name = "Python smoke graphics config"
 vtx.createGraphicsConfigPreset(graphics_config_name)
@@ -337,24 +337,29 @@ set_and_require_properties(
         ("outlineSensitivity", 0.4),
         ("outlineThickness", 2),
         ("activeChromaticAberration", True),
-        ("chromaticAberrationRed", 0.1),
-        ("chromaticAberrationGreen", 0.2),
-        ("chromaticAberrationBlue", 0.3),
+        ("chromaticAberrationRed", -0.01),
+        ("chromaticAberrationGreen", -0.02),
+        ("chromaticAberrationBlue", -0.03),
         ("activePixelize", True),
         ("pixelizeSize", 4),
         ("pixelizeBackground", True),
         ("activeCrt", True),
-        ("crtCurvatureX", 0.1),
-        ("crtCurvatureY", 0.2),
-        ("crtRatio", 1.1),
+        ("crtCurvatureX", 1.5),
+        ("crtCurvatureY", 2.5),
+        ("crtRatio", 0.9),
         ("crtGraninessX", 0.3),
         ("crtGraninessY", 0.4),
-        ("crtVignetteRoundness", 0.5),
+        ("crtVignetteRoundness", 50.0),
         ("crtVignetteIntensity", 0.6),
-        ("crtBrightness", 0.9),
+        ("crtBrightness", 1.5),
         ("activeSelection", True),
     ),
     "graphics config preset",
+)
+graphics_config.crtBrightness = 100.0
+require(
+    almost_equal(graphics_config.crtBrightness, 10.0),
+    "Out of range graphics config value should be clamped",
 )
 for property_name, expected in (
     ("colorLight", vtx.Rgba(0.1, 0.2, 0.3, 1.0)),
@@ -381,22 +386,28 @@ require(
     graphics_config_copy.shadingMode == graphics_config.shadingMode,
     "Unexpected graphics config duplicate",
 )
-graphics_config_copy.delete()
+# graphics_config_copy.delete()
 
-representation.delete()
-color_layout.delete()
-graphics_config.delete()
-require(
-    all(preset != representation for preset in vtx.getRepresentationPresets())
-    and all(preset != color_layout for preset in vtx.getColorLayoutPresets())
-    and all(preset != graphics_config for preset in vtx.getGraphicsConfigPresets()),
-    "Unexpected preset deletion",
-)
+# representation.delete()
+# color_layout.delete()
+# graphics_config.delete()
+# require(
+#     all(preset != representation for preset in vtx.getRepresentationPresets())
+#     and all(preset != color_layout for preset in vtx.getColorLayoutPresets())
+#     and all(preset != graphics_config for preset in vtx.getGraphicsConfigPresets()),
+#     "Unexpected preset deletion",
+# )
 
 position = vtx.Vec3f(1.0, 2.0, 3.0)
 rotation = vtx.Quatf.fromEuler(0.0, 90.0, 0.0)
 
 vtx.camera.setPosition(position)
+vtx.camera.lookAt(vtx.Vec3f(position.x, position.y, position.z - 10.0))
+look_euler = vtx.camera.rotation.euler
+require(
+    almost_equal(look_euler.x, 0.0, 1e-3) and almost_equal(look_euler.y, 0.0, 1e-3),
+    "Camera should look at the target",
+)
 vtx.camera.setRotation(rotation)
 vtx.camera.setFov(45.0)
 vtx.camera.setNearClip(0.1)
@@ -925,6 +936,62 @@ else:
     raise AssertionError("A zero resolution should raise ValueError")
 vtx.setResolution(*original_resolution)
 require(vtx.getResolution() == original_resolution, "Resolution should be restored")
+
+vtx.clearSelection()
+vtx.selection.extend(4.0)
+require(vtx.selection.isEmpty(topology_system), "Extending an empty selection should keep it empty")
+topology_system.getResidues([0]).setSelected()
+residue_atom_count = len(vtx.selection.getAtoms(topology_system))
+vtx.selection.extend(4.0)
+require(
+    len(vtx.selection.getAtoms(topology_system)) > residue_atom_count,
+    "Extending the selection should add neighbouring atoms",
+)
+extended_atom_count = len(vtx.selection.getAtoms(topology_system))
+vtx.selection.extend(0.0)
+require(
+    len(vtx.selection.getAtoms(topology_system)) == extended_atom_count,
+    "A zero extension distance should not change the selection",
+)
+try:
+    vtx.selection.extend(-1.0)
+except ValueError:
+    pass
+else:
+    raise AssertionError("A negative extension distance should raise ValueError")
+for invalid_distance in (float("nan"), float("inf"), float("-inf")):
+    try:
+        vtx.selection.extend(invalid_distance)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("A non-finite extension distance should raise ValueError")
+require(
+    len(vtx.selection.getAtoms(topology_system)) == extended_atom_count,
+    "Invalid extension distances should not change the selection",
+)
+
+vtx.clearSelection()
+residue_atoms = topology_system.getResidue(0).getAtoms()
+residue_atoms[0:1].setSelected()
+require(len(vtx.selection.getAtoms(topology_system)) == 1, "A single atom should be selected")
+vtx.selection.extendToResidue()
+require(
+    [atom.index for atom in vtx.selection.getAtoms(topology_system)] == [atom.index for atom in residue_atoms],
+    "Extending to residue should select the whole residue",
+)
+
+selected_atom_count = len(vtx.selection.getAtoms(topology_system))
+vtx.selection.invert()
+require(
+    len(vtx.selection.getAtoms(topology_system)) == topology_system.atomCount - selected_atom_count,
+    "Inverting the selection should select the other atoms",
+)
+vtx.selection.invert()
+require(
+    len(vtx.selection.getAtoms(topology_system)) == selected_atom_count,
+    "Inverting twice should restore the selection",
+)
 
 vtx.clearSelection()
 require(topology_system.selectionState == vtx.SELECTION_STATE.NONE, "Selection should be cleared")

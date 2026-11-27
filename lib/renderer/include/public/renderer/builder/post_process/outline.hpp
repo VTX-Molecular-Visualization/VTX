@@ -5,6 +5,7 @@
 #include "renderer/context/context_wrapper.hpp"
 #include "renderer/graph_builder.hpp"
 #include <string_view>
+#include <util/math.hpp>
 #include <util/constants.hpp>
 #include <utility>
 
@@ -21,17 +22,16 @@ namespace VTX::Renderer
 
 	struct OutlineConfig
 	{
-		Util::Color::Rgba color;
-		float			  sensitivity;
-		uint			  thickness;
-	};
+		Util::Color::Rgba color = COLOR_OUTLINE_DEFAULT;
+		float			  sensitivity = OUTLINE_SENSITIVITY_DEFAULT;
+		uint			  thickness = OUTLINE_THICKNESS_DEFAULT;
 
-	namespace GraphicsConfigs
-	{
-		inline const OutlineConfig OUTLINE_DEFAULT { COLOR_OUTLINE_DEFAULT,
-													 OUTLINE_SENSITIVITY_DEFAULT,
-													 OUTLINE_THICKNESS_DEFAULT };
-	} // namespace GraphicsConfigs
+		void clamp()
+		{
+			sensitivity = Util::Math::clamp( sensitivity, OUTLINE_SENSITIVITY_MIN, OUTLINE_SENSITIVITY_MAX );
+			thickness	= Util::Math::clamp( thickness, OUTLINE_THICKNESS_MIN, OUTLINE_THICKNESS_MAX );
+		}
+	};
 } // namespace VTX::Renderer
 
 namespace VTX::Renderer::Builder::PostProcess

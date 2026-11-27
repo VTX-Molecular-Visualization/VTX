@@ -1,0 +1,46 @@
+{
+    "version": 1,
+    "type": "graphics_config",
+    "name": "Illustration",
+    "data": {
+        "shading": {
+            "mode": "TOON",
+            "colorLight": "#FFFFFFFF",
+            "colorBackground": "#F5F5F2FF",
+            "specularFactor": 0.0,
+            "shininess": 0.0,
+            "toonSteps": 4,
+            "lightIntensity": 2.0,
+            "ambientIntensity": 0.01,
+            "backgroundMode": "COLOR",
+            "environmentPath": null,
+            "environmentFaceSize": 1024,
+            "skyboxIntensity": 1.0,
+            "iblIntensity": 1.0,
+            "environmentRotation": 0.0
+        },
+        "ssao": {
+            "method": "SSAO",
+            "intensity": 2.5,
+            "radius": 0.5,
+            "scale": 2.0,
+            "blurSize": 11.0
+        },
+        "outline": {
+            "color": "#1C1C1CFF",
+            "sensitivity": 0.35,
+            "thickness": 2
+        },
+        "fog": null,
+        "chromaticAberration": null,
+        "pixelize": null,
+        "crt": null,
+        "selection": {
+            "color": "#FF4040FF"
+        },
+        "toneMapping": {
+            "mode": "REINHARD",
+            "exposure": 1.0
+        }
+    }
+}

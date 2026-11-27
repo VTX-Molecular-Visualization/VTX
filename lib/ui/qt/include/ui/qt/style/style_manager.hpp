@@ -32,13 +32,22 @@ namespace VTX::UI::QT::Style
 	constexpr float			  DEFAULT_SIZE_SCALE = 0.85f;
 	constexpr int			  DEFAULT_FONT_SIZE	 = 10;
 	constexpr E_THEME		  DEFAULT_THEME		 = E_THEME::DARK;
-	constexpr QUtf8StringView DEFAULT_FONT_FAMILY { Resources::FONT_CASCADIA_MONO_FAMILY };
+	constexpr QUtf8StringView DEFAULT_FONT_FAMILY { Resources::FONT_CASCADIA_CODE_FAMILY };
 	constexpr QUtf8StringView DEFAULT_FONT_FAMILY_SEQUENCE = { Resources::FONT_LIBERATION_MONO_FAMILY };
 	constexpr QUtf8StringView DYSLEXIC_FONT_FAMILY		   = { Resources::FONT_OPEN_DYSLEXIC_FAMILY };
 	constexpr int			  MINIMUM_DOCK_PANEL_WIDTH	   = 200;
 	constexpr int			  MINIMUM_DOCK_PANEL_HEIGHT	   = 50;
 	constexpr int			  DEFAULT_LATERAL_DOCK_WIDTH   = 250;
 	constexpr int			  DEFAULT_CONSOLE_HEIGHT	   = 120;
+
+	constexpr int HUE_GRAPHICS_CONFIG = 260;
+	constexpr int HUE_COLOR_LAYOUT	  = 30;
+	constexpr int HUE_REPRESENTATION  = 320;
+	constexpr int HUE_SCRIPTS		  = 100;
+	constexpr int HUE_CAMERA		  = 180;
+	constexpr int HUE_SYSTEM		  = 215;
+
+	constexpr std::array<int, 5> LIGHTNESS_SYSTEM = { 128, 80, 176, 56, 200 };
 
 	/**
 	 * @brief Class managing application style (themes, stylesheets, etc.).
@@ -76,10 +85,12 @@ namespace VTX::UI::QT::Style
 		 */
 		QIcon iconFromCodepoint( Codepoint );
 
+		const QStringList & getBundledFonts() const { return _bundledFonts; }
+
 		/**
 		 * @brief Get the available fonts.
 		 */
-		static QStringList getAvailableFonts() { return QFontDatabase::families(); }
+		QStringList getSystemFonts() const;
 
 	  private:
 		/**
@@ -91,6 +102,8 @@ namespace VTX::UI::QT::Style
 		 * @brief Store palettes for each theme.
 		 */
 		std::array<QPalette, toUnderlying( E_THEME::COUNT )> _themePalettes;
+
+		QStringList _bundledFonts;
 	};
 } // namespace VTX::UI::QT::Style
 

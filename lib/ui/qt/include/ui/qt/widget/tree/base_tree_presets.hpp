@@ -5,10 +5,12 @@
 #include "ui/qt/settings.hpp"
 #include "ui/qt/style/icons.hpp"
 #include "ui/qt/style/style_manager.hpp"
+#include "ui/qt/widget/library/preset_selector.hpp"
 #include "ui/qt/widget/tree/base_tree.hpp"
 #include <QTreeWidget>
 #include <app/action/preset.hpp>
 #include <app/generic/name.hpp>
+#include <app/generic/readonly.hpp>
 #include <app/services.hpp>
 #include <memory>
 #include <util/action_manager.hpp>
@@ -41,7 +43,7 @@ namespace VTX::UI::QT::Widget::Tree
 				this,
 				[]( QTreeWidgetItem * item, int column )
 				{
-					if ( item == nullptr || item->parent() == nullptr || column != 0 )
+					if ( item == nullptr || not item->data( 0, Qt::UserRole ).isValid() || column != 0 )
 					{
 						return;
 					}
@@ -53,6 +55,20 @@ namespace VTX::UI::QT::Widget::Tree
 		}
 
 	  protected:
+		void _addGroups()
+		{
+			assert( W::topLevelItem( 0 ) != nullptr );
+
+			_builtInItem = new QTreeWidgetItem( W::topLevelItem( 0 ), QStringList { "Built-in" } );
+			_builtInItem->setData(
+				0, Library::PRESET_SCOPE_ROLE, static_cast<int>( Library::E_PRESET_SCOPE::BUILT_IN )
+			);
+			_builtInItem->setExpanded( true );
+			_userItem = new QTreeWidgetItem( W::topLevelItem( 0 ), QStringList { "User" } );
+			_userItem->setData( 0, Library::PRESET_SCOPE_ROLE, static_cast<int>( Library::E_PRESET_SCOPE::USER ) );
+			_userItem->setExpanded( true );
+		}
+
 		void _restoreExpansionState( const QAnyStringView p_settingKey )
 		{
 			assert( W::topLevelItem( 0 ) != nullptr );
@@ -104,6 +120,8 @@ namespace VTX::UI::QT::Widget::Tree
 		 */
 		std::unordered_map<Entity, QTreeWidgetItem *> _entityToItemMap;
 		Entity										  _appliedPreset = InvalidEntity;
+		QTreeWidgetItem *							  _builtInItem	 = nullptr;
+		QTreeWidgetItem *							  _userItem		 = nullptr;
 
 		/**
 		 * @brief Connections to App.
@@ -123,8 +141,9 @@ namespace VTX::UI::QT::Widget::Tree
 				= new QTreeWidgetItem( QStringList() << QString::fromStdString( name.name ) );
 			presetItem->setData( 0, Qt::UserRole, QVariant::fromValue( p_e ) );
 			_setPresetItemApplied( presetItem, p_e == _appliedPreset );
-			W::topLevelItem( 0 )->addChild( presetItem );
-			W::topLevelItem( 0 )->sortChildren( 0, Qt::AscendingOrder );
+			QTreeWidgetItem * const group = p_r.all_of<App::Generic::ReadOnly>( p_e ) ? _builtInItem : _userItem;
+			group->addChild( presetItem );
+			group->sortChildren( 0, Qt::AscendingOrder );
 			_entityToItemMap.emplace( p_e, presetItem );
 			W::updateGeometry();
 		}
@@ -156,7 +175,7 @@ namespace VTX::UI::QT::Widget::Tree
 
 			QTreeWidgetItem * const presetItem = _entityToItemMap.at( p_event.preset );
 			presetItem->setText( 0, QString::fromStdString( p_event.name ) );
-			W::topLevelItem( 0 )->sortChildren( 0, Qt::AscendingOrder );
+			presetItem->parent()->sortChildren( 0, Qt::AscendingOrder );
 		}
 
 		/**

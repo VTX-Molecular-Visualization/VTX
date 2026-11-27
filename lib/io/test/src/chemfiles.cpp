@@ -159,7 +159,7 @@ namespace
 	}
 } // namespace
 
-TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfiles][trajectory][1 frame]" )
+TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer - 1 frame", "[writer][chemfiles][trajectory][1 frame]" )
 {
 	using namespace VTX::IO::Writer;
 
@@ -195,7 +195,7 @@ TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 1 frame", "[writer][chemfi
 	CHECK( positions.size() == 6 );
 }
 
-TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer, 2 frames", "[writer][chemfiles][trajectory][2 frames]" )
+TEST_CASE( "VTX_IO - Test ChemfilesTrajectory writer - 2 frames", "[writer][chemfiles][trajectory][2 frames]" )
 {
 	using namespace VTX::IO::Writer;
 
@@ -594,7 +594,7 @@ TEST_CASE( "VTX_IO - writeFile multi-system: each atom receives coordinates from
 	CHECK( xs[ 3 ] == Catch::Approx( 4.f ).margin( 0.01f ) );
 }
 
-TEST_CASE( "VTX_IO - writeFile atom filter: excluded atoms absent, kept atoms retain correct coordinates",
+TEST_CASE( "VTX_IO - writeFile atom filter: excluded atoms absent and kept atoms retain correct coordinates",
 		   "[writer][writeFile][filter]" )
 {
 	using namespace VTX::IO::Writer;
@@ -641,7 +641,7 @@ TEST_CASE( "VTX_IO - writeFile atom filter: excluded atoms absent, kept atoms re
 	CHECK( xs[ 1 ] == Catch::Approx( 3.f ).margin( 0.01f ) );
 }
 
-TEST_CASE( "VTX_IO - writeFile multi-system with filter: combined atom count correct, filtered atoms absent",
+TEST_CASE( "VTX_IO - writeFile multi-system with filter: combined atom count correct and filtered atoms absent",
 		   "[writer][writeFile][multi-system][filter]" )
 {
 	using namespace VTX::IO::Writer;
