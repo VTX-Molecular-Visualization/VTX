@@ -18,7 +18,7 @@ class VTXUtilRecipe(ConanFile):
     def requirements(self):
         self.requires("glm/1.0.3", transitive_headers=True)
         self.requires("spdlog/1.17.0", transitive_headers=True)
-        self.requires("magic_enum/0.9.8", transitive_headers=True)
+        self.requires("magic_enum/0.10.0", transitive_headers=True)
         self.requires("entt/4.0.0", transitive_headers=True)
         self.requires("assimp/6.0.5", transitive_headers=True)
         self.requires("minizip/1.3.2", force=True)
